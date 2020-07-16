@@ -1,2 +1,2 @@
 # spec-like
-## teste
+## Program under development for emulating Spec
