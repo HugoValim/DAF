@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#oisoi
+
 
 import xrayutilities as xu
 import numpy as np
-
+import pandas as pd
 
 class TablePrinter(object):
     "Print a list of dicts as a table"
@@ -150,9 +150,9 @@ class Control(object):
         else:
             self.Del_bound = (-180,180)
         
-      
+     
         self.constrain = [(self.const[i],0) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
-    
+ 
         self.idir = (0,0,1)
         self.ndir = (1,1,0)
         self.sampleor = 'x+'
@@ -230,16 +230,27 @@ class Control(object):
         phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
         naz = phipseudo
         
-        taupseudo = deg(np.arccos(np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))
-                                +np.sin(rad(alphain))*np.sin(rad(tB1))))
+        arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
+        if arg1 >1:
+            arg1 = 0.999999999999999999999
+        taupseudo = deg(np.arccos(arg1))
         
-        psipseudo = deg(np.arccos((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/
-                                        (np.sin(rad(taupseudo))*np.cos(rad(tB1)))))
+        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
+        if arg2 >1:
+            arg2 = 0.999999999999999999999
+        taupseudo = deg(np.arccos(arg2))
         
-        betaout = deg(np.arcsin(2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))))
+        psipseudo = deg(np.arccos(arg2))
         
-        omega = deg(np.arcsin((np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*
-                                np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))))
+        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        if arg3 >1:
+            arg3 = 0.999999999999999999999
+        betaout = deg(np.arcsin(arg3))
+        
+        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
+        if arg4 >1:
+         arg4 = 0.999999999999999999999
+        omega = deg(np.arcsin(arg4))
         
         a = (alphain, upsipseudo, phipseudo, taupseudo, psipseudo, betaout, omega)
         # print(np.round(a,3))
@@ -285,7 +296,14 @@ class Control(object):
         if len(args) != 0:
             if len(args) != (len(self.constrain)-s):
                 raise ValueError('Constraints passed must have the same size of constrained angles')
+            
+            elif self.col2 == 1 and self.col3 == 0:
+                args=list(args)
+                args.append(args[-1])
+                self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
+            
             else:
+                print(self.const[0])
                 self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
   
     def set_circle_constrain(self, **kwargs):
@@ -425,8 +443,10 @@ class Control(object):
         
  
     
- 
-        return TablePrinter(fmt, ul=self.marker)(data)  
+        if self.isscan:
+            return  repr(self.formscan)
+        else:
+            return TablePrinter(fmt, ul=self.marker)(data)  
                 
     
     def __call__(self, *args, **kwargs):
@@ -435,10 +455,16 @@ class Control(object):
         """
         return self.motor_angles(*args, **kwargs)
     
-
+    def scan_generator(self, hkli, hklf, points):
+        
+        ini = np.array(hkli)
+        fin = np.array(hklf)
+        scanlist = np.linspace(hkli,hklf,points)
+        return scanlist        
     
     def motor_angles(self, *args, **kwargs):
         
+        self.isscan = False
 
         self.sampleID = self.samp.name
         PI = np.pi
@@ -463,7 +489,7 @@ class Control(object):
         self.dhkl = self.samp.planeDistance(self.hkl)
         tilt = xu.math.vector.VecAngle(self.hkl, self.samp.Q(self.ndir), deg=True)   
         
-        print(np.round(self.preangs,3))
+        # print(np.round(self.preangs,3))
         self.bounds = (self.Mu_bound, self.Eta_bound, self.Chi_bound, 
                         self.Phi_bound, self.Nu_bound, self.Del_bound)
 
@@ -599,7 +625,7 @@ class Control(object):
         
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
         nz = Z.dot([0,0,1])
-        ttB1 = round(deg(np.arccos(np.cos(rad(self.Nu)) * np.cos(rad(self.Del)))),5)
+        ttB1 = deg(np.arccos(np.cos(rad(self.Nu)) * np.cos(rad(self.Del))))
         tB1 = ttB1/2
         
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
@@ -610,8 +636,8 @@ class Control(object):
         naz = phipseudo
         taupseudo = deg(np.arccos(np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))
                                 +np.sin(rad(alphain))*np.sin(rad(tB1))))
-        psipseudo = deg(np.arccos(round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/
-                                        (np.sin(rad(taupseudo))*np.cos(rad(tB1))),6)))
+        psipseudo = deg(np.arccos((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/
+                                        (np.sin(rad(taupseudo))*np.cos(rad(tB1)))))
         betaout = deg(np.arcsin(2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))))
         omega = deg(np.arcsin((np.sin(rad(self.Eta))*np.sin(rad(upsipseudo))+np.sin(rad(self.Mu))*np.cos(rad(self.Eta))*
                                np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(self.Mu))*np.cos(rad(self.Eta))*np.sin(rad(tB1))))
@@ -627,9 +653,165 @@ class Control(object):
         self.betaout = betaout
         self.omega = omega
         
-       
+    def scan(self, hkli, hklf, points):
         
+        self.isscan = True
+        
+        scl = Control.scan_generator(self, hkli, hklf, points)
+        
+        self.sampleID = self.samp.name
+        PI = np.pi
+        MAT = np.array
+        rad = np.deg2rad
+        deg = np.rad2deg
+
+        
+        self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
+        
+        
+        # qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Sirius coordinate axes system
+        
+        self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
+        
+        self.Q_material = self.samp.Q(self.hkl)
+
+
+        self.Q_lab = self.hrxrd.Transform(self.Q_material)
+      
+        self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+        self.dhkl = self.samp.planeDistance(self.hkl)
+        tilt = xu.math.vector.VecAngle(self.hkl, self.samp.Q(self.ndir), deg=True)   
+        
+        # print(np.round(self.preangs,3))
+        self.bounds = (self.Mu_bound, self.Eta_bound, self.Chi_bound, 
+                        self.Phi_bound, self.Nu_bound, self.Del_bound)
+
+
+        self.errflag = 0
+        
+        if len(self.constrain) != 0:
+    
+            pseudoconst = Control.pseudoAngleConst
+            
+            while True:
+       
+         
+                if len(self.constrain) == 1:
+                    
+                    if self.errflag == 0:
+                        
+                        restrict = {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}
+                    elif self.errflag == 1:
+                        break
+                     
+                elif len(self.constrain) == 2:
+                  
+                    if self.errflag == 0:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
+                    
+                    if self.errflag == 1:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])})
+                    
+                    if self.errflag == 2:
+                        
+                        break
+                
+                elif len(self.constrain) == 3:
+        
+                    
+                    if self.errflag == 0:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])})
+                        
+                    elif self.errflag == 1:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
+                    
+                    elif self.errflag == 2:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])})
+                    
+                    elif self.errflag == 3:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])})
+                    
+                    elif self.errflag == 4:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])})
+                    
+                    elif self.errflag == 5:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
+                    
+                    elif self.errflag == 6:
+                        break
+                
+            
+                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
+                    
+                if qerror > 1e-5:
+                    self.errflag +=1
+                else:
+                    
+                    angslist = list()
+                    sv = self.start
+                    for i in scl:
+                        Qmaterial = self.samp.Q(i)      
+                        Qlab = self.hrxrd.Transform(Qmaterial)
+                        ang, qerror, errcode = xu.Q2AngFit(Qlab, self.hrxrd, self.bounds, startvalues = sv, constraints=restrict)
+                        sv = ang
+                        teste = np.abs(np.array(ang) - sv)
+                        hklcalc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp),5)
+                        if np.max(teste) > 0.1:
+                            raise (" Exceded limit of difractometer angles change")
+                        else:
+                            lang = list(np.round(ang,4))
+                            lang.append(hklcalc)
+                            lang.append("{0:.2e}".format(qerror))
+                            angslist.append(lang)
+                       
+                        
+                    break
+                
+        else:
+            angslist = list()
+            sv = self.start
+            for i in scl:
+                Qmaterial = self.samp.Q(i)      
+                Qlab = self.hrxrd.Transform(Qmaterial)
+                ang, qerror, errcode = xu.Q2AngFit(Qlab, self.hrxrd, self.bounds, startvalues = sv)
+                sv = ang
+                teste = np.abs(np.array(ang) - sv)
+                hklcalc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp),5)
+                if np.max(teste) > 0.1:
+                    raise (" Exceded limit of difractometer angles change")
+                else:
+                    lang = list(np.round(ang,4))
+                    lang.append(hklcalc)
+                    lang.append("{0:.2e}".format(qerror))
+                    angslist.append(lang)
+                       
+        self.formscan = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', "HKL Calc      "  , 'Error '])      
+                                
+    
         
     
 
 
+    
