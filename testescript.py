@@ -21,14 +21,14 @@ if len(sys.argv) != 1:
     exp = sl.Control(*args)
 else:
     exp = sl.Control(2,1,5)
-exp.set_hkl((1,1,0))
+exp.set_hkl((0,0,1.9996))
 exp.set_material('Si')
 exp.set_exp_conditions(idir = (1,0,0), ndir = (0,0,1))
-# exp.set_constraints(3)
+# exp.set_constraints(10)
 exp.set_circle_constrain()
 
 
-# exp(sv =  (0,0,90,0,0,0))
-# exp.set_print_options(marker = '-', column_marker = '|',   space = 12)
+# exp(sv =  (20,30,90,0,30,0))
+exp.set_print_options(marker = '-', column_marker = '|',   space = 16)
 exp()
 print(exp)

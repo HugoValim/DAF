@@ -184,12 +184,12 @@ class Control(object):
         rad = np.deg2rad
         deg = np.rad2deg
         
-        Mu = angles[0]
-        Eta = angles[1]
-        Chi = angles[2]
-        Phi= angles[3]
-        Nu = angles[4]
-        Del = angles[5]
+        Mu = angles[0] + 1e-6
+        Eta = angles[1] + 1e-6
+        Chi = angles[2] + 1e-6
+        Phi= angles[3] + 1e-6
+        Nu = angles[4] + 1e-6
+        Del = angles[5] + 1e-6
     
         PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
               [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
@@ -217,13 +217,13 @@ class Control(object):
         
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
         nz = Z.dot([0,0,1])
-        ttB1 = round(deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del)))),5)
+        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
         
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
         
         # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
-        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.0000000000000000001))))
+        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
         qaz = upsipseudo
         # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
         
@@ -233,8 +233,8 @@ class Control(object):
         taupseudo = deg(np.arccos(np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))
                                 +np.sin(rad(alphain))*np.sin(rad(tB1))))
         
-        psipseudo = deg(np.arccos(round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/
-                                        (np.sin(rad(taupseudo+0.00000000001))*np.cos(rad(tB1+0.00000000001))),6)))
+        psipseudo = deg(np.arccos((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/
+                                        (np.sin(rad(taupseudo))*np.cos(rad(tB1)))))
         
         betaout = deg(np.arcsin(2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))))
         
@@ -439,11 +439,7 @@ class Control(object):
     
     def motor_angles(self, *args, **kwargs):
         
-        if 'sv' in kwargs.keys():
-            self.start = kwargs['sv']
-        else:
-            self.start = None
-           
+
         self.sampleID = self.samp.name
         PI = np.pi
         MAT = np.array
@@ -459,48 +455,120 @@ class Control(object):
         self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         
         self.Q_material = self.samp.Q(self.hkl)
+
+
         self.Q_lab = self.hrxrd.Transform(self.Q_material)
+      
+        self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
         self.dhkl = self.samp.planeDistance(self.hkl)
         tilt = xu.math.vector.VecAngle(self.hkl, self.samp.Q(self.ndir), deg=True)   
         
+        print(np.round(self.preangs,3))
         self.bounds = (self.Mu_bound, self.Eta_bound, self.Chi_bound, 
                         self.Phi_bound, self.Nu_bound, self.Del_bound)
+
+        if 'sv' in kwargs.keys():
+            self.start = kwargs['sv']
+        else:
+            self.start = (0,0,0,0,0,self.preangs[3])
+            # self.start = (0,0,0,0,0,0)
+           
+
+        self.errflag = 0
         
-      
-     
-     
         if len(self.constrain) != 0:
-            
+    
             pseudoconst = Control.pseudoAngleConst
-        
-            if len(self.constrain) == 1:
-                restrict = {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}
-             
-            elif len(self.constrain) == 2:
-         
-                restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                            {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
             
-            elif len(self.constrain) == 3:
-                
-                restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                            {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
-                            {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])})
-            
-            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
+            while True:
        
+         
+                if len(self.constrain) == 1:
+                    
+                    if self.errflag == 0:
+                        
+                        restrict = {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}
+                    elif self.errflag == 1:
+                        break
+                     
+                elif len(self.constrain) == 2:
+                  
+                    if self.errflag == 0:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
+                    
+                    if self.errflag == 1:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])})
+                    
+                    if self.errflag == 2:
+                        
+                        break
+                
+                elif len(self.constrain) == 3:
+        
+                    
+                    if self.errflag == 0:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])})
+                        
+                    elif self.errflag == 1:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
+                    
+                    elif self.errflag == 2:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])})
+                    
+                    elif self.errflag == 3:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])})
+                    
+                    elif self.errflag == 4:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])})
+                    
+                    elif self.errflag == 5:
+                    
+                        restrict = ({'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])})
+                    
+                    elif self.errflag == 6:
+                        break
+                
+                
+                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
+                    
+                if qerror > 1e-5:
+                    self.errflag +=1
+                else:
+                    break
+                
         else:
             
-
             ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start)
-        
+            
+   
 
         self.qerror = qerror
         self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp),5)
         # print(self.hkl_calc)
         
-        self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
-        self.Nu, self.Del = (ang[4], ang[5])
+        self.Mu, self.Eta, self.Chi, self.Phi = np.round((ang[0], ang[1], ang[2], ang[3]), 5)
+        self.Nu, self.Del = np.round((ang[4], ang[5]), 5)
         
         
         ## Matrices from 4S+2D angles, H. You, JAC, 1999, 32, 614-23
