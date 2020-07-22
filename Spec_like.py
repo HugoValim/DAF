@@ -762,7 +762,7 @@ class Control(object):
         
         return [np.round(self.Mu,4), np.round(self.Eta,4), np.round(self.Chi,4), np.round(self.Phi,4), np.round(self.Nu,4), np.round(self.Del,4), self.hkl_calc, "{0:.2e}".format(self.qerror)] 
                    
-    def scan1(self, hkli, hklf, points, diflimit = 0.1):
+    def scan(self, hkli, hklf, points, diflimit = 0.1):
         
         scl = Control.scan_generator(self, hkli, hklf, points)
         angslist = list()
