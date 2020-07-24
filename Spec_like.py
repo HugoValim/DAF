@@ -6,6 +6,8 @@ import xrayutilities as xu
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import sys
+
 
 class TablePrinter(object):
     "Print a list of dicts as a table"
@@ -114,13 +116,14 @@ class Control(object):
         
         
        
-       
+        # print(self.const)
         self.fix = list()
+        
         
         for i in self.motcon:
             if i != 'x':
                self.fix.append(i)
-        
+     
         
         
         if 'Mu' in self.fix:
@@ -163,6 +166,9 @@ class Control(object):
         self.lam = xu.en2lam(self.en)
         self.posrestrict = ()
         self.negrestrict = ()
+        self.fcsv = '{0:.4f}'.format
+
+
     
     
     def set_hkl(self, HKL):
@@ -173,7 +179,8 @@ class Control(object):
         
         materiais = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
                      'Cu' : xu.materials.Cu, 'Cr' : xu.materials.Cr, 'Fe' : xu.materials.Fe, 
-                     'Ge' : xu.materials.Ge, 'MgO' : xu.materials.MgO, 'Sn' : xu.materials.Sn}
+                     'Ge' : xu.materials.Ge, 'MgO' : xu.materials.MgO, 'Sn' : xu.materials.Sn,
+                     'LaB6' : xu.materials.LaB6}
                      
         self.samp = materiais[sample]
     
@@ -255,23 +262,33 @@ class Control(object):
         arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
         if arg1 >1:
             arg1 = 0.999999999999999999999
+        elif arg1 < -1:
+            arg3 = -0.99999999999999999999
         taupseudo = deg(np.arccos(arg1))
         
         arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
         if arg2 >1:
             arg2 = 0.999999999999999999999
+        elif arg2 < -1:
+            arg2 = -0.99999999999999999999
         taupseudo = deg(np.arccos(arg2))
         
         psipseudo = deg(np.arccos(arg2))
         
         arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # print(arg3)
         if arg3 >1:
-            arg3 = 0.999999999999999999999
+            arg3 = 0.99999999999999999999
+        # elif arg3 < -1:
+        #     arg3 = -0.9999999999999999999
+        # print(arg3)
         betaout = deg(np.arcsin(arg3))
         
         arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
         if arg4 >1:
          arg4 = 0.999999999999999999999
+        elif  arg4 < -1:
+            arg3 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
         
         a = (alphain, upsipseudo, phipseudo, taupseudo, psipseudo, betaout, omega)
@@ -304,7 +321,7 @@ class Control(object):
             # print(betaout - alphain)
             return betaout - alphain
     
-    def set_constraints(self, *args, forcepos = (), forceneg = ()):
+    def set_constraints(self, *args, setineq = None, **kwargs):
 
         if args:
             s = 0
@@ -326,31 +343,51 @@ class Control(object):
                 
                 else:
                     self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
-        self.posrestrict = [i for i in forcepos]
-        self.negrestrict = [i for i in forceneg]
+
+        self.posrestrict = [setineq]
+        
+        if kwargs:
+            if 'Mu' in kwargs.keys() and 'Mu' in self.fix:
+                self.Mu_bound = kwargs['Mu']
+            
+            if 'Eta' in kwargs.keys() and 'Eta' in self.fix:
+                self.Eta_bound = kwargs['Eta']
+     
+            if 'Chi' in kwargs.keys() and 'Chi' in self.fix:
+                self.Chi_bound = kwargs['Chi']
+         
+            if 'Phi' in kwargs.keys() and 'Phi' in self.fix:
+                self.Phi_bound = kwargs['Phi']
+          
+            if 'Nu' in kwargs.keys() and 'Nu' in self.fix:
+                self.Nu_bound = kwargs['Nu']
+         
+            if 'Del' in kwargs.keys() and 'Del' in self.fix:
+                self.Del_bound = kwargs['Del']
+            
+
     
     def set_circle_constrain(self, **kwargs):
          
-        if 'mu' in kwargs.keys():
-            self.Mu_bound = kwargs['mu']
+        if 'Mu' in kwargs.keys() and 'Mu' not in self.fix:
+            self.Mu_bound = kwargs['Mu']
         
-        if 'eta' in kwargs.keys():
-            self.Eta_bound = kwargs['eta']
+        if 'Eta' in kwargs.keys() and 'Eta' not in self.fix:
+            self.Eta_bound = kwargs['Eta']
  
-        if 'chi' in kwargs.keys():
-            self.Chi_bound = kwargs['chi']
+        if 'Chi' in kwargs.keys() and 'Chi' not in self.fix:
+            self.Chi_bound = kwargs['Chi']
      
-        if 'phi' in kwargs.keys():
-            self.Phi_bound = kwargs['phi']
+        if 'Phi' in kwargs.keys() and 'Phi' not in self.fix:
+            self.Phi_bound = kwargs['Phi']
       
-        if 'nu' in kwargs.keys():
-            self.Nu_bound = kwargs['nu']
+        if 'Nu' in kwargs.keys() and 'Nu' not in self.fix:
+            self.Nu_bound = kwargs['Nu']
      
-        if 'delta' in kwargs.keys():
-            self.Del_bound = kwargs['delta']
+        if 'Del' in kwargs.keys() and 'Del' not in self.fix:
+            self.Del_bound = kwargs['Del']
     
-    def set_exp_conditions(self, idir = (0,0,1), 
-                           ndir = (1,1,0), sampleor = 'x+', en = 8000):
+    def set_exp_conditions(self, idir = (0,0,1), ndir = (1,1,0), sampleor = 'x+', en = 8000):
         
         self.idir = idir
         self.ndir = ndir
@@ -519,21 +556,23 @@ class Control(object):
         # print(np.round(self.preangs,3))
         self.bounds = (self.Mu_bound, self.Eta_bound, self.Chi_bound, 
                         self.Phi_bound, self.Nu_bound, self.Del_bound)
-
+    
         if 'sv' in kwargs.keys():
             self.start = kwargs['sv']
             # print(self.start)
         else:
             self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-            self.start = (0,self.preangs[3]/2,0,0,0,self.preangs[3])
+            self.start = (0,0,0,0,0,self.preangs[3])
         
            
-
         self.errflag = 0
         self.trythis = [i for i in ['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'] if i not in self.fix and i not in self.posrestrict]
         pseudoconst = Control.pseudoAngleConst
+
+        
+      
         if len(self.constrain) != 0:
-    
+
             while True:
        
          
@@ -606,26 +645,23 @@ class Control(object):
                         break
                 
                 if self.errflag == 0:
-                    
-                    if self.posrestrict:
+                 
+                    if not None in self.posrestrict: 
+                        # print('taaqui')
                         for i in self.posrestrict:
-                            restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                   
-                    elif self.negrestrict:
-                        for i in self.negrestrict:
-                            restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(-a, i, 0.3)})
+                         
+                            restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})
                             
-             
-                
                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
                 
                 if qerror > 1e-5:
-            
+                    dinerror = 10
                     for i in self.trythis:
                         
                         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
                         # print(i,qerror)
+                        # print(i)
                         
                         if qerror < 1e-5:
                             break
@@ -638,9 +674,9 @@ class Control(object):
                 
         else:
                 restrict = []    
-                if self.posrestrict: 
+                if not None in self.posrestrict: 
                     for i in self.posrestrict:
-                        restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
+                        restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
                     if qerror > 1e-5:
                         
@@ -652,13 +688,7 @@ class Control(object):
                             if qerror < 1e-5:
                                 break
                             restrict.pop()
-                        
-                        
                     
-                elif self.negrestrict:
-                    for i in self.negrestrict:
-                        restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(-a, i, 0.3)})
-                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
                 else:
                     
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start)
@@ -668,16 +698,17 @@ class Control(object):
                     
                             restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
                             ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict)
-                            print(i,qerror)
+                            # print(i,qerror)
                             if qerror < 1e-5:
                                 break
                             restrict.pop()
-                    
-                    
+                
+                
 
             
-   
 
+        
+  
         self.qerror = qerror
         self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp),5)
         # print(self.hkl_calc)
@@ -740,8 +771,10 @@ class Control(object):
         psipseudo = deg(np.arccos(arg2))
         
         arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-        if arg3 >1:
-            arg3 = 0.999999999999999999999
+        # if arg3 >1:
+        #     arg3 = 0.999999999999999999999
+        # elif arg3 < -1:
+        #     arg3 = -0.99999999999999999999
         betaout = deg(np.arcsin(arg3))
         
         arg4 = (np.sin(rad(self.Eta))*np.sin(rad(upsipseudo))+np.sin(rad(self.Mu))*np.cos(rad(self.Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(self.Mu))*np.cos(rad(self.Eta))*np.sin(rad(tB1))
@@ -760,33 +793,46 @@ class Control(object):
         self.betaout = betaout
         self.omega = omega
         
-        return [np.round(self.Mu,4), np.round(self.Eta,4), np.round(self.Chi,4), np.round(self.Phi,4), np.round(self.Nu,4), np.round(self.Del,4), self.hkl_calc, "{0:.2e}".format(self.qerror)] 
-                   
-    def scan(self, hkli, hklf, points, diflimit = 0.1):
+
+  
+        return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, "{0:.2e}".format(self.qerror)], [self.fcsv(self.Mu), self.fcsv(self.Eta), self.fcsv(self.Chi), self.fcsv(self.Phi), self.fcsv(self.Nu), self.fcsv(self.Del), self.fcsv(self.ttB1), self.fcsv(self.tB1), self.fcsv(self.alphain), self.fcsv(self.qaz), self.fcsv(self.naz), self.fcsv(self.taupseudo), self.fcsv(self.psipseudo), self.fcsv(self.betaout), self.fcsv(self.omega), [self.fcsv(self.hkl_calc[0]), self.fcsv(self.hkl_calc[1]), self.fcsv(self.hkl_calc[2])], "{0:.2e}".format(self.qerror)] 
+                                                                                                                                                                                                                                                                                                                 
+    def scan(self, hkli, hklf, points, diflimit = 0.1, path = '/home/hugo/Documentos/CNPEM/scans/', name = 'testscan.txt', sep = ','):
         
         scl = Control.scan_generator(self, hkli, hklf, points)
         angslist = list()
         self.hkl = scl[0]
-        sv = Control.motor_angles(self)[:6]
+        a,b = Control.motor_angles(self)
+        sv = a[:6]
     
         for i in tqdm(scl):
             self.hkl = i
-            a = Control.motor_angles(self, sv=sv)
-            angslist.append(a)
-            teste = np.abs(np.array(a[:6]) - sv)
+            a,b = Control.motor_angles(self, sv=sv)
+            angslist.append(b)
+            teste = np.abs(np.array(a[:6]) - np.array(sv))
             if np.max(teste) > diflimit:
                 raise (" Exceded limit of difractometer angles change")
+           
+            if float(a[-1]) > 1e-5:
+                raise('qerror is too big, process failed')
             
             sv = a[:6]
 
         
         self.isscan = True
-        self.formscan = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', "HKL Calc      "  , 'Error '])  
-    
-            
+
+     
+        self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2\u03B8', '\u03B8', 'alpha', 'qaz', 'naz',
+                                                                                             'tau', 'psi', 'beta', 'omega',"HKL Calc", 'Error'])  
+
+        self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]
+        self.formscantxt.to_csv(path+name, sep=sep)
         
-    
-        
+        pd.options.display.max_rows = 999
+        pd.options.display.max_columns = 0
+     
+
+                
     
 
 

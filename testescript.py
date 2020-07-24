@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python30,
 # -*- coding: utf-8 -*-
 
 import sys
 import Spec_like as sl
-
+import pandas as pd
 #      >detector<  >Reference<     >Sample<     >Sample<     >Sample<
 #         g_mode1      g_mode2      g_mode3      g_mode4      g_mode5
 # 0             .            .  omega-fixed            X            X  0
@@ -14,24 +14,24 @@ import Spec_like as sl
 # 5          Zone            X    Eta=Del/2            X            X  5
 # 6             X            X      Mu=Nu/2            X            X  6
 
-
+a = (-180,180)
 if len(sys.argv) != 1:
     sys.argv.pop(0)
     args = [int(i) for i in sys.argv]
     exp = sl.Control(*args)
 else:
     exp = sl.Control(2,1,5)
-exp.set_hkl((2,2,0))
-exp.set_material('Si')
+exp.set_hkl((0,0,2))
+exp.set_material('LaB6')
 exp.set_exp_conditions(idir = (1,0,0), ndir = (0,0,1))
-# exp.set_constraints(0)
-exp.set_circle_constrain()
+exp.set_constraints(Nu=40)
+exp.set_circle_constrain(Mu=a, Eta=a, Chi=a, Phi=a, Nu=a, Del=a)
 
 
 # exp(sv =  (20,30,90,0,30,0))
 exp.set_print_options(marker = '-', column_marker = '|',   space = 16)
 exp()
-# print(exp)
-exp.scan((1,0,1.9), (1,0,2.1), 100)
-print()
 print(exp)
+# exp.scan((2,1,1), (2.1,1,1), 100)
+# print()
+# print(exp)
