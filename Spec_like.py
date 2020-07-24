@@ -275,7 +275,8 @@ class Control(object):
         
         psipseudo = deg(np.arccos(arg2))
         
-        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
         # print(arg3)
         if arg3 >1:
             arg3 = 0.99999999999999999999
@@ -428,7 +429,7 @@ class Control(object):
     def __str__(self):
         
         if self.isscan:
-            return  repr(self.formscan)
+            return  repr(self.formscantxt)
      
         
         else:
@@ -770,7 +771,9 @@ class Control(object):
         
         psipseudo = deg(np.arccos(arg2))
         
-        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+        # print(arg3)
         # if arg3 >1:
         #     arg3 = 0.999999999999999999999
         # elif arg3 < -1:
@@ -828,7 +831,7 @@ class Control(object):
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]
         self.formscantxt.to_csv(path+name, sep=sep)
         
-        pd.options.display.max_rows = 999
+        pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
      
 
