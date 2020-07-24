@@ -271,7 +271,7 @@ class Control(object):
             arg2 = 0.999999999999999999999
         elif arg2 < -1:
             arg2 = -0.99999999999999999999
-        taupseudo = deg(np.arccos(arg2))
+   
         
         psipseudo = deg(np.arccos(arg2))
         
@@ -767,7 +767,6 @@ class Control(object):
         arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
         if arg2 >1:
             arg2 = 0.999999999999999999999
-        taupseudo = deg(np.arccos(arg2))
         
         psipseudo = deg(np.arccos(arg2))
         
