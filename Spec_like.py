@@ -112,7 +112,7 @@ class Control(object):
                 if self.setup[i] in cons.keys():
                     self.const.append(cons[self.setup[i]])
             
-   
+        print(self.const)
         
         
        
@@ -220,34 +220,42 @@ class Control(object):
         if pseudo_angle == 'Del':
             return Del - fix_angle
     
-        PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
-              [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
-              [0,                         0,             1]])
+        # PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
+        #       [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
+        #       [0,                         0,             1]])
     
-        CHI = MAT([[np.cos(rad(Chi)),    0,           np.sin(rad(Chi))],
-                  [0,                       1,                   0],
-                  [-np.sin(rad(Chi)),    0,           np.cos(rad(Chi))]])
+        # CHI = MAT([[np.cos(rad(Chi)),    0,           np.sin(rad(Chi))],
+        #           [0,                       1,                   0],
+        #           [-np.sin(rad(Chi)),    0,           np.cos(rad(Chi))]])
         
-        ETA = MAT([[np.cos(rad(Eta)),    np.sin(rad(Eta)),   0],
-                   [-np.sin(rad(Eta)),   np.cos(rad(Eta)),   0],
-                   [0,                         0,           1]])
+        # ETA = MAT([[np.cos(rad(Eta)),    np.sin(rad(Eta)),   0],
+        #             [-np.sin(rad(Eta)),   np.cos(rad(Eta)),   0],
+        #             [0,                         0,           1]])
         
-        MU = MAT([[1,                       0,                      0],
-                  [0,            np.cos(rad(Mu)),    -np.sin(rad(Mu))],
-                  [0,            np.sin(rad(Mu)),    np.cos(rad(Mu))]])
+        # MU = MAT([[1,                       0,                      0],
+        #           [0,            np.cos(rad(Mu)),    -np.sin(rad(Mu))],
+        #           [0,            np.sin(rad(Mu)),    np.cos(rad(Mu))]])
         
-        DEL = MAT([[np.cos(rad(Del)),    np.sin(rad(Del)),   0],
-                   [-np.sin(rad(Del)),   np.cos(rad(Del)),   0],
-                   [0,                       0,              1]])
+        # DEL = MAT([[np.cos(rad(Del)),    np.sin(rad(Del)),   0],
+        #             [-np.sin(rad(Del)),   np.cos(rad(Del)),   0],
+        #             [0,                       0,              1]])
         
-        NU = MAT([[1,                    0,                         0],
-                  [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
-                  [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
+        # NU = MAT([[1,                    0,                         0],
+        #           [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
+        #           [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
         
-        Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        nz = Z.dot([0,0,1])
+        # Z = MU.dot(ETA).dot(CHI).dot(PHI)
+        # nz = Z.dot([0,0,1])
+        
+        nz = MAT([np.cos(rad(Eta))*np.sin(rad(Chi)), -np.cos(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) - np.sin(rad(Mu))*np.cos(rad(Chi)), 
+            -np.sin(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) + np.cos(rad(Mu))*np.cos(rad(Chi))])
+        
+        
+        
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
+        
+        
         
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
         
@@ -761,13 +769,15 @@ class Control(object):
         
         arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
         if arg1 >1:
-            arg1 = 0.999999999999999999999
+            arg1 = 0.99999999999999999999
         taupseudo = deg(np.arccos(arg1))
         
         arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
         if arg2 >1:
             arg2 = 0.999999999999999999999
-        
+        elif arg2 < -1:
+            arg2 = -0.99999999999999999999
+        # print(arg2)
         psipseudo = deg(np.arccos(arg2))
         
         # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
@@ -813,7 +823,7 @@ class Control(object):
             angslist.append(b)
             teste = np.abs(np.array(a[:6]) - np.array(sv))
             if np.max(teste) > diflimit:
-                raise (" Exceded limit of difractometer angles change")
+                raise ("Exceded max limit of angles variation")
            
             if float(a[-1]) > 1e-5:
                 raise('qerror is too big, process failed')
@@ -835,7 +845,3 @@ class Control(object):
      
 
                 
-    
-
-
-    

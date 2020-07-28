@@ -17,21 +17,34 @@ import pandas as pd
 a = (-180,180)
 if len(sys.argv) != 1:
     sys.argv.pop(0)
-    args = [int(i) for i in sys.argv]
+    args = [int(sys.argv[i]) for i in range(3)]
     exp = sl.Control(*args)
+    if len(sys.argv) > 6:
+        args2 = [float(i) for i in sys.argv]
+        print(args2)
+        exp.set_hkl((args2[3], args2[4], args2[5]))
+        scanarg = (args2[3], args2[4], args2[5]), (args2[6], args2[7], args2[8]), int(sys.argv[9])
+    else:
+        exp.set_hkl((2,1,1))
+        scanarg = (2,1,1), (2.1,1,1), 100
+        
 else:
-    exp = sl.Control(3,4,5)
-exp.set_hkl((1.9,1,3))
+    exp = sl.Control(2,1,5)
+    exp.set_hkl((2,1,1))
+    scanarg = (2,1,1), (2.1,1,1), 100
+
 exp.set_material('Si')
-exp.set_exp_conditions(idir = (1,0,0), ndir = (0,0,1), en = 20000)
-exp.set_constraints(5,15)
-exp.set_circle_constrain(Mu=a, Eta=a, Chi=a, Phi=a, Nu=a, Del=a)
+exp.set_exp_conditions(idir = (1,0,0), ndir = (0,0,1), en = 8000)
+# exp.set_constraints(20)
+# exp.set_circle_constrain(Mu=a, Eta=a, Nu=a, Del=a)
 
 
 # exp(sv =  (20,30,90,0,30,0))
 # exp.set_print_options(marker = '-', column_marker = '|',   space = 16)
+exp.set_print_options(space = 16)
 exp()
 print(exp)
-exp.scan((1.9,0.9,2.9), (2.1,1.1,3.1), 150)
-# print()
+print() 
+exp.scan(scanarg[0], scanarg[1], scanarg[2])
 print(exp)
+print()
