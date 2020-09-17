@@ -112,7 +112,7 @@ class Control(object):
                 if self.setup[i] in cons.keys():
                     self.const.append(cons[self.setup[i]])
             
-        print(self.const)
+        #print(self.const)
         
         
        
@@ -838,7 +838,7 @@ class Control(object):
                                                                                              'tau', 'psi', 'beta', 'omega',"HKL Calc", 'Error'])  
 
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]
-        self.formscantxt.to_csv(path+name, sep=sep)
+        #self.formscantxt.to_csv(path+name, sep=sep)
         
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
