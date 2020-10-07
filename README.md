@@ -1,4 +1,4 @@
-# spec-like
+# Diffractometer Angles Finder
 ## Program under development for emulating Spec
 
 ## Requirements:
