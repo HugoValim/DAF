@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import argparse as ap
+import sys
+import os
+import Spec_like as sl
+
+doc = """
+
+Sets the bounds of the difractometer angles
+
+"""
+
+epi = "Eg: mcbound -m -180 180 -n -180 180"
+    
+
+parser = ap.ArgumentParser(description=doc, epilog=epi)
+
+parser.add_argument('--hkl1', '-h1', metavar='', type=float, nargs=3, help='Sets Mu bounds')
+parser.add_argument('--hkl2', '-h2', metavar='', type=float, nargs=3, help='Sets Eta bounds')
+parser.add_argument('--hkl3', '-h3', metavar='',type=float, nargs=3, help='Sets Chi bounds')
+parser.add_argument('--angs1', '-a1', metavar='',type=float, nargs=6, help='Sets Phi bounds')
+parser.add_argument('--angs2', '-a2', metavar='',type=float, nargs=6, help='Sets Nu bounds')
+parser.add_argument('--angs3', '-a3', metavar='',type=float, nargs=6, help='Sets Del bounds')
+parser.add_argument('--Calc2', '-c2', action='store_true', help='Calculate UB for 2 reflections')
+parser.add_argument('--Calc3', '-c3', action='store_true', help='Calculate UB for 3 reflections')
+
+args = parser.parse_args()
+dic = vars(args)
+
+with open('Experiment', 'r+') as exp:
+ 
+    lines = exp.readlines()
+
+
+ 
+
+    for i, line in enumerate(lines):
+        for j,k in dic.items():
+            
+
+ 
+
+            if line.startswith(str(j)):
+                if k != None:
+                    lines[i] = str(j)+'='+str(k)+'\n'
+          
+            exp.seek(0)
+            
+          
+
+
+    for line in lines:
+        exp.write(line)
+
+
+with open('Experiment', 'r') as exp:
+    
+    lines = exp.readlines()
+    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
+
+def ret_list(string):
+    
+    return [float(i) for i in string.strip('][').split(', ')]
+
+if dict_args['hkl1'] != '':
+    hkl1 = ret_list(dict_args['hkl1'])
+    angs1 = ret_list(dict_args['angs1'])
+
+    
+if dict_args['hkl2'] != '':
+    hkl2 = ret_list(dict_args['hkl2'])
+    angs2 = ret_list(dict_args['angs2'])
+    
+if dict_args['hkl3'] != '':
+    hkl3 = ret_list(dict_args['hkl3'])
+    angs3 = ret_list(dict_args['angs3'])
+
+mode = [int(i) for i in dict_args['Mode']]    
+
+exp = sl.Control(*mode)
+exp.set_material(dict_args['Material'])
+exp.set_exp_conditions(en = float(dict_args['Energy']))
+
+if  args.Calc2:
+    
+    U = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+    print(U)
+
+if  args.Calc3:
+    
+    U = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
+    print(U)
+
+    
+        
+log = sys.argv.pop(0).split('bin/')[1]      
+
+for i in sys.argv:
+    log += ' ' + i
+
+os.system(f"echo {log} >> Log")

@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import argparse as ap
+import sys
+import os
+
+doc = """
+
+Sets the bounds of the difractometer angles
+
+"""
+
+epi = "Eg: mcbound -m -180 180 -n -180 180"
+    
+
+parser = ap.ArgumentParser(description=doc, epilog=epi)
+
+parser.add_argument('--bound_Mu', '-m', metavar='', type=float, nargs=2, help='Sets Mu bounds')
+parser.add_argument('--bound_Eta', '-e', metavar='',type=float, nargs=2, help='Sets Eta bounds')
+parser.add_argument('--bound_Chi', '-c', metavar='',type=float, nargs=2, help='Sets Chi bounds')
+parser.add_argument('--bound_Phi', '-p', metavar='',type=float, nargs=2, help='Sets Phi bounds')
+parser.add_argument('--bound_Nu', '-n', metavar='',type=float, nargs=2, help='Sets Nu bounds')
+parser.add_argument('--bound_Del', '-d', metavar='',type=float, nargs=2, help='Sets Del bounds')
+
+args = parser.parse_args()
+dic = vars(args)
+# print([(i,j) for i,j in dic.items()])
+# with open ('Experiment', 'w') as doc:
+#     for i,j in dic.items():
+#         doc.write(str(i)+': '+str(j)+'\n')
+# ndir = list2str(args.NDir)
+with open('Experiment', 'r+') as exp:
+ 
+    lines = exp.readlines()
+
+
+ 
+
+    for i, line in enumerate(lines):
+        for j,k in dic.items():
+            
+
+ 
+
+            if line.startswith(str(j)):
+                if k != None:
+                    lines[i] = str(j)+'='+str(k)+'\n'
+          
+            exp.seek(0)
+            
+          
+
+
+    for line in lines:
+        exp.write(line)
+        
+        
+log = sys.argv.pop(0).split('bin/')[1]      
+
+for i in sys.argv:
+    log += ' ' + i
+
+os.system(f"echo {log} >> Log")
