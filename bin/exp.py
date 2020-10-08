@@ -4,6 +4,7 @@ import argparse as ap
 import sys
 import os
 
+
 doc = """
 
 Describe the experiment inputs
@@ -12,13 +13,18 @@ Describe the experiment inputs
 
 parser = ap.ArgumentParser(description=doc)
 
-parser.add_argument('--Material', '-m', metavar='', type=str, help='Set the material that is going to be used in the experiment')
-parser.add_argument('--IDir', '-i', metavar='', type=int, nargs=3,help='Set the plane paralel to the incident beam')
-parser.add_argument('--NDir', '-n', metavar='', type=int, nargs=3,help='Set the plane perpendicular to the incident beam')
-parser.add_argument('--Sampleor', '-s', metavar='', type=str,help='Set the sample orientation at the Phi axis')
-parser.add_argument('--Energy', '-e', metavar='', type=float, help='Set the energy of the experiment, wavelength can also be given')
+parser.add_argument('-m', '--Material', metavar='', type=str, help='Set the material that is going to be used in the experiment')
+parser.add_argument('-i', '--IDir', metavar='', type=int, nargs=3,help='Set the plane paralel to the incident beam')
+parser.add_argument('-n', '--NDir', metavar='', type=int, nargs=3,help='Set the plane perpendicular to the incident beam')
+parser.add_argument('-s', '--Sampleor', metavar='', type=str,help='Set the sample orientation at the Phi axis')
+parser.add_argument('-e', '--Energy', metavar='', type=float, help='Set the energy of the experiment, wavelength can also be given')
 args = parser.parse_args()
 dic = vars(args)
+
+
+##Lazy mode to create the Experiment file
+os.system("wc Experiment > /dev/null 2>&1 || cp $EXP .")
+
 
 with open('Experiment', 'r+') as exp:
  

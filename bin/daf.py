@@ -292,8 +292,9 @@ class Control(object):
       
         U = Tp.T.dot(TcI)
         self.U = U
-
-        return U
+        self.UB = U.dot(self.samp.B)
+        
+        return U , self.UB
       
     def calc_U_3HKL(self, h1, angh1, h2, angh2, h3, angh3):
      
@@ -327,9 +328,11 @@ class Control(object):
       rparam = [a1, a2, a3, alpha1, alpha2, alpha3]
       
       self.U = U
+      self.UB = UB2p
+      
       self.calclp = rparam
       
-      return U, rparam    
+      return U, UB2p, rparam    
     
     
     def pseudoAngleConst(angles, pseudo_angle, fix_angle):
@@ -480,49 +483,78 @@ class Control(object):
     
     def set_constraints(self, *args, setineq = None, **kwargs):
 
-        if args:
-            s = 0
-            if 'eta=del/2' in self.const:
-                s+=1
-            if 'mu=nu/2' in self.const:
-                s+=1
-            if 'aeqb' in self.const:
-                s+=1
+        # if args:
+        #     s = 0
+        #     if 'eta=del/2' in self.const:
+        #         s+=1
+        #     if 'mu=nu/2' in self.const:
+        #         s+=1
+        #     if 'aeqb' in self.const:
+        #         s+=1
                 
-            if len(args) != 0:
-                if len(args) != (len(self.constrain)-s):
-                    raise ValueError('Constraints passed must have the same size of constrained angles')
+        #     if len(args) != 0:
+        #         if len(args) != (len(self.constrain)-s):
+        #             raise ValueError('Constraints passed must have the same size of constrained angles')
                 
-                elif self.col2 == 1 and self.col3 == 0:
-                    args=list(args)
-                    args.append(args[-1])
-                    self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
+        #         elif self.col2 == 1 and self.col3 == 0:
+        #             args=list(args)
+        #             args.append(args[-1])
+        #             self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
                 
-                else:
-                    self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
+        #         else:
+        #             self.constrain = [(self.const[i],args[i]) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
 
-        self.posrestrict = [setineq]
+        # self.posrestrict = [setineq]
         
-        if kwargs:
-            if 'Mu' in kwargs.keys() and 'Mu' in self.fix:
-                self.Mu_bound = kwargs['Mu']
-            
-            if 'Eta' in kwargs.keys() and 'Eta' in self.fix:
-                self.Eta_bound = kwargs['Eta']
+        self.constrain = list()
+        
+        
+        if 'Mu' in kwargs.keys() and 'Mu' in self.fix:
+            self.Mu_bound = kwargs['Mu']
+        
+        if 'Eta' in kwargs.keys() and 'Eta' in self.fix:
+            self.Eta_bound = kwargs['Eta']
+ 
+        if 'Chi' in kwargs.keys() and 'Chi' in self.fix:
+            self.Chi_bound = kwargs['Chi']
      
-            if 'Chi' in kwargs.keys() and 'Chi' in self.fix:
-                self.Chi_bound = kwargs['Chi']
-         
-            if 'Phi' in kwargs.keys() and 'Phi' in self.fix:
-                self.Phi_bound = kwargs['Phi']
-          
-            if 'Nu' in kwargs.keys() and 'Nu' in self.fix:
-                self.Nu_bound = kwargs['Nu']
-         
-            if 'Del' in kwargs.keys() and 'Del' in self.fix:
-                self.Del_bound = kwargs['Del']
+        if 'Phi' in kwargs.keys() and 'Phi' in self.fix:
+            self.Phi_bound = kwargs['Phi']
+      
+        if 'Nu' in kwargs.keys() and 'Nu' in self.fix:
+            self.Nu_bound = kwargs['Nu']
+     
+        if 'Del' in kwargs.keys() and 'Del' in self.fix:
+            self.Del_bound = kwargs['Del']
+        
+        if 'qaz' in kwargs.keys() and 'qaz' in self.const:
+            self.constrain.append(('qaz', kwargs['qaz']))
+        
+        if 'naz' in kwargs.keys() and 'naz' in self.const:
+            self.constrain.append(('naz', kwargs['naz']))
+        
+        if 'alpha' in kwargs.keys() and 'alpha' in self.const:
+            self.constrain.append(('alpha', kwargs['alpha']))
+        
+        if 'beta' in kwargs.keys() and 'beta' in self.const:
+            self.constrain.append(('beta', kwargs['beta']))
+        
+        if 'psi' in kwargs.keys() and 'psi' in self.const:
+            self.constrain.append(('psi', kwargs['psi']))
+        
+        if 'omega' in kwargs.keys() and 'omega' in self.const:
+            self.constrain.append(('omega', kwargs['omega']))
+        
+        if 'aeqb' in self.const:
+            self.constrain.append(('aeqb', '--'))
+        
+        if 'eta=del/2' in self.const:
+            self.constrain.append(('eta=del/2', '--'))
+        
+        if 'mu=nu/2' in self.const:
+            self.constrain.append(('mu=nu/2', '--'))
             
-
+            
     
     def set_circle_constrain(self, **kwargs):
          
@@ -640,8 +672,8 @@ class Control(object):
             data = [{'col1':self.center.format('MODE'), 'col2':self.center.format(self.setup[0]), 'col3':self.center.format(self.setup[1]), 'col4':self.center.format(self.setup[2]), 'col5':self.center.format(self.setup[3]), 'col6' : self.center.format(self.setup[4]), 'col7' : self.center.format('Error')},
                     {'col1':self.center.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.center.format(self.forprint[0][1]), 'col3':self.center.format(self.forprint[1][1]), 'col4':self.center.format(self.forprint[2][1]), 'col5':self.center.format(self.forprint[3][1]), 'col6' : self.center.format(self.forprint[4][1]), 'col7' : self.center.format('%.3g' % self.qerror)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
-                    {'col1':self.center.format('2Theta exp'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy'), 'col4':self.center.format('HKL'), 'col5' : self.center.format('HKLCalc'), 'col6':self.center.format('idir:'+str(self.idir[0])+str(self.idir[1])+str(self.idir[2])), 'col7' : self.center.format('Sample')},
-                    {'col1':self.center.format(np.round(self.ttB1,self.roundfit)), 'col2':self.center.format(np.round(self.dhkl,self.roundfit)), 'col3':self.center.format(np.round(self.en,self.roundfit)),'col4':self.center.format(str(self.hkl[0])+str(self.hkl[1])+str(self.hkl[2])), 'col5' : self.center.format(str(int(self.hkl_calc[0]))+str(int(self.hkl_calc[1]))+str(int(self.hkl_calc[2]))), 'col6':self.center.format('ndir:'+str(self.ndir[0])+str(self.ndir[1])+str(self.ndir[2])), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
+                    {'col1':self.center.format('2Theta exp'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy'), 'col4':self.center.format('H'), 'col5' : self.center.format('K'), 'col6':self.center.format('L'), 'col7' : self.center.format('Sample')},
+                    {'col1':self.center.format(np.round(self.ttB1,self.roundfit)), 'col2':self.center.format(np.round(self.dhkl,self.roundfit)), 'col3':self.center.format(np.round(self.en,self.roundfit)),'col4':self.center.format(str(self.hkl_calc[0])), 'col5' : self.center.format(str(self.hkl_calc[1])), 'col6':self.center.format(str(self.hkl_calc[2])), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
                     {'col1':self.center.format('Alpha'), 'col2':self.center.format('Beta'), 'col3':self.center.format('Psi'), 'col4':self.center.format('Tau'), 'col5':self.center.format('Qaz'), 'col6' : self.center.format('Naz'), 'col7' : self.center.format('Omega')},
                     {'col1':self.center.format(np.round(self.alphain,self.roundfit)), 'col2':self.center.format(np.round(self.betaout,self.roundfit)), 'col3':self.center.format(np.round(self.psipseudo,self.roundfit)), 'col4':self.center.format(np.round(self.taupseudo,self.roundfit)), 'col5':self.center.format(np.round(self.qaz,self.roundfit)), 'col6' : self.center.format(np.round(self.naz,self.roundfit)), 'col7' : self.center.format(np.round(self.omega,self.roundfit))},
@@ -664,11 +696,22 @@ class Control(object):
             
             return TablePrinter(fmt, ul=self.marker)(data)  
          
-            
+    def set_U(self, U):
+      
+        self.U = U
      
+    def calc_from_angs(self, Mu,Eta,Chi,Phi,Nu,Del):
+        self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
         
+        
+        self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
+        hkl = self.hrxrd.Ang2HKL(Mu,Eta,Chi,Phi,Nu,Del, mat=self.samp, U = self.U, en = self.en)
+        
+        return hkl
      
-          
+    def export_angles(self):
+        
+        return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, self.hkl_calc, "{0:.2e}".format(self.qerror)]
     
     def __call__(self, *args, **kwargs):
         """
@@ -714,9 +757,9 @@ class Control(object):
         self.bounds = (self.Mu_bound, self.Eta_bound, self.Chi_bound, 
                         self.Phi_bound, self.Nu_bound, self.Del_bound)
     
-        if 'sv' in kwargs.keys():
+        if 'sv' in kwargs.keys() and kwargs['sv'] != [0,0,0,0,0,0]:
             self.start = kwargs['sv']
-            # print(self.start)
+        
         else:
             self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
             self.start = (0,0,0,0,0,self.preangs[3])
@@ -867,7 +910,7 @@ class Control(object):
         
   
         self.qerror = qerror
-        self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp),5)
+        self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp, en = self.en, U = self.U),5)
         # print(self.hkl_calc)
         
         self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
@@ -952,6 +995,7 @@ class Control(object):
         self.psipseudo = psipseudo
         self.betaout = betaout
         self.omega = omega
+ 
         
 
   

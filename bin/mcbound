@@ -15,12 +15,12 @@ epi = "Eg: mcbound -m -180 180 -n -180 180"
 
 parser = ap.ArgumentParser(description=doc, epilog=epi)
 
-parser.add_argument('--bound_Mu', '-m', metavar='', type=float, nargs=2, help='Sets Mu bounds')
-parser.add_argument('--bound_Eta', '-e', metavar='',type=float, nargs=2, help='Sets Eta bounds')
-parser.add_argument('--bound_Chi', '-c', metavar='',type=float, nargs=2, help='Sets Chi bounds')
-parser.add_argument('--bound_Phi', '-p', metavar='',type=float, nargs=2, help='Sets Phi bounds')
-parser.add_argument('--bound_Nu', '-n', metavar='',type=float, nargs=2, help='Sets Nu bounds')
-parser.add_argument('--bound_Del', '-d', metavar='',type=float, nargs=2, help='Sets Del bounds')
+parser.add_argument('-m', '--bound_Mu', metavar='', type=float, nargs=2, help='Sets Mu bounds')
+parser.add_argument('-e', '--bound_Eta', metavar='',type=float, nargs=2, help='Sets Eta bounds')
+parser.add_argument('-c', '--bound_Chi', metavar='',type=float, nargs=2, help='Sets Chi bounds')
+parser.add_argument('-p', '--bound_Phi', metavar='',type=float, nargs=2, help='Sets Phi bounds')
+parser.add_argument('-n', '--bound_Nu', metavar='',type=float, nargs=2, help='Sets Nu bounds')
+parser.add_argument('-d', '--bound_Del', metavar='',type=float, nargs=2, help='Sets Del bounds')
 
 args = parser.parse_args()
 dic = vars(args)

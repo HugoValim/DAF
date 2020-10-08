@@ -3,7 +3,8 @@
 import argparse as ap
 import sys
 import os
-import Spec_like as sl
+import daf
+import numpy as np
 
 doc = """
 
@@ -16,14 +17,15 @@ epi = "Eg: mcbound -m -180 180 -n -180 180"
 
 parser = ap.ArgumentParser(description=doc, epilog=epi)
 
-parser.add_argument('--hkl1', '-h1', metavar='', type=float, nargs=3, help='Sets Mu bounds')
-parser.add_argument('--hkl2', '-h2', metavar='', type=float, nargs=3, help='Sets Eta bounds')
-parser.add_argument('--hkl3', '-h3', metavar='',type=float, nargs=3, help='Sets Chi bounds')
-parser.add_argument('--angs1', '-a1', metavar='',type=float, nargs=6, help='Sets Phi bounds')
-parser.add_argument('--angs2', '-a2', metavar='',type=float, nargs=6, help='Sets Nu bounds')
-parser.add_argument('--angs3', '-a3', metavar='',type=float, nargs=6, help='Sets Del bounds')
-parser.add_argument('--Calc2', '-c2', action='store_true', help='Calculate UB for 2 reflections')
-parser.add_argument('--Calc3', '-c3', action='store_true', help='Calculate UB for 3 reflections')
+parser.add_argument('-h1', '--hkl1', metavar='', type=float, nargs=3, help='Sets Mu bounds')
+parser.add_argument('-h2', '--hkl2', metavar='', type=float, nargs=3, help='Sets Eta bounds')
+parser.add_argument('-h3', '--hkl3', metavar='',type=float, nargs=3, help='Sets Chi bounds')
+parser.add_argument('-a1', '--angs1', metavar='',type=float, nargs=6, help='Sets Phi bounds')
+parser.add_argument('-a2', '--angs2', metavar='',type=float, nargs=6, help='Sets Nu bounds')
+parser.add_argument('-a3', '--angs3', metavar='',type=float, nargs=6, help='Sets Del bounds')
+parser.add_argument('-c2', '--Calc2', action='store_true', help='Calculate UB for 2 reflections')
+parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections')
+parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -54,6 +56,9 @@ with open('Experiment', 'r+') as exp:
         exp.write(line)
 
 
+
+
+
 with open('Experiment', 'r') as exp:
     
     lines = exp.readlines()
@@ -63,37 +68,124 @@ def ret_list(string):
     
     return [float(i) for i in string.strip('][').split(', ')]
 
+# def display(n):
+#     cv = lambda x: '%.6f' % x
+#     return [[cv(i) for i in a] for a in n]
+
+
 if dict_args['hkl1'] != '':
     hkl1 = ret_list(dict_args['hkl1'])
     angs1 = ret_list(dict_args['angs1'])
+else: 
+    hkl1 = None
 
     
 if dict_args['hkl2'] != '':
     hkl2 = ret_list(dict_args['hkl2'])
     angs2 = ret_list(dict_args['angs2'])
-    
+else:
+    hkl2 = None
+        
 if dict_args['hkl3'] != '':
     hkl3 = ret_list(dict_args['hkl3'])
     angs3 = ret_list(dict_args['angs3'])
+else:
+    hkl3 = None
 
-mode = [int(i) for i in dict_args['Mode']]    
-
-exp = sl.Control(*mode)
-exp.set_material(dict_args['Material'])
-exp.set_exp_conditions(en = float(dict_args['Energy']))
+if args.list:
+    print('')
+    if hkl1:
+        print(f'HKL1: {hkl1}  {angs1}')
+    if hkl2:
+        print(f'HKL2: {hkl2}  {angs2}')
+    if hkl3:
+        print(f'HKL3: {hkl3}  {angs3}')
+    
+    print('')
 
 if  args.Calc2:
+    mode = [int(i) for i in dict_args['Mode']]    
+
+    exp = daf.Control(*mode)
+    exp.set_material(dict_args['Material'])
+    exp.set_exp_conditions(en = float(dict_args['Energy']))
     
-    U = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
-    print(U)
+    U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+ 
+
+    print(f'\n          {U[0]}\nU =       {U[1]}\n          {U[2]}\n')
+    
+    print(f'\n          {UB[0]}\nUB =      {UB[1]}\n          {UB[2]}\n')
+    
+    with open('Experiment', 'r+') as exp:
+  
+          lines = exp.readlines()
+     
+     
+      
+     
+          for i, line in enumerate(lines):
+             
+                 
+     
+      
+     
+            if line.startswith('U'):
+                    lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+          
+            exp.seek(0)
+                 
+               
+     
+     
+          for line in lines:
+              exp.write(line)
 
 if  args.Calc3:
-    
-    U = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
-    print(U)
+    mode = [int(i) for i in dict_args['Mode']]    
 
+    exp = daf.Control(*mode)
+    exp.set_material(dict_args['Material'])
+    exp.set_exp_conditions(en = float(dict_args['Energy']))
     
-        
+    U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
+    
+    print(f'\n          {U[0]}\nU =       {U[1]}\n          {U[2]}\n')
+    
+    print(f'\n          {UB[0]}\nUB =      {UB[1]}\n          {UB[2]}\n')
+    
+    print(f'a = {rp[0]}')
+    print(f'b = {rp[1]}')
+    print(f'c = {rp[2]}')
+    print(f'\u03B1 = {rp[3]}')
+    print(f'\u03B2 = {rp[4]}')
+    print(f'\u03B3 = {rp[5]}')
+    print('')
+
+    with open('Experiment', 'r+') as exp:
+ 
+         lines = exp.readlines()
+    
+    
+     
+    
+         for i, line in enumerate(lines):
+            
+                
+    
+     
+    
+           if line.startswith('U'):
+                   lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+         
+           exp.seek(0)
+                
+              
+    
+    
+         for line in lines:
+             exp.write(line)
+       
 log = sys.argv.pop(0).split('bin/')[1]      
 
 for i in sys.argv:
