@@ -3,7 +3,7 @@
 import argparse as ap
 import sys
 import os
-
+import dafutilities as du
 
 doc = """
 
@@ -20,13 +20,7 @@ parser.add_argument('-e', '--Execute', metavar='',type=str, help='Execute a reco
 args = parser.parse_args()
 dic = vars(args)
 
-
-os.system("head -60 Experiment > Experiment1")
-os.system("rm Experiment; mv Experiment1 Experiment")
-with open('Experiment', 'r') as exp:
-    
-    lines = exp.readlines()
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
+dict_args = du.dict_conv()
 
 if args.Initialize:
 

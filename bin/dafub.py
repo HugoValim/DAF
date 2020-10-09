@@ -5,6 +5,7 @@ import sys
 import os
 import daf
 import numpy as np
+import dafutilities as du
 
 doc = """
 
@@ -20,8 +21,10 @@ parser = ap.ArgumentParser(description=doc, epilog=epi)
 parser.add_argument('-r1', '--hkl1', metavar='', type=float, nargs=9, help='HKL and angles for first reflection')
 parser.add_argument('-r2', '--hkl2', metavar='', type=float, nargs=9, help='HKL and angles for second reflection')
 parser.add_argument('-r3', '--hkl3', metavar='',type=float, nargs=9, help='HKL and angles for third reflection')
+parser.add_argument('-U', '--Umatrix', metavar='',type=float, nargs=9, help='set U matrix')
+parser.add_argument('-UB', '--UBmatrix', metavar='',type=float, nargs=9, help='Set UB matrix')
 parser.add_argument('-c2', '--Calc2', action='store_true', help='Calculate UB for 2 reflections')
-parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections')
+parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections, the right energy must be setted in this case')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
 parser.add_argument('-p', '--Params', action='store_true', help='Lattice parameters if 3 reflection calculation had been done')
@@ -57,20 +60,76 @@ with open('Experiment', 'r+') as exp:
         exp.write(line)
 
 
-os.system("head -60 Experiment > Experiment1")
-os.system("rm Experiment; mv Experiment1 Experiment")
+
+if args.UBmatrix:
+    UB = np.array(args.UBmatrix).reshape(3,3)
+    with open('Experiment', 'r+') as exp:
+  
+          lines = exp.readlines()
+     
+     
+      
+     
+          for i, line in enumerate(lines):
+             
+                 
+     
+      
+     
+            # if line.startswith('U'):
+            #         lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+            if line.startswith('UB_mat'):
+                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
+          
+            exp.seek(0)
+                 
+               
+     
+     
+          for line in lines:
+              exp.write(line)
+
+if args.Umatrix:
+    U = np.array(args.Umatrix).reshape(3,3)
+    with open('Experiment', 'r+') as exp:
+  
+          lines = exp.readlines()
+     
+     
+      
+     
+          for i, line in enumerate(lines):
+             
+                 
+     
+      
+     
+            if line.startswith('U_mat'):
+                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+            # if line.startswith('UB'):
+            #         lines[i] = 'UB='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
+          
+            exp.seek(0)
+                 
+               
+     
+     
+          for line in lines:
+              exp.write(line)
 
 
-with open('Experiment', 'r') as exp:
-    
-    lines = exp.readlines()
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
+
 
 lb = lambda x: "{:.5f}".format(float(x))
 
+
+
+
 if args.Show:
     
-    Uw = dict_args['U'].split(',')
+    dict_args = du.dict_conv()
+    
+    Uw = dict_args['U_mat'].split(',')
 
 
     U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
@@ -78,7 +137,7 @@ if args.Show:
     U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
     U = np.array([U1, U2, U3])
     
-    UBw = dict_args['UB'].split(',')
+    UBw = dict_args['UB_mat'].split(',')
 
 
     UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
@@ -90,30 +149,29 @@ if args.Show:
     center2 = "{:^11}"
     center3 = "{:^11}\u2502"
     fmt1 = [
+                    ('', 'ident',   6),        
                     ('', 'col1',   12),
                     ('', 'col2',   12),
                     ('', 'col3',   12),
                
                    ]
     
-    data1 = [{'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
-             {'col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
-             {'col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
+    data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
+             {'ident':'U =','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
+             {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
              ]
     
-    data2 = [{'col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
-             {'col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
-             {'col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
+    data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
+             {'ident':'UB = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
+             {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
              ]
     
     Utp = daf.TablePrinter(fmt1, ul='')(data1)
     UBtp = daf.TablePrinter(fmt1, ul='')(data2)
     
     print('')
-    print('U = ')
     print(Utp)
     print('')
-    print('UB = ')
     print(UBtp)
     print('')
     
@@ -121,6 +179,8 @@ if args.Show:
 
 
 if args.Params:
+    
+    dict_args = du.dict_conv()
     
     print('')
     print(f'a = {dict_args["lparam_a"]}')
@@ -137,6 +197,7 @@ def ret_list(string):
     
     return [float(i) for i in string.strip('][').split(', ')]
 
+dict_args = du.dict_conv()
 
 if dict_args['hkl1'] != '':
     r1 = ret_list(dict_args['hkl1'])
@@ -194,10 +255,10 @@ if  args.Calc2:
      
       
      
-            if line.startswith('U'):
-                    lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-            if line.startswith('UB'):
-                    lines[i] = 'UB='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
+            if line.startswith('U_mat'):
+                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+            if line.startswith('UB_mat'):
+                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
           
             exp.seek(0)
                  
@@ -215,8 +276,6 @@ if  args.Calc3:
     exp.set_exp_conditions(en = float(dict_args['Energy']))
     
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
-    
-    
 
     with open('Experiment', 'r+') as exp:
  
@@ -231,11 +290,11 @@ if  args.Calc3:
     
      
              
-            if line.startswith('U'):
-                lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+            if line.startswith('U_mat'):
+                lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
             
-            if line.startswith('UB'):
-                lines[i] = 'UB='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
+            if line.startswith('UB_mat'):
+                lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
             
             if line.startswith('lparam_a'):   
                 lines[i] = 'lparam_a='+lb(rp[0])+'\n'

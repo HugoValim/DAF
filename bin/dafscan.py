@@ -6,6 +6,8 @@ import os
 import daf
 import numpy as np
 import dafutilities as du
+import pandas as pd
+
 doc = """
 
 Move by setting a HKL or by a given diffractometer angle
@@ -17,16 +19,50 @@ epi = "\n Eg: \n daf.move -mv 1 0 0, \n daf.move --Eta 15 -Del 30"
 
 parser = ap.ArgumentParser(description=doc, epilog=epi)
 
-parser.add_argument('Move', metavar='', type=float, nargs=3, help='Move to a desired HKL')
-parser.add_argument('-v', '--verbosity', action='store_true', help='Show full output')
+parser.add_argument('hkli', metavar='', type=float, nargs=3, help='Initial HKL for scan')
+parser.add_argument('hklf', metavar='', type=float, nargs=3, help='Final HKL for scan')
+parser.add_argument('points', metavar='', type=int, help='Number of points for the scan')
+parser.add_argument('-n', '--scan_name', metavar='', type=str, help='Name of the scan')
+parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the scan')
+parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, default: ,')
+parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation, if 0 is given no verification will be done')
+parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
 
 
 args = parser.parse_args()
 dic = vars(args)
-  
-    
+
+
+with open('Experiment', 'r+') as exp:
+ 
+    lines = exp.readlines()
+
+
+ 
+
+    for i, line in enumerate(lines):
+        for j,k in dic.items():
+            
+
+ 
+
+            if line.startswith(str(j)):
+                if k != None:
+                    lines[i] = str(j)+'='+str(k)+'\n'
+          
+            exp.seek(0)
+            
+
+
+ 
+
+    for line in lines:
+        exp.write(line)
+
+
+     
 dict_args = du.dict_conv()
-   
+        
 def ret_list(string):
     
     return [float(i) for i in string.strip('][').split(', ')]
@@ -54,11 +90,8 @@ Phi_bound = ret_list(dict_args['bound_Phi'])
 Nu_bound = ret_list(dict_args['bound_Nu'])
 Del_bound = ret_list(dict_args['bound_Del'])
 
-# print(type(dict_args['IDir']))
-# print(type(idir))
-
 exp = daf.Control(*mode)
-exp.set_hkl(args.Move)
+# exp.set_hkl(args.Move)
 exp.set_material(dict_args['Material'])
 exp.set_exp_conditions(idir = idir, ndir = ndir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
 exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
@@ -72,50 +105,14 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 
 startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
-exp(sv = startvalue)
-error = exp.qerror
-if error > 1e-4:
-    exp()
-if args.verbosity:
+exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
+
+if args.verbose:
+    pd.options.display.max_rows = None
+    pd.options.display.max_columns = 0
+     
     print(exp)
-angs = exp.export_angles()
 
-exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs[4], 'Del':angs[5], 'tt':angs[6],
-            'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':list(angs[15])}
-
-if float(angs[16]) < 1e-4:
-    with open('Experiment', 'r+') as exp:
- 
-        lines = exp.readlines()
-    
-    
-     
-    
-        for i, line in enumerate(lines):
-            for j,k in exp_dict.items():
-                
-    
-     
-    
-                if line.startswith(str(j)):
-                        lines[i] = str(j)+'='+str(k)+'\n'
-              
-            exp.seek(0)
-                
-              
-    
-        
-        for line in lines:
-            exp.write(line)
-        
-        
-
-else:
-    print('Cannot find the HKL')
-
-
-       
-        
 
 log = sys.argv.pop(0).split('command_line/')[1]    
 

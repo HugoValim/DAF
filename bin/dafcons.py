@@ -5,6 +5,8 @@ import sys
 import os
 import daf
 import numpy as np
+import dafutilities as du
+
 
 doc = """
 
@@ -39,6 +41,8 @@ dic = vars(args)
 
 
 angs = ['cons_Mu','cons_Eta', 'cons_Chi', 'cons_Phi', 'cons_Nu', 'cons_Del', 'cons_alpha', 'cons_beta', 'cons_psi', 'cons_omega', 'cons_qaz', 'cons_naz']
+
+
 with open('Experiment', 'r+') as exp:
  
     lines = exp.readlines()
@@ -93,13 +97,7 @@ if args.Reset:
         for line in lines:
             exp.write(line)
 
-os.system("head -60 Experiment > Experiment1")
-os.system("rm Experiment; mv Experiment1 Experiment")
-
-with open('Experiment', 'r') as exp:
-
-    lines = exp.readlines()
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
+dict_args = du.dict_conv()
 
 
     

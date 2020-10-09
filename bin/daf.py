@@ -83,6 +83,7 @@ class Control(object):
         self.column_marker = '\u2503'
         self.center = self.column_marker+"{:^" + str(self.space - 2) + "}" + self.column_marker
         self.roundfit = 5
+        self.centshow = "{:^" + str(16 - 2) + "}"
         
         self.setup = (Control.colunas[1][self.col1], Control.colunas[2][self.col2], Control.colunas[3][self.col3], 
               Control.colunas[4][self.col4], Control.colunas[5][self.col5])
@@ -168,6 +169,86 @@ class Control(object):
         # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
         self.qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Coordenada YOU 1999
     
+    def show(self, sh):
+        
+        dprint = {'x' : '--', 'Mu' : self.Mu_bound, 'Eta' : self.Eta_bound, 'Chi' : self.Chi_bound,
+                      'Phi' : self.Phi_bound, 'Nu' : self.Nu_bound, 'Del' : self.Del_bound}
+            
+        lb = lambda x: "{:.5f}".format(float(x))    
+
+        
+        self.forprint = self.constrain.copy()
+            
+        if self.col1 in (1,2):
+            if self.col1 == 1:
+                self.forprint.insert(0,(self.setup[0],self.Del_bound))
+            elif self.col1 == 2:
+                self.forprint.insert(0,(self.setup[0],self.Nu_bound))
+            for i in self.motcon:
+                if i not in ('Del', 'Nu'):
+                    self.forprint.append((i,dprint[i]) )
+            if self.col2 ==0:
+                self.forprint.insert(1,('XD', '--'))
+    
+        else:
+            if self.col1 == 0 and self.col2 ==0:
+                
+                self.forprint.insert(0,('XD', '--'))
+                self.forprint.insert(0,('XD', '--'))              
+
+                for i in self.motcon:
+                    self.forprint.append((i,dprint[i]))
+      
+           
+            elif self.col1 == 0:
+               
+                self.forprint.insert(0,('XD', '--'))
+               
+               
+                for i in self.motcon:
+                    self.forprint.append((i,dprint[i]))
+     
+                
+            
+            elif self.col2 == 0:
+                self.forprint.insert(1,('XD', '--'))
+                # self.forprint.pop()
+      
+                for i in self.motcon:
+                    self.forprint.append((i,dprint[i]))
+            else:
+                for i in self.motcon:
+                    self.forprint.append((i,dprint[i]))
+        
+        fmt = [ 
+                    ('', 'ident',   3),
+                    ('', 'col1',   14),
+                    ('', 'col2',   14),
+                    ('', 'col3',   14),
+                    ('', 'col4',   14),
+                    ('', 'col5',   14),
+                    ('', 'col6',   14),
+              
+                    
+                   ]
+        
+        
+        if sh == 'mode':            
+            
+            data = [{'ident':'','col1':self.centshow.format('MODE'), 'col2':self.centshow.format(self.setup[0]), 'col3':self.centshow.format(self.setup[1]), 'col4':self.centshow.format(self.setup[2]), 'col5':self.centshow.format(self.setup[3]), 'col6' : self.centshow.format(self.setup[4])},
+                    {'ident':'','col1':self.centshow.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.centshow.format(self.forprint[0][1]), 'col3':self.centshow.format(self.forprint[1][1]), 'col4':self.centshow.format(self.forprint[2][1]), 'col5':self.centshow.format(self.forprint[3][1]), 'col6' : self.centshow.format(self.forprint[4][1])},
+                        ]
+                   
+            
+            return TablePrinter(fmt, ul='')(data)  
+    
+        
+        if sh == 'expt':
+        
+            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (\u212B)'), 'col3':self.centshow.format('Energy (KeV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Sample Or')},
+                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6':self.centshow.format(self.sampleor)}
+                   ]
+            return TablePrinter(fmt, ul='')(data)  
     
     def set_hkl(self, HKL):
         
@@ -1072,7 +1153,7 @@ class Control(object):
                                    
 
                                                                                                                                                   
-    def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, path = '/home/hugo/Documentos/CNPEM/scans/', name = 'testscan.txt', sep = ','):
+    def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ','):
         
         scl = Control.scan_generator(self, hkli, hklf, points)
         angslist = list()
@@ -1085,7 +1166,7 @@ class Control(object):
             a,b = Control.motor_angles(self, sv=sv)
             angslist.append(b)
             teste = np.abs(np.array(a[:6]) - np.array(sv))
-            if np.max(teste) > diflimit:
+            if np.max(teste) > diflimit and diflimit != 0:
                 raise ("Exceded max limit of angles variation")
            
             if float(a[-1]) > 1e-5:
@@ -1103,7 +1184,7 @@ class Control(object):
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]
         
         if write:
-            self.formscantxt.to_csv(path+name, sep=sep)
+            self.formscantxt.to_csv(name, sep=sep)
         
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0

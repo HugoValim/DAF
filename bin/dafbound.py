@@ -3,7 +3,7 @@
 import argparse as ap
 import sys
 import os
-
+import dafutilities as du
 doc = """
 
 Sets the bounds of the diffractometer angles
@@ -30,8 +30,7 @@ dic = vars(args)
 #     for i,j in dic.items():
 #         doc.write(str(i)+': '+str(j)+'\n')
 # ndir = list2str(args.NDir)
-os.system("head -60 Experiment > Experiment1")
-os.system("rm Experiment; mv Experiment1 Experiment")
+
 with open('Experiment', 'r+') as exp:
  
     lines = exp.readlines()
@@ -57,10 +56,7 @@ with open('Experiment', 'r+') as exp:
     for line in lines:
         exp.write(line)
 
-with open('Experiment', 'r') as exp:
-    
-    lines = exp.readlines()
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}        
+dict_args = du.dict_conv()      
         
 if args.list:
     

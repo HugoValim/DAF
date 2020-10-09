@@ -5,6 +5,9 @@ import sys
 import os
 import daf
 import numpy as np
+import dafutilities as du
+
+
 
 doc = """
 
@@ -22,32 +25,17 @@ parser.add_argument('-s', '--status', action='store_true', help='Show where you 
 args = parser.parse_args()
 dic = vars(args)
 
-os.system("head -60 Experiment > Experiment1")
-os.system("rm Experiment; mv Experiment1 Experiment")
-
-
-
-
-with open('Experiment', 'r') as exp:
-    
-    lines = exp.readlines()
-
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
+dict_args = du.dict_conv()
  
 def ret_list(string):
     
     return [float(i) for i in string.strip('][').split(', ')]        
 
-    
-with open('Experiment', 'r') as exp:
-
-    lines = exp.readlines()
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
 
 lb = lambda x: "{:.5f}".format(float(x))
 
 hklnow = ret_list(dict_args["hklnow"])
-print(lb(hklnow[0]))
+
 print('')
 print(f'HKL now =', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))
 print('')

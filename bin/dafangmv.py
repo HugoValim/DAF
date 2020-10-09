@@ -5,6 +5,9 @@ import sys
 import os
 import daf
 import numpy as np
+import dafutilities as du
+
+
 
 doc = """
 
@@ -58,14 +61,7 @@ with open('Experiment', 'r+') as exp:
 
 
      
-os.system("head -60 Experiment > Experiment1")
-os.system("rm Experiment; mv Experiment1 Experiment")
-
-with open('Experiment', 'r') as exp:
-    
-    lines = exp.readlines()
-
-    dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
+dict_args = du.dict_conv()
  
         
 def ret_list(string):
@@ -73,7 +69,7 @@ def ret_list(string):
     return [float(i) for i in string.strip('][').split(', ')]
 
 
-Uw = dict_args['U'].split(',')
+Uw = dict_args['U_mat'].split(',')
 
 
 U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
