@@ -107,6 +107,8 @@ startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["
 
 exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
 
+
+
 if args.verbose:
     pd.options.display.max_rows = None
     pd.options.display.max_columns = 0
