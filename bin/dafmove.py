@@ -8,17 +8,21 @@ import numpy as np
 import dafutilities as du
 doc = """
 
-Move by setting a HKL or by a given diffractometer angle
+Move in the reciprocal space by giving a HKL 
 
 """
 
-epi = "\n Eg: \n daf.move -mv 1 0 0, \n daf.move --Eta 15 -Del 30"
+epi = '''
+Eg:
+    daf.mv 1 1 1
+    daf.mv 1 0 0 -v
+    '''
 
 
-parser = ap.ArgumentParser(description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
-parser.add_argument('Move', metavar='', type=float, nargs=3, help='Move to a desired HKL')
-parser.add_argument('-v', '--verbosity', action='store_true', help='Show full output')
+parser.add_argument('Move', metavar='H K L', type=float, nargs=3, help='Move to a desired HKL')
+parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
 
 
 args = parser.parse_args()
@@ -76,18 +80,19 @@ exp(sv = startvalue)
 error = exp.qerror
 if error > 1e-4:
     exp()
-if args.verbosity:
+if args.verbose:
+    exp.set_print_options(marker = '', column_marker='', space=12)
     print(exp)
 angs = exp.export_angles()
 
 exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs[4], 'Del':angs[5], 'tt':angs[6],
             'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':list(angs[15])}
 
-print(exp_dict['hklnow'])
-print(angs[15])
+# print(exp_dict['hklnow'])
+# print(angs[15])
 
 if float(angs[16]) < 1e-4:
-    with open('Experiment', 'r+') as exp:
+    with open('.Experiment', 'r+') as exp:
  
         lines = exp.readlines()
     

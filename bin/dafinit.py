@@ -11,7 +11,13 @@ Initialize Diffractometer Angles Finder
 
 """
 
-parser = ap.ArgumentParser(description=doc)
+epi = '''
+Eg: 
+   daf.init -6c 
+    '''
+
+
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
 parser.add_argument('-6c', '--6cirlce', action='store_true', help='Set the 6-cirlce diffractometer geometry')
 
@@ -19,7 +25,7 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-os.system("cp $EXP .")
+os.system("cp $EXP \.Experiment")
 
 
 log = sys.argv.pop(0).split('command_line/')[1]      

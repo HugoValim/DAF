@@ -10,22 +10,26 @@ import pandas as pd
 
 doc = """
 
-Move by setting a HKL or by a given diffractometer angle
+Perform a scan using HKL coordinates
 
 """
 
-epi = "\n Eg: \n daf.move -mv 1 0 0, \n daf.move --Eta 15 -Del 30"
+epi = '''
+Eg:
+    daf.scan 1 1 1 1.1 1.1 1.1 100 -n my_scan
+    daf.scan 1 1 1 1.1 1.1 1.1 1000 -n my_scan -sep \; -v
+    '''
 
 
-parser = ap.ArgumentParser(description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
-parser.add_argument('hkli', metavar='', type=float, nargs=3, help='Initial HKL for scan')
-parser.add_argument('hklf', metavar='', type=float, nargs=3, help='Final HKL for scan')
-parser.add_argument('points', metavar='', type=int, help='Number of points for the scan')
+parser.add_argument('hkli', metavar=('Hi, Ki, Li'), type=float, nargs=3, help='Initial HKL for scan')
+parser.add_argument('hklf', metavar=('Hf, Kf, Lf'), type=float, nargs=3, help='Final HKL for scan')
+parser.add_argument('points', metavar='points', type=int, help='Number of points for the scan')
 parser.add_argument('-n', '--scan_name', metavar='', type=str, help='Name of the scan')
 parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the scan')
-parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, default: ,')
-parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation, if 0 is given no verification will be done')
+parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, comma is default')
+parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation (default is 0.1), if 0 is given no verification will be done')
 parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
 
 
@@ -33,7 +37,7 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-with open('Experiment', 'r+') as exp:
+with open('.Experiment', 'r+') as exp:
  
     lines = exp.readlines()
 
@@ -103,17 +107,50 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 
 
 
-startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+startvalues = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
-exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
+dict_args['Max_diff'] = 0 ###ver esse role aqui
 
-
+exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'], startvalues = startvalues)
 
 if args.verbose:
     pd.options.display.max_rows = None
     pd.options.display.max_columns = 0
      
     print(exp)
+
+angs = exp.export_angles()
+exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs[4], 'Del':angs[5], 'tt':angs[6],
+            'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':list(angs[15])}
+exp_dict['hklnow'] = [float(i) for i in exp_dict['hklnow']]
+
+
+if float(angs[16]) < 1e-4:
+    with open('.Experiment', 'r+') as exp:
+ 
+        lines = exp.readlines()
+    
+    
+     
+    
+        for i, line in enumerate(lines):
+            for j,k in exp_dict.items():
+                
+    
+     
+    
+                if line.startswith(str(j)):
+                        lines[i] = str(j)+'='+str(k)+'\n'
+              
+            exp.seek(0)
+                
+              
+    
+        
+        for line in lines:
+            exp.write(line)
+
+
 
 
 log = sys.argv.pop(0).split('command_line/')[1]    

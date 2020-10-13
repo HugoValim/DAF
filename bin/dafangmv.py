@@ -11,21 +11,25 @@ import dafutilities as du
 
 doc = """
 
-Move by setting a HKL or by a given diffractometer angle
+Move the diffractometer by direct change in the angles
 
 """
 
-epi = "\n Eg: \n daf.move -mv 1 0 0, \n daf.move --Eta 15 -Del 30"
+epi = '''
+Eg: 
+    daf.amv --Del 30 --Eta 15
+    daf.amv -d 30 -e 15
+    '''
 
 
-parser = ap.ArgumentParser(description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
-parser.add_argument('-m', '--Mu', metavar='', type=float, help='Constrain naz, default: 0')
-parser.add_argument('-e', '--Eta', metavar='', type=float, help='Constrain naz, default: 0')
-parser.add_argument('-c', '--Chi', metavar='', type=float, help='Constrain naz, default: 0')
-parser.add_argument('-p', '--Phi', metavar='', type=float, help='Constrain naz, default: 0')
-parser.add_argument('-n', '--Nu', metavar='', type=float, help='Constrain naz, default: 0')
-parser.add_argument('-d', '--Del', metavar='', type=float, help='Constrain naz, default: 0')
+parser.add_argument('-m', '--Mu', metavar='ang', type=float, help='Sets Mu angle to a desired position')
+parser.add_argument('-e', '--Eta', metavar='ang', type=float, help='Sets Eta angle to a desired position')
+parser.add_argument('-c', '--Chi', metavar='ang', type=float, help='Sets Chi angle to a desired position')
+parser.add_argument('-p', '--Phi', metavar='ang', type=float, help='Sets Phi angle to a desired position')
+parser.add_argument('-n', '--Nu', metavar='ang', type=float, help='Sets Nu angle to a desired position')
+parser.add_argument('-d', '--Del', metavar='ang', type=float, help='Sets Del angle to a desired position')
 # parser.add_argument('-v', '--verbosity', action='store_true', help='Show full output')
 
 args = parser.parse_args()
@@ -33,7 +37,7 @@ dic = vars(args)
 
 
 
-with open('Experiment', 'r+') as exp:
+with open('.Experiment', 'r+') as exp:
  
     lines = exp.readlines()
 
@@ -94,7 +98,7 @@ pseudo = exp.calc_pseudo(float(dict_args["Mu"]), float(dict_args["Eta"]), float(
 pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
 
 
-with open('Experiment', 'r+') as exp:
+with open('.Experiment', 'r+') as exp:
  
     lines = exp.readlines()
 

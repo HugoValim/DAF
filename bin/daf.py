@@ -648,6 +648,26 @@ class Control(object):
         else:
               self.lam = ENWL
               self.en = xu.lam2en(self.lam)
+    
+    
+    def two_theta_max(self):
+        
+        if type(self.bounds[4]) == float:
+            nub = self.bounds[4]
+        else:
+            nub = np.linspace(self.bounds[4][0], self.bounds[4][1], 1000)
+        
+        if type(self.bounds[5]) == float:
+            delb = self.bounds[5]
+        else:
+            delb = np.linspace(self.bounds[5][0], self.bounds[5][1], 1000)
+            
+        delb, nub = np.meshgrid(delb, nub)
+        R = np.cos(np.radians(delb))*np.cos(np.radians(nub))
+        Z = np.arccos(R)
+                
+        return np.degrees(np.max(Z))
+    
     def calc_pseudo(self, Mu, Eta, Chi, Phi, Nu, Del):
         
         PI = np.pi
@@ -921,9 +941,9 @@ class Control(object):
         if 'sv' in kwargs.keys():
             self.start = kwargs['sv']
             # print(self.start)
-        else:
-            self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-            self.start = (0,0,0,0,0,self.preangs[3])
+        # else:
+        #     self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+        #     self.start = (0,0,0,0,0,self.preangs[3])
         
         
         self.errflag = 0
@@ -1013,20 +1033,27 @@ class Control(object):
                             restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})         
                                
                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
-                
+                # print(self.fix)
                 if qerror > 1e-5:
-                    dinerror = 10
-                    for i in self.trythis:
+                        if 'Del' not in self.fix and 'Eta' not in self.fix:
+                            self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+                            self.start = (0,0,0,0,0,self.preangs[3])
+                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                        else:
+                            self.sv = [0,0,0,0,0,0]
+                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                            
+                        # if qerror > 1e-5:
+                        #     dinerror = 10
+                        #     for i in self.trythis:
+                                
+                        #         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
+                        #         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                         
-                        restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                        # print(i,qerror)
-                        # print(i)
-                        
-                        if qerror < 1e-5:
-                            break
-                        restrict.pop()
-                 
+                        #         if qerror < 1e-5:
+                        #             break
+                        #         restrict.pop()
+                     
                 if qerror > 1e-5:
                     self.errflag +=1
                 else:
@@ -1039,29 +1066,65 @@ class Control(object):
                         restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
                     if qerror > 1e-5:
-                        
-                        for i in self.trythis:
-                    
-                            restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
+                        if 'Del' not in self.fix and 'Eta' not in self.fix:
+                            self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+                            self.start = (0,0,0,0,0,self.preangs[3])
+                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                        else:
+                            self.sv = [0,0,0,0,0,0]
+                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                             
-                            if qerror < 1e-5:
-                                break
-                            restrict.pop()
+                        # if qerror > 1e-5:
+                        #     dinerror = 10
+                        #     for i in self.trythis:
+                                
+                        #         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
+                        #         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                        
+                        #         if qerror < 1e-5:
+                        #             break
+                        #         restrict.pop()
+                        # for i in self.trythis:
+                    
+                        #     restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
+                        #     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
+                            
+                        #     if qerror < 1e-5:
+                        #         break
+                        #     restrict.pop()
                     
                 else:
                     
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat = self.U)
                     if qerror > 1e-5:
+                        if 'Del' not in self.fix and 'Eta' not in self.fix:
+                            self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+                            self.start = (0,0,0,0,0,self.preangs[3])
+                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                        else:
+                            self.sv = [0,0,0,0,0,0]
+                            ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                            
+                        # if qerror > 1e-5:
+                        #     dinerror = 10
+                        #     for i in self.trythis:
+                                
+                        #         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
+                        #         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                         
-                        for i in self.trythis:
+                        #         if qerror < 1e-5:
+                        #             break
+                        #         restrict.pop()
+                        
+                        
+                        # for i in self.trythis:
                     
-                            restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            ang, qerror, errcode = xu.Q2AncondagFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
-                            # print(i,qerror)
-                            if qerror < 1e-5:
-                                break
-                            restrict.pop()
+                        #     restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
+                        #     ang, qerror, errcode = xu.Q2AncondagFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
+                        #     # print(i,qerror)
+                        #     if qerror < 1e-5:
+                        #         break
+                        #     restrict.pop()
                 
                 
 
@@ -1162,30 +1225,34 @@ class Control(object):
                                    
 
                                                                                                                                                   
-    def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ','):
+    def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ',', startvalues = [0,0,0,0,0,0]):
         
         scl = Control.scan_generator(self, hkli, hklf, points)
         angslist = list()
-        self.hkl = scl[0]
-        a,b = Control.motor_angles(self)
-        sv = a[:6]
-    
+        # self.hkl = scl[0]
+        # a,b = self.motor_angles(self)
+        # sv = a[:6]
+        # initial = np.round(self.hrxrd.Ang2HKL(*startvalues,mat=self.samp, en = self.en, U=self.U),5)
+        # print(initial)
         for i in tqdm(scl):
             self.hkl = i
-            a,b = Control.motor_angles(self, sv=sv)
+            a,b = self.motor_angles(self, sv=startvalues)
             angslist.append(b)
-            teste = np.abs(np.array(a[:6]) - np.array(sv))
+            teste = np.abs(np.array(a[:6]) - np.array(startvalues))
+            
+            # print(np.max(teste))
+         
             if np.max(teste) > diflimit and diflimit != 0:
                 raise ("Exceded max limit of angles variation")
            
             if float(a[-1]) > 1e-5:
                 raise('qerror is too big, process failed')
             
-            sv = a[:6]
-
+            startvalues = a[:6]
+            
+     
         
         self.isscan = True
-
      
         self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2\u03B8', '\u03B8', 'alpha', 'qaz', 'naz',
                                                                                              'tau', 'psi', 'beta', 'omega','HKL Calc', 'Error'])  
@@ -1197,7 +1264,10 @@ class Control(object):
         
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
-     
+        
+
+        
+        
     def show_reciprocal_space_plane(self, ttmax=None, maxqout=0.01, scalef=100, ax=None, color=None,
             show_Laue=True, show_legend=True, projection='perpendicular',
             label=None):
@@ -1458,7 +1528,7 @@ class Control(object):
                     exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
                                 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
                     if angles[6] < 1e-4:
-                        with open('Experiment', 'r+') as exp:
+                        with open('.Experiment', 'r+') as exp:
      
                             lines = exp.readlines()
                         

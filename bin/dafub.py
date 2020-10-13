@@ -9,20 +9,30 @@ import dafutilities as du
 
 doc = """
 
-Calculate UB matrix from 2 or 3 reflections
+Defines UB matrix and Calculate UB matrix from 2 or 3 reflections
 
 """
 
-epi = "\n Eg: \n daf.ub -h1 1 0 0 -a1 0 5.28232 0 2 0 10.5647"
     
+epi = '''
+Eg:
+    daf.ub -r1 1 0 0 0 5.28232 0 2 0 10.5647
+    daf.ub -r2 0 1 0 0 5.28232 2 92 0 10.5647
+    daf.ub -c2
+    daf.ub -U 1 0 0 0 1 0 0 0 1
+    daf.up -s
+    daf.up -s -p
+    '''
 
-parser = ap.ArgumentParser(description=doc, epilog=epi)
 
-parser.add_argument('-r1', '--hkl1', metavar='', type=float, nargs=9, help='HKL and angles for first reflection')
-parser.add_argument('-r2', '--hkl2', metavar='', type=float, nargs=9, help='HKL and angles for second reflection')
-parser.add_argument('-r3', '--hkl3', metavar='',type=float, nargs=9, help='HKL and angles for third reflection')
-parser.add_argument('-U', '--Umatrix', metavar='',type=float, nargs=9, help='set U matrix')
-parser.add_argument('-UB', '--UBmatrix', metavar='',type=float, nargs=9, help='Set UB matrix')
+
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+
+parser.add_argument('-r1', '--hkl1', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for first reflection')
+parser.add_argument('-r2', '--hkl2', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for second reflection')
+parser.add_argument('-r3', '--hkl3', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'),type=float, nargs=9, help='HKL and angles for third reflection')
+parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
+parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
 parser.add_argument('-c2', '--Calc2', action='store_true', help='Calculate UB for 2 reflections')
 parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections, the right energy must be setted in this case')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
@@ -34,7 +44,7 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-with open('Experiment', 'r+') as exp:
+with open('.Experiment', 'r+') as exp:
  
     lines = exp.readlines()
 
@@ -63,7 +73,7 @@ with open('Experiment', 'r+') as exp:
 
 if args.UBmatrix:
     UB = np.array(args.UBmatrix).reshape(3,3)
-    with open('Experiment', 'r+') as exp:
+    with open('.Experiment', 'r+') as exp:
   
           lines = exp.readlines()
      
@@ -90,8 +100,24 @@ if args.UBmatrix:
               exp.write(line)
 
 if args.Umatrix:
-    U = np.array(args.Umatrix).reshape(3,3)
-    with open('Experiment', 'r+') as exp:
+    U = np.array(args.Umatrix).reshape(3,3)          │  0.99943    -0.03488      0.00122  │
+U    =    │  0.03490     0.99882     -0.03488  │
+          │  0.00000     0.03490      0.99943  │
+
+                                                
+          │  1.15624    -0.04035      0.00141  │
+UB   =    │  0.04038     1.15553     -0.04035  │
+          │  0.00000     0.04038      1.15624  │
+
+
+a    =    5.43085
+b    =    5.43085
+c    =    5.43085
+α    =    90.00000
+β    =    90.00003
+γ    =    90.00000
+
+    with open('.Experiment', 'r+') as exp:
   
           lines = exp.readlines()
      
@@ -149,7 +175,7 @@ if args.Show:
     center2 = "{:^11}"
     center3 = "{:^11}\u2502"
     fmt1 = [
-                    ('', 'ident',   6),        
+                    ('', 'ident',  9),        
                     ('', 'col1',   12),
                     ('', 'col2',   12),
                     ('', 'col3',   12),
@@ -157,12 +183,12 @@ if args.Show:
                    ]
     
     data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
-             {'ident':'U =','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
+             {'ident':'U    =   ','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
              {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
              ]
     
     data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
-             {'ident':'UB = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
+             {'ident':'UB   = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
              {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
              ]
     
@@ -183,12 +209,12 @@ if args.Params:
     dict_args = du.dict_conv()
     
     print('')
-    print(f'a = {dict_args["lparam_a"]}')
-    print(f'b = {dict_args["lparam_b"]}')
-    print(f'c = {dict_args["lparam_c"]}')
-    print(f'\u03B1 = {dict_args["lparam_alpha"]}')
-    print(f'\u03B2 = {dict_args["lparam_beta"]}')
-    print(f'\u03B3 = {dict_args["lparam_gama"]}')
+    print(f'a    =    {dict_args["lparam_a"]}')
+    print(f'b    =    {dict_args["lparam_b"]}')
+    print(f'c    =    {dict_args["lparam_c"]}')
+    print(f'\u03B1    =    {dict_args["lparam_alpha"]}')
+    print(f'\u03B2    =    {dict_args["lparam_beta"]}')
+    print(f'\u03B3    =    {dict_args["lparam_gama"]}')
     print('')
 
 
@@ -242,7 +268,7 @@ if  args.Calc2:
     U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
 
     
-    with open('Experiment', 'r+') as exp:
+    with open('.Experiment', 'r+') as exp:
   
           lines = exp.readlines()
      
@@ -277,7 +303,7 @@ if  args.Calc3:
     
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
 
-    with open('Experiment', 'r+') as exp:
+    with open('.Experiment', 'r+') as exp:
  
          lines = exp.readlines()
     

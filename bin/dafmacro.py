@@ -7,15 +7,23 @@ import dafutilities as du
 
 doc = """
 
-Creates a macro for run many commands from a txt file
+Creates a macro to run commands from a script (txt) file
 
 """
 
-parser = ap.ArgumentParser(description=doc)
+epi = '''
+Eg: 
+   daf.macro -i -n my_macro
+   daf.macro -s
+   daf.macro -e my_macro
+    '''
+
+
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 parser.add_argument('-i', '--Initialize', action='store_true', help='Start recording your commands')
 parser.add_argument('-s', '--Stop', action='store_true', help='Stop the macro')
-parser.add_argument('-n', '--name', metavar='',type=str, help='Sets macro file name')
-parser.add_argument('-e', '--Execute', metavar='',type=str, help='Execute a recorded macro')
+parser.add_argument('-n', '--name', metavar='name',type=str, help='Sets the name of the macro file')
+parser.add_argument('-e', '--Execute', metavar='file',type=str, help='Execute a recorded macro')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -27,7 +35,7 @@ if args.Initialize:
     os.system(f"echo '#!/usr/bin/env bash' > {args.name}")
     os.system(f"chmod 755 {args.name}")
     
-    with open('Experiment', 'r+') as exp:
+    with open('.Experiment', 'r+') as exp:
      
         lines = exp.readlines()
     
@@ -57,7 +65,7 @@ if args.Initialize:
         
 if args.Stop:
     
-    with open('Experiment', 'r+') as exp:
+    with open('.Experiment', 'r+') as exp:
      
         lines = exp.readlines()
     

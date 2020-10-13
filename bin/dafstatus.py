@@ -15,12 +15,16 @@ Show the experiment status
 
 """
 
-epi = "\n Eg: \n daf.move -mv 1 0 0, \n daf.move --Eta 15 -Del 30"
+epi = '''
+Eg:
+    daf.status -a
+    daf.status -m
+    '''
 
 
-parser = ap.ArgumentParser(description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
-parser.add_argument('-m', '--Mode', action='store_true', help='Show current mode of diffractometer')
+parser.add_argument('-m', '--Mode', action='store_true', help='Show current operating mode of the diffractometer')
 parser.add_argument('-e', '--Experiment', action='store_true', help='Show experiment information')
 parser.add_argument('-a', '--All', action='store_true', help='Show all information')
 

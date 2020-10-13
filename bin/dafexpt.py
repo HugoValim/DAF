@@ -10,20 +10,27 @@ doc = """
 Describe the experiment inputs
 
 """
+epi = '''
+Eg: 
+    daf.expt --Material Si --Energy 8000
+    daf.expt -m Si -e 8000
+    daf.expt -s x+ 
+    daf.expt -i 1 0 0 -n 0 1 0    
+    '''
+    
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
-parser = ap.ArgumentParser(description=doc)
-
-parser.add_argument('-m', '--Material', metavar='', type=str, help='Set the material that is going to be used in the experiment')
-parser.add_argument('-i', '--IDir', metavar='', type=int, nargs=3,help='Set the plane paralel to the incident beam')
-parser.add_argument('-n', '--NDir', metavar='', type=int, nargs=3,help='Set the plane perpendicular to the incident beam')
-parser.add_argument('-s', '--Sampleor', metavar='', type=str,help='Set the sample orientation at the Phi axis')
-parser.add_argument('-e', '--Energy', metavar='', type=float, help='Set the energy of the experiment, wavelength can also be given')
+parser.add_argument('-m', '--Material', metavar='samp', type=str, help='Sets the material that is going to be used in the experiment')
+parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the plane paralel to the incident beam')
+parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the plane perpendicular to the incident beam')
+parser.add_argument('-s', '--Sampleor', metavar='or', type=str,help='Sets the sample orientation at Phi axis')
+parser.add_argument('-e', '--Energy', metavar='en', type=float, help='Sets the energy of the experiment (KeV), wavelength can also be given (\u212B)')
 args = parser.parse_args()
 dic = vars(args)
 
 
 
-with open('Experiment', 'r+') as exp:
+with open('.Experiment', 'r+') as exp:
  
     lines = exp.readlines()
 

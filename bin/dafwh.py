@@ -11,14 +11,18 @@ import dafutilities as du
 
 doc = """
 
-Move by setting a HKL or by a given diffractometer angle
+Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer 
 
 """
 
-epi = "\n Eg: \n daf.move -mv 1 0 0, \n daf.move --Eta 15 -Del 30"
+epi = '''
+Eg:
+    daf.wh
+    '''
 
 
-parser = ap.ArgumentParser(description=doc, epilog=epi)
+
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
 parser.add_argument('-s', '--status', action='store_true', help='Show where you are in space')
 
@@ -37,22 +41,22 @@ lb = lambda x: "{:.5f}".format(float(x))
 hklnow = ret_list(dict_args["hklnow"])
 
 print('')
-print(f'HKL now =', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))
+print(f'HKL now =   ', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))
 print('')
-print(f'Alpha =   {lb(dict_args["alpha"])}')
-print(f'Beta =    {lb(dict_args["beta"])}')
-print(f'Psi =     {lb(dict_args["psi"])}')
-print(f'Tau =     {lb(dict_args["tau"])}')
-print(f'Qaz =     {lb(dict_args["qaz"])}')
-print(f'Naz =     {lb(dict_args["naz"])}')
-print(f'Omega =   {lb(dict_args["omega"])}')
+print(f'Alpha   =    {lb(dict_args["alpha"])}')
+print(f'Beta    =    {lb(dict_args["beta"])}')
+print(f'Psi     =    {lb(dict_args["psi"])}')
+print(f'Tau     =    {lb(dict_args["tau"])}')
+print(f'Qaz     =    {lb(dict_args["qaz"])}')
+print(f'Naz     =    {lb(dict_args["naz"])}')
+print(f'Omega   =    {lb(dict_args["omega"])}')
 print('')
-print(f'Mu =      {lb(dict_args["Mu"])}')
-print(f'Eta =     {lb(dict_args["Eta"])}')
-print(f'Chi =     {lb(dict_args["Chi"])}')
-print(f'Phi =     {lb(dict_args["Phi"])}')
-print(f'Nu =      {lb(dict_args["Nu"])}')
-print(f'Del =     {lb(dict_args["Del"])}')
+print(f'Mu      =    {lb(dict_args["Mu"])}')
+print(f'Eta     =    {lb(dict_args["Eta"])}')
+print(f'Chi     =    {lb(dict_args["Chi"])}')
+print(f'Phi     =    {lb(dict_args["Phi"])}')
+print(f'Nu      =    {lb(dict_args["Nu"])}')
+print(f'Del     =    {lb(dict_args["Del"])}')
 print('')    
     
 log = sys.argv.pop(0).split('command_line/')[1]    

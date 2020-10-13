@@ -11,7 +11,13 @@ Reset experiment to default
 
 """
 
-parser = ap.ArgumentParser(description=doc)
+epi = '''
+Eg:
+    daf.reset -a
+    '''
+
+
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
 parser.add_argument('-a', '--All', action='store_true', help='Sets all inputs of the experiment to default')
 
@@ -19,8 +25,8 @@ args = parser.parse_args()
 dic = vars(args)
 
 if args.All:
-    os.system(f"rm Experiment")
-    os.system(f"cp $EXP .")
+    os.system(f"rm .Experiment")
+    os.system(f"cp $EXP \.Experiment")
 
 # with open('Experiment', 'r+') as exp:
  
