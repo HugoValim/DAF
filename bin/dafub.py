@@ -100,23 +100,7 @@ if args.UBmatrix:
               exp.write(line)
 
 if args.Umatrix:
-    U = np.array(args.Umatrix).reshape(3,3)          │  0.99943    -0.03488      0.00122  │
-U    =    │  0.03490     0.99882     -0.03488  │
-          │  0.00000     0.03490      0.99943  │
-
-                                                
-          │  1.15624    -0.04035      0.00141  │
-UB   =    │  0.04038     1.15553     -0.04035  │
-          │  0.00000     0.04038      1.15624  │
-
-
-a    =    5.43085
-b    =    5.43085
-c    =    5.43085
-α    =    90.00000
-β    =    90.00003
-γ    =    90.00000
-
+    U = np.array(args.Umatrix).reshape(3,3)
     with open('.Experiment', 'r+') as exp:
   
           lines = exp.readlines()

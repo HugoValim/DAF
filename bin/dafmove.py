@@ -73,7 +73,6 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 
 
 
-
 startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
 exp(sv = startvalue)

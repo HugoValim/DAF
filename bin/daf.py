@@ -11,6 +11,25 @@ from numpy import linalg as LA
 import os
 import dafutilities as du
 
+
+
+
+PI = np.pi
+MAT = np.array
+rad = np.deg2rad
+deg = np.rad2deg
+
+
+
+
+
+
+
+
+
+
+
+
 class TablePrinter(object):
     "Print a list of dicts as a table"
     def __init__(self, fmt, sep=' ', ul=None):
@@ -413,151 +432,6 @@ class Control(object):
       
       return U, UB2p, rparam    
     
-    def pseudoAngleConst(angles, pseudo_angle, fix_angle):
-    
-        if pseudo_angle == 'eta=del/2':
-            return angles[1] - angles[5]/2
-        elif pseudo_angle == 'mu=nu/2':
-            return angles[0] - angles[4]/2
-        
-        PI = np.pi
-        MAT = np.array
-        rad = np.deg2rad
-        deg = np.rad2deg
-        
-        Mu = angles[0] + 1e-6
-        if pseudo_angle == 'Mu':
-            return Mu - fix_angle
-        
-        Eta = angles[1] + 1e-6
-        if pseudo_angle == 'Eta':
-            return Eta - fix_angle
-        
-        Chi = angles[2] + 1e-6
-        if pseudo_angle == 'Chi':
-            return Chi - fix_angle
-        
-        Phi= angles[3] + 1e-6
-        if pseudo_angle == 'Phi':
-            return Phi - fix_angle
-        
-        Nu = angles[4] + 1e-6
-        if pseudo_angle == 'Nu':
-            return Nu - fix_angle
-        
-        Del = angles[5] + 1e-6
-        if pseudo_angle == 'Del':
-            return Del - fix_angle
-    
-        # PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
-        #       [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
-        #       [0,                         0,             1]])
-    
-        # CHI = MAT([[np.cos(rad(Chi)),    0,           np.sin(rad(Chi))],
-        #           [0,                       1,                   0],
-        #           [-np.sin(rad(Chi)),    0,           np.cos(rad(Chi))]])
-        
-        # ETA = MAT([[np.cos(rad(Eta)),    np.sin(rad(Eta)),   0],
-        #             [-np.sin(rad(Eta)),   np.cos(rad(Eta)),   0],
-        #             [0,                         0,           1]])
-        
-        # MU = MAT([[1,                       0,                      0],
-        #           [0,            np.cos(rad(Mu)),    -np.sin(rad(Mu))],
-        #           [0,            np.sin(rad(Mu)),    np.cos(rad(Mu))]])
-        
-        # DEL = MAT([[np.cos(rad(Del)),    np.sin(rad(Del)),   0],
-        #             [-np.sin(rad(Del)),   np.cos(rad(Del)),   0],
-        #             [0,                       0,              1]])
-        
-        # NU = MAT([[1,                    0,                         0],
-        #           [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
-        #           [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
-        
-        # Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        # nz = Z.dot([0,0,1])
-        
-        nz = MAT([np.cos(rad(Eta))*np.sin(rad(Chi)), -np.cos(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) - np.sin(rad(Mu))*np.cos(rad(Chi)), 
-            -np.sin(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) + np.cos(rad(Mu))*np.cos(rad(Chi))])
-        
-        
-        
-        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
-        tB1 = ttB1/2
-        
-        
-        
-        alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
-        
-        # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
-        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
-        qaz = upsipseudo
-        # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
-        
-        phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
-        naz = phipseudo
-        
-        arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
-        if arg1 >1:
-            arg1 = 0.999999999999999999999
-        elif arg1 < -1:
-            arg3 = -0.99999999999999999999
-        taupseudo = deg(np.arccos(arg1))
-        
-        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
-        if arg2 >1:
-            arg2 = 0.999999999999999999999
-        elif arg2 < -1:
-            arg2 = -0.99999999999999999999
-   
-        
-        psipseudo = deg(np.arccos(arg2))
-        
-        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-        arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-        # print(arg3)
-        if arg3 >1:
-            arg3 = 0.99999999999999999999
-        # elif arg3 < -1:
-        #     arg3 = -0.9999999999999999999
-        # print(arg3)
-        betaout = deg(np.arcsin(arg3))
-        
-        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
-        if arg4 >1:
-         arg4 = 0.999999999999999999999
-        elif  arg4 < -1:
-            arg3 = -0.999999999999999999
-        omega = deg(np.arcsin(arg4))
-        
-        a = (alphain, upsipseudo, phipseudo, taupseudo, psipseudo, betaout, omega)
-        # print(np.round(a,3))
-      
-        
-        if pseudo_angle == 'alpha':
-            return alphain - fix_angle
-        
-        elif pseudo_angle == 'beta':
-            return betaout - fix_angle
-        
-        elif pseudo_angle == 'qaz':     
-            return upsipseudo - fix_angle
-        
-        elif pseudo_angle == 'naz':
-            return phipseudo - fix_angle
-        
-        elif pseudo_angle == 'tau':
-            return taupseudo - fix_angle
-       
-        elif pseudo_angle == 'psi':
-            # print(psipseudo - fix_angle)
-            return psipseudo - fix_angle
-        
-        elif pseudo_angle == 'omega':
-            return omega - fix_angle
-        
-        elif pseudo_angle == 'aeqb':
-            # print(betaout - alphain)
-            return betaout - alphain
     
     def set_constraints(self, *args, setineq = None, **kwargs):
 
@@ -665,97 +539,8 @@ class Control(object):
         delb, nub = np.meshgrid(delb, nub)
         R = np.cos(np.radians(delb))*np.cos(np.radians(nub))
         Z = np.arccos(R)
-                
-        return np.degrees(np.max(Z))
-    
-    def calc_pseudo(self, Mu, Eta, Chi, Phi, Nu, Del):
-        
-        PI = np.pi
-        MAT = np.array
-        rad = np.deg2rad
-        deg = np.rad2deg
-        
-        # PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
-        #       [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
-        #       [0,                         0,             1]])
-    
-        # CHI = MAT([[np.cos(rad(Chi)),    0,           np.sin(rad(Chi))],
-        #           [0,                       1,                   0],
-        #           [-np.sin(rad(Chi)),    0,           np.cos(rad(Chi))]])
-        
-        # ETA = MAT([[np.cos(rad(Eta)),    np.sin(rad(Eta)),   0],
-        #             [-np.sin(rad(Eta)),   np.cos(rad(Eta)),   0],
-        #             [0,                         0,           1]])
-        
-        # MU = MAT([[1,                       0,                      0],
-        #           [0,            np.cos(rad(Mu)),    -np.sin(rad(Mu))],
-        #           [0,            np.sin(rad(Mu)),    np.cos(rad(Mu))]])
-        
-        # DEL = MAT([[np.cos(rad(Del)),    np.sin(rad(Del)),   0],
-        #             [-np.sin(rad(Del)),   np.cos(rad(Del)),   0],
-        #             [0,                       0,              1]])
-        
-        # NU = MAT([[1,                    0,                         0],
-        #           [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
-        #           [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
-        
-        # Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        # nz = Z.dot([0,0,1])
-        
-        nz = MAT([np.cos(rad(Eta))*np.sin(rad(Chi)), -np.cos(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) - np.sin(rad(Mu))*np.cos(rad(Chi)), 
-            -np.sin(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) + np.cos(rad(Mu))*np.cos(rad(Chi))])
-        
-        
-        
-        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
-        tB1 = ttB1/2
-        
-        
-        
-        alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
-        
-        # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
-        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
-        qaz = upsipseudo
-        # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
-        
-        phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
-        naz = phipseudo
-        
-        arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
-        if arg1 >1:
-            arg1 = 0.999999999999999999999
-        elif arg1 < -1:
-            arg3 = -0.99999999999999999999
-        taupseudo = deg(np.arccos(arg1))
-        
-        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
-        if arg2 >1:
-            arg2 = 0.999999999999999999999
-        elif arg2 < -1:
-            arg2 = -0.99999999999999999999
-   
-        
-        psipseudo = deg(np.arccos(arg2))
-        
-        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-        arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-        # print(arg3)
-        if arg3 >1:
-            arg3 = 0.99999999999999999999
-        # elif arg3 < -1:
-        #     arg3 = -0.9999999999999999999
-        # print(arg3)
-        betaout = deg(np.arcsin(arg3))
-        
-        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
-        if arg4 >1:
-          arg4 = 0.999999999999999999999
-        elif  arg4 < -1:
-            arg3 = -0.999999999999999999
-        omega = deg(np.arcsin(arg4))
-        
-        return (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)        
+     
+        return np.degrees(np.max(Z)), np.degrees(np.min(Z))      
    
     def set_print_options(self, marker = '\u2501', column_marker = '\u2503', space = 12):
      
@@ -889,22 +674,332 @@ class Control(object):
         
         self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         hkl = self.hrxrd.Ang2HKL(Mu,Eta,Chi,Phi,Nu,Del, mat=self.samp, en = self.en, U = self.U)
-        
+        self.hkl = hkl
         return hkl
      
     def export_angles(self):
         
         return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, self.hkl_calc, "{0:.2e}".format(self.qerror)]
     
+    def taupseudo(self):
+        
+        A1 = (self.samp.a1)
+        A2 = (self.samp.a2)
+        A3 = (self.samp.a3)
+        
+        vcell = A1.dot(np.cross(A2,A3))
+        
+        B1 = np.cross(self.samp.a2,self.samp.a3)/vcell
+        B2 = np.cross(self.samp.a3,self.samp.a1)/vcell
+        B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
+        
+        q = self.samp.Q(self.hkl) # eq (1)
+        normQ = LA.norm(q)
+        Qhat = q/normQ
+        
+
+        n = [0,0,1]
+
+        
+        n = n[0]*B1 + n[1]*B2 + n[2]*B3
+        normn = LA.norm(n)
+        
+        nhat = n/normn
+    
+        
+        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+        self.tau = taupseudo
+    
+    def calc_pseudo(self, Mu, Eta, Chi, Phi, Nu, Del):
+        
+        PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
+              [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
+              [0,                         0,             1]])
+    
+        CHI = MAT([[np.cos(rad(Chi)),    0,           np.sin(rad(Chi))],
+                  [0,                       1,                   0],
+                  [-np.sin(rad(Chi)),    0,           np.cos(rad(Chi))]])
+        
+        ETA = MAT([[np.cos(rad(Eta)),    np.sin(rad(Eta)),   0],
+                    [-np.sin(rad(Eta)),   np.cos(rad(Eta)),   0],
+                    [0,                         0,           1]])
+        
+        MU = MAT([[1,                       0,                      0],
+                  [0,            np.cos(rad(Mu)),    -np.sin(rad(Mu))],
+                  [0,            np.sin(rad(Mu)),    np.cos(rad(Mu))]])
+        
+        DEL = MAT([[np.cos(rad(Del)),    np.sin(rad(Del)),   0],
+                    [-np.sin(rad(Del)),   np.cos(rad(Del)),   0],
+                    [0,                       0,              1]])
+        
+        NU = MAT([[1,                    0,                         0],
+                  [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
+                  [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
+        
+        
+        
+    
+        Z = MU.dot(ETA).dot(CHI).dot(PHI)
+        n = [0,0,1]
+        nc = self.samp.B.dot(n)
+        nphi = self.U.dot(nc)
+        nphihat = nphi/LA.norm(nphi)
+        nz = Z.dot(nphihat)
+        
+        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
+        tB1 = ttB1/2
+        
+        
+        
+        A1 = (self.samp.a1)
+        A2 = (self.samp.a2)
+        A3 = (self.samp.a3)
+        
+        vcell = A1.dot(np.cross(A2,A3))
+        
+        B1 = np.cross(self.samp.a2,self.samp.a3)/vcell
+        B2 = np.cross(self.samp.a3,self.samp.a1)/vcell
+        B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
+        
+        q = self.samp.Q(self.hkl) # eq (1)
+        normQ = LA.norm(q)
+        Qhat = q/normQ
+        
+        
+        n = n[0]*B1 + n[1]*B2 + n[2]*B3
+        normn = LA.norm(n)
+        
+        nhat = n/normn
+    
+        
+        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+        
+        
+        alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
+        
+        # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
+        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
+        qaz = upsipseudo
+        # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
+        
+        phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
+        naz = phipseudo
+        
+        # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
+        # if arg1 >1:
+        #     arg1 = 0.999999999999999999999
+        # elif arg1 < -1:
+        #     arg3 = -0.99999999999999999999
+       
+        
+        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
+        if arg2 >1:
+            arg2 = 0.999999999999999999999
+        elif arg2 < -1:
+            arg2 = -0.99999999999999999999
+   
+        
+        psipseudo = deg(np.arccos(arg2))
+        
+        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+        # print(arg3)
+        if arg3 >1:
+            arg3 = 0.99999999999999999999
+        elif arg3 < -1:
+            arg3 = -0.9999999999999999999
+        # print(arg3)
+        betaout = deg(np.arcsin(arg3))
+        
+        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
+        if arg4 >1:
+          arg4 = 0.999999999999999999999
+        elif  arg4 < -1:
+            arg3 = -0.999999999999999999
+        omega = deg(np.arcsin(arg4))
+        
+        return (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)
+    
+    def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):
+    
+        if pseudo_angle == 'eta=del/2':
+            return angles[1] - angles[5]/2
+        elif pseudo_angle == 'mu=nu/2':
+            return angles[0] - angles[4]/2
+        
+        PI = np.pi
+        MAT = np.array
+        rad = np.deg2rad
+        deg = np.rad2deg
+        
+        Mu = angles[0] + 1e-6
+        if pseudo_angle == 'Mu':
+            return Mu - fix_angle
+        
+        Eta = angles[1] + 1e-6
+        if pseudo_angle == 'Eta':
+            return Eta - fix_angle
+        
+        Chi = angles[2] + 1e-6
+        if pseudo_angle == 'Chi':
+            return Chi - fix_angle
+        
+        Phi= angles[3] + 1e-6
+        if pseudo_angle == 'Phi':
+            return Phi - fix_angle
+        
+        Nu = angles[4] + 1e-6
+        if pseudo_angle == 'Nu':
+            return Nu - fix_angle
+        
+        Del = angles[5] + 1e-6
+        if pseudo_angle == 'Del':
+            return Del - fix_angle
+    
+        PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
+              [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
+              [0,                         0,             1]])
+    
+        CHI = MAT([[np.cos(rad(Chi)),    0,           np.sin(rad(Chi))],
+                  [0,                       1,                   0],
+                  [-np.sin(rad(Chi)),    0,           np.cos(rad(Chi))]])
+        
+        ETA = MAT([[np.cos(rad(Eta)),    np.sin(rad(Eta)),   0],
+                    [-np.sin(rad(Eta)),   np.cos(rad(Eta)),   0],
+                    [0,                         0,           1]])
+        
+        MU = MAT([[1,                       0,                      0],
+                  [0,            np.cos(rad(Mu)),    -np.sin(rad(Mu))],
+                  [0,            np.sin(rad(Mu)),    np.cos(rad(Mu))]])
+        
+        DEL = MAT([[np.cos(rad(Del)),    np.sin(rad(Del)),   0],
+                    [-np.sin(rad(Del)),   np.cos(rad(Del)),   0],
+                    [0,                       0,              1]])
+        
+        NU = MAT([[1,                    0,                         0],
+                  [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
+                  [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
+        
+
+        Z = MU.dot(ETA).dot(CHI).dot(PHI)
+        n = [0,0,1]
+        nc = self.samp.B.dot(n)
+        nphi = self.U.dot(nc)
+        nphihat = nphi/LA.norm(nphi)
+
+        nz = Z.dot(nphihat)
+        
+        A1 = (self.samp.a1)
+        A2 = (self.samp.a2)
+        A3 = (self.samp.a3)
+        
+        vcell = A1.dot(np.cross(A2,A3))
+        
+        B1 = np.cross(self.samp.a2,self.samp.a3)/vcell
+        B2 = np.cross(self.samp.a3,self.samp.a1)/vcell
+        B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
+        
+        q = self.samp.Q(self.hkl) # eq (1)
+        normQ = LA.norm(q)
+        Qhat = q/normQ
+        
+        
+        n = n[0]*B1 + n[1]*B2 + n[2]*B3
+        normn = LA.norm(n)
+        
+        nhat = n/normn
+    
+        
+        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+
+        
+        
+        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
+        tB1 = ttB1/2
+        
+        
+        
+        alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
+        
+        # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
+        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
+        qaz = upsipseudo
+        # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
+        
+        phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
+        naz = phipseudo
+        
+        # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
+        # if arg1 >1:
+        #     arg1 = 0.999999999999999999999
+        # elif arg1 < -1:
+        #     arg3 = -0.99999999999999999999
+        # taupseudo = deg(np.arccos(arg1))
+        
+     
+        
+        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
+        if arg2 >1:
+            arg2 = 0.999999999999999999999
+        elif arg2 < -1:
+            arg2 = -0.99999999999999999999
+   
+        
+        psipseudo = deg(np.arccos(arg2))
+        
+        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+        # print(arg3)
+        if arg3 >1:
+            arg3 = 0.99999999999999999999
+        elif arg3 < -1:
+            arg3 = -0.9999999999999999999
+        # # print(arg3)
+        betaout = deg(np.arcsin(arg3))
+        
+        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
+        if arg4 >1:
+          arg4 = 0.999999999999999999999
+        elif  arg4 < -1:
+            arg3 = -0.999999999999999999
+        omega = deg(np.arcsin(arg4))
+        
+        a = (alphain, upsipseudo, phipseudo, taupseudo, psipseudo, betaout, omega)
+        # print(np.round(a,3))
+      
+        
+        if pseudo_angle == 'alpha':
+            return alphain - fix_angle
+        
+        elif pseudo_angle == 'beta':
+            return betaout - fix_angle
+        
+        elif pseudo_angle == 'qaz':     
+            return upsipseudo - fix_angle
+        
+        elif pseudo_angle == 'naz':
+            return phipseudo - fix_angle
+        
+        elif pseudo_angle == 'tau':
+            return taupseudo - fix_angle
+       
+        elif pseudo_angle == 'psi':
+            # print(psipseudo - fix_angle)
+            return psipseudo - fix_angle
+        
+        elif pseudo_angle == 'omega':
+            return omega - fix_angle
+        
+        elif pseudo_angle == 'aeqb':
+            # print(betaout - alphain)
+            return betaout - alphain
+    
+    
     def motor_angles(self, *args, qvec = False, **kwargs):
         
         self.isscan = False
 
         self.sampleID = self.samp.name
-        PI = np.pi
-        MAT = np.array
-        rad = np.deg2rad
-        deg = np.rad2deg
 
         
         # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
@@ -918,17 +1013,13 @@ class Control(object):
        
         if qvec is not False:
             self.Q_lab = qvec
-        
+            
             
         else:
             self.Q_material = self.samp.Q(self.hkl)
-    
             
             self.Q_lab = self.hrxrd.Transform(self.Q_material)
-        # self.Q_material = self.samp.Q(self.hkl)
-
-
-        # self.Q_lab = self.hrxrd.Transform(self.Q_material)
+    
       
        
         self.dhkl = self.samp.planeDistance(self.hkl)
@@ -961,7 +1052,7 @@ class Control(object):
                     
                     if self.errflag == 0:
                         
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
                         
                     elif self.errflag == 1:
                         break
@@ -970,14 +1061,14 @@ class Control(object):
                   
                     if self.errflag == 0:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
                                    
                     
                     if self.errflag == 1:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
                     
                     if self.errflag == 2:
                         
@@ -988,39 +1079,39 @@ class Control(object):
                     
                     if self.errflag == 0:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])}]
                         
                     elif self.errflag == 1:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
                     
                     elif self.errflag == 2:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
                     
                     elif self.errflag == 3:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])}]
                     
                     elif self.errflag == 4:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
                     
                     elif self.errflag == 5:
                     
-                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[2][0], self.constrain[2][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[0][0], self.constrain[0][1])},
-                                    {'type':'eq', 'fun': lambda a: pseudoconst(a, self.constrain[1][0], self.constrain[1][1])}]
+                        restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
+                                    {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
                     
                     elif self.errflag == 6:
                         break
@@ -1130,7 +1221,7 @@ class Control(object):
 
             
 
-        
+                n = [0,0,1]
   
         self.qerror = qerror
         self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp, en = self.en, U=self.U),5)
@@ -1166,8 +1257,41 @@ class Control(object):
                   [0,            np.cos(rad(self.Nu)),    -np.sin(rad(self.Nu))],
                   [0,            np.sin(rad(self.Nu)),    np.cos(rad(self.Nu))]])
         
+        
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        nz = Z.dot([0,0,1])
+
+        n = [0,0,1]
+        nc = self.samp.B.dot(n)
+        nphi = self.U.dot(nc)
+        nphihat = nphi/LA.norm(nphi)
+        # print(nphihat)
+        nz = Z.dot(nphihat)
+        
+        A1 = (self.samp.a1)
+        A2 = (self.samp.a2)
+        A3 = (self.samp.a3)
+        
+        vcell = A1.dot(np.cross(A2,A3))
+        
+        B1 = np.cross(self.samp.a2,self.samp.a3)/vcell
+        B2 = np.cross(self.samp.a3,self.samp.a1)/vcell
+        B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
+        
+        q = self.samp.Q(self.hkl) # eq (1)
+        normQ = LA.norm(q)
+        Qhat = q/normQ
+        
+
+        n = n[0]*B1 + n[1]*B2 + n[2]*B3
+        normn = LA.norm(n)
+        
+        nhat = n/normn
+    
+        
+        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+        
+        
+        
         ttB1 = deg(np.arccos(np.cos(rad(self.Nu)) * np.cos(rad(self.Del))))
         tB1 = ttB1/2
         
@@ -1181,10 +1305,11 @@ class Control(object):
         phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
         naz = phipseudo
         
-        arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
-        if arg1 >1:
-            arg1 = 0.99999999999999999999
-        taupseudo = deg(np.arccos(arg1))
+        # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
+        # if arg1 >1:
+        #     arg1 = 0.99999999999999999999
+        # taupseudo = deg(np.arccos(arg1))
+      
         
         arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
         if arg2 >1:
@@ -1194,13 +1319,13 @@ class Control(object):
         # print(arg2)
         psipseudo = deg(np.arccos(arg2))
         
-        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
         arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
         # print(arg3)
-        # if arg3 >1:
-        #     arg3 = 0.999999999999999999999
-        # elif arg3 < -1:
-        #     arg3 = -0.99999999999999999999
+        if arg3 >1:
+            arg3 = 0.999999999999999999999
+        elif arg3 < -1:
+            arg3 = -0.99999999999999999999
         betaout = deg(np.arcsin(arg3))
         
         arg4 = (np.sin(rad(self.Eta))*np.sin(rad(upsipseudo))+np.sin(rad(self.Mu))*np.cos(rad(self.Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(self.Mu))*np.cos(rad(self.Eta))*np.sin(rad(tB1))
@@ -1230,7 +1355,7 @@ class Control(object):
         scl = Control.scan_generator(self, hkli, hklf, points)
         angslist = list()
         # self.hkl = scl[0]
-        # a,b = self.motor_angles(self)
+        # a,b = self.motor_angles(self)qmax = 2 * k0 * math.sin(math.radians(ttmin/2.))
         # sv = a[:6]
         # initial = np.round(self.hrxrd.Ang2HKL(*startvalues,mat=self.samp, en = self.en, U=self.U),5)
         # print(initial)
@@ -1268,7 +1393,7 @@ class Control(object):
 
         
         
-    def show_reciprocal_space_plane(self, ttmax=None, maxqout=0.01, scalef=100, ax=None, color=None,
+    def show_reciprocal_space_plane(self, ttmax=None, ttmin = None, maxqout=0.01, scalef=100, ax=None, color=None,
             show_Laue=True, show_legend=True, projection='perpendicular',
             label=None):
         """
@@ -1339,7 +1464,7 @@ class Control(object):
 
                 # from .mpl_helper import SqrtAllowNegScale
                 return True, plt
-            except ImportError:
+            except ImportError:# print(d['qvec'][m][ind['ind'][0]])
                 if config.VERBOSITY >= config.INFO_LOW:
                     print("%s: Warning: plot functionality not available" % funcname)
                 return False, None
@@ -1362,7 +1487,8 @@ class Control(object):
                 peaks
             """
            
-            
+            ttmax = 180
+            # print(d['qvec'][m][ind['ind'][0]])
             
             # calculate maximal Bragg indices
             hma = int(math.ceil(xu.math.vector.VecNorm(mat.a1) * exp.k0 / pi *
@@ -1430,6 +1556,11 @@ class Control(object):
             c = plt.matplotlib.patches.Circle((0, 0), qmax, facecolor='#FFFFFF',
                                               edgecolor='none')
             ax.add_patch(c)
+            if ttmin:
+                qmax = 2 * k0 * math.sin(math.radians(ttmin/2.))
+                c = plt.matplotlib.patches.Circle((0, 0), qmax, facecolor='#FF9180',
+                                                  edgecolor='none')
+                ax.add_patch(c)
     
             c = plt.matplotlib.patches.Circle((0, 0), 2*k0, facecolor='none',
                                               edgecolor='0.5')
@@ -1486,6 +1617,7 @@ class Control(object):
             annot.xy = pos
             text = "{}\n{}".format(mat.name,
                                    str(d['hkl'][m][ind['ind'][0]]))
+            
             annot.set_text(text)
             annot.get_bbox_patch().set_facecolor(h.get_facecolor()[0])
             annot.get_bbox_patch().set_alpha(0.2)
@@ -1506,7 +1638,7 @@ class Control(object):
         def click(event):
             if event.inaxes == ax:
                 cont, ind = h.contains(event)
-                # print(h.contains(event))
+                
                 if cont:
                     popts = numpy.get_printoptions()
                     numpy.set_printoptions(precision=4, suppress=True)
@@ -1514,6 +1646,9 @@ class Control(object):
                     dict_args = du.dict_conv()
                     startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
                     
+                    hkl = (d['hkl'][m][ind['ind'][0]])
+                    self.hkl = hkl
+               
                     ang = Control.motor_angles(self, qvec = d['qvec'][m][ind['ind'][0]], sv = startvalue)
                     angles = [ang[0][0], ang[0][1], ang[0][2], ang[0][3], ang[0][4], ang[0][5], float(ang[0][-1])]
                     

@@ -107,8 +107,7 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 
 
 
-
-startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+# startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
 #
 # exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
@@ -116,9 +115,9 @@ startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["
 startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
 exp(sv = startvalue)
-tt = exp.two_theta_max()
-
-exp.show_reciprocal_space_plane(ttmax = tt)
+ttmax, ttmin = exp.two_theta_max()
+print(ttmax)
+exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin)
 
 
 
