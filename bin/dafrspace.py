@@ -96,7 +96,7 @@ Nu_bound = ret_list(dict_args['bound_Nu'])
 Del_bound = ret_list(dict_args['bound_Del'])
 
 exp = daf.Control(*mode)
-exp.set_hkl([1, 0,0])
+# exp.set_hkl([1, 0,0])
 exp.set_material(dict_args['Material'])
 exp.set_exp_conditions(idir = idir, ndir = ndir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
 exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
@@ -112,11 +112,11 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 #
 # exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
 
-startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+# startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
-exp(sv = startvalue)
+exp(calc=False)
 ttmax, ttmin = exp.two_theta_max()
-print(ttmax)
+# print(ttmax)
 exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin)
 
 

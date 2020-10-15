@@ -26,6 +26,7 @@ parser.add_argument('-p', '--bound_Phi', metavar=('min', 'max'),type=float, narg
 parser.add_argument('-n', '--bound_Nu', metavar=('min', 'max'),type=float, nargs=2, help='Sets Nu bounds')
 parser.add_argument('-d', '--bound_Del', metavar=('min', 'max'),type=float, nargs=2, help='Sets Del bounds')
 parser.add_argument('-l', '--list', action='store_true', help='List the current bounds')
+parser.add_argument('-r', '--Reset', action='store_true', help='Reset all bounds to default')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -34,6 +35,8 @@ dic = vars(args)
 #     for i,j in dic.items():
 #         doc.write(str(i)+': '+str(j)+'\n')
 # ndir = list2str(args.NDir)
+
+bounds = {'bound_Mu' : [-180.0, 180.0], 'bound_Eta' : [-180.0, 180.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-180.0, 180.0], 'bound_Nu' : [-180.0, 180.0], 'bound_Del' : [-180.0, 180.0]}
 
 with open('.Experiment', 'r+') as exp:
  
@@ -59,6 +62,34 @@ with open('.Experiment', 'r+') as exp:
 
     for line in lines:
         exp.write(line)
+
+if args.Reset:
+    
+    with open('.Experiment', 'r+') as exp:
+ 
+        lines = exp.readlines()
+    
+    
+     
+    
+        for i, line in enumerate(lines):
+            for j,k in bounds.items():
+                
+    
+     
+    
+                if line.startswith(str(j)):
+                        lines[i] = str(j)+'='+str(k)+'\n'
+              
+                exp.seek(0)
+                
+
+
+ 
+
+        for line in lines:
+            exp.write(line)
+
 
 dict_args = du.dict_conv()      
         
