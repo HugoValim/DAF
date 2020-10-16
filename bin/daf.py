@@ -1007,7 +1007,7 @@ class Control(object):
 
             
         # qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Sirius coordinate axes system
-        
+
         self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         
              # print(np.round(self.preangs,3))
