@@ -118,7 +118,7 @@ if float(angs[16]) < 1e-4:
         
 
 else:
-    print('Cannot find the HKL')
+    print('Can\'t find the HKL')
 
 
        

@@ -1690,7 +1690,7 @@ class Control(object):
                         
                         os.system("daf.wh")
                     else:
-                        print('Cannot find the reflection')
+                        print('Can\'t find the reflection')
                     
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)
