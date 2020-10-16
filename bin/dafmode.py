@@ -26,7 +26,7 @@ Eg:
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
-parser.add_argument('Mode', type=int,help='Set the operation mode of the diffractometer, following the same modes as used in Spec, the mode should be passed without spaces')
+parser.add_argument('Mode', type=str,help='Set the operation mode of the diffractometer, following the same modes as used in Spec, the mode should be passed without spaces')
 
 
 args = parser.parse_args()
