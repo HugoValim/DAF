@@ -279,7 +279,7 @@ class Control(object):
         materiais = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
                      'Cu' : xu.materials.Cu, 'Cr' : xu.materials.Cr, 'Fe' : xu.materials.Fe, 
                      'Ge' : xu.materials.Ge, 'MgO' : xu.materials.MgO, 'Sn' : xu.materials.Sn,
-                     'LaB6' : xu.materials.LaB6}
+                     'LaB6' : xu.materials.LaB6, 'Al2O3' : xu.materials.Al2O3}
                      
         self.samp = materiais[sample]
     
