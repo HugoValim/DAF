@@ -36,7 +36,7 @@ dic = vars(args)
 #         doc.write(str(i)+': '+str(j)+'\n')
 # ndir = list2str(args.NDir)
 
-bounds = {'bound_Mu' : [-180.0, 180.0], 'bound_Eta' : [-180.0, 180.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-180.0, 180.0], 'bound_Nu' : [-180.0, 180.0], 'bound_Del' : [-180.0, 180.0]}
+bounds = {'bound_Mu' : [-20.0, 160.0], 'bound_Eta' : [-20.0, 160.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-400.0, 400.0], 'bound_Nu' : [-20.0, 160.0], 'bound_Del' : [-20.0, 160.0]}
 
 with open('.Experiment', 'r+') as exp:
  
