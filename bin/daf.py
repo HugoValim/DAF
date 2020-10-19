@@ -176,7 +176,8 @@ class Control(object):
         
      
         self.constrain = [(self.const[i],0) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
- 
+        
+        self.nref = (0,0,1)
         self.idir = (0,0,1)
         self.ndir = (1,1,0)
         self.sampleor = 'x+'
@@ -265,8 +266,8 @@ class Control(object):
         
         if sh == 'expt':
         
-            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (\u212B)'), 'col3':self.centshow.format('Energy (KeV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Sample Or')},
-                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6':self.centshow.format(self.sampleor)}
+            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (\u212B)'), 'col3':self.centshow.format('Energy (KeV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
+                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6': self.centshow.format(str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2]))}
                    ]
             return TablePrinter(fmt, ul='')(data)  
     
@@ -508,10 +509,11 @@ class Control(object):
         if 'Del' in kwargs.keys() and 'Del' not in self.fix:
             self.Del_bound = kwargs['Del']
     
-    def set_exp_conditions(self, idir = (0,0,1), ndir = (1,1,0), sampleor = 'x+', en = 8000):
+    def set_exp_conditions(self, idir = (0,0,1), ndir = (1,1,0), rdir = (0,0,1), sampleor = 'x+', en = 8000):
         
         self.idir = idir
         self.ndir = ndir
+        self.nref = rdir
         self.sampleor = sampleor
          
         ENWL = en
@@ -740,7 +742,8 @@ class Control(object):
         
     
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        n = [0,0,1]
+        # n = [0,0,1]
+        n = self.nref
         nc = self.samp.B.dot(n)
         nphi = self.U.dot(nc)
         nphihat = nphi/LA.norm(nphi)
@@ -766,18 +769,20 @@ class Control(object):
         Qhat = q/normQ
         
         
-        n = n[0]*B1 + n[1]*B2 + n[2]*B3
-        normn = LA.norm(n)
+        # n = n[0]*B1 + n[1]*B2 + n[2]*B3
+        # normn = LA.norm(n)
         
-        nhat = n/normn
+        # nhat = n/normn
     
         
-        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+        taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
         
         
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
         
         # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
+        
+        
         upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
         qaz = upsipseudo
         # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
@@ -882,7 +887,8 @@ class Control(object):
         
 
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        n = [0,0,1]
+        # n = [0,0,1]
+        n = self.nref
         nc = self.samp.B.dot(n)
         nphi = self.U.dot(nc)
         nphihat = nphi/LA.norm(nphi)
@@ -905,12 +911,12 @@ class Control(object):
         
         
         # n = n[0]*B1 + n[1]*B2 + n[2]*B3
-        normn = LA.norm(n)
+        # normn = LA.norm(n)
         
-        nhat = n/normn
+        # nhat = n/normn
     
         
-        taupseudo = deg(np.arccos(Qhat.dot(nhat)))
+        # taupseudo = deg(np.arccos(Qhat.dot(nhat)))
         taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
 
         
@@ -923,6 +929,9 @@ class Control(object):
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
         
         # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
+        # print(f"tandel = {np.tan(rad(Del))}")
+        # print(f'sinNu = {np.sin(rad(Nu))}')
+        
         upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
         qaz = upsipseudo
         # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
@@ -1262,7 +1271,8 @@ class Control(object):
             
             Z = MU.dot(ETA).dot(CHI).dot(PHI)
     
-            n = [0,0,1]
+            # n = [0,0,1]
+            n = self.nref
             nc = self.samp.B.dot(n)
             nphi = self.U.dot(nc)
             nphihat = nphi/LA.norm(nphi)
@@ -1284,13 +1294,13 @@ class Control(object):
             Qhat = q/normQ
             
     
-            n = n[0]*B1 + n[1]*B2 + n[2]*B3
-            normn = LA.norm(n)
+            # n = n[0]*B1 + n[1]*B2 + n[2]*B3
+            # normn = LA.norm(n)
             
-            nhat = n/normn
+            # nhat = n/normn
         
             
-            taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+            taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
             
             
             

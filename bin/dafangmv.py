@@ -86,9 +86,10 @@ U = np.array([U1, U2, U3])
 mode = [int(i) for i in dict_args['Mode']]  
 idir = ret_list(dict_args['IDir'])
 ndir = ret_list(dict_args['NDir'])
+rdir = ret_list(dict_args['RDir'])
 
 exp = daf.Control(*mode)
-exp.set_exp_conditions(idir = idir, ndir = ndir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
 exp.set_material(dict_args['Material'])
 exp.set_U(U)
 hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))

@@ -51,6 +51,8 @@ U = np.array([U1, U2, U3])
 mode = [int(i) for i in dict_args['Mode']]    
 idir = ret_list(dict_args['IDir'])
 ndir = ret_list(dict_args['NDir'])
+rdir = ret_list(dict_args['RDir'])
+
 Mu_bound = ret_list(dict_args['bound_Mu'])
 Eta_bound = ret_list(dict_args['bound_Eta'])
 Chi_bound = ret_list(dict_args['bound_Chi'])
@@ -64,7 +66,7 @@ Del_bound = ret_list(dict_args['bound_Del'])
 exp = daf.Control(*mode)
 exp.set_hkl(args.Move)
 exp.set_material(dict_args['Material'])
-exp.set_exp_conditions(idir = idir, ndir = ndir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
 exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
 exp.set_U(U)
 exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),

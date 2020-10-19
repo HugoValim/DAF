@@ -2,6 +2,7 @@ Mode=2052
 Material=Si
 IDir=[0, 1, 0]
 NDir=[0, 0, 1]
+RDir=[0, 0, 1]
 Sampleor=z+
 Energy=8000
 bound_Mu=[-20.0, 160.0]

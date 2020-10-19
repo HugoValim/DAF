@@ -23,6 +23,7 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 parser.add_argument('-m', '--Material', metavar='samp', type=str, help='Sets the material that is going to be used in the experiment')
 parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the plane paralel to the incident beam')
 parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the plane perpendicular to the incident beam')
+parser.add_argument('-r', '--RDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the reference vector')
 parser.add_argument('-s', '--Sampleor', metavar='or', type=str,help='Sets the sample orientation at Phi axis')
 parser.add_argument('-e', '--Energy', metavar='en', type=float, help='Sets the energy of the experiment (KeV), wavelength can also be given (\u212B)')
 args = parser.parse_args()
