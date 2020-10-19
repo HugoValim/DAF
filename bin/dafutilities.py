@@ -10,7 +10,7 @@ import sys
 
 
 def dict_conv():
-    os.system("head -62 .Experiment > Experiment1")
+    os.system("head -63 .Experiment > Experiment1")
     os.system("rm .Experiment; mv Experiment1 \.Experiment")
     
     with open('.Experiment', 'r') as exp:

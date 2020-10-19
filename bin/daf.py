@@ -904,13 +904,14 @@ class Control(object):
         Qhat = q/normQ
         
         
-        n = n[0]*B1 + n[1]*B2 + n[2]*B3
+        # n = n[0]*B1 + n[1]*B2 + n[2]*B3
         normn = LA.norm(n)
         
         nhat = n/normn
     
         
-        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
+        taupseudo = deg(np.arccos(Qhat.dot(nhat)))
+        taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
 
         
         
