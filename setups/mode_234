@@ -1,4 +1,4 @@
-Mode=2052
+Mode=234
 Material=Si
 IDir=[0, 1, 0]
 NDir=[0, 0, 1]
@@ -62,4 +62,4 @@ scan_name=scan_test
 separator=,
 macro_flag=False
 macro_file=macro
-setup=default
+setup=defaults

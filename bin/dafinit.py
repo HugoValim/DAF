@@ -26,7 +26,7 @@ dic = vars(args)
 
 
 os.system("cp $EXP \.Experiment")
-
+os.system("cat $EXP > $EXPS/default ")
 
 log = sys.argv.pop(0).split('command_line/')[1]      
 
