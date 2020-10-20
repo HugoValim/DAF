@@ -674,7 +674,7 @@ class Control(object):
     def calc_from_angs(self, Mu,Eta,Chi,Phi,Nu,Del):
         
         
-        self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
+        self.hrxrd = xu.HXRD(self.idir, self.ndir, en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         hkl = self.hrxrd.Ang2HKL(Mu,Eta,Chi,Phi,Nu,Del, mat=self.samp, en = self.en, U = self.U)
         self.hkl = hkl
         return hkl
@@ -683,34 +683,6 @@ class Control(object):
         
         return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, self.hkl_calc, "{0:.2e}".format(self.qerror)]
     
-    def taupseudo(self):
-        
-        A1 = (self.samp.a1)
-        A2 = (self.samp.a2)
-        A3 = (self.samp.a3)
-        
-        vcell = A1.dot(np.cross(A2,A3))
-        
-        B1 = np.cross(self.samp.a2,self.samp.a3)/vcell
-        B2 = np.cross(self.samp.a3,self.samp.a1)/vcell
-        B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
-        
-        q = self.samp.Q(self.hkl) # eq (1)
-        normQ = LA.norm(q)
-        Qhat = q/normQ
-        
-
-        n = [0,0,1]
-
-        
-        n = n[0]*B1 + n[1]*B2 + n[2]*B3
-        normn = LA.norm(n)
-        
-        nhat = n/normn
-    
-        
-        taupseudo = deg(np.arccos(Qhat.dot(nhat)))    
-        self.tau = taupseudo
     
     def calc_pseudo(self, Mu, Eta, Chi, Phi, Nu, Del):
         
@@ -1011,16 +983,10 @@ class Control(object):
 
         self.sampleID = self.samp.name
 
-        
-        # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
-        
 
-            
-        # qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Sirius coordinate axes system
-
-        self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
+        self.hrxrd = xu.HXRD(self.idir, self.ndir, en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         
-             # print(np.round(self.preangs,3))
+      
         self.bounds = (self.Mu_bound, self.Eta_bound, self.Chi_bound, 
                         self.Phi_bound, self.Nu_bound, self.Del_bound)
         if calc:
