@@ -266,7 +266,7 @@ class Control(object):
         
         if sh == 'expt':
         
-            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (\u212B)'), 'col3':self.centshow.format('Energy (KeV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
+            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (\u212B)'), 'col3':self.centshow.format('Energy (keV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
                     {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6': self.centshow.format(str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2]))}
                    ]
             return TablePrinter(fmt, ul='')(data)  
@@ -275,14 +275,19 @@ class Control(object):
         
         self.hkl = HKL
     
-    def set_material(self, sample):
+    def set_material(self, sample, *args):
         
         materiais = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
                      'Cu' : xu.materials.Cu, 'Cr' : xu.materials.Cr, 'Fe' : xu.materials.Fe, 
                      'Ge' : xu.materials.Ge, 'MgO' : xu.materials.MgO, 'Sn' : xu.materials.Sn,
                      'LaB6' : xu.materials.LaB6, 'Al2O3' : xu.materials.Al2O3}
                      
-        self.samp = materiais[sample]
+        if sample in materiais.keys():
+            self.samp = materiais[sample]
+        
+        else:
+            self.samp = xu.materials.Crystal(str(sample),xu.materials.SGLattice(1, args[0], args[1], args[2], args[3], args[4], args[5]))
+
     
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
         
@@ -412,9 +417,6 @@ class Control(object):
       UB = Hp.dot(HI)
       UB2p = UB*2*PI 
       
-      
-      U = UB2p.dot(LA.inv(self.samp.B))
-      
       GI = UB.T.dot(UB)
       G = LA.inv(GI)
       a1 = G[0,0]**0.5
@@ -423,6 +425,10 @@ class Control(object):
       alpha1 = deg(np.arccos(G[1,2]/(a2*a3)))
       alpha2 = deg(np.arccos(G[0,2]/(a1*a3)))
       alpha3 = deg(np.arccos(G[0,1]/(a1*a2)))
+      
+      samp = xu.materials.Crystal('generic',xu.materials.SGLattice(1, a1, a2, a3, alpha1, alpha2, alpha3))
+      
+      U = UB2p.dot(LA.inv(samp.B))
       
       rparam = [a1, a2, a3, alpha1, alpha2, alpha3]
       
@@ -620,18 +626,20 @@ class Control(object):
                 else:
                     for i in self.motcon:
                         self.forprint.append((i,dprint[i]))
-    
+             
+            lb = lambda x: "{:.5f}".format(float(x))    
+            
             data = [{'col1':self.center.format('MODE'), 'col2':self.center.format(self.setup[0]), 'col3':self.center.format(self.setup[1]), 'col4':self.center.format(self.setup[2]), 'col5':self.center.format(self.setup[3]), 'col6' : self.center.format(self.setup[4]), 'col7' : self.center.format('Error')},
                     {'col1':self.center.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.center.format(self.forprint[0][1]), 'col3':self.center.format(self.forprint[1][1]), 'col4':self.center.format(self.forprint[2][1]), 'col5':self.center.format(self.forprint[3][1]), 'col6' : self.center.format(self.forprint[4][1]), 'col7' : self.center.format('%.3g' % self.qerror)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
-                    {'col1':self.center.format('2Theta exp'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy'), 'col4':self.center.format('H'), 'col5' : self.center.format('K'), 'col6':self.center.format('L'), 'col7' : self.center.format('Sample')},
-                    {'col1':self.center.format(np.round(self.ttB1,self.roundfit)), 'col2':self.center.format(np.round(self.dhkl,self.roundfit)), 'col3':self.center.format(np.round(self.en,self.roundfit)),'col4':self.center.format(str(self.hkl_calc[0])), 'col5' : self.center.format(str(self.hkl_calc[1])), 'col6':self.center.format(str(self.hkl_calc[2])), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
+                    {'col1':self.center.format('2Theta exp'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy (keV)'), 'col4':self.center.format('H'), 'col5' : self.center.format('K'), 'col6':self.center.format('L'), 'col7' : self.center.format('Sample')},
+                    {'col1':self.center.format(lb(self.ttB1)), 'col2':self.center.format(lb(self.dhkl)), 'col3':self.center.format(lb(self.en/1000)),'col4':self.center.format(str(self.hkl_calc[0])), 'col5' : self.center.format(str(self.hkl_calc[1])), 'col6':self.center.format(str(self.hkl_calc[2])), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
                     {'col1':self.center.format('Alpha'), 'col2':self.center.format('Beta'), 'col3':self.center.format('Psi'), 'col4':self.center.format('Tau'), 'col5':self.center.format('Qaz'), 'col6' : self.center.format('Naz'), 'col7' : self.center.format('Omega')},
-                    {'col1':self.center.format(np.round(self.alphain,self.roundfit)), 'col2':self.center.format(np.round(self.betaout,self.roundfit)), 'col3':self.center.format(np.round(self.psipseudo,self.roundfit)), 'col4':self.center.format(np.round(self.taupseudo,self.roundfit)), 'col5':self.center.format(np.round(self.qaz,self.roundfit)), 'col6' : self.center.format(np.round(self.naz,self.roundfit)), 'col7' : self.center.format(np.round(self.omega,self.roundfit))},
+                    {'col1':self.center.format(lb(self.alphain)), 'col2':self.center.format(lb(self.betaout)), 'col3':self.center.format(lb(self.psipseudo)), 'col4':self.center.format(lb(self.taupseudo)), 'col5':self.center.format(lb(self.qaz)), 'col6' : self.center.format(lb(self.naz)), 'col7' : self.center.format(lb(self.omega))},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
                     {'col1':self.center.format('Del'), 'col2':self.center.format('Eta'), 'col3':self.center.format('Chi'), 'col4':self.center.format('Phi'), 'col5':self.center.format('Nu'), 'col6' : self.center.format('Mu'), 'col7' : self.center.format('--')},
-                    {'col1':self.center.format(np.round(self.Del,self.roundfit)), 'col2':self.center.format(np.round(self.Eta,self.roundfit)), 'col3':self.center.format(np.round(self.Chi,self.roundfit)), 'col4':self.center.format(np.round(self.Phi,self.roundfit)), 'col5':self.center.format(np.round(self.Nu,self.roundfit)), 'col6' : self.center.format(np.round(self.Mu,self.roundfit)), 'col7' : self.center.format('--')},
+                    {'col1':self.center.format(lb(self.Del)), 'col2':self.center.format(lb(self.Eta)), 'col3':self.center.format(lb(self.Chi)), 'col4':self.center.format(lb(self.Phi)), 'col5':self.center.format(lb(self.Nu)), 'col6' : self.center.format(lb(self.Mu)), 'col7' : self.center.format('--')},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space}
                     ]
         

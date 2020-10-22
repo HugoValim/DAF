@@ -81,8 +81,8 @@ if args.Stop:
             if line.startswith('macro_flag'):
                     lines[i] ='macro_flag=False\n'
             
-            if line.startswith('macro_file'):
-                    lines[i] ='macro_file=macro'
+            # if line.startswith('macro_file'):
+            #         lines[i] ='macro_file=macro'
                     
           
             exp.seek(0)

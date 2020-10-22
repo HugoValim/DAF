@@ -246,7 +246,7 @@ if  args.Calc2:
     mode = [int(i) for i in dict_args['Mode']]    
 
     exp = daf.Control(*mode)
-    exp.set_material(dict_args['Material'])
+    exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
     exp.set_exp_conditions(en = float(dict_args['Energy']))
     
     U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
@@ -282,7 +282,7 @@ if  args.Calc3:
     mode = [int(i) for i in dict_args['Mode']]    
 
     exp = daf.Control(*mode)
-    exp.set_material(dict_args['Material'])
+    # exp.set_material(dict_args['Material'])
     exp.set_exp_conditions(en = float(dict_args['Energy']))
     
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)

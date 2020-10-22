@@ -27,6 +27,7 @@ dic = vars(args)
 if args.All:
     os.system(f"rm .Experiment")
     os.system(f"cp $EXP \.Experiment")
+    os.system("cat $EXP > $EXPS/default ")
 
 # with open('Experiment', 'r+') as exp:
  
