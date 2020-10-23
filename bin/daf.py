@@ -370,6 +370,7 @@ class Control(object):
         def normalise(m):
             d = LA.norm(m)
             # if d < SMALL:
+
             #     raise DiffcalcException("Invalid UB reference data. Please check that the specified "
             #                               "reference reflections/orientations are not parallel.")
             return m / d
@@ -442,7 +443,7 @@ class Control(object):
     
     def set_constraints(self, *args, setineq = None, **kwargs):
 
-        
+        lb = lambda x: "{:.5f}".format(float(x)) 
         self.constrain = list()
         if kwargs:
             if 'Mu' in kwargs.keys() and 'Mu' in self.fix:
@@ -632,8 +633,8 @@ class Control(object):
             data = [{'col1':self.center.format('MODE'), 'col2':self.center.format(self.setup[0]), 'col3':self.center.format(self.setup[1]), 'col4':self.center.format(self.setup[2]), 'col5':self.center.format(self.setup[3]), 'col6' : self.center.format(self.setup[4]), 'col7' : self.center.format('Error')},
                     {'col1':self.center.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.center.format(self.forprint[0][1]), 'col3':self.center.format(self.forprint[1][1]), 'col4':self.center.format(self.forprint[2][1]), 'col5':self.center.format(self.forprint[3][1]), 'col6' : self.center.format(self.forprint[4][1]), 'col7' : self.center.format('%.3g' % self.qerror)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
-                    {'col1':self.center.format('2Theta exp'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy (keV)'), 'col4':self.center.format('H'), 'col5' : self.center.format('K'), 'col6':self.center.format('L'), 'col7' : self.center.format('Sample')},
-                    {'col1':self.center.format(lb(self.ttB1)), 'col2':self.center.format(lb(self.dhkl)), 'col3':self.center.format(lb(self.en/1000)),'col4':self.center.format(str(self.hkl_calc[0])), 'col5' : self.center.format(str(self.hkl_calc[1])), 'col6':self.center.format(str(self.hkl_calc[2])), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
+                    {'col1':self.center.format('Exp 2\u03B8'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy (keV)'), 'col4':self.center.format('H'), 'col5' : self.center.format('K'), 'col6':self.center.format('L'), 'col7' : self.center.format('Sample')},
+                    {'col1':self.center.format(lb(self.ttB1)), 'col2':self.center.format(lb(self.dhkl)), 'col3':self.center.format(lb(self.en/1000)),'col4':self.center.format(str(lb(self.hkl_calc[0]))), 'col5' : self.center.format(str(lb(self.hkl_calc[1]))), 'col6':self.center.format(str(lb(self.hkl_calc[2]))), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
                     {'col1':self.center.format('Alpha'), 'col2':self.center.format('Beta'), 'col3':self.center.format('Psi'), 'col4':self.center.format('Tau'), 'col5':self.center.format('Qaz'), 'col6' : self.center.format('Naz'), 'col7' : self.center.format('Omega')},
                     {'col1':self.center.format(lb(self.alphain)), 'col2':self.center.format(lb(self.betaout)), 'col3':self.center.format(lb(self.psipseudo)), 'col4':self.center.format(lb(self.taupseudo)), 'col5':self.center.format(lb(self.qaz)), 'col6' : self.center.format(lb(self.naz)), 'col7' : self.center.format(lb(self.omega))},
