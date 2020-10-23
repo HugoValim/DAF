@@ -85,10 +85,14 @@ if args.list:
     os.system(f"ls -A1 $EXPS | sed 's/^/   /' | sed '/   {setup_now}$/c \u27A4  {setup_now}' ")
 
 if args.remove:
-    for i in args.remove:
-        os.system(f"rm $EXPS/{i}")
-
     
+    for i in args.remove:
+        if setup_now != i: 
+            os.system(f"rm $EXPS/{i}")
+        else:
+            print('')
+            print('Leave the setup before removing it')
+            print('')
     
     
     
