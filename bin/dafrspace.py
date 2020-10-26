@@ -8,6 +8,7 @@ import numpy as np
 import dafutilities as du
 import pandas as pd
 import matplotlib.pyplot
+from matplotlib import pyplot as plt
 doc = """
 
 Move in reciprocal space by choosing a HKL in a graphical resciprocal space map
@@ -31,43 +32,44 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 # parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, default: ,')
 # parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation, if 0 is given no verification will be done')
 # parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
-
+parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the plane paralel to x axis')
+parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the plane perpendicular to x axis')
 
 args = parser.parse_args()
 dic = vars(args)
 
 
 matplotlib.pyplot.show(block=True)
-with open('.Experiment', 'r+') as exp:
+# with open('.Experiment', 'r+') as exp:
  
-    lines = exp.readlines()
+#     lines = exp.readlines()
 
 
  
 
-    for i, line in enumerate(lines):
-        for j,k in dic.items():
+#     for i, line in enumerate(lines):
+#         for j,k in dic.items():
             
 
  
 
-            if line.startswith(str(j)):
-                if k != None:
-                    lines[i] = str(j)+'='+str(k)+'\n'
+#             if line.startswith(str(j)):
+#                 if k != None:
+#                     lines[i] = str(j)+'='+str(k)+'\n'
           
-            exp.seek(0)
+#             exp.seek(0)
             
 
 
  
 
-    for line in lines:
-        exp.write(line)
+#     for line in lines:
+#         exp.write(line)
 
 
      
 dict_args = du.dict_conv()
-        
+
 def ret_list(string):
     
     return [float(i) for i in string.strip('][').split(', ')]
@@ -89,6 +91,19 @@ mode = [int(i) for i in dict_args['Mode']]
 idir = ret_list(dict_args['IDir'])
 ndir = ret_list(dict_args['NDir'])
 rdir = ret_list(dict_args['RDir'])
+
+
+if args.IDir == None:
+    paradir = idir
+else:
+    paradir = args.IDir
+
+if args.NDir == None:
+    normdir = ndir
+else:
+    normdir = args.NDir
+
+
 
 Mu_bound = ret_list(dict_args['bound_Mu'])
 Eta_bound = ret_list(dict_args['bound_Eta'])
@@ -118,9 +133,9 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 exp(calc=False)
 ttmax, ttmin = exp.two_theta_max()
 # print(ttmax)
-exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin)
-
-
+ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir)
+plt.show(block=True)
+ax.figure.show()
 
 
 log = sys.argv.pop(0).split('command_line/')[1]    

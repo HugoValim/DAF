@@ -1382,7 +1382,7 @@ class Control(object):
         
     def show_reciprocal_space_plane(self, ttmax=None, ttmin = None, maxqout=0.01, scalef=100, ax=None, color=None,
             show_Laue=True, show_legend=True, projection='perpendicular',
-            label=None):
+            label=None, idir=None,ndir=None):
         """
         show a plot of the coplanar diffraction plane with peak positions for the
         respective material. the size of the spots is scaled with the strength of
@@ -1426,7 +1426,11 @@ class Control(object):
         """
         import math
         import numpy
-        exp = self.hrxrd
+        # print(idir)
+        # print(ndir)
+        exp = xu.HXRD(idir, ndir, en = self.en, qconv= self.qconv, sampleor = self.sampleor)
+        exp_real = self.hrxrd
+        # print(exp)
         mat = self.samp
         pi = np.pi
         EPSILON = 1e-7
@@ -1473,7 +1477,7 @@ class Control(object):
                 data array with columns for 'q', 'qvec', 'hkl', 'r' for the Bragg
                 peaks
             """
-           
+            # print(exp)
             ttmax = 180
             # print(d['qvec'][m][ind['ind'][0]])
             
@@ -1493,6 +1497,7 @@ class Control(object):
             hkl = numpy.mgrid[hma:hmi-1:-1,
                               kma:kmi-1:-1,
                               lma:lmi-1:-1].reshape(3, -1).T
+            
             q = mat.Q(hkl)
             qnorm = xu.math.vector.VecNorm(q)
             m = qnorm < qmax
@@ -1635,8 +1640,9 @@ class Control(object):
                     
                     hkl = (d['hkl'][m][ind['ind'][0]])
                     self.hkl = hkl
-               
+                    
                     ang = Control.motor_angles(self, qvec = d['qvec'][m][ind['ind'][0]], sv = startvalue)
+                    ang = Control.motor_angles(self, sv = startvalue)
                     angles = [ang[0][0], ang[0][1], ang[0][2], ang[0][3], ang[0][4], ang[0][5], float(ang[0][-1])]
                     
                     text = "{}\nhkl: {}\nangles: {}".format(
@@ -1680,7 +1686,7 @@ class Control(object):
                     
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)
-        plt.show(block=True)
+        # plt.show(block=True)
         return ax, h
     
 
