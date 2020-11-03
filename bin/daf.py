@@ -369,10 +369,10 @@ class Control(object):
       
         def normalise(m):
             d = LA.norm(m)
-            # if d < SMALL:
+            if d < SMALL:
 
-            #     raise DiffcalcException("Invalid UB reference data. Please check that the specified "
-            #                               "reference reflections/orientations are not parallel.")
+                raise DiffcalcException("Invalid UB reference data. Please check that the specified "
+                                          "reference reflections/orientations are not parallel.")
             return m / d
       
         t1c = normalise(t1c)
@@ -575,6 +575,8 @@ class Control(object):
     
     def __str__(self):
         
+        lb = lambda x: "{:.5f}".format(float(x))  
+        
         if self.isscan:
             return  repr(self.formscantxt)
      
@@ -585,6 +587,9 @@ class Control(object):
             
             
             self.forprint = self.constrain.copy()
+            
+            
+            
             
             if self.col1 in (1,2):
                 if self.col1 == 1:
@@ -627,8 +632,9 @@ class Control(object):
                 else:
                     for i in self.motcon:
                         self.forprint.append((i,dprint[i]))
-             
-            lb = lambda x: "{:.5f}".format(float(x))    
+
+            self.forprint = [(i[0], lb(i[1])) if i[1] != '--' else (i[0], i[1]) for i in self.forprint]
+           
             
             data = [{'col1':self.center.format('MODE'), 'col2':self.center.format(self.setup[0]), 'col3':self.center.format(self.setup[1]), 'col4':self.center.format(self.setup[2]), 'col5':self.center.format(self.setup[3]), 'col6' : self.center.format(self.setup[4]), 'col7' : self.center.format('Error')},
                     {'col1':self.center.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.center.format(self.forprint[0][1]), 'col3':self.center.format(self.forprint[1][1]), 'col4':self.center.format(self.forprint[2][1]), 'col5':self.center.format(self.forprint[3][1]), 'col6' : self.center.format(self.forprint[4][1]), 'col7' : self.center.format('%.3g' % self.qerror)},
@@ -1679,7 +1685,8 @@ class Control(object):
             
                             for line in lines:
                                 exp.write(line)
-                        
+                        print('')
+                        print(f'Sample  = {self.samp.name}')
                         os.system("daf.wh")
                     else:
                         print('Can\'t find the reflection')

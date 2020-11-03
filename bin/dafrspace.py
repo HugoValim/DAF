@@ -18,6 +18,9 @@ Move in reciprocal space by choosing a HKL in a graphical resciprocal space map
 epi = '''
 Eg:
     daf.rmap
+    daf.rmap -i 1 1 0 -n 0 0 1
+    daf.rmap -m Cu Ge
+    daf.rmap -i 1 1 0 -n 0 0 1 -m Ge
     '''
 
 
@@ -34,6 +37,8 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 # parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
 parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the plane paralel to x axis')
 parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the plane perpendicular to x axis')
+parser.add_argument('-m', '--materials', metavar = 'sample', nargs = '*', help='Add a predefined material to rmap visualization')
+parser.add_argument('-s', '--scale', metavar='', type=float, help='Scale reference for the points in the map, default is 100')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -103,6 +108,9 @@ if args.NDir == None:
 else:
     normdir = args.NDir
 
+if args.scale == None:
+    args.scale = 100
+    
 
 
 Mu_bound = ret_list(dict_args['bound_Mu'])
@@ -133,7 +141,43 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
 exp(calc=False)
 ttmax, ttmin = exp.two_theta_max()
 # print(ttmax)
-ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir)
+ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale)
+
+
+
+if args.materials:
+    for i in args.materials:
+    
+        exp = daf.Control(*mode)
+        exp.set_material(str(i))
+        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+        exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
+        exp.set_U(U)
+        exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
+                            Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
+                            psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
+        
+        
+        
+        # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+        
+        #
+        # exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
+        
+        # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+        
+        exp(calc=False)
+        ttmax, ttmin = exp.two_theta_max()
+        # print(ttmax)
+        
+        ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale, ax = ax)
+    
+     
+    
+     
+
+
+
 plt.show(block=True)
 ax.figure.show()
 
