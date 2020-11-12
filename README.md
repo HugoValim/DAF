@@ -9,7 +9,7 @@
 4. pandas
 5. tqdm
 
-To start using DAF first you need to export the commands path, to do this enter in the clonned directory and execute the init.sh script:
+To start using DAF first you need to export the command's path, to do this enter in the clonned directory and execute the init.sh script:
 ```
 source init.sh
 ```
@@ -20,7 +20,7 @@ daf.
 daf.amv     daf.bounds  daf.cons    daf.expt    daf.init    daf.macro   daf.mode    daf.mv      daf.reset   daf.rmap    daf.scan    daf.setup   daf.status  daf.ub      daf.wh 
 ```
 
-Now you just need to move to a desired directory where you want the data to be generated and use DAF.
+Them you just need to move to a desired directory where you want the data to be generated and use DAF.
 
 First initialize DAF:
 ```
