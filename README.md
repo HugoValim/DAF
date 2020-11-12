@@ -1,5 +1,5 @@
 # Diffractometer Angles Finder
-## Program still under development
+## Program still under development in LNLS
 
 ## Requirements:
 
