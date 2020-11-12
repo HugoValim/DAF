@@ -69,8 +69,6 @@ daf.expt -m my_sample -p 5.431 5.431 5.431 90 90 90
 This will set silicon as your sample and energy to 12 keV
 
 ```
-daf.mode -h 
-
 daf.mode -h
 usage: daf.mode [-h] Mode
 
