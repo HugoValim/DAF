@@ -201,6 +201,6 @@ Or aided by a graphical interface, where you can point and click in a hkl:
 daf.rmap
 ```
 
-![This is a alt text.](/home/hugo/rmape.png "This is a sample image.")
+![This is a alt text.](rmape.png "daf.rmap interface")
 
 A more consistent documentation is being developed.
