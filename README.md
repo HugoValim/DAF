@@ -1,5 +1,5 @@
 # Diffractometer Angles Finder
-## Program under development for emulating Spec
+## Program still under development
 
 ## Requirements:
 
@@ -9,7 +9,7 @@
 4. pandas
 5. tqdm
 
-To start using DAF first you need to export the commands path, to do this enter in the clonned directory anda execute the init.sh script:
+To start using DAF first you need to export the commands path, to do this enter in the clonned directory and execute the init.sh script:
 ```
 source init.sh
 ```
@@ -30,15 +30,43 @@ All of the functions have a shell-like help option by typing -h or --help, like:
 
 ```
 daf.expt -h
+usage: daf.expt [-h] [-m samp] [-p a b c α β γ] [-i x y z] [-n x y z]
+                [-r x y z] [-s or] [-e en]
+
+Describe the experiment inputs
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -m samp, --Material samp
+                        Sets the material that is going to be used in the
+                        experiment
+  -p a b c α β γ , --Lattice_parameters a b c α β γ 
+                        Sets lattice parameters, must be passed if defining a
+                        new material
+  -i x y z, --IDir x y z
+                        Sets the reflection paralel to the incident beam
+  -n x y z, --NDir x y z
+                        Sets the reflection perpendicular to the incident beam
+  -r x y z, --RDir x y z
+                        Sets the reference vector
+  -s or, --Sampleor or  Sets the sample orientation at Phi axis
+  -e en, --Energy en    Sets the energy of the experiment (KeV), wavelength
+                        can also be given (Å)
+
+Eg: 
+    daf.expt --Material Si --Energy 8000
+    daf.expt -m Si -e 8000
+    daf.expt -s x+ 
+    daf.expt -i 1 0 0 -n 0 1 0 
 ```
 
-Them use the functions daf.expt, daf.mode, daf.bounds, daf.cons in order to define your experiment conditions.
+Them use the functions daf.expt, daf.mode, daf.bounds, daf.cons, daf.ub in order to define your experiment conditions.
 
 ```
 daf.expt -m Si -e 12000
 daf.expt -m my_sample -p 5.431 5.431 5.431 90 90 90
 ```
-This will set Silicon as your sample and energy to 12 keV
+This will set silicon as your sample and energy to 12 keV
 
 ```
 daf.mode -h 
@@ -149,7 +177,7 @@ Del   =    [-180.0, 180.0]
 
 ```
 
-To move use daf.amv for angle movement, daf.mv for hkl movement, daf.rmap to see a graphical of the reciprocal space, daf.scan to perform a scan.
+In order to move use daf.amv for angle movement, daf.mv for hkl movement, daf.rmap to move aided by graphical of the reciprocal space, daf.scan to perform a scan.
 
 Use daf.amv to directly set an angle value, and them daf.wh to see where you are in the hkl coordinates:
 
