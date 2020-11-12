@@ -9,6 +9,8 @@
 4. pandas
 5. tqdm
 
+##Tutorial
+
 To start using DAF first you need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
 ```
 source init.sh
@@ -283,6 +285,6 @@ Change freely between them by:
 daf.setup -c env_1.0 
 ```
 
-As daf is runned in terminal, you can use any shell command to interact with it and also genereta macros by shell scripting.
+As daf is runned in terminal, you can use any shell command to interact with it, and also generate macros by shell scripting.
 
 A more consistent documentation is being developed.
