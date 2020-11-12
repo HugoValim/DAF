@@ -258,7 +258,7 @@ You can always return everything to default by using:
 daf.reset -a
 ```
 
-And also consult and your daf's commands in the log file generated in your currently directory:
+And also consult your daf's commands in the log file generated in your currently directory:
 
 ```
 vi Log
