@@ -26,6 +26,8 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 
 parser.add_argument('-m', '--Mode', action='store_true', help='Show current operating mode of the diffractometer')
 parser.add_argument('-e', '--Experiment', action='store_true', help='Show experiment information')
+parser.add_argument('-u', '--umatrix', action='store_true', help='Show current orientation matrix')
+parser.add_argument('-b', '--bounds', action='store_true', help='Show current setted bounds')
 parser.add_argument('-a', '--All', action='store_true', help='Show all information')
 
 
@@ -77,6 +79,67 @@ if args.Experiment:
     print(mode)
     print('')
 
+if args.umatrix:
+    
+    dict_args = du.dict_conv()
+    
+    Uw = dict_args['U_mat'].split(',')
+
+
+    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
+    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
+    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
+    U = np.array([U1, U2, U3])
+    
+    UBw = dict_args['UB_mat'].split(',')
+
+
+    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
+    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
+    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
+    UB = np.array([UB1, UB2, UB3])
+
+    center1 = "\u2502{:^11}"
+    center2 = "{:^11}"
+    center3 = "{:^11}\u2502"
+    fmt1 = [
+                    ('', 'ident',  9),        
+                    ('', 'col1',   12),
+                    ('', 'col2',   12),
+                    ('', 'col3',   12),
+               
+                   ]
+    
+    data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
+             {'ident':'U    =   ','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
+             {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
+             ]
+    
+    data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
+             {'ident':'UB   = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
+             {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
+             ]
+    
+    Utp = daf.TablePrinter(fmt1, ul='')(data1)
+    UBtp = daf.TablePrinter(fmt1, ul='')(data2)
+    
+    print('')
+    print(Utp)
+    print('')
+    print(UBtp)
+    print('')
+
+if args.bounds:
+    
+    print('')
+    print(f'Mu    =    {dict_args["bound_Mu"]}')
+    print(f'Eta   =    {dict_args["bound_Eta"]}')
+    print(f'Chi   =    {dict_args["bound_Chi"]}')
+    print(f'Phi   =    {dict_args["bound_Phi"]}')
+    print(f'Nu    =    {dict_args["bound_Nu"]}')
+    print(f'Del   =    {dict_args["bound_Del"]}')
+    print('')    
+
 if args.All:
     
     mode = exp.show(sh = 'mode')
@@ -86,6 +149,65 @@ if args.All:
     mode = exp.show(sh = 'expt')
     print(mode)
     print('')
+    
+    
+    # dict_args = du.dict_conv()
+    
+    Uw = dict_args['U_mat'].split(',')
+
+
+    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
+    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
+    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
+    U = np.array([U1, U2, U3])
+    
+    UBw = dict_args['UB_mat'].split(',')
+
+
+    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
+    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
+    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
+    UB = np.array([UB1, UB2, UB3])
+
+    center1 = "\u2502{:^11}"
+    center2 = "{:^11}"
+    center3 = "{:^11}\u2502"
+    fmt1 = [
+                    ('', 'ident',  9),        
+                    ('', 'col1',   12),
+                    ('', 'col2',   12),
+                    ('', 'col3',   12),
+               
+                   ]
+    
+    data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
+             {'ident':'U    =   ','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
+             {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
+             ]
+    
+    data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
+             {'ident':'UB   = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
+             {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
+             ]
+    
+    Utp = daf.TablePrinter(fmt1, ul='')(data1)
+    UBtp = daf.TablePrinter(fmt1, ul='')(data2)
+    
+    print('')
+    print(Utp)
+    print('')
+    print(UBtp)
+    print('')
+    
+    print('')
+    print(f'Mu    =    {dict_args["bound_Mu"]}')
+    print(f'Eta   =    {dict_args["bound_Eta"]}')
+    print(f'Chi   =    {dict_args["bound_Chi"]}')
+    print(f'Phi   =    {dict_args["bound_Phi"]}')
+    print(f'Nu    =    {dict_args["bound_Nu"]}')
+    print(f'Del   =    {dict_args["bound_Del"]}')
+    print('')    
+
 
 
     

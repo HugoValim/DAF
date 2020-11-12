@@ -120,7 +120,7 @@ if float(angs[16]) < 1e-4:
         
 
 else:
-    print('Can\'t find the HKL')
+    print(f'Can\'t find the HKL {args.Move}')
 
 
        

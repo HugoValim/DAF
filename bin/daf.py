@@ -1345,7 +1345,7 @@ class Control(object):
                                                                                                                                                   
     def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ',', startvalues = [0,0,0,0,0,0]):
         
-        scl = Control.scan_generator(self, hkli, hklf, points)
+        scl = Control.scan_generator(self, hkli, hklf, points+1)
         angslist = list()
         # self.hkl = scl[0]
         # a,b = self.motor_angles(self)qmax = 2 * k0 * math.sin(math.radians(ttmin/2.))
@@ -1689,7 +1689,7 @@ class Control(object):
                         print(f'Sample  = {self.samp.name}')
                         os.system("daf.wh")
                     else:
-                        print('Can\'t find the reflection')
+                        print(f'Can\'t find the reflection {hkl}')
                     
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)

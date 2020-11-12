@@ -25,7 +25,7 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 
 parser.add_argument('hkli', metavar=('Hi, Ki, Li'), type=float, nargs=3, help='Initial HKL for scan')
 parser.add_argument('hklf', metavar=('Hf, Kf, Lf'), type=float, nargs=3, help='Final HKL for scan')
-parser.add_argument('points', metavar='points', type=int, help='Number of points for the scan')
+parser.add_argument('points', metavar='points', type=float, help='Number of points for the scan')
 parser.add_argument('-n', '--scan_name', metavar='', type=str, help='Name of the scan')
 parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the scan')
 parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, comma is default')
@@ -113,7 +113,7 @@ startvalues = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args[
 
 dict_args['Max_diff'] = 0 ###ver esse role aqui
 
-exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'], startvalues = startvalues)
+exp.scan(args.hkli, args.hklf, int(args.points), diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'], startvalues = startvalues)
 
 if args.verbose:
     pd.options.display.max_rows = None
