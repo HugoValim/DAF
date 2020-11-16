@@ -99,34 +99,6 @@ if args.UBmatrix:
           for line in lines:
               exp.write(line)
 
-if args.Umatrix:
-    U = np.array(args.Umatrix).reshape(3,3)
-    with open('.Experiment', 'r+') as exp:
-  
-          lines = exp.readlines()
-     
-     
-      
-     
-          for i, line in enumerate(lines):
-             
-                 
-     
-      
-     
-            if line.startswith('U_mat'):
-                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-            # if line.startswith('UB'):
-            #         lines[i] = 'UB='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-          
-            exp.seek(0)
-                 
-               
-     
-     
-          for line in lines:
-              exp.write(line)
-
 
 
 
@@ -241,6 +213,44 @@ if args.list:
         print(f'HKL3: {hkl3}  {angs3}')
     
     print('')
+
+if args.Umatrix:
+    U = np.array(args.Umatrix).reshape(3,3)
+    mode = [int(i) for i in dict_args['Mode']]    
+
+    exp = daf.Control(*mode)
+    exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
+    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_U(U)
+    UB = exp.calcUB()
+    with open('.Experiment', 'r+') as exp:
+  
+          lines = exp.readlines()
+     
+     
+      
+     
+          for i, line in enumerate(lines):
+             
+                 
+     
+      
+     
+            if line.startswith('U_mat'):
+                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+            if line.startswith('UB'):
+                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
+          
+            exp.seek(0)
+                 
+               
+     
+     
+          for line in lines:
+              exp.write(line)
+
+
+
 
 if  args.Calc2:
     mode = [int(i) for i in dict_args['Mode']]    

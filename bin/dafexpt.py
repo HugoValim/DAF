@@ -4,6 +4,8 @@ import argparse as ap
 import sys
 import os
 import dafutilities as du
+import numpy as np
+import daf
 
 doc = """
 
@@ -56,7 +58,7 @@ with open('.Experiment', 'r+') as exp:
     for line in lines:
         exp.write(line)
 
-dict_args = du.dict_conv()
+
         
 if args.Lattice_parameters:
     with open('.Experiment', 'r+') as exp:
@@ -92,6 +94,52 @@ if args.Lattice_parameters:
     
          for line in lines:
              exp.write(line)
+             
+          
+dict_args = du.dict_conv()
+            
+if args.Material:
+    Uw = dict_args['U_mat'].split(',')
+
+
+    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
+    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
+    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
+    U = np.array([U1, U2, U3])
+    mode = [int(i) for i in dict_args['Mode']]    
+    
+    exp = daf.Control(*mode)
+    exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
+    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_U(U)
+    UB = exp.calcUB()
+    with open('.Experiment', 'r+') as exp:
+  
+          lines = exp.readlines()
+     
+     
+      
+     
+          for i, line in enumerate(lines):
+             
+                 
+     
+      
+     
+            if line.startswith('U_mat'):
+                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
+            if line.startswith('UB'):
+                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
+          
+            exp.seek(0)
+                 
+               
+     
+     
+          for line in lines:
+              exp.write(line)
+
+
 
 log = sys.argv.pop(0).split('command_line/')[1]         
 

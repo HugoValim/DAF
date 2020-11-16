@@ -639,8 +639,11 @@ class Control(object):
             data = [{'col1':self.center.format('MODE'), 'col2':self.center.format(self.setup[0]), 'col3':self.center.format(self.setup[1]), 'col4':self.center.format(self.setup[2]), 'col5':self.center.format(self.setup[3]), 'col6' : self.center.format(self.setup[4]), 'col7' : self.center.format('Error')},
                     {'col1':self.center.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.center.format(self.forprint[0][1]), 'col3':self.center.format(self.forprint[1][1]), 'col4':self.center.format(self.forprint[2][1]), 'col5':self.center.format(self.forprint[3][1]), 'col6' : self.center.format(self.forprint[4][1]), 'col7' : self.center.format('%.3g' % self.qerror)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
-                    {'col1':self.center.format('Exp 2\u03B8'), 'col2':self.center.format('Dhkl'), 'col3':self.center.format('Energy (keV)'), 'col4':self.center.format('H'), 'col5' : self.center.format('K'), 'col6':self.center.format('L'), 'col7' : self.center.format('Sample')},
-                    {'col1':self.center.format(lb(self.ttB1)), 'col2':self.center.format(lb(self.dhkl)), 'col3':self.center.format(lb(self.en/1000)),'col4':self.center.format(str(lb(self.hkl_calc[0]))), 'col5' : self.center.format(str(lb(self.hkl_calc[1]))), 'col6':self.center.format(str(lb(self.hkl_calc[2]))), 'col7' : self.center.format(self.sampleID+' '+self.sampleor)},
+                    {'col1':self.center.format('H'), 'col2' : self.center.format('K'), 'col3':self.center.format('L'), 'col4' : self.center.format('Ref vector'), 'col5':self.center.format('Energy (keV)'), 'col6':self.center.format('WL (\u212B)'), 'col7':self.center.format('Sample')},
+                    {'col1':self.center.format(str(lb(self.hkl_calc[0]))), 'col2' : self.center.format(str(lb(self.hkl_calc[1]))), 'col3':self.center.format(str(lb(self.hkl_calc[2]))),'col4' : self.center.format(str(self.nref[0])+ ' ' + str(self.nref[1]) + ' ' + str(self.nref[2])),'col5':self.center.format(lb(self.en/1000)), 'col6':self.center.format(lb(self.lam)), 'col7':self.center.format(self.samp.name)},
+                    {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
+                    {'col1':self.center.format('Qx'), 'col2' : self.center.format('Qy'), 'col3':self.center.format('Qz'), 'col4' : self.center.format('|Q|'),'col5':self.center.format('Exp 2\u03B8'), 'col6':self.center.format('Dhkl'), 'col7':self.center.format('FHKL (Base)')},
+                    {'col1':self.center.format(str(lb(self.Qshow[0]))), 'col2' : self.center.format(str(lb(self.Qshow[1]))), 'col3':self.center.format(str(lb(self.Qshow[2]))), 'col4' : self.center.format(lb(self.Qnorm)), 'col5':self.center.format(lb(self.ttB1)), 'col6':self.center.format(lb(self.dhkl)), 'col7':self.center.format(lb(self.FHKL))},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
                     {'col1':self.center.format('Alpha'), 'col2':self.center.format('Beta'), 'col3':self.center.format('Psi'), 'col4':self.center.format('Tau'), 'col5':self.center.format('Qaz'), 'col6' : self.center.format('Naz'), 'col7' : self.center.format('Omega')},
                     {'col1':self.center.format(lb(self.alphain)), 'col2':self.center.format(lb(self.betaout)), 'col3':self.center.format(lb(self.psipseudo)), 'col4':self.center.format(lb(self.taupseudo)), 'col5':self.center.format(lb(self.qaz)), 'col6' : self.center.format(lb(self.naz)), 'col7' : self.center.format(lb(self.omega))},
@@ -686,6 +689,11 @@ class Control(object):
       
         self.U = U
      
+        
+    def calcUB(self):
+
+        return self.U.dot(self.samp.B)
+    
     def calc_from_angs(self, Mu,Eta,Chi,Phi,Nu,Del):
         
         
@@ -701,6 +709,7 @@ class Control(object):
     
     def calc_pseudo(self, Mu, Eta, Chi, Phi, Nu, Del):
         
+
         PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
               [-np.sin(rad(Phi)),  np.cos(rad(Phi)),     0],
               [0,                         0,             1]])
@@ -729,9 +738,9 @@ class Control(object):
         
     
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        # n = [0,0,1]
         n = self.nref
         nc = self.samp.B.dot(n)
+        nchat = nc/LA.norm(nc)
         nphi = self.U.dot(nc)
         nphihat = nphi/LA.norm(nphi)
         nz = Z.dot(nphihat)
@@ -752,75 +761,92 @@ class Control(object):
         B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
         
         q = self.samp.Q(self.hkl) # eq (1)
+        self.Qshow = q
         normQ = LA.norm(q)
-        Qhat = q/normQ
-        
+        self.Qnorm = normQ
+        Qhat = np.round(q/normQ,5)
+   
         
         k = (2*np.pi)/(self.lam)
-        ki = k*np.array([0,1,0])
+        Ki = k*np.array([0,1,0])
         Kf0 = Ki ##### eq (6)
         Kfnu = k*MAT([ np.sin(rad(Del)), np.cos(rad(Nu))*np.cos(rad(Del)), np.sin(rad(Nu))*np.cos(rad(Del))])
         Kfnunorm = LA.norm(Kfnu)
         Kfnuhat = Kfnu/Kfnunorm
         
-        # n = n[0]*B1 + n[1]*B2 + n[2]*B3
-        # normn = LA.norm(n)
-        
-        # nhat = n/normn
     
         
-        taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
+        taupseudo = deg(np.arccos(Qhat.dot(nchat)))    
         
-        
+   
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
         
         # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
         
         
-        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
-        qaz = upsipseudo
-        # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
+        qaz = deg(np.arctan2(np.tan(rad(Del)),np.sin(rad(Nu))))
+
         
-        phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
-        naz = phipseudo
+        # QLhat = MAT([ np.cos(rad(tB1))*np.sin(rad(qaz)),
+        #             -np.sin(rad(tB1)),
+        #             np.cos(rad(tB1))*np.cos(rad(qaz))])
         
-        # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
-        # if arg1 >1:
-        #     arg1 = 0.999999999999999999999
-        # elif arg1 < -1:
-        #     arg3 = -0.99999999999999999999
+        # taupseudo = deg(np.arccos(QLhat.dot(nz)))   
+        
+
+        
+        # naz = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
+        
+        naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
+     
+        
        
+        if taupseudo == 0:
+
+            Qphi = Qhat.dot(self.samp.B)
+            Qphinorm = LA.norm(Qphi)
+            Qphihat = Qphi/Qphinorm
+         
+            newref = MAT([np.sqrt(Qphihat[1]**2 + Qphihat[2]**2),
+                                  -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
+                                  -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
+            
+            tautemp = deg(np.arccos(Qhat.dot(newref)))
+
+     
+            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
+
         
-        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
-        if arg2 >1:
-            arg2 = 0.999999999999999999999
-        elif arg2 < -1:
-            arg2 = -0.99999999999999999999
-   
-        
+            print('')
+            print(f' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {np.round(newref,5)} will be used.')
+                
+        else:
+     
+            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),5)
+
         psipseudo = deg(np.arccos(arg2))
         
         # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
         # # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-        # # print(arg3)
+
         # if arg3 >1:
         #     arg3 = 0.99999999999999999999
         # elif arg3 < -1:
         #     arg3 = -0.9999999999999999999
-        # # print(arg3)
+
         # betaout = deg(np.arcsin(arg3))
         
         betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
-        print(betaout)
+
         
         
-        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
-        if arg4 >1:
-          arg4 = 0.999999999999999999999
-        elif  arg4 < -1:
-            arg4 = -0.999999999999999999
+        arg4 = np.round((np.sin(rad(Eta))*np.sin(rad(qaz))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1)),5)
+        # if arg4 >1:
+        #   arg4 = 0.999999999999999999999
+        # elif  arg4 < -1:
+        #     arg4 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
-        
+
         return (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)
     
     def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):
@@ -886,9 +912,9 @@ class Control(object):
         
 
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
-        # n = [0,0,1]
         n = self.nref
         nc = self.samp.B.dot(n)
+        nchat = nc/LA.norm(nc)
         nphi = self.U.dot(nc)
         nphihat = nphi/LA.norm(nphi)
 
@@ -906,7 +932,7 @@ class Control(object):
         
         q = self.samp.Q(self.hkl) # eq (1)
         normQ = LA.norm(q)
-        Qhat = q/normQ
+        Qhat = np.round(q/normQ,5)
         
         k = (2*np.pi)/(self.lam)
         ki = k*np.array([0,1,0])
@@ -916,16 +942,10 @@ class Control(object):
         Kfnuhat = Kfnu/Kfnunorm
         
         
-        # n = n[0]*B1 + n[1]*B2 + n[2]*B3
-        # normn = LA.norm(n)
-        
-        # nhat = n/normn
-    
         
         # taupseudo = deg(np.arccos(Qhat.dot(nhat)))
-        taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
+        taupseudo = deg(np.arccos(Qhat.dot(nchat)))    
 
-        
         
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
@@ -935,58 +955,69 @@ class Control(object):
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
         
         # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
-        # print(f"tandel = {np.tan(rad(Del))}")
-        # print(f'sinNu = {np.sin(rad(Nu))}')
+
         
-        qaz = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
+        qaz = deg(np.arctan2(np.tan(rad(Del)),np.sin(rad(Nu))))
    
+        # QLhat = MAT([ np.cos(rad(tB1))*np.sin(rad(qaz)),
+        #             -np.sin(rad(tB1)),
+        #             np.cos(rad(tB1))*np.cos(rad(qaz))])
+        
+        # taupseudo = deg(np.arccos(QLhat.dot(nz)))   
         # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
         
-        naz = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
+        naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
     
         
-        # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
-        # if arg1 >1:
-        #     arg1 = 0.999999999999999999999
-        # elif arg1 < -1:
-        #     arg3 = -0.99999999999999999999
-        # taupseudo = deg(np.arccos(arg1))
-        
      
-        
-        arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
-        if arg2 >1:
-            arg2 = 0.999999999999999999999
-        elif arg2 < -1:
-            arg2 = -0.99999999999999999999
-   
+        if taupseudo == 0:
+
+            Qphi = Qhat.dot(self.samp.B)
+            Qphinorm = LA.norm(Qphi)
+            Qphihat = Qphi/Qphinorm
+  
+            newref = MAT([np.sqrt(Qphihat[1]**2 + Qphihat[2]**2),
+                                  -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
+                                  -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
+            
+            tautemp = deg(np.arccos(Qhat.dot(newref)))
+     
+            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
+                
+
+                
+        else:
+ 
+            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),5)
+
+
+        psipseudo = deg(np.arccos(arg2))
+            
+
         
         psipseudo = deg(np.arccos(arg2))
         
         
         
         # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-        # # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-        # # print(arg3)
+        # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+   
         # if arg3 >1:
         #     arg3 = 0.99999999999999999999
         # elif arg3 < -1:
         #     arg3 = -0.9999999999999999999
-        # # # print(arg3)
         # betaout = deg(np.arcsin(arg3))
         
         betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
         
-        arg4 = (np.sin(rad(Eta))*np.sin(rad(qaz))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
-        if arg4 >1:
-          arg4 = 0.999999999999999999999
-        elif  arg4 < -1:
-            arg4 = -0.999999999999999999
+        arg4 = np.round((np.sin(rad(Eta))*np.sin(rad(qaz))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1)))
+        # if arg4 >1:
+        #   arg4 = 0.999999999999999999999
+        # elif  arg4 < -1:
+        #     arg4 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
         
-        a = (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)
-        # print(np.round(a,3))
-      
+
         
         if pseudo_angle == 'alpha':
             return alphain - fix_angle
@@ -1004,14 +1035,12 @@ class Control(object):
             return taupseudo - fix_angle
        
         elif pseudo_angle == 'psi':
-            # print(psipseudo - fix_angle)
             return psipseudo - fix_angle
         
         elif pseudo_angle == 'omega':
             return omega - fix_angle
         
         elif pseudo_angle == 'aeqb':
-            # print(betaout - alphain)
             return betaout - alphain
     
     
@@ -1046,14 +1075,9 @@ class Control(object):
         
             if 'sv' in kwargs.keys():
                 self.start = kwargs['sv']
-                # print(self.start)
-            # else:
-            #     self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-            #     self.start = (0,0,0,0,0,self.preangs[3])
             
             
             self.errflag = 0
-            self.trythis = [i for i in ['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'] if i not in self.fix and i not in self.posrestrict]
             pseudoconst = Control.pseudoAngleConst
     
             
@@ -1139,7 +1163,7 @@ class Control(object):
                                 restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})         
                                    
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
-                    # print(self.fix)
+                  
                     if qerror > 1e-5:
                             if 'Del' not in self.fix and 'Eta' not in self.fix:
                                 self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
@@ -1149,16 +1173,7 @@ class Control(object):
                                 self.sv = [0,0,0,0,0,0]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 
-                            # if qerror > 1e-5:
-                            #     dinerror = 10
-                            #     for i in self.trythis:
-                                    
-                            #         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            #         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            
-                            #         if qerror < 1e-5:
-                            #             break
-                            #         restrict.pop()
+                      
                          
                     if qerror > 1e-5:
                         self.errflag +=1
@@ -1180,24 +1195,7 @@ class Control(object):
                                 self.sv = [0,0,0,0,0,0]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 
-                            # if qerror > 1e-5:
-                            #     dinerror = 10
-                            #     for i in self.trythis:
-                                    
-                            #         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            #         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            
-                            #         if qerror < 1e-5:
-                            #             break
-                            #         restrict.pop()
-                            # for i in self.trythis:
-                        
-                            #     restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            #     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
-                                
-                            #     if qerror < 1e-5:
-                            #         break
-                            #     restrict.pop()
+                     
                         
                     else:
                         
@@ -1211,36 +1209,12 @@ class Control(object):
                                 self.sv = [0,0,0,0,0,0]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 
-                            # if qerror > 1e-5:
-                            #     dinerror = 10
-                            #     for i in self.trythis:
-                                    
-                            #         restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            #         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            
-                            #         if qerror < 1e-5:
-                            #             break
-                            #         restrict.pop()
-                            
-                            
-                            # for i in self.trythis:
-                        
-                            #     restrict.append({'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i, 0.3)})
-                            #     ang, qerror, errcode = xu.Q2AncondagFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
-                            #     # print(i,qerror)
-                            #     if qerror < 1e-5:
-                            #         break
-                            #     restrict.pop()
-                    
                     
     
-                
-    
-                    n = [0,0,1]
       
             self.qerror = qerror
             self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp, en = self.en, U=self.U),5)
-            # print(self.hkl_calc)
+
             
             self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
             self.Nu, self.Del = (ang[4], ang[5])
@@ -1270,17 +1244,17 @@ class Control(object):
             
             NU = MAT([[1,                    0,                         0],
                       [0,            np.cos(rad(self.Nu)),    -np.sin(rad(self.Nu))],
-                      [0,            np.sin(rad(self.Nu)),    np.cos(rad(self.Nu))]])
+                      [0,            np.sin(rad(self.Nu)),    np.cos(rad(self.Nu))]])   
             
             
             Z = MU.dot(ETA).dot(CHI).dot(PHI)
     
-            # n = [0,0,1]
             n = self.nref
             nc = self.samp.B.dot(n)
+            nchat = nc/LA.norm(nc)
             nphi = self.U.dot(nc)
             nphihat = nphi/LA.norm(nphi)
-            # print(nphihat)
+  
             nz = Z.dot(nphihat)
             
             A1 = (self.samp.a1)
@@ -1294,8 +1268,12 @@ class Control(object):
             B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
             
             q = self.samp.Q(self.hkl) # eq (1)
+            self.Qshow = q
             normQ = LA.norm(q)
-            Qhat = q/normQ
+            self.Qnorm = normQ
+            Qhat = np.round(q/normQ,5)
+            self.FHKL = LA.norm(self.samp.StructureFactor(q, self.en))
+            
             
             k = (2*np.pi)/(self.lam)
             Ki = k*np.array([0,1,0])
@@ -1304,42 +1282,54 @@ class Control(object):
             Kfnunorm = LA.norm(Kfnu)
             Kfnuhat = Kfnu/Kfnunorm
         
-            
-            # n = n[0]*B1 + n[1]*B2 + n[2]*B3
-            # normn = LA.norm(n)
-            
-            # nhat = n/normn
+     
+            taupseudo = deg(np.arccos(Qhat.dot(nchat)))    
         
-            
-            taupseudo = deg(np.arccos(Qhat.dot(nphihat)))    
-            
-            
-            
+        
             ttB1 = deg(np.arccos(np.cos(rad(self.Nu)) * np.cos(rad(self.Del))))
             tB1 = ttB1/2
             
             alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
             
             # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
-            upsipseudo = deg(np.arctan(np.tan(rad(self.Del))/np.sin(rad(self.Nu))))
-            qaz = upsipseudo
+            qaz = deg(np.arctan2(np.tan(rad(self.Del)),np.sin(rad(self.Nu))))
+            
             # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
             
-            phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
-            naz = phipseudo
+            # QLhat = MAT([ np.cos(rad(tB1))*np.sin(rad(qaz)),
+            #         -np.sin(rad(tB1)),
+            #         np.cos(rad(tB1))*np.cos(rad(qaz))])
+
+            # taupseudo = deg(np.arccos(QLhat.dot(nz)))   
+    
+            naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
+         
             
-            # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
-            # if arg1 >1:
-            #     arg1 = 0.99999999999999999999
-            # taupseudo = deg(np.arccos(arg1))
           
-            
-            arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
-            if arg2 >1:
-                arg2 = 0.999999999999999999999
-            elif arg2 < -1:
-                arg2 = -0.99999999999999999999
-            # print(arg2)
+            if taupseudo == 0:
+
+                Qphi = Qhat.dot(self.samp.B)
+                Qphinorm = LA.norm(Qphi)
+                Qphihat = Qphi/Qphinorm
+  
+                newref = MAT([np.sqrt(Qphihat[1]**2 + Qphihat[2]**2),
+                                      -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
+                                      -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
+                
+                tautemp = deg(np.arccos(Qhat.dot(newref)))
+         
+                arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
+                if 'flagmap' not in kwargs.keys():
+           
+                    print('')
+                    print(f' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {np.round(newref,5)} will be used.')
+
+                
+            else:
+     
+                arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),5)
+
+     
             psipseudo = deg(np.arccos(arg2))
             
             # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
@@ -1352,13 +1342,13 @@ class Control(object):
             # betaout = deg(np.arcsin(arg3))
             
             betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
-            print(betaout)
+     
             
-            arg4 = (np.sin(rad(self.Eta))*np.sin(rad(upsipseudo))+np.sin(rad(self.Mu))*np.cos(rad(self.Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(self.Mu))*np.cos(rad(self.Eta))*np.sin(rad(tB1))
-            if arg4 >1:
-              arg4 = 0.999999999999999999999
-            elif arg4 < -1:
-                arg4 = -0.999999999999999999999
+            arg4 = np.round((np.sin(rad(self.Eta))*np.sin(rad(qaz))+np.sin(rad(self.Mu))*np.cos(rad(self.Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(self.Mu))*np.cos(rad(self.Eta))*np.sin(rad(tB1)),5)
+            # if arg4 >1:
+            #   arg4 = 0.999999999999999999999
+            # elif arg4 < -1:
+            #     arg4 = -0.999999999999999999999
             omega = deg(np.arcsin(arg4))
             
           
@@ -1382,18 +1372,12 @@ class Control(object):
         
         scl = Control.scan_generator(self, hkli, hklf, points+1)
         angslist = list()
-        # self.hkl = scl[0]
-        # a,b = self.motor_angles(self)qmax = 2 * k0 * math.sin(math.radians(ttmin/2.))
-        # sv = a[:6]
-        # initial = np.round(self.hrxrd.Ang2HKL(*startvalues,mat=self.samp, en = self.en, U=self.U),5)
-        # print(initial)
         for i in tqdm(scl):
             self.hkl = i
             a,b = self.motor_angles(self, sv=startvalues)
             angslist.append(b)
             teste = np.abs(np.array(a[:6]) - np.array(startvalues))
             
-            # print(np.max(teste))
          
             if np.max(teste) > diflimit and diflimit != 0:
                 raise ("Exceded max limit of angles variation")
@@ -1467,11 +1451,11 @@ class Control(object):
         """
         import math
         import numpy
-        # print(idir)
-        # print(ndir)
+
+
         exp = xu.HXRD(idir, ndir, en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         exp_real = self.hrxrd
-        # print(exp)
+   
         mat = self.samp
         pi = np.pi
         EPSILON = 1e-7
@@ -1675,24 +1659,23 @@ class Control(object):
                 if cont:
                     popts = numpy.get_printoptions()
                     numpy.set_printoptions(precision=4, suppress=True)
-                    # print(d['qvec'][m][ind['ind'][0]])
                     dict_args = du.dict_conv()
                     startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
                     
                     hkl = (d['hkl'][m][ind['ind'][0]])
                     self.hkl = hkl
                     
-                    ang = Control.motor_angles(self, qvec = d['qvec'][m][ind['ind'][0]], sv = startvalue)
-                    ang = Control.motor_angles(self, sv = startvalue)
+                    # ang = Control.motor_angles(self, qvec = d['qvec'][m][ind['ind'][0]], sv = startvalue)
+                    ang = Control.motor_angles(self, sv = startvalue, flagmap = True)
                     angles = [ang[0][0], ang[0][1], ang[0][2], ang[0][3], ang[0][4], ang[0][5], float(ang[0][-1])]
                     
                     text = "{}\nhkl: {}\nangles: {}".format(
                         mat.name, str(d['hkl'][m][ind['ind'][0]]), str(angles))
                     numpy.set_printoptions(**popts)
-                    # print(text)
+                 
                     
                     
-                    # print(angles)
+              
                     pseudo = self.calc_pseudo(*angles[:6])
                     exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
                                 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
@@ -1728,7 +1711,6 @@ class Control(object):
                     
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)
-        # plt.show(block=True)
         return ax, h
     
 
