@@ -756,6 +756,13 @@ class Control(object):
         Qhat = q/normQ
         
         
+        k = (2*np.pi)/(self.lam)
+        ki = k*np.array([0,1,0])
+        Kf0 = Ki ##### eq (6)
+        Kfnu = k*MAT([ np.sin(rad(Del)), np.cos(rad(Nu))*np.cos(rad(Del)), np.sin(rad(Nu))*np.cos(rad(Del))])
+        Kfnunorm = LA.norm(Kfnu)
+        Kfnuhat = Kfnu/Kfnunorm
+        
         # n = n[0]*B1 + n[1]*B2 + n[2]*B3
         # normn = LA.norm(n)
         
@@ -793,21 +800,25 @@ class Control(object):
         
         psipseudo = deg(np.arccos(arg2))
         
-        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-        # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-        # print(arg3)
-        if arg3 >1:
-            arg3 = 0.99999999999999999999
-        elif arg3 < -1:
-            arg3 = -0.9999999999999999999
-        # print(arg3)
-        betaout = deg(np.arcsin(arg3))
+        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+        # # print(arg3)
+        # if arg3 >1:
+        #     arg3 = 0.99999999999999999999
+        # elif arg3 < -1:
+        #     arg3 = -0.9999999999999999999
+        # # print(arg3)
+        # betaout = deg(np.arcsin(arg3))
+        
+        betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
+        print(betaout)
+        
         
         arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
         if arg4 >1:
           arg4 = 0.999999999999999999999
         elif  arg4 < -1:
-            arg3 = -0.999999999999999999
+            arg4 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
         
         return (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)
@@ -872,6 +883,7 @@ class Control(object):
                   [0,            np.cos(rad(Nu)),    -np.sin(rad(Nu))],
                   [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
         
+        
 
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
         # n = [0,0,1]
@@ -896,6 +908,13 @@ class Control(object):
         normQ = LA.norm(q)
         Qhat = q/normQ
         
+        k = (2*np.pi)/(self.lam)
+        ki = k*np.array([0,1,0])
+        Kf0 = Ki ##### eq (6)
+        Kfnu = k*MAT([ np.sin(rad(Del)), np.cos(rad(Nu))*np.cos(rad(Del)), np.sin(rad(Nu))*np.cos(rad(Del))])
+        Kfnunorm = LA.norm(Kfnu)
+        Kfnuhat = Kfnu/Kfnunorm
+        
         
         # n = n[0]*B1 + n[1]*B2 + n[2]*B3
         # normn = LA.norm(n)
@@ -919,12 +938,12 @@ class Control(object):
         # print(f"tandel = {np.tan(rad(Del))}")
         # print(f'sinNu = {np.sin(rad(Nu))}')
         
-        upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
-        qaz = upsipseudo
+        qaz = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu))))
+   
         # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
         
-        phipseudo = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
-        naz = phipseudo
+        naz = deg(np.arctan((nz.dot([1,0,0]))/(nz.dot([0,0,1]))))
+    
         
         # arg1 = np.cos(rad(alphain))*np.cos(rad(tB1))*np.cos(rad(phipseudo-upsipseudo))+np.sin(rad(alphain))*np.sin(rad(tB1))
         # if arg1 >1:
@@ -944,24 +963,28 @@ class Control(object):
         
         psipseudo = deg(np.arccos(arg2))
         
-        arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-        # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-        # print(arg3)
-        if arg3 >1:
-            arg3 = 0.99999999999999999999
-        elif arg3 < -1:
-            arg3 = -0.9999999999999999999
-        # # print(arg3)
-        betaout = deg(np.arcsin(arg3))
         
-        arg4 = (np.sin(rad(Eta))*np.sin(rad(upsipseudo))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
+        
+        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+        # # print(arg3)
+        # if arg3 >1:
+        #     arg3 = 0.99999999999999999999
+        # elif arg3 < -1:
+        #     arg3 = -0.9999999999999999999
+        # # # print(arg3)
+        # betaout = deg(np.arcsin(arg3))
+        
+        betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
+        
+        arg4 = (np.sin(rad(Eta))*np.sin(rad(qaz))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1))
         if arg4 >1:
           arg4 = 0.999999999999999999999
         elif  arg4 < -1:
-            arg3 = -0.999999999999999999
+            arg4 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
         
-        a = (alphain, upsipseudo, phipseudo, taupseudo, psipseudo, betaout, omega)
+        a = (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)
         # print(np.round(a,3))
       
         
@@ -972,10 +995,10 @@ class Control(object):
             return betaout - fix_angle
         
         elif pseudo_angle == 'qaz':     
-            return upsipseudo - fix_angle
+            return qaz - fix_angle
         
         elif pseudo_angle == 'naz':
-            return phipseudo - fix_angle
+            return naz - fix_angle
         
         elif pseudo_angle == 'tau':
             return taupseudo - fix_angle
@@ -1274,7 +1297,14 @@ class Control(object):
             normQ = LA.norm(q)
             Qhat = q/normQ
             
-    
+            k = (2*np.pi)/(self.lam)
+            Ki = k*np.array([0,1,0])
+            Kf0 = Ki ##### eq (6)
+            Kfnu = k*MAT([ np.sin(rad(self.Del)), np.cos(rad(self.Nu))*np.cos(rad(self.Del)), np.sin(rad(self.Nu))*np.cos(rad(self.Del))])
+            Kfnunorm = LA.norm(Kfnu)
+            Kfnuhat = Kfnu/Kfnunorm
+        
+            
             # n = n[0]*B1 + n[1]*B2 + n[2]*B3
             # normn = LA.norm(n)
             
@@ -1312,18 +1342,23 @@ class Control(object):
             # print(arg2)
             psipseudo = deg(np.arccos(arg2))
             
-            arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
-            arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
-            # print(arg3)
-            if arg3 >1:
-                arg3 = 0.999999999999999999999
-            elif arg3 < -1:
-                arg3 = -0.99999999999999999999
-            betaout = deg(np.arcsin(arg3))
+            # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+            # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+            # # print(arg3)
+            # if arg3 >1:
+            #     arg3 = 0.999999999999999999999
+            # elif arg3 < -1:
+            #     arg3 = -0.99999999999999999999
+            # betaout = deg(np.arcsin(arg3))
+            
+            betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
+            print(betaout)
             
             arg4 = (np.sin(rad(self.Eta))*np.sin(rad(upsipseudo))+np.sin(rad(self.Mu))*np.cos(rad(self.Eta))*np.cos(rad(upsipseudo)))*np.cos(rad(tB1))-np.cos(rad(self.Mu))*np.cos(rad(self.Eta))*np.sin(rad(tB1))
             if arg4 >1:
               arg4 = 0.999999999999999999999
+            elif arg4 < -1:
+                arg4 = -0.999999999999999999999
             omega = deg(np.arcsin(arg4))
             
           
