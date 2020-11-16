@@ -935,7 +935,7 @@ class Control(object):
         Qhat = np.round(q/normQ,5)
         
         k = (2*np.pi)/(self.lam)
-        ki = k*np.array([0,1,0])
+        Ki = k*np.array([0,1,0])
         Kf0 = Ki ##### eq (6)
         Kfnu = k*MAT([ np.sin(rad(Del)), np.cos(rad(Nu))*np.cos(rad(Del)), np.sin(rad(Nu))*np.cos(rad(Del))])
         Kfnunorm = LA.norm(Kfnu)
