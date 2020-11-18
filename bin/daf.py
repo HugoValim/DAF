@@ -1130,7 +1130,7 @@ class Control(object):
                                 if qerror < 1e-5:
                                     break
                                 self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 if qerror < 1e-5:
                                     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
