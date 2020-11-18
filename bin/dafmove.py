@@ -79,8 +79,8 @@ startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["
 
 exp(sv = startvalue)
 error = exp.qerror
-if error > 1e-4:
-    exp()
+# if error > 1e-4:
+#     exp()
 if args.verbose:
     exp.set_print_options(marker = '', column_marker='', space=12)
     print(exp)

@@ -801,7 +801,7 @@ class Control(object):
      
         
        
-        if taupseudo == 0:
+        if taupseudo == 0 or taupseudo == 180:
 
             Qphi = Qhat.dot(self.samp.B)
             Qphinorm = LA.norm(Qphi)
@@ -817,8 +817,8 @@ class Control(object):
             arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
 
         
-            print('')
-            print(f' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {np.round(newref,5)} will be used.')
+            # print('')
+            # print(f' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {np.round(newref,5)} will be used.')
                 
         else:
      
@@ -970,7 +970,7 @@ class Control(object):
     
         
      
-        if taupseudo == 0:
+        if taupseudo == 0 or taupseudo == 180:
 
             Qphi = Qhat.dot(self.samp.B)
             Qphinorm = LA.norm(Qphi)
@@ -1075,151 +1075,62 @@ class Control(object):
         
             if 'sv' in kwargs.keys():
                 self.start = kwargs['sv']
+            else:
+                self.start = [0,0,0,0,0,0]
             
             media = lambda x,y: (x+y)/2
             self.chute1 = [media(i[0], i[1]) if type(i) != float else i for i in self.bounds]
-            print(self.bounds)
-            print(self.chute1)
             
-            self.errflag = 0
-            pseudoconst = Control.pseudoAngleConst
-    
-            
-          
+
+
             if len(self.constrain) != 0:
+                    pseudoconst = Control.pseudoAngleConst
     
-                while True:
+         
            
              
                     if len(self.constrain) == 1:
                         
-                        if self.errflag == 0:
                             
                             restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
                             
-                        elif self.errflag == 1:
-                            break
+             
                          
                     elif len(self.constrain) == 2:
                       
-                        if self.errflag == 0:
+                       
                         
                             restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
                                         {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
                                        
-                        
-                        if self.errflag == 1:
-                        
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
-                        
-                        if self.errflag == 2:
-                            
-                            break
+        
                     
                     elif len(self.constrain) == 3:
             
                         
-                        if self.errflag == 0:
-                        
+          
                             restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
                                         {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
                                         {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])}]
                             
-                        elif self.errflag == 1:
-                        
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
-                        
-                        elif self.errflag == 2:
-                        
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
-                        
-                        elif self.errflag == 3:
-                        
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])}]
-                        
-                        elif self.errflag == 4:
-                        
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
-                        
-                        elif self.errflag == 5:
-                        
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
-                        
-                        elif self.errflag == 6:
-                            break
-                    
-                    if self.errflag == 0:
-                     
-                        if not None in self.posrestrict: 
-                            for i in self.posrestrict:
-                             
-                                restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})         
-                                   
+                 
+  
+             
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
                   
-                    if qerror > 1e-5:  
-                            # if 'Del' not in self.fix and 'Eta' not in self.fix:
-                            #     self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-                            #     self.start = (0,0,0,0,0,self.preangs[3])
-                            #     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            # else:
-                            # self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]] 
-                            # self.start = [45,45,0,180,45,45]
-                            # print('oi')
-                            # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            while True:
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 45, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break 
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
-                                break
-                      
-                         
                     if qerror > 1e-5:
-                        self.errflag +=1
-                    else:
-                        break
-                    
-            else:
-                    restrict = []    
-                    if not None in self.posrestrict: 
-                        for i in self.posrestrict:
-                            restrict.insert(0,{'type': 'ineq', 'fun': lambda a:  pseudoconst(a, i[0], i[1])})
-                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
-                        if qerror > 1e-5:
-                            # if 'Del' not in self.fix and 'Eta' not in self.fix:
-                            #     self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-                            #     self.start = (0,0,0,0,0,self.preangs[3])
-                            #     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            # else:
-                            # self.sv = self.chute1
-                            # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                             while True:
+                                self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+                                self.start = (0,0,0,0,0,self.preangs[3])
+                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                                if qerror < 1e-5:
+                                    break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 45, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                                if qerror < 1e-5:
+                                    break
+                                self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
+                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
                                 if qerror < 1e-5:
                                     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
@@ -1235,38 +1146,39 @@ class Control(object):
                                 if qerror < 1e-5:
                                     break
                                 break
-                            
                      
                         
-                    else:
-                        
-                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat = self.U)
-                        if qerror > 1e-5:
-                            # if 'Del' not in self.fix and 'Eta' not in self.fix:
-                            #     self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-                            #     self.start = (0,0,0,0,0,self.preangs[3])
-                            #     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            # else:
-                            # self.sv = self.chute1
-                            # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                            while True:
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 45, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break 
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
-                                break
+            else:
+                
+                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat = self.U)
+                if qerror > 1e-5:
+                    while True:
+                        self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
+                        self.start = (0,0,0,0,0,self.preangs[3])
+                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        if qerror < 1e-5:
+                            break
+                        self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 45, self.chute1[4], self.chute1[5]]
+                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        if qerror < 1e-5:
+                            break
+                        self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
+                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        if qerror < 1e-5:
+                            break
+                        self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
+                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        if qerror < 1e-5:
+                            break
+                        self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]]
+                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        if qerror < 1e-5:
+                            break 
+                        self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]]
+                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        if qerror < 1e-5:
+                            break
+                        break
                                 
                     
     
@@ -1365,7 +1277,7 @@ class Control(object):
          
             
           
-            if taupseudo == 0:
+            if taupseudo == 0 or taupseudo == 180:
 
                 Qphi = Qhat.dot(self.samp.B)
                 Qphinorm = LA.norm(Qphi)
@@ -1381,7 +1293,7 @@ class Control(object):
                 if 'flagmap' not in kwargs.keys():
            
                     print('')
-                    print(f' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {np.round(newref,5)} will be used.')
+                    print(f'Q parallel to reference vector, so using {np.round(newref,5)} as reference for Psi')
 
                 
             else:
