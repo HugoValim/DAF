@@ -776,7 +776,7 @@ class Control(object):
         
     
         
-        taupseudo = deg(np.arccos(Qhat.dot(nchat)))    
+        taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))    
         
    
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
@@ -811,10 +811,17 @@ class Control(object):
                                   -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
                                   -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
             
+            ntmp = newref
+            nctmp = self.samp.B.dot(ntmp)
+            nchattmp = nc/LA.norm(nctmp)
+            nphitmp = self.U.dot(nctmp)
+            nphihattmp = nphitmp/LA.norm(nphitmp)
+  
+            nztmp = Z.dot(nphihattmp)
+            alphatmp = deg(np.arcsin(-xu.math.vector.VecDot(nztmp,[0,1,0])))
             tautemp = deg(np.arccos(Qhat.dot(newref)))
-
-     
-            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
+  
+            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphatmp)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),8)
 
         
             # print('')
@@ -822,7 +829,7 @@ class Control(object):
                 
         else:
      
-            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),5)
+            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),8)
 
         psipseudo = deg(np.arccos(arg2))
         
@@ -944,7 +951,7 @@ class Control(object):
         
         
         # taupseudo = deg(np.arccos(Qhat.dot(nhat)))
-        taupseudo = deg(np.arccos(Qhat.dot(nchat)))    
+        taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))    
 
         
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
@@ -980,22 +987,28 @@ class Control(object):
                                   -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
                                   -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
             
+            ntmp = newref
+            nctmp = self.samp.B.dot(ntmp)
+            nchattmp = nc/LA.norm(nctmp)
+            nphitmp = self.U.dot(nctmp)
+            nphihattmp = nphitmp/LA.norm(nphitmp)
+  
+            nztmp = Z.dot(nphihattmp)
+            alphatmp = deg(np.arcsin(-xu.math.vector.VecDot(nztmp,[0,1,0])))
             tautemp = deg(np.arccos(Qhat.dot(newref)))
-     
-            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
-                
-
+  
+            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphatmp)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),8)
                 
         else:
  
-            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),5)
+            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),8)
 
 
         psipseudo = deg(np.arccos(arg2))
             
 
         
-        psipseudo = deg(np.arccos(arg2))
+        # psipseudo = deg(np.arccos(arg2))
         
         
         
@@ -1125,14 +1138,14 @@ class Control(object):
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 if qerror < 1e-5:
                                     break
-                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 45, self.chute1[4], self.chute1[5]]
+                                self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 0, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 if qerror < 1e-5:
                                     break
-                                self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
-                                ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
-                                    break
+                                # self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.preangs[3]]
+                                # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
+                                # if qerror < 1e-5:
+                                #     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
                                 if qerror < 1e-5:
@@ -1158,7 +1171,7 @@ class Control(object):
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
                         if qerror < 1e-5:
                             break
-                        self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 45, self.chute1[4], self.chute1[5]]
+                        self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 0, self.chute1[4], self.chute1[5]]
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
                         if qerror < 1e-5:
                             break
@@ -1166,10 +1179,10 @@ class Control(object):
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
                         if qerror < 1e-5:
                             break
-                        self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
-                        ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                        if qerror < 1e-5:
-                            break
+                        # self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
+                        # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
+                        # if qerror < 1e-5:
+                        #     break
                         self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]]
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
                         if qerror < 1e-5:
@@ -1253,8 +1266,9 @@ class Control(object):
             Kfnunorm = LA.norm(Kfnu)
             Kfnuhat = Kfnu/Kfnunorm
         
-     
-            taupseudo = deg(np.arccos(Qhat.dot(nchat)))    
+
+            
+            taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))  
         
         
             ttB1 = deg(np.arccos(np.cos(rad(self.Nu)) * np.cos(rad(self.Del))))
@@ -1276,7 +1290,7 @@ class Control(object):
             naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
          
             
-          
+      
             if taupseudo == 0 or taupseudo == 180:
 
                 Qphi = Qhat.dot(self.samp.B)
@@ -1286,10 +1300,17 @@ class Control(object):
                 newref = MAT([np.sqrt(Qphihat[1]**2 + Qphihat[2]**2),
                                       -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
                                       -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
-                
+                ntmp = newref
+                nctmp = self.samp.B.dot(ntmp)
+                nchattmp = nc/LA.norm(nctmp)
+                nphitmp = self.U.dot(nctmp)
+                nphihattmp = nphitmp/LA.norm(nphitmp)
+      
+                nztmp = Z.dot(nphihattmp)
+                alphatmp = deg(np.arcsin(-xu.math.vector.VecDot(nztmp,[0,1,0])))
                 tautemp = deg(np.arccos(Qhat.dot(newref)))
-         
-                arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),5)
+      
+                arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphatmp)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),8)
                 if 'flagmap' not in kwargs.keys():
            
                     print('')
@@ -1297,12 +1318,12 @@ class Control(object):
 
                 
             else:
-     
-                arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),5)
+                arg2 = (np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1)))
 
-     
-            psipseudo = deg(np.arccos(arg2))
+                arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),8)
             
+      
+            psipseudo = deg(np.arccos(arg2))
             # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
             # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
             # # print(arg3)
