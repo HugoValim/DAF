@@ -83,6 +83,8 @@ class Control(object):
         
         if args[0] == 5:
             raise('Zone mode was not implemented yet')
+        if args[0] == 6:
+            raise('Energy mode was not implemented yet')
         
         self.col1 = args[0]
         self.col2 = args[1]

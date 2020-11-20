@@ -1,7 +1,11 @@
 # Diffractometer Angles Finder
 ## Program still under development in LNLS
+## BRAZILIAN SYNCHROTRON LIGHT LABORATORY
+## LNLS is part of the Brazilian Center for Research in Energy and Materials (CNPEM)
 
-## Requirements:
+
+
+### Requirements:
 
 1. xrayutilities
 2. numpy
@@ -10,7 +14,7 @@
 5. matplotlib
 6. tqdm
 
-## Tutorial
+### Tutorial
 
 To start using DAF first you'll need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
 ```
@@ -73,6 +77,7 @@ This will set silicon as your sample and energy to 12 keV
 
 ```
 daf.mode -h
+
 usage: daf.mode [-h] Mode
 
      >detector<  >Reference<     >Sample<     >Sample<     >Sample<
@@ -82,8 +87,10 @@ usage: daf.mode [-h] Mode
 2      Nu-fixed  Alpha-fixed     Mu-fixed     Mu-fixed     Mu-fixed  2
 3     Qaz-fixed   Beta-fixed    Chi-fixed    Chi-fixed    Chi-fixed  3
 4     Naz-fixed    Psi-fixed    Phi-fixed    Phi-fixed    Phi-fixed  4
-5          Zone            X    Eta=Del/2            X            X  5
-6             X            X      Mu=Nu/2            X            X  6
+5         Zone*            X    Eta=Del/2            X            X  5
+6       Energy*            X      Mu=Nu/2            X            X  6
+
+*not implemented
 
 positional arguments:
   Mode        Set the operation mode of the diffractometer, following the same
@@ -94,6 +101,7 @@ optional arguments:
 
 Eg:
     daf.mode 215, will set Nu fix, Alpha=Beta, Eta=Del/2
+    
 ```
 
 To set a mode:

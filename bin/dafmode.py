@@ -14,9 +14,10 @@ doc = """
 2      Nu-fixed  Alpha-fixed     Mu-fixed     Mu-fixed     Mu-fixed  2
 3     Qaz-fixed   Beta-fixed    Chi-fixed    Chi-fixed    Chi-fixed  3
 4     Naz-fixed    Psi-fixed    Phi-fixed    Phi-fixed    Phi-fixed  4
-5          Zone            X    Eta=Del/2            X            X  5
-6             X            X      Mu=Nu/2            X            X  6
+5         Zone*            X    Eta=Del/2            X            X  5
+6       Energy*            X      Mu=Nu/2            X            X  6
 
+*not implemented
 """
 epi = '''
 Eg:
