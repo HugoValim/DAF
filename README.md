@@ -7,11 +7,12 @@
 2. numpy
 3. scipy; version=1.4.1
 4. pandas
-5. tqdm
+5. matplotlib
+6. tqdm
 
 ## Tutorial
 
-To start using DAF first you need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
+To start using DAF first you'll need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
 ```
 source init.sh
 ```
@@ -52,14 +53,14 @@ optional arguments:
   -r x y z, --RDir x y z
                         Sets the reference vector
   -s or, --Sampleor or  Sets the sample orientation at Phi axis
-  -e en, --Energy en    Sets the energy of the experiment (KeV), wavelength
-                        can also be given (Å)
+  -e en, --Energy en    Sets the energy of the experiment (eV), wavelength can
+                        also be given (Å)
 
 Eg: 
     daf.expt --Material Si --Energy 8000
     daf.expt -m Si -e 8000
     daf.expt -s x+ 
-    daf.expt -i 1 0 0 -n 0 1 0 
+    daf.expt -i 1 0 0 -n 0 1 0  
 ```
 
 Them use the functions daf.expt, daf.mode, daf.bounds, daf.cons, daf.ub in order to define your experiment conditions.
@@ -177,7 +178,7 @@ Del   =    [-180.0, 180.0]
 
 ```
 
-In order to move use daf.amv for angle movement, daf.mv for hkl movement, daf.rmap to move aided by graphical of the reciprocal space, daf.scan to perform a scan.
+In order to move use daf.amv for angle movement, daf.mv for hkl movement, daf.rmap to move aided by graphical of interface of  the reciprocal space, daf.scan to perform a scan.
 
 Use daf.amv to directly set an angle value, and them daf.wh to see where you are in the hkl coordinates:
 
