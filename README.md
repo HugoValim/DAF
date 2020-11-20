@@ -7,11 +7,12 @@
 2. numpy
 3. scipy; version=1.4.1
 4. pandas
-5. tqdm
+5. matplotlib
+6. tqdm
 
 ## Tutorial
 
-To start using DAF first you need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
+To start using DAF first you'll need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
 ```
 source init.sh
 ```
@@ -52,14 +53,14 @@ optional arguments:
   -r x y z, --RDir x y z
                         Sets the reference vector
   -s or, --Sampleor or  Sets the sample orientation at Phi axis
-  -e en, --Energy en    Sets the energy of the experiment (KeV), wavelength
-                        can also be given (Å)
+  -e en, --Energy en    Sets the energy of the experiment (eV), wavelength can
+                        also be given (Å)
 
 Eg: 
     daf.expt --Material Si --Energy 8000
     daf.expt -m Si -e 8000
     daf.expt -s x+ 
-    daf.expt -i 1 0 0 -n 0 1 0 
+    daf.expt -i 1 0 0 -n 0 1 0  
 ```
 
 Them use the functions daf.expt, daf.mode, daf.bounds, daf.cons, daf.ub in order to define your experiment conditions.
@@ -177,7 +178,7 @@ Del   =    [-180.0, 180.0]
 
 ```
 
-In order to move use daf.amv for angle movement, daf.mv for hkl movement, daf.rmap to move aided by graphical of the reciprocal space, daf.scan to perform a scan.
+In order to move use daf.amv for angle movement, daf.mv for hkl movement, daf.rmap to move aided by graphical of interface of  the reciprocal space, daf.scan to perform a scan.
 
 Use daf.amv to directly set an angle value, and them daf.wh to see where you are in the hkl coordinates:
 
@@ -208,18 +209,22 @@ Move directly by an hkl with daf.mv:
 
 ```
 daf.mv 1 1 1 -v
+
+   MODE        nu_fix       α = β       η = δ/2         --           --         Error     
+  21500       0.00000         --           --           --           --        6.47e-09   
                                                                                           
-   MODE        nu_fix         --        η = δ/2       mu_fix         --         Error     
-  20520       0.00000         --           --        0.00000         --        1.93e-05   
+    H            K            L        Ref vector   Energy (keV)   WL (Å)       Sample    
+ 1.00000      1.00000      1.00000     0.0 0.0 1.0   12.39842     1.00000         Si      
                                                                                           
-  Exp 2θ        Dhkl      Energy (keV)     H            K            L          Sample    
- 18.96562     3.13561      12.00000     0.99998      1.00000      1.00000       Si z+     
+    Qx           Qy           Qz          |Q|         Exp 2θ        Dhkl      FHKL (Base) 
+ 1.15690      1.15690      1.15690      2.00381      18.35093     3.13561      60.43181   
                                                                                           
   Alpha         Beta         Psi          Tau          Qaz          Naz         Omega     
- 5.45823      5.45815      90.00005     54.73561     90.00000     34.89391     -0.00000   
+ 5.28232      5.28232      90.00000     54.73563     90.00000     34.91732     -0.00000   
                                                                                           
    Del          Eta          Chi          Phi           Nu           Mu           --      
- 18.96562     9.48281      35.26468     45.00034     0.00000      0.00000         --      
+ 18.35093     9.17547      35.26439     45.00000     0.00000      -0.00000        --      
+
 
 ```
 
