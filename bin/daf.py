@@ -1094,8 +1094,8 @@ class Control(object):
                 self.start = [0,0,0,0,0,0]
             
             media = lambda x,y: (x+y)/2
-            self.chute1 = [media(i[0], i[1]) if type(i) != float else i for i in self.bounds]
-            
+            # self.chute1 = [media(i[0], i[1]) if type(i) != float else i for i in self.bounds]
+            self.chute1 = [45,45,45,45,45,45]
 
 
             if len(self.constrain) != 0:
