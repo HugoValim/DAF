@@ -160,7 +160,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

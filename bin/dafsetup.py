@@ -40,7 +40,7 @@ dic = vars(args)
 
 
 if args.change:
-    os.system(f"cat $EXPS/{args.change} > \.Experiment")
+    os.system("cat $EXPS/{} > \.Experiment".format(args.change))
 
     with open('.Experiment', 'r+') as exp:
  
@@ -76,22 +76,22 @@ setup_now = dict_args['setup']
 
 if args.save:
     if args.save == 'no_args':
-        os.system(f"cat .Experiment > $EXPS/{setup_now}")
+        os.system("cat .Experiment > $EXPS/{}".format(setup_now))
     
     else:
         
-        os.system(f"cat .Experiment > $EXPS/{args.save}")
+        os.system("cat .Experiment > $EXPS/{}".format(args.save))
 
 
 
 if args.list:
-    os.system(f"ls -A1 $EXPS | sed 's/^/   /' | sed '/   {setup_now}$/c \u27A4  {setup_now}' ")
+    os.system("ls -A1 $EXPS | sed 's/^/   /' | sed '/   {}$/c \u27A4  {}' ".format(setup_now, setup_now))
 
 if args.remove:
     
     for i in args.remove:
         if setup_now != i: 
-            os.system(f"rm $EXPS/{i}")
+            os.system("rm $EXPS/{}".format(i))
         else:
             print('')
             print('Leave the setup before removing it')
@@ -105,7 +105,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

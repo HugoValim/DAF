@@ -32,8 +32,8 @@ dict_args = du.dict_conv()
 
 if args.Initialize:
 
-    os.system(f"echo '#!/usr/bin/env bash' > {args.name}")
-    os.system(f"chmod 755 {args.name}")
+    os.system("echo '#!/usr/bin/env bash' > {}".format(args.name))
+    os.system("chmod 755 {}".format(args.name))
     
     with open('.Experiment', 'r+') as exp:
      
@@ -94,7 +94,7 @@ if args.Stop:
             exp.write(line)
 
 if args.Execute:
-    os.system(f"./{args.Execute}")
+    os.system("./{}".format(args.Execute))
 
     
 log = sys.argv.pop(0).split('command_line/')[1]         
@@ -102,4 +102,4 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))

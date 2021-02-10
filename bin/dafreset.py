@@ -25,8 +25,8 @@ args = parser.parse_args()
 dic = vars(args)
 
 if args.All:
-    os.system(f"rm .Experiment")
-    os.system(f"cp $EXP \.Experiment")
+    os.system("rm .Experiment")
+    os.system("cp $EXP \.Experiment")
     os.system("cat $EXP > $EXPS/default ")
 
 # with open('Experiment', 'r+') as exp:
@@ -62,9 +62,9 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))
 
 
