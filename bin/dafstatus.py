@@ -132,12 +132,12 @@ if args.umatrix:
 if args.bounds:
     
     print('')
-    print('Mu    =    }'.format(dict_args["bound_Mu"]))
-    print('Eta   =    }'.format(dict_args["bound_Eta"]))
-    print('Chi   =    }'.format(dict_args["bound_Chi"]))
-    print('Phi   =    }'.format(dict_args["bound_Phi"]))
-    print('Nu    =    }'.format(dict_args["bound_Nu"]))
-    print('Del   =    }'.format(dict_args["bound_Del"]))
+    print('Mu    =    {}'.format(dict_args["bound_Mu"]))
+    print('Eta   =    {}'.format(dict_args["bound_Eta"]))
+    print('Chi   =    {}'.format(dict_args["bound_Chi"]))
+    print('Phi   =    {}'.format(dict_args["bound_Phi"]))
+    print('Nu    =    {}'.format(dict_args["bound_Nu"]))
+    print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')    
 
 if args.All:
@@ -200,12 +200,12 @@ if args.All:
     print('')
     
     print('')
-    print('Mu    =    }'.format(dict_args["bound_Mu"]))
-    print('Eta   =    }'.format(dict_args["bound_Eta"]))
-    print('Chi   =    }'.format(dict_args["bound_Chi"]))
-    print('Phi   =    }'.format(dict_args["bound_Phi"]))
-    print('Nu    =    }'.format(dict_args["bound_Nu"]))
-    print('Del   =    }'.format(dict_args["bound_Del"]))
+    print('Mu    =    {}'.format(dict_args["bound_Mu"]))
+    print('Eta   =    {}'.format(dict_args["bound_Eta"]))
+    print('Chi   =    {}'.format(dict_args["bound_Chi"]))
+    print('Phi   =    {}'.format(dict_args["bound_Phi"]))
+    print('Nu    =    {}'.format(dict_args["bound_Nu"]))
+    print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')    
 
 
