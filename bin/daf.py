@@ -827,7 +827,7 @@ class Control(object):
 
         
             # print('')
-            # print(f' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {np.round(newref,5)} will be used.')
+            # print(' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {} will be used.'.format(np.round(newref,5)))
                 
         else:
      
@@ -1316,7 +1316,7 @@ class Control(object):
                 if 'flagmap' not in kwargs.keys():
            
                     print('')
-                    print(f'Q parallel to reference vector, so using {np.round(newref,5)} as reference for Psi')
+                    print('Q parallel to reference vector, so using {} as reference for Psi'.format(np.round(newref,5)))
 
                 
             else:
@@ -1698,10 +1698,10 @@ class Control(object):
                             for line in lines:
                                 exp.write(line)
                         print('')
-                        print(f'Sample  = {self.samp.name}')
+                        print('Sample  = {}'.format(self.samp.name))
                         os.system("daf.wh")
                     else:
-                        print(f'Can\'t find the reflection {hkl}')
+                        print('Can\'t find the reflection {}'.format(hkl))
                     
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)

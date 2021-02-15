@@ -41,22 +41,22 @@ lb = lambda x: "{:.5f}".format(float(x))
 hklnow = ret_list(dict_args["hklnow"])
 
 print('')
-print(f'HKL now =   ', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))
+print('HKL now =   ', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))
 print('')
-print(f'Alpha   =    {lb(dict_args["alpha"])}')
-print(f'Beta    =    {lb(dict_args["beta"])}')
-print(f'Psi     =    {lb(dict_args["psi"])}')
-print(f'Tau     =    {lb(dict_args["tau"])}')
-print(f'Qaz     =    {lb(dict_args["qaz"])}')
-print(f'Naz     =    {lb(dict_args["naz"])}')
-print(f'Omega   =    {lb(dict_args["omega"])}')
+print('Alpha   =    {}'.format(lb(dict_args["alpha"])))
+print('Beta    =    {}'.format(lb(dict_args["beta"])))
+print('Psi     =    {}'.format(lb(dict_args["psi"])))
+print('Tau     =    {}'.format(lb(dict_args["tau"])))
+print('Qaz     =    {}'.format(lb(dict_args["qaz"])))
+print('Naz     =    {}'.format(lb(dict_args["naz"])))
+print('Omega   =    {}'.format(lb(dict_args["omega"])))
 print('')
-print(f'Del     =    {lb(dict_args["Del"])}')
-print(f'Eta     =    {lb(dict_args["Eta"])}')
-print(f'Chi     =    {lb(dict_args["Chi"])}')
-print(f'Phi     =    {lb(dict_args["Phi"])}')
-print(f'Nu      =    {lb(dict_args["Nu"])}')
-print(f'Mu      =    {lb(dict_args["Mu"])}')
+print('Del     =    {}'.format(lb(dict_args["Del"])))
+print('Eta     =    {}'.format(lb(dict_args["Eta"])))
+print('Chi     =    {}'.format(lb(dict_args["Chi"])))
+print('Phi     =    {}'.format(lb(dict_args["Phi"])))
+print('Nu      =    {}'.format(lb(dict_args["Nu"])))
+print('Mu      =    {}'.format(lb(dict_args["Mu"])))
 print('')    
     
 log = sys.argv.pop(0).split('command_line/')[1]    
@@ -64,7 +64,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

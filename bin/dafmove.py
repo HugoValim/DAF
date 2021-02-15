@@ -120,7 +120,7 @@ if float(angs[16]) < 1e-4:
         
 
 else:
-    print(f'Can\'t find the HKL {args.Move}')
+    print('Can\'t find the HKL {}'.format(args.Move))
 
 
        
@@ -131,7 +131,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

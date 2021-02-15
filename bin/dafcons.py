@@ -109,19 +109,19 @@ if args.List:
     
     
     print('')
-    print(f'Alpha =    {dict_args["cons_alpha"]}')
-    print(f'Beta  =    {dict_args["cons_beta"]}')
-    print(f'Psi   =    {dict_args["cons_psi"]}')
-    print(f'Qaz   =    {dict_args["cons_qaz"]}')
-    print(f'Naz   =    {dict_args["cons_naz"]}')
-    print(f'Omega =    {dict_args["cons_omega"]}')
+    print('Alpha =    {}'.format(dict_args["cons_alpha"]))
+    print('Beta  =    {}'.format(dict_args["cons_beta"]))
+    print('Psi   =    {}'.format(dict_args["cons_psi"]))
+    print('Qaz   =    {}'.format(dict_args["cons_qaz"]))
+    print('Naz   =    {}'.format(dict_args["cons_naz"]))
+    print('Omega =    {}'.format(dict_args["cons_omega"]))
     print('')
-    print(f'Mu    =    {dict_args["cons_Mu"]}')
-    print(f'Eta   =    {dict_args["cons_Eta"]}')
-    print(f'Chi   =    {dict_args["cons_Chi"]}')
-    print(f'Phi   =    {dict_args["cons_Phi"]}')
-    print(f'Nu    =    {dict_args["cons_Nu"]}')
-    print(f'Del   =    {dict_args["cons_Del"]}')
+    print('Mu    =    {}'.format(dict_args["cons_Mu"]))
+    print('Eta   =    {}'.format(dict_args["cons_Eta"]))
+    print('Chi   =    {}'.format(dict_args["cons_Chi"]))
+    print('Phi   =    {}'.format(dict_args["cons_Phi"]))
+    print('Nu    =    {}'.format(dict_args["cons_Nu"]))
+    print('Del   =    {}'.format(dict_args["cons_Del"]))
     print('')    
     
 log = sys.argv.pop(0).split('command_line/')[1]    
@@ -129,7 +129,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

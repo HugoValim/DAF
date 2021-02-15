@@ -165,12 +165,12 @@ if args.Params:
     dict_args = du.dict_conv()
     
     print('')
-    print(f'a    =    {dict_args["lparam_a"]}')
-    print(f'b    =    {dict_args["lparam_b"]}')
-    print(f'c    =    {dict_args["lparam_c"]}')
-    print(f'\u03B1    =    {dict_args["lparam_alpha"]}')
-    print(f'\u03B2    =    {dict_args["lparam_beta"]}')
-    print(f'\u03B3    =    {dict_args["lparam_gama"]}')
+    print('a    =    {}'.format(dict_args["lparam_a"]))
+    print('b    =    {}'.format(dict_args["lparam_b"]))
+    print('c    =    {}'.format(dict_args["lparam_c"]))
+    print('\u03B1    =    {}'.format(dict_args["lparam_alpha"]))
+    print('\u03B2    =    {}'.format(dict_args["lparam_beta"]))
+    print('\u03B3    =    {}'.format(dict_args["lparam_gama"]))
     print('')
 
 
@@ -206,11 +206,11 @@ else:
 if args.list:
     print('')
     if hkl1:
-        print(f'HKL1: {hkl1}  {angs1}')
+        print('HKL1: {}  {}'.format(hkl1, angs1))
     if hkl2:
-        print(f'HKL2: {hkl2}  {angs2}')
+        print('HKL2: {}  {}'.format(hkl2, angs2))
     if hkl3:
-        print(f'HKL3: {hkl3}  {angs3}')
+        print('HKL3: {}  {}'.format(hkl3, angs3))
     
     print('')
 
@@ -345,7 +345,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

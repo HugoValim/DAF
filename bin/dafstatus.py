@@ -132,12 +132,12 @@ if args.umatrix:
 if args.bounds:
     
     print('')
-    print(f'Mu    =    {dict_args["bound_Mu"]}')
-    print(f'Eta   =    {dict_args["bound_Eta"]}')
-    print(f'Chi   =    {dict_args["bound_Chi"]}')
-    print(f'Phi   =    {dict_args["bound_Phi"]}')
-    print(f'Nu    =    {dict_args["bound_Nu"]}')
-    print(f'Del   =    {dict_args["bound_Del"]}')
+    print('Mu    =    {}'.format(dict_args["bound_Mu"]))
+    print('Eta   =    {}'.format(dict_args["bound_Eta"]))
+    print('Chi   =    {}'.format(dict_args["bound_Chi"]))
+    print('Phi   =    {}'.format(dict_args["bound_Phi"]))
+    print('Nu    =    {}'.format(dict_args["bound_Nu"]))
+    print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')    
 
 if args.All:
@@ -200,12 +200,12 @@ if args.All:
     print('')
     
     print('')
-    print(f'Mu    =    {dict_args["bound_Mu"]}')
-    print(f'Eta   =    {dict_args["bound_Eta"]}')
-    print(f'Chi   =    {dict_args["bound_Chi"]}')
-    print(f'Phi   =    {dict_args["bound_Phi"]}')
-    print(f'Nu    =    {dict_args["bound_Nu"]}')
-    print(f'Del   =    {dict_args["bound_Del"]}')
+    print('Mu    =    {}'.format(dict_args["bound_Mu"]))
+    print('Eta   =    {}'.format(dict_args["bound_Eta"]))
+    print('Chi   =    {}'.format(dict_args["bound_Chi"]))
+    print('Phi   =    {}'.format(dict_args["bound_Phi"]))
+    print('Nu    =    {}'.format(dict_args["bound_Nu"]))
+    print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')    
 
 
@@ -216,7 +216,7 @@ log = sys.argv.pop(0).split('command_line/')[1]
 for i in sys.argv:
     log += ' ' + i
 
-os.system(f"echo {log} >> Log")
+os.system("echo {} >> Log".format(log))
 
 if dict_args['macro_flag'] == 'True':
-    os.system(f"echo {log} >> {dict_args['macro_file']}")
+    os.system("echo {} >> {}".format(log, dict_args['macro_file']))
