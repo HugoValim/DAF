@@ -36,5 +36,4 @@ for i in sys.argv:
 os.system("echo {} >> Log".format(log))
 
 # if dict_args['macro_flag']:
-    os.system("echo {} >> {}".format(log, dict_args['macro_name']))
-
+#    os.system("echo {} >> {}".format(log, dict_args['macro_name']))
