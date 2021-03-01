@@ -20,18 +20,16 @@ Eg:
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
 parser.add_argument('-a', '--All', action='store_true', help='Sets all inputs of the experiment to default')
-parser.add_argument('--hard', action='store_true', help='If used resets all setups to default')
-parser.add_argument('--realhard', action='store_true', help='If used deletes all setups and then resets to default')
+parser.add_argument('--hard', action='store_true', help='If used deletes all setups before reseting them')
 
 args = parser.parse_args()
 dic = vars(args)
 
 if args.All:
+    if args.hard:
+        os.system('rm -fr "$HOME/.daf/"')
+    os.system('cp -r "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
     os.system('cp "$HOME/.daf/default" .Experiment')
-    if args.hard or args.realhard:
-        if args.realhard:
-            os.system('rm -fr "$HOME/.daf/"')
-        os.system('cp -r "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
 
 # with open('Experiment', 'r+') as exp:
  
