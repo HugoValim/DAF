@@ -25,8 +25,8 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-os.system("cp $EXP \.Experiment")
-os.system("cat $EXP > $EXPS/default ")
+os.system('cp -nr "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
+os.system('cp -n "$HOME/.daf/default" .Experiment')
 
 log = sys.argv.pop(0).split('command_line/')[1]      
 

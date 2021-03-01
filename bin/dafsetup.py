@@ -40,7 +40,7 @@ dic = vars(args)
 
 
 if args.change:
-    os.system("cat $EXPS/{} > \.Experiment".format(args.change))
+    os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
 
     with open('.Experiment', 'r+') as exp:
  
@@ -76,22 +76,22 @@ setup_now = dict_args['setup']
 
 if args.save:
     if args.save == 'no_args':
-        os.system("cat .Experiment > $EXPS/{}".format(setup_now))
+        os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
     
     else:
         
-        os.system("cat .Experiment > $EXPS/{}".format(args.save))
+        os.system('cp .Experiment "$HOME/.daf/{}"'.format(args.save))
 
 
 
 if args.list:
-    os.system("ls -A1 $EXPS | sed 's/^/   /' | sed '/   {}$/c \u27A4  {}' ".format(setup_now, setup_now))
+    os.system("ls -A1 \"$HOME/.daf/\" | sed 's/^/   /' | sed '/   {}$/c \u27A4  {}' ".format(setup_now, setup_now))
 
 if args.remove:
     
     for i in args.remove:
         if setup_now != i: 
-            os.system("rm $EXPS/{}".format(i))
+            os.system('rm -f "$HOME/.daf/{}"'.format(i))
         else:
             print('')
             print('Leave the setup before removing it')
