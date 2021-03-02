@@ -94,8 +94,8 @@ class Control(object):
             self.col5 = 0
         
         self.space = 12
-        self.marker = '\u2501'
-        self.column_marker = '\u2503'
+        self.marker = '-'
+        self.column_marker = '|'
         self.center = self.column_marker+"{:^" + str(self.space - 2) + "}" + self.column_marker
         self.roundfit = 5
         
@@ -676,7 +676,7 @@ class Control(object):
               self.en = xu.lam2en(self.lam)
             
    
-    def set_print_options(self, marker = '\u2501', column_marker = '\u2503', space = 12):
+    def set_print_options(self, marker = '-', column_marker = '|', space = 12):
      
         self.marker = marker
         self.column_marker = column_marker
