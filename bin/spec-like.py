@@ -57,8 +57,8 @@ class Control(object):
     
     
     colunas = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
-               2:{0 : '--', 1 : '\u03B1 = \u03B2', 2 : '\u03B1 fix', 3 : '\u03B2 fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
-               3:{0 : '\u03C9 fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '\u03B7 = \u03B4/2', 6 : '\u03BC = \u03BD/2'},
+               2:{0 : '--', 1 : 'alpha = beta', 2 : 'alpha fix', 3 : 'beta fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
+               3:{0 : 'omega fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : 'eta = delta/2', 6 : 'mu = nu/2'},
                4:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'},
                5:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'}}
     
@@ -106,9 +106,9 @@ class Control(object):
         angles = {'--' : 'x', 'del_fix' : 'Del', 'nu_fix' : 'Nu', 'mu_fix' : 'Mu', 
                   'eta_fix' : 'Eta', 'chi_fix' : 'Chi','phi_fix' : 'Phi'}
         
-        cons = {'--' : 'x', 'qaz_fix' : 'qaz', 'naz_fix' : 'naz', '\u03B1 = \u03B2' : 'aeqb', 
-                     '\u03B1 fix' : 'alpha', '\u03B2 fix' : 'beta', 'psi_fix' : 'psi', '\u03C9 fix' : 'omega',
-                     '\u03B7 = \u03B4/2' : 'eta=del/2', '\u03BC = \u03BD/2' : 'mu=nu/2'}
+        cons = {'--' : 'x', 'qaz_fix' : 'qaz', 'naz_fix' : 'naz', 'alpha = beta' : 'aeqb', 
+                     'alpha fix' : 'alpha', 'beta fix' : 'beta', 'psi_fix' : 'psi', 'omega fix' : 'omega',
+                     'eta = delta/2' : 'eta=del/2', 'mu = nu/2' : 'mu=nu/2'}
         
         self.motcon = list()
         self.const = list()
@@ -1390,7 +1390,7 @@ class Control(object):
         self.isscan = True
 
      
-        self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2\u03B8', '\u03B8', 'alpha', 'qaz', 'naz',
+        self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2theta', 'theta', 'alpha', 'qaz', 'naz',
                                                                                              'tau', 'psi', 'beta', 'omega',"HKL Calc", 'Error'])  
 
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]

@@ -23,12 +23,12 @@ Eg:
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
 parser.add_argument('-m', '--Material', metavar='samp', type=str, help='Sets the material that is going to be used in the experiment')
-parser.add_argument('-p', '--Lattice_parameters', metavar=('a', 'b', 'c', '\u03B1', '\u03B2', '\u03B3 '), type=float, nargs=6, help='Sets lattice parameters, must be passed if defining a new material')
+parser.add_argument('-p', '--Lattice_parameters', metavar=('a', 'b', 'c', 'alpha', 'beta', 'gamma '), type=float, nargs=6, help='Sets lattice parameters, must be passed if defining a new material')
 parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the reflection paralel to the incident beam')
 parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the reflection perpendicular to the incident beam')
 parser.add_argument('-r', '--RDir', metavar=('x', 'y', 'z'), type=int, nargs=3,help='Sets the reference vector')
 parser.add_argument('-s', '--Sampleor', metavar='or', type=str,help='Sets the sample orientation at Phi axis')
-parser.add_argument('-e', '--Energy', metavar='en', type=float, help='Sets the energy of the experiment (eV), wavelength can also be given (\u212B)')
+parser.add_argument('-e', '--Energy', metavar='en', type=float, help='Sets the energy of the experiment (eV), wavelength can also be given (angstrom)')
 args = parser.parse_args()
 dic = vars(args)
 

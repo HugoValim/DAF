@@ -168,9 +168,9 @@ if args.Params:
     print('a    =    {}'.format(dict_args["lparam_a"]))
     print('b    =    {}'.format(dict_args["lparam_b"]))
     print('c    =    {}'.format(dict_args["lparam_c"]))
-    print('\u03B1    =    {}'.format(dict_args["lparam_alpha"]))
-    print('\u03B2    =    {}'.format(dict_args["lparam_beta"]))
-    print('\u03B3    =    {}'.format(dict_args["lparam_gama"]))
+    print('alpha    =    {}'.format(dict_args["lparam_alpha"]))
+    print('beta    =    {}'.format(dict_args["lparam_beta"]))
+    print('gamma    =    {}'.format(dict_args["lparam_gama"]))
     print('')
 
 
