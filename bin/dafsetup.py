@@ -85,7 +85,7 @@ if args.save:
 
 
 if args.list:
-    os.system("ls -A1 \"$HOME/.daf/\" | sed 's/^/   /' | sed '/   {}$/c \u27A4  {}' ".format(setup_now, setup_now))
+    os.system("ls -A1 \"$HOME/.daf/\" | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(setup_now, setup_now))
 
 if args.remove:
     

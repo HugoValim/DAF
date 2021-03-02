@@ -62,8 +62,8 @@ class TablePrinter(object):
 class Control(object):
     
     colunas = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
-               2:{0 : '--', 1 : '\u03B1 = \u03B2', 2 : '\u03B1 fix', 3 : '\u03B2 fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
-               3:{0 : '\u03C9 fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '\u03B7 = \u03B4/2', 6 : '\u03BC = \u03BD/2'},
+               2:{0 : '--', 1 : 'alpha = beta', 2 : 'alpha fix', 3 : 'beta fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
+               3:{0 : 'omega fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : 'eta = delta/2', 6 : 'mu = nu/2'},
                4:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'},
                5:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'}}
     
@@ -101,8 +101,8 @@ class Control(object):
             self.col5 = 0
         
         self.space = 12
-        self.marker = '\u2501'
-        self.column_marker = '\u2503'
+        self.marker = '-'
+        self.column_marker = '|'
         self.center = self.column_marker+"{:^" + str(self.space - 2) + "}" + self.column_marker
         self.roundfit = 5
         self.centshow = "{:^" + str(16 - 2) + "}"
@@ -114,9 +114,9 @@ class Control(object):
         angles = {'--' : 'x', 'del_fix' : 'Del', 'nu_fix' : 'Nu', 'mu_fix' : 'Mu', 
                   'eta_fix' : 'Eta', 'chi_fix' : 'Chi','phi_fix' : 'Phi'}
         
-        cons = {'--' : 'x', 'qaz_fix' : 'qaz', 'naz_fix' : 'naz', '\u03B1 = \u03B2' : 'aeqb', 
-                     '\u03B1 fix' : 'alpha', '\u03B2 fix' : 'beta', 'psi_fix' : 'psi', '\u03C9 fix' : 'omega',
-                     '\u03B7 = \u03B4/2' : 'eta=del/2', '\u03BC = \u03BD/2' : 'mu=nu/2'}
+        cons = {'--' : 'x', 'qaz_fix' : 'qaz', 'naz_fix' : 'naz', 'alpha = beta' : 'aeqb', 
+                     'alpha fix' : 'alpha', 'beta fix' : 'beta', 'psi_fix' : 'psi', 'omega fix' : 'omega',
+                     'eta = delta/2' : 'eta=del/2', 'mu = nu/2' : 'mu=nu/2'}
         
         self.motcon = list()
         self.const = list()
@@ -268,7 +268,7 @@ class Control(object):
         
         if sh == 'expt':
         
-            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (\u212B)'), 'col3':self.centshow.format('Energy (keV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
+            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (angstrom)'), 'col3':self.centshow.format('Energy (keV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
                     {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6': self.centshow.format(str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2]))}
                    ]
             return TablePrinter(fmt, ul='')(data)  
@@ -553,7 +553,7 @@ class Control(object):
      
         return np.degrees(np.max(Z)), np.degrees(np.min(Z))      
    
-    def set_print_options(self, marker = '\u2501', column_marker = '\u2503', space = 12):
+    def set_print_options(self, marker = '-', column_marker = '|', space = 12):
      
         self.marker = marker
         self.column_marker = column_marker
@@ -641,10 +641,10 @@ class Control(object):
             data = [{'col1':self.center.format('MODE'), 'col2':self.center.format(self.setup[0]), 'col3':self.center.format(self.setup[1]), 'col4':self.center.format(self.setup[2]), 'col5':self.center.format(self.setup[3]), 'col6' : self.center.format(self.setup[4]), 'col7' : self.center.format('Error')},
                     {'col1':self.center.format(str(self.col1)+str(self.col2)+str(self.col3)+str(self.col4)+str(self.col5)), 'col2':self.center.format(self.forprint[0][1]), 'col3':self.center.format(self.forprint[1][1]), 'col4':self.center.format(self.forprint[2][1]), 'col5':self.center.format(self.forprint[3][1]), 'col6' : self.center.format(self.forprint[4][1]), 'col7' : self.center.format('%.3g' % self.qerror)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
-                    {'col1':self.center.format('H'), 'col2' : self.center.format('K'), 'col3':self.center.format('L'), 'col4' : self.center.format('Ref vector'), 'col5':self.center.format('Energy (keV)'), 'col6':self.center.format('WL (\u212B)'), 'col7':self.center.format('Sample')},
+                    {'col1':self.center.format('H'), 'col2' : self.center.format('K'), 'col3':self.center.format('L'), 'col4' : self.center.format('Ref vector'), 'col5':self.center.format('Energy (keV)'), 'col6':self.center.format('WL (angstrom)'), 'col7':self.center.format('Sample')},
                     {'col1':self.center.format(str(lb(self.hkl_calc[0]))), 'col2' : self.center.format(str(lb(self.hkl_calc[1]))), 'col3':self.center.format(str(lb(self.hkl_calc[2]))),'col4' : self.center.format(str(self.nref[0])+ ' ' + str(self.nref[1]) + ' ' + str(self.nref[2])),'col5':self.center.format(lb(self.en/1000)), 'col6':self.center.format(lb(self.lam)), 'col7':self.center.format(self.samp.name)},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
-                    {'col1':self.center.format('Qx'), 'col2' : self.center.format('Qy'), 'col3':self.center.format('Qz'), 'col4' : self.center.format('|Q|'),'col5':self.center.format('Exp 2\u03B8'), 'col6':self.center.format('Dhkl'), 'col7':self.center.format('FHKL (Base)')},
+                    {'col1':self.center.format('Qx'), 'col2' : self.center.format('Qy'), 'col3':self.center.format('Qz'), 'col4' : self.center.format('|Q|'),'col5':self.center.format('Exp 2theta'), 'col6':self.center.format('Dhkl'), 'col7':self.center.format('FHKL (Base)')},
                     {'col1':self.center.format(str(lb(self.Qshow[0]))), 'col2' : self.center.format(str(lb(self.Qshow[1]))), 'col3':self.center.format(str(lb(self.Qshow[2]))), 'col4' : self.center.format(lb(self.Qnorm)), 'col5':self.center.format(lb(self.ttB1)), 'col6':self.center.format(lb(self.dhkl)), 'col7':self.center.format(lb(self.FHKL))},
                     {'col1':self.marker*self.space, 'col2':self.marker*self.space, 'col3':self.marker*self.space, 'col4':self.marker*self.space, 'col5':self.marker*self.space, 'col6' : self.marker*self.space,'col7':self.marker*self.space},
                     {'col1':self.center.format('Alpha'), 'col2':self.center.format('Beta'), 'col3':self.center.format('Psi'), 'col4':self.center.format('Tau'), 'col5':self.center.format('Qaz'), 'col6' : self.center.format('Naz'), 'col7' : self.center.format('Omega')},
@@ -1385,7 +1385,7 @@ class Control(object):
         
         self.isscan = True
      
-        self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2\u03B8', '\u03B8', 'alpha', 'qaz', 'naz',
+        self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2theta', 'theta', 'alpha', 'qaz', 'naz',
                                                                                              'tau', 'psi', 'beta', 'omega','HKL Calc', 'Error'])  
 
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]

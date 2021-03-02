@@ -99,9 +99,9 @@ if args.umatrix:
     UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
     UB = np.array([UB1, UB2, UB3])
 
-    center1 = "\u2502{:^11}"
+    center1 = "|{:^11}"
     center2 = "{:^11}"
-    center3 = "{:^11}\u2502"
+    center3 = "{:^11}|"
     fmt1 = [
                     ('', 'ident',  9),        
                     ('', 'col1',   12),
@@ -169,9 +169,9 @@ if args.All:
     UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
     UB = np.array([UB1, UB2, UB3])
 
-    center1 = "\u2502{:^11}"
+    center1 = "|{:^11}"
     center2 = "{:^11}"
-    center3 = "{:^11}\u2502"
+    center3 = "{:^11}|"
     fmt1 = [
                     ('', 'ident',  9),        
                     ('', 'col1',   12),

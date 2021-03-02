@@ -127,9 +127,9 @@ if args.Show:
     UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
     UB = np.array([UB1, UB2, UB3])
 
-    center1 = "\u2502{:^11}"
+    center1 = "|{:^11}"
     center2 = "{:^11}"
-    center3 = "{:^11}\u2502"
+    center3 = "{:^11}|"
     fmt1 = [
                     ('', 'ident',  9),        
                     ('', 'col1',   12),
@@ -168,9 +168,9 @@ if args.Params:
     print('a    =    {}'.format(dict_args["lparam_a"]))
     print('b    =    {}'.format(dict_args["lparam_b"]))
     print('c    =    {}'.format(dict_args["lparam_c"]))
-    print('\u03B1    =    {}'.format(dict_args["lparam_alpha"]))
-    print('\u03B2    =    {}'.format(dict_args["lparam_beta"]))
-    print('\u03B3    =    {}'.format(dict_args["lparam_gama"]))
+    print('alpha    =    {}'.format(dict_args["lparam_alpha"]))
+    print('beta    =    {}'.format(dict_args["lparam_beta"]))
+    print('gamma    =    {}'.format(dict_args["lparam_gama"]))
     print('')
 
 
