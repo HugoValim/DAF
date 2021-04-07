@@ -24,7 +24,6 @@ Eg:
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
 
-
 parser.add_argument('-m', '--cons_Mu', metavar='ang', type=float, help='Constrain Mu, default: 0')
 parser.add_argument('-e', '--cons_Eta', metavar='ang', type=float, help='Constrain Eta, default: 0')
 parser.add_argument('-c', '--cons_Chi', metavar='ang', type=float, help='Constrain Chi, default: 0')
@@ -52,12 +51,8 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
 
 
             if line.startswith(str(j)):
@@ -65,9 +60,6 @@ with open('.Experiment', 'r+') as exp:
                     lines[i] = str(j)+'='+str(k)+'\n'
 
             exp.seek(0)
-
-
-
 
 
     for line in lines:
@@ -81,12 +73,8 @@ if args.Reset:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
             for j in angs:
-
-
 
 
                 if line.startswith(str(j)):
@@ -95,14 +83,10 @@ if args.Reset:
                 exp.seek(0)
 
 
-
-
-
         for line in lines:
             exp.write(line)
 
 dict_args = du.dict_conv()
-
 
 
 if args.List:

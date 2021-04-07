@@ -42,12 +42,8 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
 
 
             if line.startswith(str(j)):
@@ -57,12 +53,8 @@ with open('.Experiment', 'r+') as exp:
             exp.seek(0)
 
 
-
-
-
     for line in lines:
         exp.write(line)
-
 
 
 dict_args = du.dict_conv()
@@ -79,9 +71,6 @@ U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
 U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
 U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
 U = np.array([U1, U2, U3])
-
-
-
 
 
 mode = [int(i) for i in dict_args['Mode']]
@@ -105,8 +94,6 @@ exp.set_U(U)
 exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
                     Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
                     psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
-
-
 
 
 startvalues = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
@@ -133,12 +120,8 @@ if float(angs[16]) < 1e-4:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
             for j,k in exp_dict.items():
-
-
 
 
                 if line.startswith(str(j)):
@@ -147,12 +130,8 @@ if float(angs[16]) < 1e-4:
             exp.seek(0)
 
 
-
-
         for line in lines:
             exp.write(line)
-
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

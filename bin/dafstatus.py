@@ -8,7 +8,6 @@ import numpy as np
 import dafutilities as du
 
 
-
 doc = """
 
 Show the experiment status
@@ -41,7 +40,6 @@ def ret_list(string):
     return [float(i) for i in string.strip('][').split(', ')]
 
 
-
 lb = lambda x: "{:.5f}".format(float(x))
 
 mode = [int(i) for i in dict_args['Mode']]
@@ -71,7 +69,6 @@ if args.Mode:
     mode = exp.show(sh = 'mode')
     print(mode)
     print('')
-
 
 
 if args.Experiment:
@@ -207,8 +204,6 @@ if args.All:
     print('Nu    =    {}'.format(dict_args["bound_Nu"]))
     print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')
-
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

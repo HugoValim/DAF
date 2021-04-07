@@ -12,22 +12,10 @@ import os
 import dafutilities as du
 
 
-
-
 PI = np.pi
 MAT = np.array
 rad = np.deg2rad
 deg = np.rad2deg
-
-
-
-
-
-
-
-
-
-
 
 
 class TablePrinter(object):
@@ -66,7 +54,6 @@ class Control(object):
                3:{0 : 'omega fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : 'eta = delta/2', 6 : 'mu = nu/2'},
                4:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'},
                5:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'}}
-
 
 
     def __init__(self, *args):
@@ -143,7 +130,6 @@ class Control(object):
         for i in self.motcon:
             if i != 'x':
                self.fix.append(i)
-
 
 
         if 'Mu' in self.fix:
@@ -232,7 +218,6 @@ class Control(object):
                     self.forprint.append((i,dprint[i]))
 
 
-
             elif self.col2 == 0:
                 self.forprint.insert(1,('XD', '--'))
                 # self.forprint.pop()
@@ -297,7 +282,6 @@ class Control(object):
         MAT = np.array
         rad = np.deg2rad
         deg = np.rad2deg
-
 
 
         PHI = MAT([[np.cos(rad(Phi)),    np.sin(rad(Phi)),   0],
@@ -388,8 +372,6 @@ class Control(object):
         Tc = MAT([t1c, t2c, t3c])
         Tp = MAT([t1p, t2p, t3p])
         TcI = LA.inv(Tc.T)
-
-
 
 
         U = Tp.T.dot(TcI)
@@ -494,10 +476,6 @@ class Control(object):
                 self.constrain.append(('mu=nu/2', '--'))
 
 
-
-
-
-
     def set_circle_constrain(self, **kwargs):
 
         if 'Mu' in kwargs.keys() and 'Mu' not in self.fix:
@@ -574,7 +552,6 @@ class Control(object):
             self.roundfit = 4
 
 
-
     def __str__(self):
 
         lb = lambda x: "{:.5f}".format(float(x))
@@ -589,8 +566,6 @@ class Control(object):
 
 
             self.forprint = self.constrain.copy()
-
-
 
 
             if self.col1 in (1,2):
@@ -621,8 +596,6 @@ class Control(object):
 
                     for i in self.motcon:
                         self.forprint.append((i,dprint[i]))
-
-
 
 
                 elif self.col2 == 0:
@@ -667,11 +640,6 @@ class Control(object):
                    ]
 
             return TablePrinter(fmt, ul=self.marker)(data)
-
-
-
-
-
 
 
     def __call__(self, *args, **kwargs):
@@ -737,8 +705,6 @@ class Control(object):
                   [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
 
 
-
-
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
         n = self.nref
         nc = self.samp.B.dot(n)
@@ -749,7 +715,6 @@ class Control(object):
 
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
-
 
 
         A1 = (self.samp.a1)
@@ -777,7 +742,6 @@ class Control(object):
         Kfnuhat = Kfnu/Kfnunorm
 
 
-
         taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))
 
 
@@ -796,11 +760,9 @@ class Control(object):
         # taupseudo = deg(np.arccos(QLhat.dot(nz)))
 
 
-
         # naz = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
 
         naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
-
 
 
         if taupseudo == 0 or taupseudo == 180:
@@ -846,7 +808,6 @@ class Control(object):
         # betaout = deg(np.arcsin(arg3))
 
         betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
-
 
 
         arg4 = np.round((np.sin(rad(Eta))*np.sin(rad(qaz))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1)),5)
@@ -919,7 +880,6 @@ class Control(object):
                   [0,            np.sin(rad(Nu)),    np.cos(rad(Nu))]])
 
 
-
         Z = MU.dot(ETA).dot(CHI).dot(PHI)
         n = self.nref
         nc = self.samp.B.dot(n)
@@ -951,14 +911,12 @@ class Control(object):
         Kfnuhat = Kfnu/Kfnunorm
 
 
-
         # taupseudo = deg(np.arccos(Qhat.dot(nhat)))
         taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))
 
 
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
-
 
 
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
@@ -976,7 +934,6 @@ class Control(object):
         # phipseudo = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
 
         naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
-
 
 
         if taupseudo == 0 or taupseudo == 180:
@@ -1009,9 +966,7 @@ class Control(object):
         psipseudo = deg(np.arccos(arg2))
 
 
-
         # psipseudo = deg(np.arccos(arg2))
-
 
 
         # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
@@ -1031,7 +986,6 @@ class Control(object):
         # elif  arg4 < -1:
         #     arg4 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
-
 
 
         if pseudo_angle == 'alpha':
@@ -1082,10 +1036,8 @@ class Control(object):
                 self.Q_lab = self.hrxrd.Transform(self.Q_material)
 
 
-
             self.dhkl = self.samp.planeDistance(self.hkl)
             tilt = xu.math.vector.VecAngle(self.hkl, self.samp.Q(self.ndir), deg=True)
-
 
 
             if 'sv' in kwargs.keys():
@@ -1102,33 +1054,25 @@ class Control(object):
                     pseudoconst = Control.pseudoAngleConst
 
 
-
-
                     if len(self.constrain) == 1:
 
 
                             restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
 
 
-
                     elif len(self.constrain) == 2:
-
 
 
                             restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
                                         {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
 
 
-
                     elif len(self.constrain) == 3:
-
 
 
                             restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
                                         {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
                                         {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])}]
-
-
 
 
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
@@ -1194,8 +1138,6 @@ class Control(object):
                         if qerror < 1e-5:
                             break
                         break
-
-
 
 
             self.qerror = qerror
@@ -1269,7 +1211,6 @@ class Control(object):
             Kfnuhat = Kfnu/Kfnunorm
 
 
-
             taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))
 
 
@@ -1290,7 +1231,6 @@ class Control(object):
             # taupseudo = deg(np.arccos(QLhat.dot(nz)))
 
             naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
-
 
 
             if taupseudo == 0 or taupseudo == 180:
@@ -1357,9 +1297,7 @@ class Control(object):
             self.omega = omega
 
 
-
             return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, "{0:.2e}".format(self.qerror)], [self.fcsv(self.Mu), self.fcsv(self.Eta), self.fcsv(self.Chi), self.fcsv(self.Phi), self.fcsv(self.Nu), self.fcsv(self.Del), self.fcsv(self.ttB1), self.fcsv(self.tB1), self.fcsv(self.alphain), self.fcsv(self.qaz), self.fcsv(self.naz), self.fcsv(self.taupseudo), self.fcsv(self.psipseudo), self.fcsv(self.betaout), self.fcsv(self.omega), [self.fcsv(self.hkl_calc[0]), self.fcsv(self.hkl_calc[1]), self.fcsv(self.hkl_calc[2])], "{0:.2e}".format(self.qerror)]
-
 
 
     def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ',', startvalues = [0,0,0,0,0,0]):
@@ -1382,7 +1320,6 @@ class Control(object):
             startvalues = a[:6]
 
 
-
         self.isscan = True
 
         self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2theta', 'theta', 'alpha', 'qaz', 'naz',
@@ -1395,8 +1332,6 @@ class Control(object):
 
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
-
-
 
 
     def show_reciprocal_space_plane(self, ttmax=None, ttmin = None, maxqout=0.01, scalef=100, ax=None, color=None,
@@ -1668,8 +1603,6 @@ class Control(object):
                     numpy.set_printoptions(**popts)
 
 
-
-
                     pseudo = self.calc_pseudo(*angles[:6])
                     exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
                                 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
@@ -1679,20 +1612,14 @@ class Control(object):
                             lines = exp.readlines()
 
 
-
-
                             for i, line in enumerate(lines):
                                 for j,k in exp_dict.items():
-
-
 
 
                                     if line.startswith(str(j)):
                                             lines[i] = str(j)+'='+str(k)+'\n'
 
                                 exp.seek(0)
-
-
 
 
                             for line in lines:

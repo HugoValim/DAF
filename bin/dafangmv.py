@@ -8,7 +8,6 @@ import numpy as np
 import dafutilities as du
 
 
-
 doc = """
 
 Move the diffractometer by direct change in the angles
@@ -36,18 +35,13 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-
 with open('.Experiment', 'r+') as exp:
 
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
 
 
             if line.startswith(str(j)):
@@ -57,12 +51,8 @@ with open('.Experiment', 'r+') as exp:
             exp.seek(0)
 
 
-
-
-
     for line in lines:
         exp.write(line)
-
 
 
 dict_args = du.dict_conv()
@@ -80,7 +70,6 @@ U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
 U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
 U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
 U = np.array([U1, U2, U3])
-
 
 
 mode = [int(i) for i in dict_args['Mode']]
@@ -104,20 +93,14 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in pseudo_dict.items():
-
-
 
 
             if line.startswith(str(j)):
                     lines[i] = str(j)+'='+str(k)+'\n'
 
             exp.seek(0)
-
-
 
 
     for line in lines:

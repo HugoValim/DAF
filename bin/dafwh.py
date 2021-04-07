@@ -8,7 +8,6 @@ import numpy as np
 import dafutilities as du
 
 
-
 doc = """
 
 Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer
@@ -19,7 +18,6 @@ epi = '''
 Eg:
     daf.wh
     '''
-
 
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)

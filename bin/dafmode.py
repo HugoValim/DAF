@@ -41,13 +41,8 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
-
 
 
             if line.startswith(str(j)):
@@ -58,12 +53,8 @@ with open('.Experiment', 'r+') as exp:
             exp.seek(0)
 
 
-
-
     for line in lines:
             exp.write(line)
-
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

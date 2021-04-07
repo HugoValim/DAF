@@ -45,9 +45,6 @@ U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
 U = np.array([U1, U2, U3])
 
 
-
-
-
 mode = [int(i) for i in dict_args['Mode']]
 idir = ret_list(dict_args['IDir'])
 ndir = ret_list(dict_args['NDir'])
@@ -74,7 +71,6 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
                     psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
 
 
-
 startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
 exp(sv = startvalue)
@@ -98,12 +94,8 @@ if float(angs[16]) < 1e-4:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
             for j,k in exp_dict.items():
-
-
 
 
                 if line.startswith(str(j)):
@@ -112,18 +104,12 @@ if float(angs[16]) < 1e-4:
             exp.seek(0)
 
 
-
-
         for line in lines:
             exp.write(line)
 
 
-
 else:
     print('Can\'t find the HKL {}'.format(args.Move))
-
-
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]
