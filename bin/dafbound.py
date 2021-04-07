@@ -11,11 +11,11 @@ Sets the bounds of the diffractometer angles
 """
 
 epi = '''
-Eg: 
+Eg:
     daf.bounds --Mu -180 180 --Nu -180 180
     daf.bouns -m -180 180 -n -180 180
     '''
-    
+
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
@@ -39,62 +39,62 @@ dic = vars(args)
 bounds = {'bound_Mu' : [-20.0, 160.0], 'bound_Eta' : [-20.0, 160.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-400.0, 400.0], 'bound_Nu' : [-20.0, 160.0], 'bound_Del' : [-20.0, 160.0]}
 
 with open('.Experiment', 'r+') as exp:
- 
+
     lines = exp.readlines()
 
 
- 
+
 
     for i, line in enumerate(lines):
         for j,k in dic.items():
-            
 
- 
+
+
 
             if line.startswith(str(j)):
                 if k != None:
                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
             exp.seek(0)
-            
-          
+
+
 
 
     for line in lines:
         exp.write(line)
 
 if args.Reset:
-    
+
     with open('.Experiment', 'r+') as exp:
- 
+
         lines = exp.readlines()
-    
-    
-     
-    
+
+
+
+
         for i, line in enumerate(lines):
             for j,k in bounds.items():
-                
-    
-     
-    
+
+
+
+
                 if line.startswith(str(j)):
                         lines[i] = str(j)+'='+str(k)+'\n'
-              
+
                 exp.seek(0)
-                
 
 
- 
+
+
 
         for line in lines:
             exp.write(line)
 
 
-dict_args = du.dict_conv()      
-        
+dict_args = du.dict_conv()
+
 if args.list:
-    
+
     print('')
     print('Mu    =    {}'.format(dict_args["bound_Mu"]))
     print('Eta   =    {}'.format(dict_args["bound_Eta"]))
@@ -102,12 +102,12 @@ if args.list:
     print('Phi   =    {}'.format(dict_args["bound_Phi"]))
     print('Nu    =    {}'.format(dict_args["bound_Nu"]))
     print('Del   =    {}'.format(dict_args["bound_Del"]))
-    print('')    
-    
+    print('')
 
 
 
-log = sys.argv.pop(0).split('command_line/')[1]         
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

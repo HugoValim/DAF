@@ -32,34 +32,34 @@ if args.All:
     os.system('cp "$HOME/.daf/default" .Experiment')
 
 # with open('Experiment', 'r+') as exp:
- 
+
 #     lines = exp.readlines()
 
 
- 
+
 
 #     for i, line in enumerate(lines):
 #         for j,k in dic.items():
-            
 
- 
+
+
 
 #             if line.startswith(str(j)):
 #                 if k != None:
 #                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
 #             exp.seek(0)
-            
-    
+
+
 
 
 #     for line in lines:
 #         exp.write(line)
-        
+
 
 dict_args = du.dict_conv()
-       
-log = sys.argv.pop(0).split('command_line/')[1]         
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

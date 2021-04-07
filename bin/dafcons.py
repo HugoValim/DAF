@@ -15,7 +15,7 @@ Function to constrain angles during the experiment
 """
 
 epi = '''
-Eg: 
+Eg:
     daf.cons --cons_Del 30 --cons_naz 15
     daf.amv -d 30 -cnaz 15
     '''
@@ -48,55 +48,55 @@ angs = ['cons_Mu','cons_Eta', 'cons_Chi', 'cons_Phi', 'cons_Nu', 'cons_Del', 'co
 
 
 with open('.Experiment', 'r+') as exp:
- 
+
     lines = exp.readlines()
 
 
- 
+
 
     for i, line in enumerate(lines):
         for j,k in dic.items():
-            
 
- 
+
+
 
             if line.startswith(str(j)):
                 if k != None:
                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
             exp.seek(0)
-            
 
 
- 
+
+
 
     for line in lines:
         exp.write(line)
 
 
 if args.Reset:
-    
+
     with open('.Experiment', 'r+') as exp:
- 
+
         lines = exp.readlines()
-    
-    
-     
-    
+
+
+
+
         for i, line in enumerate(lines):
             for j in angs:
-                
-    
-     
-    
+
+
+
+
                 if line.startswith(str(j)):
                         lines[i] = str(j)+'=0'+'\n'
-              
+
                 exp.seek(0)
-                
 
 
- 
+
+
 
         for line in lines:
             exp.write(line)
@@ -104,10 +104,10 @@ if args.Reset:
 dict_args = du.dict_conv()
 
 
-    
+
 if args.List:
-    
-    
+
+
     print('')
     print('Alpha =    {}'.format(dict_args["cons_alpha"]))
     print('Beta  =    {}'.format(dict_args["cons_beta"]))
@@ -122,9 +122,9 @@ if args.List:
     print('Phi   =    {}'.format(dict_args["cons_Phi"]))
     print('Nu    =    {}'.format(dict_args["cons_Nu"]))
     print('Del   =    {}'.format(dict_args["cons_Del"]))
-    print('')    
-    
-log = sys.argv.pop(0).split('command_line/')[1]    
+    print('')
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

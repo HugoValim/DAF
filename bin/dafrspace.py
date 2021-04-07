@@ -46,37 +46,37 @@ dic = vars(args)
 
 matplotlib.pyplot.show(block=True)
 # with open('.Experiment', 'r+') as exp:
- 
+
 #     lines = exp.readlines()
 
 
- 
+
 
 #     for i, line in enumerate(lines):
 #         for j,k in dic.items():
-            
 
- 
+
+
 
 #             if line.startswith(str(j)):
 #                 if k != None:
 #                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
 #             exp.seek(0)
-            
 
 
- 
+
+
 
 #     for line in lines:
 #         exp.write(line)
 
 
-     
+
 dict_args = du.dict_conv()
 
 def ret_list(string):
-    
+
     return [float(i) for i in string.strip('][').split(', ')]
 
 
@@ -91,8 +91,8 @@ U = np.array([U1, U2, U3])
 
 
 
-    
-mode = [int(i) for i in dict_args['Mode']]    
+
+mode = [int(i) for i in dict_args['Mode']]
 idir = ret_list(dict_args['IDir'])
 ndir = ret_list(dict_args['NDir'])
 rdir = ret_list(dict_args['RDir'])
@@ -110,7 +110,7 @@ else:
 
 if args.scale == None:
     args.scale = 100
-    
+
 
 
 Mu_bound = ret_list(dict_args['bound_Mu'])
@@ -147,7 +147,7 @@ ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir
 
 if args.materials:
     for i in args.materials:
-    
+
         exp = daf.Control(*mode)
         exp.set_material(str(i))
         exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
@@ -156,25 +156,25 @@ if args.materials:
         exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
                             Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
                             psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
-        
-        
-        
+
+
+
         # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
-        
+
         #
         # exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
-        
+
         # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
-        
+
         exp(calc=False)
         ttmax, ttmin = exp.two_theta_max()
         # print(ttmax)
-        
+
         ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale, ax = ax)
-    
-     
-    
-     
+
+
+
+
 
 
 
@@ -182,7 +182,7 @@ plt.show(block=True)
 ax.figure.show()
 
 
-log = sys.argv.pop(0).split('command_line/')[1]    
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

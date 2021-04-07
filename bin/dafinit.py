@@ -12,8 +12,8 @@ Initialize Diffractometer Angles Finder
 """
 
 epi = '''
-Eg: 
-   daf.init -6c 
+Eg:
+   daf.init -6c
     '''
 
 
@@ -28,7 +28,7 @@ dic = vars(args)
 os.system('cp -nr "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
 os.system('cp -n "$HOME/.daf/default" .Experiment')
 
-log = sys.argv.pop(0).split('command_line/')[1]      
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

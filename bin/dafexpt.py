@@ -13,13 +13,13 @@ Describe the experiment inputs
 
 """
 epi = '''
-Eg: 
+Eg:
     daf.expt --Material Si --Energy 8000
     daf.expt -m Si -e 8000
-    daf.expt -s x+ 
-    daf.expt -i 1 0 0 -n 0 1 0    
+    daf.expt -s x+
+    daf.expt -i 1 0 0 -n 0 1 0
     '''
-    
+
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
 
 parser.add_argument('-m', '--Material', metavar='samp', type=str, help='Sets the material that is going to be used in the experiment')
@@ -34,70 +34,70 @@ dic = vars(args)
 
 
 with open('.Experiment', 'r+') as exp:
- 
+
     lines = exp.readlines()
 
 
- 
+
 
     for i, line in enumerate(lines):
         for j,k in dic.items():
-            
 
- 
+
+
 
             if line.startswith(str(j)):
                 if k != None:
                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
             exp.seek(0)
-            
-          
+
+
 
 
     for line in lines:
         exp.write(line)
 
 
-        
+
 if args.Lattice_parameters:
     with open('.Experiment', 'r+') as exp:
- 
+
          lines = exp.readlines()
-    
-    
-     
-    
+
+
+
+
          for i, line in enumerate(lines):
-            
-                
-            
-            if line.startswith('lparam_a'):   
+
+
+
+            if line.startswith('lparam_a'):
                 lines[i] = 'lparam_a='+str(args.Lattice_parameters[0])+'\n'
-            if line.startswith('lparam_b'):   
+            if line.startswith('lparam_b'):
                 lines[i] = 'lparam_b='+str(args.Lattice_parameters[1])+'\n'
-            if line.startswith('lparam_c'):   
+            if line.startswith('lparam_c'):
                 lines[i] = 'lparam_c='+str(args.Lattice_parameters[2])+'\n'
-            if line.startswith('lparam_alpha'):   
+            if line.startswith('lparam_alpha'):
                 lines[i] = 'lparam_alpha='+str(args.Lattice_parameters[3])+'\n'
-            if line.startswith('lparam_beta'):   
+            if line.startswith('lparam_beta'):
                 lines[i] = 'lparam_beta='+str(args.Lattice_parameters[4])+'\n'
-            if line.startswith('lparam_gama'):   
+            if line.startswith('lparam_gama'):
                 lines[i] = 'lparam_gama='+str(args.Lattice_parameters[5])+'\n'
-             
-          
-         
+
+
+
             exp.seek(0)
-                
-              
-    
-    
+
+
+
+
          for line in lines:
              exp.write(line)
-             
-          
+
+
 dict_args = du.dict_conv()
-            
+
 if args.Material:
     Uw = dict_args['U_mat'].split(',')
 
@@ -106,42 +106,42 @@ if args.Material:
     U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
     U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
     U = np.array([U1, U2, U3])
-    mode = [int(i) for i in dict_args['Mode']]    
-    
+    mode = [int(i) for i in dict_args['Mode']]
+
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
     exp.set_exp_conditions(en = float(dict_args['Energy']))
     exp.set_U(U)
     UB = exp.calcUB()
     with open('.Experiment', 'r+') as exp:
-  
+
           lines = exp.readlines()
-     
-     
-      
-     
+
+
+
+
           for i, line in enumerate(lines):
-             
-                 
-     
-      
-     
+
+
+
+
+
             if line.startswith('U_mat'):
                     lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
             if line.startswith('UB'):
                     lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-          
+
             exp.seek(0)
-                 
-               
-     
-     
+
+
+
+
           for line in lines:
               exp.write(line)
 
 
 
-log = sys.argv.pop(0).split('command_line/')[1]         
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

@@ -12,7 +12,7 @@ Creates a macro to run commands from a script (txt) file
 """
 
 epi = '''
-Eg: 
+Eg:
    daf.macro -i -n my_macro
    daf.macro -s
    daf.macro -e my_macro
@@ -34,70 +34,70 @@ if args.Initialize:
 
     os.system("echo '#!/usr/bin/env bash' > {}".format(args.name))
     os.system("chmod 755 {}".format(args.name))
-    
+
     with open('.Experiment', 'r+') as exp:
-     
+
         lines = exp.readlines()
-    
-    
-     
-    
+
+
+
+
         for i, line in enumerate(lines):
-            
-                
-    
-     
-    
+
+
+
+
+
             if line.startswith('macro_flag'):
                     lines[i] ='macro_flag=True\n'
-            
+
             if line.startswith('macro_file'):
                     lines[i] ='macro_file='+args.name+'\n'
-                    
-          
+
+
             exp.seek(0)
-            
-          
-    
-    
+
+
+
+
         for line in lines:
             exp.write(line)
-        
+
 if args.Stop:
-    
+
     with open('.Experiment', 'r+') as exp:
-     
+
         lines = exp.readlines()
-    
-    
-     
-    
+
+
+
+
         for i, line in enumerate(lines):
-            
-                
-    
-     
-    
+
+
+
+
+
             if line.startswith('macro_flag'):
                     lines[i] ='macro_flag=False\n'
-            
+
             # if line.startswith('macro_file'):
             #         lines[i] ='macro_file=macro'
-                    
-          
+
+
             exp.seek(0)
-            
-          
-    
-    
+
+
+
+
         for line in lines:
             exp.write(line)
 
 if args.Execute:
     os.system("./{}".format(args.Execute))
 
-    
-log = sys.argv.pop(0).split('command_line/')[1]         
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i
