@@ -25,7 +25,6 @@ Eg:
     '''
 
 
-
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
 parser.add_argument('-r1', '--hkl1', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for first reflection')
@@ -49,12 +48,8 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
 
 
             if line.startswith(str(j)):
@@ -64,11 +59,8 @@ with open('.Experiment', 'r+') as exp:
             exp.seek(0)
 
 
-
-
     for line in lines:
         exp.write(line)
-
 
 
 if args.UBmatrix:
@@ -78,12 +70,7 @@ if args.UBmatrix:
           lines = exp.readlines()
 
 
-
-
           for i, line in enumerate(lines):
-
-
-
 
 
             # if line.startswith('U'):
@@ -94,17 +81,11 @@ if args.UBmatrix:
             exp.seek(0)
 
 
-
-
           for line in lines:
               exp.write(line)
 
 
-
-
 lb = lambda x: "{:.5f}".format(float(x))
-
-
 
 
 if args.Show:
@@ -158,8 +139,6 @@ if args.Show:
     print('')
 
 
-
-
 if args.Params:
 
     dict_args = du.dict_conv()
@@ -172,7 +151,6 @@ if args.Params:
     print('beta    =    {}'.format(dict_args["lparam_beta"]))
     print('gamma    =    {}'.format(dict_args["lparam_gama"]))
     print('')
-
 
 
 def ret_list(string):
@@ -228,12 +206,7 @@ if args.Umatrix:
           lines = exp.readlines()
 
 
-
-
           for i, line in enumerate(lines):
-
-
-
 
 
             if line.startswith('U_mat'):
@@ -244,12 +217,8 @@ if args.Umatrix:
             exp.seek(0)
 
 
-
-
           for line in lines:
               exp.write(line)
-
-
 
 
 if  args.Calc2:
@@ -267,12 +236,7 @@ if  args.Calc2:
           lines = exp.readlines()
 
 
-
-
           for i, line in enumerate(lines):
-
-
-
 
 
             if line.startswith('U_mat'):
@@ -281,8 +245,6 @@ if  args.Calc2:
                     lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
 
             exp.seek(0)
-
-
 
 
           for line in lines:
@@ -302,12 +264,7 @@ if  args.Calc3:
          lines = exp.readlines()
 
 
-
-
          for i, line in enumerate(lines):
-
-
-
 
 
             if line.startswith('U_mat'):
@@ -330,10 +287,7 @@ if  args.Calc3:
                 lines[i] = 'lparam_gama='+lb(rp[5])+'\n'
 
 
-
             exp.seek(0)
-
-
 
 
          for line in lines:

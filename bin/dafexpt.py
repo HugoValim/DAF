@@ -38,12 +38,8 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
 
 
             if line.startswith(str(j)):
@@ -53,11 +49,8 @@ with open('.Experiment', 'r+') as exp:
             exp.seek(0)
 
 
-
-
     for line in lines:
         exp.write(line)
-
 
 
 if args.Lattice_parameters:
@@ -66,10 +59,7 @@ if args.Lattice_parameters:
          lines = exp.readlines()
 
 
-
-
          for i, line in enumerate(lines):
-
 
 
             if line.startswith('lparam_a'):
@@ -86,10 +76,7 @@ if args.Lattice_parameters:
                 lines[i] = 'lparam_gama='+str(args.Lattice_parameters[5])+'\n'
 
 
-
             exp.seek(0)
-
-
 
 
          for line in lines:
@@ -118,12 +105,7 @@ if args.Material:
           lines = exp.readlines()
 
 
-
-
           for i, line in enumerate(lines):
-
-
-
 
 
             if line.startswith('U_mat'):
@@ -134,11 +116,8 @@ if args.Material:
             exp.seek(0)
 
 
-
-
           for line in lines:
               exp.write(line)
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

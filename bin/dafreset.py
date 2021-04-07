@@ -36,12 +36,8 @@ if args.All:
 #     lines = exp.readlines()
 
 
-
-
 #     for i, line in enumerate(lines):
 #         for j,k in dic.items():
-
-
 
 
 #             if line.startswith(str(j)):
@@ -49,8 +45,6 @@ if args.All:
 #                     lines[i] = str(j)+'='+str(k)+'\n'
 
 #             exp.seek(0)
-
-
 
 
 #     for line in lines:

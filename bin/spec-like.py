@@ -54,14 +54,11 @@ class TablePrinter(object):
 class Control(object):
 
 
-
-
     colunas = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
                2:{0 : '--', 1 : 'alpha = beta', 2 : 'alpha fix', 3 : 'beta fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
                3:{0 : 'omega fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : 'eta = delta/2', 6 : 'mu = nu/2'},
                4:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'},
                5:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'}}
-
 
 
     def __init__(self, *args):
@@ -131,7 +128,6 @@ class Control(object):
         #print(self.const)
 
 
-
         # print(self.const)
         self.fix = list()
 
@@ -139,7 +135,6 @@ class Control(object):
         for i in self.motcon:
             if i != 'x':
                self.fix.append(i)
-
 
 
         if 'Mu' in self.fix:
@@ -184,7 +179,6 @@ class Control(object):
         self.negrestrict = ()
         self.fcsv = '{0:.4f}'.format
         # self.U = np.identity(3)
-
 
 
     def set_hkl(self, HKL):
@@ -286,8 +280,6 @@ class Control(object):
         Tc = MAT([t1c, t2c, t3c])
         Tp = MAT([t1p, t2p, t3p])
         TcI = LA.inv(Tc.T)
-
-
 
 
         U = Tp.T.dot(TcI)
@@ -402,10 +394,8 @@ class Control(object):
             -np.sin(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) + np.cos(rad(Mu))*np.cos(rad(Chi))])
 
 
-
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
-
 
 
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
@@ -514,10 +504,8 @@ class Control(object):
             -np.sin(rad(Mu))*np.sin(rad(Eta))*np.sin(rad(Chi)) + np.cos(rad(Mu))*np.cos(rad(Chi))])
 
 
-
         ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1/2
-
 
 
         alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
@@ -639,7 +627,6 @@ class Control(object):
             self.constrain.append(('mu=nu/2', '--'))
 
 
-
     def set_circle_constrain(self, **kwargs):
 
         if 'Mu' in kwargs.keys() and 'Mu' not in self.fix:
@@ -697,7 +684,6 @@ class Control(object):
             self.roundfit = 4
 
 
-
     def __str__(self):
 
         if self.isscan:
@@ -739,8 +725,6 @@ class Control(object):
 
                     for i in self.motcon:
                         self.forprint.append((i,dprint[i]))
-
-
 
 
                 elif self.col2 == 0:
@@ -854,7 +838,6 @@ class Control(object):
     #     self.errflag = 0
     #     self.trythis = [i for i in ['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'] if i not in self.fix and i not in self.posrestrict]
     #     pseudoconst = Control.pseudoAngleConst
-
 
 
     #     if len(self.constrain) != 0:
@@ -991,11 +974,6 @@ class Control(object):
     #                         restrict.pop()
 
 
-
-
-
-
-
     #     self.qerror = qerror
     #     self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp, en = self.en, U = self.U),5)
     #     print(self.hkl_calc)
@@ -1084,8 +1062,6 @@ class Control(object):
     #     self.omega = omega
 
 
-
-
     #     return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, "{0:.2e}".format(self.qerror)], [self.fcsv(self.Mu), self.fcsv(self.Eta), self.fcsv(self.Chi), self.fcsv(self.Phi), self.fcsv(self.Nu), self.fcsv(self.Del), self.fcsv(self.ttB1), self.fcsv(self.tB1), self.fcsv(self.alphain), self.fcsv(self.qaz), self.fcsv(self.naz), self.fcsv(self.taupseudo), self.fcsv(self.psipseudo), self.fcsv(self.betaout), self.fcsv(self.omega), [self.fcsv(self.hkl_calc[0]), self.fcsv(self.hkl_calc[1]), self.fcsv(self.hkl_calc[2])], "{0:.2e}".format(self.qerror)]
 
 
@@ -1107,7 +1083,6 @@ class Control(object):
         # qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Sirius coordinate axes system
 
         self.hrxrd = xu.HXRD(self.samp.Q(self.idir), self.samp.Q(self.ndir), en = self.en, qconv= self.qconv, sampleor = self.sampleor)
-
 
 
         self.Q_material = self.samp.Q(self.hkl)
@@ -1134,7 +1109,6 @@ class Control(object):
         self.errflag = 0
         self.trythis = [i for i in ['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'] if i not in self.fix and i not in self.posrestrict]
         pseudoconst = Control.pseudoAngleConst
-
 
 
         if len(self.constrain) != 0:
@@ -1269,11 +1243,6 @@ class Control(object):
                             restrict.pop()
 
 
-
-
-
-
-
         self.qerror = qerror
         self.hkl_calc = np.round(self.hrxrd.Ang2HKL(*ang,mat=self.samp, en = self.en),5)
         # print(self.hkl_calc)
@@ -1360,7 +1329,6 @@ class Control(object):
         self.psipseudo = psipseudo
         self.betaout = betaout
         self.omega = omega
-
 
 
         return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, "{0:.2e}".format(self.qerror)], [self.fcsv(self.Mu), self.fcsv(self.Eta), self.fcsv(self.Chi), self.fcsv(self.Phi), self.fcsv(self.Nu), self.fcsv(self.Del), self.fcsv(self.ttB1), self.fcsv(self.tB1), self.fcsv(self.alphain), self.fcsv(self.qaz), self.fcsv(self.naz), self.fcsv(self.taupseudo), self.fcsv(self.psipseudo), self.fcsv(self.betaout), self.fcsv(self.omega), [self.fcsv(self.hkl_calc[0]), self.fcsv(self.hkl_calc[1]), self.fcsv(self.hkl_calc[2])], "{0:.2e}".format(self.qerror)]

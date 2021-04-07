@@ -43,12 +43,8 @@ with open('.Experiment', 'r+') as exp:
     lines = exp.readlines()
 
 
-
-
     for i, line in enumerate(lines):
         for j,k in dic.items():
-
-
 
 
             if line.startswith(str(j)):
@@ -56,8 +52,6 @@ with open('.Experiment', 'r+') as exp:
                     lines[i] = str(j)+'='+str(k)+'\n'
 
             exp.seek(0)
-
-
 
 
     for line in lines:
@@ -70,21 +64,14 @@ if args.Reset:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
             for j,k in bounds.items():
-
-
 
 
                 if line.startswith(str(j)):
                         lines[i] = str(j)+'='+str(k)+'\n'
 
                 exp.seek(0)
-
-
-
 
 
         for line in lines:
@@ -103,8 +90,6 @@ if args.list:
     print('Nu    =    {}'.format(dict_args["bound_Nu"]))
     print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')
-
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

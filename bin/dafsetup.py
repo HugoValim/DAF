@@ -8,7 +8,6 @@ import numpy as np
 import dafutilities as du
 
 
-
 doc = """
 
 Create setups that helps the user to save their previou configuration configuration
@@ -37,8 +36,6 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-
-
 if args.change:
     os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
 
@@ -47,11 +44,7 @@ if args.change:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
-
-
 
 
             if line.startswith('setup'):
@@ -61,14 +54,8 @@ if args.change:
                 exp.seek(0)
 
 
-
-
-
         for line in lines:
             exp.write(line)
-
-
-
 
 
 dict_args = du.dict_conv()
@@ -83,7 +70,6 @@ if args.save:
         os.system('cp .Experiment "$HOME/.daf/{}"'.format(args.save))
 
 
-
 if args.list:
     os.system("ls -A1 \"$HOME/.daf/\" | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(setup_now, setup_now))
 
@@ -96,8 +82,6 @@ if args.remove:
             print('')
             print('Leave the setup before removing it')
             print('')
-
-
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

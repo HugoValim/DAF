@@ -24,7 +24,6 @@ Eg:
     '''
 
 
-
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
 
 # parser.add_argument('hkli', metavar='', type=float, nargs=3, help='Initial HKL for scan')
@@ -50,12 +49,8 @@ matplotlib.pyplot.show(block=True)
 #     lines = exp.readlines()
 
 
-
-
 #     for i, line in enumerate(lines):
 #         for j,k in dic.items():
-
-
 
 
 #             if line.startswith(str(j)):
@@ -65,12 +60,8 @@ matplotlib.pyplot.show(block=True)
 #             exp.seek(0)
 
 
-
-
-
 #     for line in lines:
 #         exp.write(line)
-
 
 
 dict_args = du.dict_conv()
@@ -87,9 +78,6 @@ U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
 U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
 U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
 U = np.array([U1, U2, U3])
-
-
-
 
 
 mode = [int(i) for i in dict_args['Mode']]
@@ -112,7 +100,6 @@ if args.scale == None:
     args.scale = 100
 
 
-
 Mu_bound = ret_list(dict_args['bound_Mu'])
 Eta_bound = ret_list(dict_args['bound_Eta'])
 Chi_bound = ret_list(dict_args['bound_Chi'])
@@ -130,7 +117,6 @@ exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['con
                     psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
 
 
-
 # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
 #
@@ -142,7 +128,6 @@ exp(calc=False)
 ttmax, ttmin = exp.two_theta_max()
 # print(ttmax)
 ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale)
-
 
 
 if args.materials:
@@ -158,7 +143,6 @@ if args.materials:
                             psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
 
 
-
         # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
         #
@@ -171,11 +155,6 @@ if args.materials:
         # print(ttmax)
 
         ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale, ax = ax)
-
-
-
-
-
 
 
 plt.show(block=True)

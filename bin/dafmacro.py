@@ -40,12 +40,7 @@ if args.Initialize:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
-
-
-
 
 
             if line.startswith('macro_flag'):
@@ -58,8 +53,6 @@ if args.Initialize:
             exp.seek(0)
 
 
-
-
         for line in lines:
             exp.write(line)
 
@@ -70,12 +63,7 @@ if args.Stop:
         lines = exp.readlines()
 
 
-
-
         for i, line in enumerate(lines):
-
-
-
 
 
             if line.startswith('macro_flag'):
@@ -86,8 +74,6 @@ if args.Stop:
 
 
             exp.seek(0)
-
-
 
 
         for line in lines:
