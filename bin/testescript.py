@@ -27,7 +27,7 @@ import pandas as pd
 #     else:
 #         exp.set_hkl((2,1,1))
 #         scanarg = (2,1,1), (2.1,1,1), 100
-        
+
 # else:
 exp = sl.Control(2,1,5)
 exp.set_hkl((2,1,1))
@@ -55,7 +55,7 @@ exp.set_print_options(marker = '-', column_marker = '|',   space = 16)
 # print(p)
 exp()
 print(exp)
-print() 
+print()
 # exp.scan(scanarg[0], scanarg[1], scanarg[2])
 # print(exp)
 # print()

@@ -17,7 +17,7 @@ Create setups that helps the user to save their previou configuration configurat
 
 
 epi = '''
-Eg: 
+Eg:
    daf.setup -c default
    daf.setup -s new_setup
    daf.setup -s
@@ -43,32 +43,32 @@ if args.change:
     os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
 
     with open('.Experiment', 'r+') as exp:
- 
+
         lines = exp.readlines()
 
 
- 
+
 
         for i, line in enumerate(lines):
-                
-    
-     
-    
+
+
+
+
             if line.startswith('setup'):
-  
+
                 lines[i] = 'setup='+str(args.change)+'\n'
-              
+
                 exp.seek(0)
-                
 
 
- 
+
+
 
         for line in lines:
             exp.write(line)
 
 
-     
+
 
 
 dict_args = du.dict_conv()
@@ -77,9 +77,9 @@ setup_now = dict_args['setup']
 if args.save:
     if args.save == 'no_args':
         os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
-    
+
     else:
-        
+
         os.system('cp .Experiment "$HOME/.daf/{}"'.format(args.save))
 
 
@@ -88,19 +88,19 @@ if args.list:
     os.system("ls -A1 \"$HOME/.daf/\" | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(setup_now, setup_now))
 
 if args.remove:
-    
+
     for i in args.remove:
-        if setup_now != i: 
+        if setup_now != i:
             os.system('rm -f "$HOME/.daf/{}"'.format(i))
         else:
             print('')
             print('Leave the setup before removing it')
             print('')
-    
-    
-    
 
-log = sys.argv.pop(0).split('command_line/')[1]    
+
+
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

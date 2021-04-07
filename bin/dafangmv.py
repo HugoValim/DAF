@@ -16,7 +16,7 @@ Move the diffractometer by direct change in the angles
 """
 
 epi = '''
-Eg: 
+Eg:
     daf.amv --Del 30 --Eta 15
     daf.amv -d 30 -e 15
     '''
@@ -38,38 +38,38 @@ dic = vars(args)
 
 
 with open('.Experiment', 'r+') as exp:
- 
+
     lines = exp.readlines()
 
 
- 
+
 
     for i, line in enumerate(lines):
         for j,k in dic.items():
-            
 
- 
+
+
 
             if line.startswith(str(j)):
                 if k != None:
                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
             exp.seek(0)
-            
 
 
- 
+
+
 
     for line in lines:
         exp.write(line)
 
 
-     
+
 dict_args = du.dict_conv()
- 
-        
+
+
 def ret_list(string):
-    
+
     return [float(i) for i in string.strip('][').split(', ')]
 
 
@@ -83,7 +83,7 @@ U = np.array([U1, U2, U3])
 
 
 
-mode = [int(i) for i in dict_args['Mode']]  
+mode = [int(i) for i in dict_args['Mode']]
 idir = ret_list(dict_args['IDir'])
 ndir = ret_list(dict_args['NDir'])
 rdir = ret_list(dict_args['RDir'])
@@ -100,31 +100,31 @@ pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo
 
 
 with open('.Experiment', 'r+') as exp:
- 
+
     lines = exp.readlines()
 
 
- 
+
 
     for i, line in enumerate(lines):
         for j,k in pseudo_dict.items():
-            
 
- 
+
+
 
             if line.startswith(str(j)):
                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
             exp.seek(0)
-            
-          
+
+
 
 
     for line in lines:
         exp.write(line)
 
-    
-log = sys.argv.pop(0).split('command_line/')[1]    
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

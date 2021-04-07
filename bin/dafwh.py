@@ -11,7 +11,7 @@ import dafutilities as du
 
 doc = """
 
-Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer 
+Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer
 
 """
 
@@ -30,10 +30,10 @@ args = parser.parse_args()
 dic = vars(args)
 
 dict_args = du.dict_conv()
- 
+
 def ret_list(string):
-    
-    return [float(i) for i in string.strip('][').split(', ')]        
+
+    return [float(i) for i in string.strip('][').split(', ')]
 
 
 lb = lambda x: "{:.5f}".format(float(x))
@@ -57,9 +57,9 @@ print('Chi     =    {}'.format(lb(dict_args["Chi"])))
 print('Phi     =    {}'.format(lb(dict_args["Phi"])))
 print('Nu      =    {}'.format(lb(dict_args["Nu"])))
 print('Mu      =    {}'.format(lb(dict_args["Mu"])))
-print('')    
-    
-log = sys.argv.pop(0).split('command_line/')[1]    
+print('')
+
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i

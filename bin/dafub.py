@@ -13,7 +13,7 @@ Defines UB matrix and Calculate UB matrix from 2 or 3 reflections
 
 """
 
-    
+
 epi = '''
 Eg:
     daf.ub -r1 1 0 0 0 5.28232 0 2 0 10.5647
@@ -45,25 +45,25 @@ dic = vars(args)
 
 
 with open('.Experiment', 'r+') as exp:
- 
+
     lines = exp.readlines()
 
 
- 
+
 
     for i, line in enumerate(lines):
         for j,k in dic.items():
-            
 
- 
+
+
 
             if line.startswith(str(j)):
                 if k != None:
                     lines[i] = str(j)+'='+str(k)+'\n'
-          
+
             exp.seek(0)
-            
-          
+
+
 
 
     for line in lines:
@@ -74,28 +74,28 @@ with open('.Experiment', 'r+') as exp:
 if args.UBmatrix:
     UB = np.array(args.UBmatrix).reshape(3,3)
     with open('.Experiment', 'r+') as exp:
-  
+
           lines = exp.readlines()
-     
-     
-      
-     
+
+
+
+
           for i, line in enumerate(lines):
-             
-                 
-     
-      
-     
+
+
+
+
+
             # if line.startswith('U'):
             #         lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
             if line.startswith('UB_mat'):
                     lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-          
+
             exp.seek(0)
-                 
-               
-     
-     
+
+
+
+
           for line in lines:
               exp.write(line)
 
@@ -108,9 +108,9 @@ lb = lambda x: "{:.5f}".format(float(x))
 
 
 if args.Show:
-    
+
     dict_args = du.dict_conv()
-    
+
     Uw = dict_args['U_mat'].split(',')
 
 
@@ -118,7 +118,7 @@ if args.Show:
     U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
     U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
     U = np.array([U1, U2, U3])
-    
+
     UBw = dict_args['UB_mat'].split(',')
 
 
@@ -131,39 +131,39 @@ if args.Show:
     center2 = "{:^11}"
     center3 = "{:^11}|"
     fmt1 = [
-                    ('', 'ident',  9),        
+                    ('', 'ident',  9),
                     ('', 'col1',   12),
                     ('', 'col2',   12),
                     ('', 'col3',   12),
-               
+
                    ]
-    
+
     data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
              {'ident':'U    =   ','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
              {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
              ]
-    
+
     data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
              {'ident':'UB   = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
              {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
              ]
-    
+
     Utp = daf.TablePrinter(fmt1, ul='')(data1)
     UBtp = daf.TablePrinter(fmt1, ul='')(data2)
-    
+
     print('')
     print(Utp)
     print('')
     print(UBtp)
     print('')
-    
-    
+
+
 
 
 if args.Params:
-    
+
     dict_args = du.dict_conv()
-    
+
     print('')
     print('a    =    {}'.format(dict_args["lparam_a"]))
     print('b    =    {}'.format(dict_args["lparam_b"]))
@@ -176,7 +176,7 @@ if args.Params:
 
 
 def ret_list(string):
-    
+
     return [float(i) for i in string.strip('][').split(', ')]
 
 dict_args = du.dict_conv()
@@ -185,17 +185,17 @@ if dict_args['hkl1'] != '':
     r1 = ret_list(dict_args['hkl1'])
     hkl1 = r1[:3]
     angs1 = r1[3:9]
-else: 
+else:
     hkl1 = None
 
-  
+
 if dict_args['hkl2'] != '':
     r2 = ret_list(dict_args['hkl2'])
     hkl2 = r2[:3]
     angs2 = r2[3:9]
 else:
     hkl2 = None
-        
+
 if dict_args['hkl3'] != '':
     r3 = ret_list(dict_args['hkl3'])
     hkl3 = r3[:3]
@@ -211,12 +211,12 @@ if args.list:
         print('HKL2: {}  {}'.format(hkl2, angs2))
     if hkl3:
         print('HKL3: {}  {}'.format(hkl3, angs3))
-    
+
     print('')
 
 if args.Umatrix:
     U = np.array(args.Umatrix).reshape(3,3)
-    mode = [int(i) for i in dict_args['Mode']]    
+    mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
@@ -224,28 +224,28 @@ if args.Umatrix:
     exp.set_U(U)
     UB = exp.calcUB()
     with open('.Experiment', 'r+') as exp:
-  
+
           lines = exp.readlines()
-     
-     
-      
-     
+
+
+
+
           for i, line in enumerate(lines):
-             
-                 
-     
-      
-     
+
+
+
+
+
             if line.startswith('U_mat'):
                     lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
             if line.startswith('UB'):
                     lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-          
+
             exp.seek(0)
-                 
-               
-     
-     
+
+
+
+
           for line in lines:
               exp.write(line)
 
@@ -253,94 +253,94 @@ if args.Umatrix:
 
 
 if  args.Calc2:
-    mode = [int(i) for i in dict_args['Mode']]    
+    mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
     exp.set_exp_conditions(en = float(dict_args['Energy']))
-    
+
     U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
 
-    
+
     with open('.Experiment', 'r+') as exp:
-  
+
           lines = exp.readlines()
-     
-     
-      
-     
+
+
+
+
           for i, line in enumerate(lines):
-             
-                 
-     
-      
-     
+
+
+
+
+
             if line.startswith('U_mat'):
                     lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
             if line.startswith('UB_mat'):
                     lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-          
+
             exp.seek(0)
-                 
-               
-     
-     
+
+
+
+
           for line in lines:
               exp.write(line)
 
 if  args.Calc3:
-    mode = [int(i) for i in dict_args['Mode']]    
+    mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
     # exp.set_material(dict_args['Material'])
     exp.set_exp_conditions(en = float(dict_args['Energy']))
-    
+
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
 
     with open('.Experiment', 'r+') as exp:
- 
+
          lines = exp.readlines()
-    
-    
-     
-    
+
+
+
+
          for i, line in enumerate(lines):
-            
-                
-    
-     
-             
+
+
+
+
+
             if line.startswith('U_mat'):
                 lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-            
+
             if line.startswith('UB_mat'):
                 lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-            
-            if line.startswith('lparam_a'):   
+
+            if line.startswith('lparam_a'):
                 lines[i] = 'lparam_a='+lb(rp[0])+'\n'
-            if line.startswith('lparam_b'):   
+            if line.startswith('lparam_b'):
                 lines[i] = 'lparam_b='+lb(rp[1])+'\n'
-            if line.startswith('lparam_c'):   
+            if line.startswith('lparam_c'):
                 lines[i] = 'lparam_c='+lb(rp[2])+'\n'
-            if line.startswith('lparam_alpha'):   
+            if line.startswith('lparam_alpha'):
                 lines[i] = 'lparam_alpha='+lb(rp[3])+'\n'
-            if line.startswith('lparam_beta'):   
+            if line.startswith('lparam_beta'):
                 lines[i] = 'lparam_beta='+lb(rp[4])+'\n'
-            if line.startswith('lparam_gama'):   
+            if line.startswith('lparam_gama'):
                 lines[i] = 'lparam_gama='+lb(rp[5])+'\n'
-             
-          
-         
+
+
+
             exp.seek(0)
-                
-              
-    
-    
+
+
+
+
          for line in lines:
              exp.write(line)
 
 
-log = sys.argv.pop(0).split('command_line/')[1]        
+log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
     log += ' ' + i
