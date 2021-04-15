@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-Created on Fri Oct  9 12:51:42 2020
-
-@author: hugo
-"""
 import os
 import sys
 
