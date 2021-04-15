@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Defines UB matrix and Calculate UB matrix from 2 or 3 reflections"""
 
 import argparse as ap
 import sys
@@ -7,11 +8,6 @@ import daf
 import numpy as np
 import dafutilities as du
 
-doc = """
-
-Defines UB matrix and Calculate UB matrix from 2 or 3 reflections
-
-"""
 
 
 epi = '''
@@ -25,7 +21,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('-r1', '--hkl1', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for first reflection')
 parser.add_argument('-r2', '--hkl2', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for second reflection')

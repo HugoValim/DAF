@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
+"""Initialize Diffractometer Angles Finder"""
 
 import argparse as ap
 import sys
 import os
 
 
-doc = """
-
-Initialize Diffractometer Angles Finder
-
-"""
 
 epi = '''
 Eg:
@@ -17,7 +13,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
 
 parser.add_argument('-6c', '--6cirlce', action='store_true', help='Set the 6-cirlce diffractometer geometry')
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Describe the experiment inputs"""
 
 import argparse as ap
 import sys
@@ -7,11 +8,6 @@ import dafutilities as du
 import numpy as np
 import daf
 
-doc = """
-
-Describe the experiment inputs
-
-"""
 epi = '''
 Eg:
     daf.expt --Material Si --Energy 8000
@@ -20,7 +16,7 @@ Eg:
     daf.expt -i 1 0 0 -n 0 1 0
     '''
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
 
 parser.add_argument('-m', '--Material', metavar='samp', type=str, help='Sets the material that is going to be used in the experiment')
 parser.add_argument('-p', '--Lattice_parameters', metavar=('a', 'b', 'c', 'alpha', 'beta', 'gamma '), type=float, nargs=6, help='Sets lattice parameters, must be passed if defining a new material')

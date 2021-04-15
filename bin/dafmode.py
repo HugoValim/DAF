@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-
-import argparse as ap
-import sys
-import os
-import daf
-import dafutilities as du
-
-doc = """
+"""
      >detector<  >Reference<     >Sample<     >Sample<     >Sample<
         g_mode1      g_mode2      g_mode3      g_mode4      g_mode5
 0             .            .  omega-fixed            X            X  0
@@ -19,13 +12,20 @@ doc = """
 
 *not implemented
 """
+
+import argparse as ap
+import sys
+import os
+import daf
+import dafutilities as du
+
 epi = '''
 Eg:
     daf.mode 215, will set Nu fix, Alpha=Beta, Eta=Del/2
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
 
 parser.add_argument('Mode', type=str,help='Set the operation mode of the diffractometer, following the same modes as used in Spec, the mode should be passed without spaces')
 

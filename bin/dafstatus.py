@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Show the experiment status"""
 
 import argparse as ap
 import sys
@@ -8,11 +9,6 @@ import numpy as np
 import dafutilities as du
 
 
-doc = """
-
-Show the experiment status
-
-"""
 
 epi = '''
 Eg:
@@ -21,7 +17,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('-m', '--Mode', action='store_true', help='Show current operating mode of the diffractometer')
 parser.add_argument('-e', '--Experiment', action='store_true', help='Show experiment information')

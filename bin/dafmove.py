@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Move in the reciprocal space by giving a HKL"""
 
 import argparse as ap
 import sys
@@ -6,11 +7,6 @@ import os
 import daf
 import numpy as np
 import dafutilities as du
-doc = """
-
-Move in the reciprocal space by giving a HKL
-
-"""
 
 epi = '''
 Eg:
@@ -19,7 +15,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('Move', metavar='H K L', type=float, nargs=3, help='Move to a desired HKL')
 parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')

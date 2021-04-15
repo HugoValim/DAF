@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
+"""Creates a macro to run commands from a script (txt) file"""
 
 import argparse as ap
 import sys
 import os
 import dafutilities as du
 
-doc = """
-
-Creates a macro to run commands from a script (txt) file
-
-"""
 
 epi = '''
 Eg:
@@ -19,7 +15,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog = epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
 parser.add_argument('-i', '--Initialize', action='store_true', help='Start recording your commands')
 parser.add_argument('-s', '--Stop', action='store_true', help='Stop the macro')
 parser.add_argument('-n', '--name', metavar='name',type=str, help='Sets the name of the macro file')

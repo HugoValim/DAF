@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
+"""Sets the bounds of the diffractometer angles"""
 
 import argparse as ap
 import sys
 import os
 import dafutilities as du
-doc = """
-
-Sets the bounds of the diffractometer angles
-
-"""
 
 epi = '''
 Eg:
@@ -17,7 +13,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('-m', '--bound_Mu', metavar=('min', 'max'), type=float, nargs=2, help='Sets Mu bounds')
 parser.add_argument('-e', '--bound_Eta', metavar=('min', 'max'),type=float, nargs=2, help='Sets Eta bounds')

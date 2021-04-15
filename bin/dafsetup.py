@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Create setups that helps the user to save their previou configuration configuration"""
 
 import argparse as ap
 import sys
@@ -8,11 +9,6 @@ import numpy as np
 import dafutilities as du
 
 
-doc = """
-
-Create setups that helps the user to save their previou configuration configuration
-
-"""
 
 
 epi = '''
@@ -24,7 +20,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 
 parser.add_argument('-c', '--change', metavar = '[file]', type=str, help='Change current setup to another')

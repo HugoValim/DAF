@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Move the diffractometer by direct change in the angles"""
 
 import argparse as ap
 import sys
@@ -8,11 +9,6 @@ import numpy as np
 import dafutilities as du
 
 
-doc = """
-
-Move the diffractometer by direct change in the angles
-
-"""
 
 epi = '''
 Eg:
@@ -21,7 +17,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('-m', '--Mu', metavar='ang', type=float, help='Sets Mu angle to a desired position')
 parser.add_argument('-e', '--Eta', metavar='ang', type=float, help='Sets Eta angle to a desired position')

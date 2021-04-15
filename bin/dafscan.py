@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Perform a scan using HKL coordinates"""
 
 import argparse as ap
 import sys
@@ -8,11 +9,6 @@ import numpy as np
 import dafutilities as du
 import pandas as pd
 
-doc = """
-
-Perform a scan using HKL coordinates
-
-"""
 
 epi = '''
 Eg:
@@ -21,7 +17,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('hkli', metavar=('Hi, Ki, Li'), type=float, nargs=3, help='Initial HKL for scan')
 parser.add_argument('hklf', metavar=('Hf, Kf, Lf'), type=float, nargs=3, help='Final HKL for scan')

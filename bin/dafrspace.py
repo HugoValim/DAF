@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Move in reciprocal space by choosing a HKL in a graphical resciprocal space map"""
 
 import argparse as ap
 import sys
@@ -9,11 +10,6 @@ import dafutilities as du
 import pandas as pd
 import matplotlib.pyplot
 from matplotlib import pyplot as plt
-doc = """
-
-Move in reciprocal space by choosing a HKL in a graphical resciprocal space map
-
-"""
 
 epi = '''
 Eg:
@@ -24,7 +20,7 @@ Eg:
     '''
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=doc, epilog=epi)
+parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 # parser.add_argument('hkli', metavar='', type=float, nargs=3, help='Initial HKL for scan')
 # parser.add_argument('hklf', metavar='', type=float, nargs=3, help='Final HKL for scan')
