@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
+"""Library for reading and writing experiment files"""
 
-import os
-import sys
+import yaml
 
+DEFAULT = '.Experiment'
 
-def dict_conv():
-    os.system("head -65 .Experiment > Experiment1")
-    os.system("rm .Experiment; mv Experiment1 \.Experiment")
+def read(filepath=DEFAULT):
+    with open(filepath) as file:
+        return yaml.safe_load(file)
 
-    with open('.Experiment', 'r') as exp:
-
-        lines = exp.readlines()
-        dict_args = {i.split('=')[0]:i.split('=')[1].split('\n')[0] for i in lines if i != '\n'}
-    return dict_args
+def write(data, filepath=DEFAULT):
+    with open(filepath, 'w') as file:
+        yaml.dump(data, file)
