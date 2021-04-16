@@ -86,7 +86,7 @@ lb = lambda x: "{:.5f}".format(float(x))
 
 if args.Show:
 
-    dict_args = du.dict_conv()
+    dict_args = du.read()
 
     Uw = dict_args['U_mat'].split(',')
 
@@ -137,7 +137,7 @@ if args.Show:
 
 if args.Params:
 
-    dict_args = du.dict_conv()
+    dict_args = du.read()
 
     print('')
     print('a    =    {}'.format(dict_args["lparam_a"]))
@@ -153,7 +153,7 @@ def ret_list(string):
 
     return [float(i) for i in string.strip('][').split(', ')]
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 if dict_args['hkl1'] != '':
     r1 = ret_list(dict_args['hkl1'])

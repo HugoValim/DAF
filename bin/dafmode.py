@@ -34,7 +34,7 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 with open('.Experiment', 'r+') as exp:
 

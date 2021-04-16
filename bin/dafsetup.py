@@ -54,7 +54,7 @@ if args.change:
             exp.write(line)
 
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 setup_now = dict_args['setup']
 
 if args.save:

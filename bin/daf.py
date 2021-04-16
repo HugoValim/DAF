@@ -1586,7 +1586,7 @@ class Control(object):
                 if cont:
                     popts = numpy.get_printoptions()
                     numpy.set_printoptions(precision=4, suppress=True)
-                    dict_args = du.dict_conv()
+                    dict_args = du.read()
                     startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
                     hkl = (d['hkl'][m][ind['ind'][0]])

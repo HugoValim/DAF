@@ -79,7 +79,7 @@ if args.Lattice_parameters:
              exp.write(line)
 
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 if args.Material:
     Uw = dict_args['U_mat'].split(',')

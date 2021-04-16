@@ -24,7 +24,7 @@ parser.add_argument('-e', '--Execute', metavar='file',type=str, help='Execute a 
 args = parser.parse_args()
 dic = vars(args)
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 if args.Initialize:
 
