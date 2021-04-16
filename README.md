@@ -13,6 +13,7 @@
 4. pandas
 5. matplotlib
 6. tqdm
+7. pyyaml
 
 ### Tutorial
 
