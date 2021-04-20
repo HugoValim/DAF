@@ -42,6 +42,8 @@ dic = vars(args)
 angs = ['cons_Mu','cons_Eta', 'cons_Chi', 'cons_Phi', 'cons_Nu', 'cons_Del', 'cons_alpha', 'cons_beta', 'cons_psi', 'cons_omega', 'cons_qaz', 'cons_naz']
 
 
+dict_args = du.read()
+
 for j,k in dic.items():
     if j in dict_args and k is not None:
         dict_args[j] = str(k)

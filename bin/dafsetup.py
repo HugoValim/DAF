@@ -32,6 +32,8 @@ args = parser.parse_args()
 dic = vars(args)
 
 
+dict_args = du.read()
+
 if args.change:
     os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
 

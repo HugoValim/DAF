@@ -34,6 +34,8 @@ dic = vars(args)
 
 bounds = {'bound_Mu' : [-20.0, 160.0], 'bound_Eta' : [-20.0, 160.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-400.0, 400.0], 'bound_Nu' : [-20.0, 160.0], 'bound_Del' : [-20.0, 160.0]}
 
+dict_args = du.read()
+
 for j,k in dic.items():
     if j in dict_args and k is not None:
         dict_args[j] = str(k)
