@@ -34,44 +34,17 @@ dic = vars(args)
 
 bounds = {'bound_Mu' : [-20.0, 160.0], 'bound_Eta' : [-20.0, 160.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-400.0, 400.0], 'bound_Nu' : [-20.0, 160.0], 'bound_Del' : [-20.0, 160.0]}
 
-with open('.Experiment', 'r+') as exp:
-
-    lines = exp.readlines()
-
-
-    for i, line in enumerate(lines):
-        for j,k in dic.items():
-
-
-            if line.startswith(str(j)):
-                if k != None:
-                    lines[i] = str(j)+'='+str(k)+'\n'
-
-            exp.seek(0)
-
-
-    for line in lines:
-        exp.write(line)
+for j,k in dic.items():
+    if j in dict_args and k is not None:
+        dict_args[j] = str(k)
+du.write(dict_args)
 
 if args.Reset:
 
-    with open('.Experiment', 'r+') as exp:
-
-        lines = exp.readlines()
-
-
-        for i, line in enumerate(lines):
-            for j,k in bounds.items():
-
-
-                if line.startswith(str(j)):
-                        lines[i] = str(j)+'='+str(k)+'\n'
-
-                exp.seek(0)
-
-
-        for line in lines:
-            exp.write(line)
+    for j,k in bounds.items():
+        if j in dict_args:
+            dict_args[j] = str(k)
+    du.write(dict_args)
 
 
 dict_args = du.read()

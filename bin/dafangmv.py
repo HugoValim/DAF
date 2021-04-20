@@ -31,24 +31,10 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-with open('.Experiment', 'r+') as exp:
-
-    lines = exp.readlines()
-
-
-    for i, line in enumerate(lines):
-        for j,k in dic.items():
-
-
-            if line.startswith(str(j)):
-                if k != None:
-                    lines[i] = str(j)+'='+str(k)+'\n'
-
-            exp.seek(0)
-
-
-    for line in lines:
-        exp.write(line)
+for j,k in dic.items():
+    if j in dict_args and k is not None:
+        dict_args[j] = str(k)
+du.write(dict_args)
 
 
 dict_args = du.read()
@@ -84,23 +70,10 @@ pseudo = exp.calc_pseudo(float(dict_args["Mu"]), float(dict_args["Eta"]), float(
 pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
 
 
-with open('.Experiment', 'r+') as exp:
-
-    lines = exp.readlines()
-
-
-    for i, line in enumerate(lines):
-        for j,k in pseudo_dict.items():
-
-
-            if line.startswith(str(j)):
-                    lines[i] = str(j)+'='+str(k)+'\n'
-
-            exp.seek(0)
-
-
-    for line in lines:
-        exp.write(line)
+for j,k in pseudo_dict.items():
+    if j in dict_args:
+        dict_args[j] = str(k)
+du.write(dict_args)
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

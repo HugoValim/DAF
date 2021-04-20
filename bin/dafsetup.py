@@ -35,23 +35,8 @@ dic = vars(args)
 if args.change:
     os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
 
-    with open('.Experiment', 'r+') as exp:
-
-        lines = exp.readlines()
-
-
-        for i, line in enumerate(lines):
-
-
-            if line.startswith('setup'):
-
-                lines[i] = 'setup='+str(args.change)+'\n'
-
-                exp.seek(0)
-
-
-        for line in lines:
-            exp.write(line)
+    dict_args['setup'] = str(args.change)
+    du.write(dict_args)
 
 
 dict_args = du.read()
