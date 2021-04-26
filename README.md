@@ -5,15 +5,6 @@
 
 
 
-### Requirements:
-
-1. xrayutilities
-2. numpy
-3. scipy; version=1.4.1
-4. pandas
-5. matplotlib
-6. tqdm
-7. pyyaml
 
 ### Tutorial
 
