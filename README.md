@@ -1,7 +1,7 @@
 # Diffractometer Angles Finder
-## Program still under development in LNLS
-## BRAZILIAN SYNCHROTRON LIGHT LABORATORY
-## LNLS is part of the Brazilian Center for Research in Energy and Materials (CNPEM)
+\## Program still under development in LNLS  
+\## BRAZILIAN SYNCHROTRON LIGHT LABORATORY  
+\## LNLS is part of the Brazilian Center for Research in Energy and Materials (CNPEM)
 
 
 
