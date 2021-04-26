@@ -47,7 +47,7 @@ if args.All:
 #         exp.write(line)
 
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 log = sys.argv.pop(0).split('command_line/')[1]
 

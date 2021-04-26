@@ -60,7 +60,7 @@ matplotlib.pyplot.show(block=True)
 #         exp.write(line)
 
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 def ret_list(string):
 

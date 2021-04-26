@@ -24,56 +24,22 @@ parser.add_argument('-e', '--Execute', metavar='file',type=str, help='Execute a 
 args = parser.parse_args()
 dic = vars(args)
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 if args.Initialize:
 
     os.system("echo '#!/usr/bin/env bash' > {}".format(args.name))
     os.system("chmod 755 {}".format(args.name))
 
-    with open('.Experiment', 'r+') as exp:
-
-        lines = exp.readlines()
-
-
-        for i, line in enumerate(lines):
-
-
-            if line.startswith('macro_flag'):
-                    lines[i] ='macro_flag=True\n'
-
-            if line.startswith('macro_file'):
-                    lines[i] ='macro_file='+args.name+'\n'
-
-
-            exp.seek(0)
-
-
-        for line in lines:
-            exp.write(line)
+    dict_args['macro_flag'] = 'True'
+    dict_args['macro_file'] = args.name
+    du.write(dict_args)
 
 if args.Stop:
 
-    with open('.Experiment', 'r+') as exp:
-
-        lines = exp.readlines()
-
-
-        for i, line in enumerate(lines):
-
-
-            if line.startswith('macro_flag'):
-                    lines[i] ='macro_flag=False\n'
-
-            # if line.startswith('macro_file'):
-            #         lines[i] ='macro_file=macro'
-
-
-            exp.seek(0)
-
-
-        for line in lines:
-            exp.write(line)
+    dict_args['macro_flag'] = 'False'
+    #dict_args['macro_file'] = args.name
+    du.write(dict_args)
 
 if args.Execute:
     os.system("./{}".format(args.Execute))

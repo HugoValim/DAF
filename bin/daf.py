@@ -1586,7 +1586,7 @@ class Control(object):
                 if cont:
                     popts = numpy.get_printoptions()
                     numpy.set_printoptions(precision=4, suppress=True)
-                    dict_args = du.dict_conv()
+                    dict_args = du.read()
                     startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
                     hkl = (d['hkl'][m][ind['ind'][0]])
@@ -1605,23 +1605,10 @@ class Control(object):
                     exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
                                 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
                     if angles[6] < 1e-4:
-                        with open('.Experiment', 'r+') as exp:
-
-                            lines = exp.readlines()
-
-
-                            for i, line in enumerate(lines):
-                                for j,k in exp_dict.items():
-
-
-                                    if line.startswith(str(j)):
-                                            lines[i] = str(j)+'='+str(k)+'\n'
-
-                                exp.seek(0)
-
-
-                            for line in lines:
-                                exp.write(line)
+                        for j,k in exp_dict.items():
+                            if j in dict_args:
+                                dict_args[j] = str(k)
+                        du.write(dict_args)
                         print('')
                         print('Sample  = {}'.format(self.samp.name))
                         os.system("daf.wh")

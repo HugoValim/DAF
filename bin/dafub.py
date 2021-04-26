@@ -39,46 +39,19 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-with open('.Experiment', 'r+') as exp:
+dict_args = du.read()
 
-    lines = exp.readlines()
-
-
-    for i, line in enumerate(lines):
-        for j,k in dic.items():
-
-
-            if line.startswith(str(j)):
-                if k != None:
-                    lines[i] = str(j)+'='+str(k)+'\n'
-
-            exp.seek(0)
-
-
-    for line in lines:
-        exp.write(line)
+for j,k in dic.items():
+    if j in dict_args and k is not None:
+        dict_args[j] = str(k)
+du.write(dict_args)
 
 
 if args.UBmatrix:
     UB = np.array(args.UBmatrix).reshape(3,3)
-    with open('.Experiment', 'r+') as exp:
-
-          lines = exp.readlines()
-
-
-          for i, line in enumerate(lines):
-
-
-            # if line.startswith('U'):
-            #         lines[i] = 'U='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-            if line.startswith('UB_mat'):
-                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-
-            exp.seek(0)
-
-
-          for line in lines:
-              exp.write(line)
+    #dict_args['U'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
+    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    du.write(dict_args)
 
 
 lb = lambda x: "{:.5f}".format(float(x))
@@ -86,7 +59,7 @@ lb = lambda x: "{:.5f}".format(float(x))
 
 if args.Show:
 
-    dict_args = du.dict_conv()
+    dict_args = du.read()
 
     Uw = dict_args['U_mat'].split(',')
 
@@ -137,7 +110,7 @@ if args.Show:
 
 if args.Params:
 
-    dict_args = du.dict_conv()
+    dict_args = du.read()
 
     print('')
     print('a    =    {}'.format(dict_args["lparam_a"]))
@@ -153,7 +126,7 @@ def ret_list(string):
 
     return [float(i) for i in string.strip('][').split(', ')]
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 if dict_args['hkl1'] != '':
     r1 = ret_list(dict_args['hkl1'])
@@ -197,24 +170,9 @@ if args.Umatrix:
     exp.set_exp_conditions(en = float(dict_args['Energy']))
     exp.set_U(U)
     UB = exp.calcUB()
-    with open('.Experiment', 'r+') as exp:
-
-          lines = exp.readlines()
-
-
-          for i, line in enumerate(lines):
-
-
-            if line.startswith('U_mat'):
-                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-            if line.startswith('UB'):
-                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-
-            exp.seek(0)
-
-
-          for line in lines:
-              exp.write(line)
+    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
+    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    du.write(dict_args)
 
 
 if  args.Calc2:
@@ -227,24 +185,9 @@ if  args.Calc2:
     U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
 
 
-    with open('.Experiment', 'r+') as exp:
-
-          lines = exp.readlines()
-
-
-          for i, line in enumerate(lines):
-
-
-            if line.startswith('U_mat'):
-                    lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-            if line.startswith('UB_mat'):
-                    lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-
-            exp.seek(0)
-
-
-          for line in lines:
-              exp.write(line)
+    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
+    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    du.write(dict_args)
 
 if  args.Calc3:
     mode = [int(i) for i in dict_args['Mode']]
@@ -255,39 +198,15 @@ if  args.Calc3:
 
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
 
-    with open('.Experiment', 'r+') as exp:
-
-         lines = exp.readlines()
-
-
-         for i, line in enumerate(lines):
-
-
-            if line.startswith('U_mat'):
-                lines[i] = 'U_mat='+str(U[0])+','+str(U[1])+','+str(U[2])+'\n'
-
-            if line.startswith('UB_mat'):
-                lines[i] = 'UB_mat='+str(UB[0])+','+str(UB[1])+','+str(UB[2])+'\n'
-
-            if line.startswith('lparam_a'):
-                lines[i] = 'lparam_a='+lb(rp[0])+'\n'
-            if line.startswith('lparam_b'):
-                lines[i] = 'lparam_b='+lb(rp[1])+'\n'
-            if line.startswith('lparam_c'):
-                lines[i] = 'lparam_c='+lb(rp[2])+'\n'
-            if line.startswith('lparam_alpha'):
-                lines[i] = 'lparam_alpha='+lb(rp[3])+'\n'
-            if line.startswith('lparam_beta'):
-                lines[i] = 'lparam_beta='+lb(rp[4])+'\n'
-            if line.startswith('lparam_gama'):
-                lines[i] = 'lparam_gama='+lb(rp[5])+'\n'
-
-
-            exp.seek(0)
-
-
-         for line in lines:
-             exp.write(line)
+    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
+    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    dict_args['lparam_a'] = str(args.Lattice_parameters[0])
+    dict_args['lparam_b'] = str(args.Lattice_parameters[1])
+    dict_args['lparam_c'] = str(args.Lattice_parameters[2])
+    dict_args['lparam_alpha'] = str(args.Lattice_parameters[3])
+    dict_args['lparam_beta'] = str(args.Lattice_parameters[4])
+    dict_args['lparam_gama'] = str(args.Lattice_parameters[5])
+    du.write(dict_args)
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

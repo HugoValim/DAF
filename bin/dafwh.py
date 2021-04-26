@@ -23,7 +23,7 @@ parser.add_argument('-s', '--status', action='store_true', help='Show where you 
 args = parser.parse_args()
 dic = vars(args)
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 def ret_list(string):
 

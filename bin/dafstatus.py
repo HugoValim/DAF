@@ -29,7 +29,7 @@ parser.add_argument('-a', '--All', action='store_true', help='Show all informati
 args = parser.parse_args()
 dic = vars(args)
 
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 def ret_list(string):
 
@@ -74,7 +74,7 @@ if args.Experiment:
 
 if args.umatrix:
 
-    dict_args = du.dict_conv()
+    dict_args = du.read()
 
     Uw = dict_args['U_mat'].split(',')
 
@@ -144,7 +144,7 @@ if args.All:
     print('')
 
 
-    # dict_args = du.dict_conv()
+    # dict_args = du.read()
 
     Uw = dict_args['U_mat'].split(',')
 

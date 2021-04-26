@@ -32,29 +32,16 @@ args = parser.parse_args()
 dic = vars(args)
 
 
+dict_args = du.read()
+
 if args.change:
     os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
 
-    with open('.Experiment', 'r+') as exp:
-
-        lines = exp.readlines()
-
-
-        for i, line in enumerate(lines):
+    dict_args['setup'] = str(args.change)
+    du.write(dict_args)
 
 
-            if line.startswith('setup'):
-
-                lines[i] = 'setup='+str(args.change)+'\n'
-
-                exp.seek(0)
-
-
-        for line in lines:
-            exp.write(line)
-
-
-dict_args = du.dict_conv()
+dict_args = du.read()
 setup_now = dict_args['setup']
 
 if args.save:

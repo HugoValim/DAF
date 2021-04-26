@@ -42,47 +42,22 @@ dic = vars(args)
 angs = ['cons_Mu','cons_Eta', 'cons_Chi', 'cons_Phi', 'cons_Nu', 'cons_Del', 'cons_alpha', 'cons_beta', 'cons_psi', 'cons_omega', 'cons_qaz', 'cons_naz']
 
 
-with open('.Experiment', 'r+') as exp:
+dict_args = du.read()
 
-    lines = exp.readlines()
-
-
-    for i, line in enumerate(lines):
-        for j,k in dic.items():
-
-
-            if line.startswith(str(j)):
-                if k != None:
-                    lines[i] = str(j)+'='+str(k)+'\n'
-
-            exp.seek(0)
-
-
-    for line in lines:
-        exp.write(line)
+for j,k in dic.items():
+    if j in dict_args and k is not None:
+        dict_args[j] = str(k)
+du.write(dict_args)
 
 
 if args.Reset:
 
-    with open('.Experiment', 'r+') as exp:
+    for j in angs:
+        if j in dict_args:
+            dict_args[j] = '0'
+    du.write(dict_args)
 
-        lines = exp.readlines()
-
-
-        for i, line in enumerate(lines):
-            for j in angs:
-
-
-                if line.startswith(str(j)):
-                        lines[i] = str(j)+'=0'+'\n'
-
-                exp.seek(0)
-
-
-        for line in lines:
-            exp.write(line)
-
-dict_args = du.dict_conv()
+dict_args = du.read()
 
 
 if args.List:
