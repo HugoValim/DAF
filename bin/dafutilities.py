@@ -50,7 +50,7 @@ def stop():
         MOTORS[key].stop()
 
 
-def stop():
+def wait():
     for key in MOTORS:
         while not MOTORS[key].done_moving:
             pass
