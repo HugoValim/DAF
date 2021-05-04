@@ -63,7 +63,7 @@ def epics_put(dict_):
         aux = ret_list(dict_["bound_" + key])
         MOTORS[key].low_limit = aux[0]
         MOTORS[key].high_limit = aux[1]
-        MOTORS[key].move(dict_[key], confirm_move=True)
+        MOTORS[key].move(dict_[key], ignore_limits=True, confirm_move=True)
     wait()
 
 
