@@ -31,7 +31,7 @@ MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
 def epics_get(dict_):
     for key in MOTORS:
         dict_[key] = str(MOTORS[key].readback)
-        dict_["bound_" + key] = "[{}, {}]".format(MOTORS[key].high_limit, MOTORS[key].low_limit)
+        dict_["bound_" + key] = "[{}, {}]".format(MOTORS[key].low_limit, MOTORS[key].high_limit)
 
 
 def read(filepath=DEFAULT):
