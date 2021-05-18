@@ -11,14 +11,14 @@ import dafutilities as du
 epi = '''
 Eg:
     daf.mv 1 1 1
-    daf.mv 1 0 0 -v
+    daf.mv 1 0 0 -q
     '''
 
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('Move', metavar='H K L', type=float, nargs=3, help='Move to a desired HKL')
-parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
+parser.add_argument('-q', '--quiet', action='store_false', help='Do not show the full output')
 
 
 args = parser.parse_args()
@@ -73,8 +73,10 @@ exp(sv = startvalue)
 error = exp.qerror
 # if error > 1e-4:
 #     exp()
-if args.verbose:
-    exp.set_print_options(marker = '', column_marker='', space=12)
+
+
+if args.quiet:
+    exp.set_print_options(marker = '', column_marker='', space=14)
     print(exp)
 angs = exp.export_angles()
 
