@@ -10,8 +10,8 @@ import dafutilities as du
 import pandas as pd
 import py4syn.utils.scan as ps
 from py4syn.utils.motor import *
-
-
+from py4syn.utils.counter import createCounter, ct, disableCounter
+from py4syn.epics.ScalerClass import Scaler
 
 epi = '''
 Eg:
@@ -64,7 +64,12 @@ for motor_name, motor in PVS.items():
 
 # time = [time for i in range(len(del_points))]
 
+# writer = ps.DefaultWriter("test.txt")
+# ps.setFileWriter(writer)
+
+
 ps.setPlotGraph(False) # Error with multiprocessing.
+
 ps.scan('Mu', mu_points, 'Eta', eta_points, 'Chi', chi_points, 
     'Phi', phi_points, 'Nu', nu_points, 'Del', del_points, len(del_points), time, time)
 
@@ -72,7 +77,6 @@ ps.scan('Mu', mu_points, 'Eta', eta_points, 'Chi', chi_points,
 print('')
 print("Scan Ended")
 print("Time elapsed: ", ps.SCAN_DATA['scan_duration'])
-
 
 log = sys.argv.pop(0).split('command_line/')[1]
 
