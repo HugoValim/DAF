@@ -11,10 +11,10 @@ fi
 
 ### Needs pip3 installed ###
 # FIXME: List of requirements is not complete.
-pip3 install pandas tqdm xrayutilities
+pip3 install h5py matplotlib numpy pandas PyYAML scipy==1.4.1 tqdm xrayutilities
 
 ### Needs git installed ###
-INSTALL_DIR="/usr/local/scripts/bash/daf"
+INSTALL_DIR="/usr/local/scripts/daf"
 git clone https://gitlab.cnpem.br/BEAMLINES/EMA/CLI/daf "$INSTALL_DIR"
 
 mkdir -p /etc/profile.d
