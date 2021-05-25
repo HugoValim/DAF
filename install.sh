@@ -10,8 +10,8 @@ then
 fi
 
 ### Needs pip3 installed ###
-# FIXME: List of requirements is not complete.
-pip3 install h5py matplotlib numpy pandas PyYAML scipy==1.4.1 tqdm xrayutilities
+pip3 install h5py matplotlib numpy pandas PyYAML scipy==1.4.1 tqdm
+pip3 install xrayutilities
 
 ### Needs git installed ###
 INSTALL_DIR="/usr/local/scripts/daf"
