@@ -7,7 +7,6 @@ import yaml
 
 DEFAULT = ".Experiment"
 PV_PREFIX = "EMA:B:PB18"
-PV_PREFIX = "SOL:S"
 
 PVS = {
 "Phi" : PV_PREFIX + ":m1",
