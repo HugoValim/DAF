@@ -176,7 +176,9 @@ class Control(object):
         # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
         self.qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Coordenada YOU 1999
 
-    def show(self, sh):
+    def show(self, sh, ident = 3, space = 22):
+
+        self.centshow = "{:^" + str(space - 2) + "}"
 
         dprint = {'x' : '--', 'Mu' : self.Mu_bound, 'Eta' : self.Eta_bound, 'Chi' : self.Chi_bound,
                       'Phi' : self.Phi_bound, 'Nu' : self.Nu_bound, 'Del' : self.Del_bound}
@@ -227,13 +229,13 @@ class Control(object):
                     self.forprint.append((i,dprint[i]))
 
         fmt = [
-                    ('', 'ident',   3),
-                    ('', 'col1',   14),
-                    ('', 'col2',   14),
-                    ('', 'col3',   14),
-                    ('', 'col4',   14),
-                    ('', 'col5',   14),
-                    ('', 'col6',   14),
+                    ('', 'ident',   ident),
+                    ('', 'col1',   space),
+                    ('', 'col2',   space),
+                    ('', 'col3',   space),
+                    ('', 'col4',   space),
+                    ('', 'col5',   space),
+                    ('', 'col6',   space),
 
 
                    ]
@@ -1325,11 +1327,18 @@ class Control(object):
 
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]
 
+        scan_points = [i[:6] for i in angslist] ## Get only mu, eta, chi, phi, nu, del
+
+        
+
+
         if write:
             self.formscantxt.to_csv(name, sep=sep)
 
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
+
+        return scan_points
 
 
     def show_reciprocal_space_plane(self, ttmax=None, ttmin = None, maxqout=0.01, scalef=100, ax=None, color=None,

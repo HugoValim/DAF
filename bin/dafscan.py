@@ -11,9 +11,10 @@ import pandas as pd
 
 
 epi = '''
-Eg:
+Eg: 
     daf.scan 1 1 1 1.1 1.1 1.1 100 -n my_scan
     daf.scan 1 1 1 1.1 1.1 1.1 1000 -n my_scan -sep \; -v
+    daf.scan 1 1 1 1.1 1.1 1.1 100 -p -t 0.5
     '''
 
 
@@ -27,6 +28,8 @@ parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the s
 parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, comma is default')
 parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation (default is 0.1), if 0 is given no verification will be done')
 parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
+parser.add_argument('-p', '--perform', action='store_true', help='Perform the scan')
+parser.add_argument('-t', '--time', metavar='', type=float, help='Acquisition time in each point in seconds. Default is 0.01s')
 
 
 args = parser.parse_args()
@@ -84,7 +87,7 @@ startvalues = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args[
 
 dict_args['Max_diff'] = 0 ###ver esse role aqui
 
-exp.scan(args.hkli, args.hklf, int(args.points), diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'], startvalues = startvalues)
+scan_points = exp.scan(args.hkli, args.hklf, int(args.points), diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'], startvalues = startvalues)
 
 if args.verbose:
     pd.options.display.max_rows = None
@@ -96,6 +99,40 @@ angs = exp.export_angles()
 exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs[4], 'Del':angs[5], 'tt':angs[6],
             'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':list(angs[15])}
 exp_dict['hklnow'] = [float(i) for i in exp_dict['hklnow']]
+
+
+if args.perform:
+
+    if args.time == None:
+        time = 0.01
+    else:
+        time = args.time
+
+    os.system("daf.rfscan {} -t {}".format(dict_args['scan_name'], time))
+
+    # from py4syn.utils.scan import scan as scan_daf
+    # from py4syn.utils.motor import *
+    # # PV_PREFIX = du.PV_PREFIX
+
+    # mu_points = [float(i[0]) for i in scan_points] # Get only the points related to mu
+    # eta_points = [float(i[1]) for i in scan_points] # Get only the points related to eta
+    # chi_points = [float(i[2]) for i in scan_points] # Get only the points related to chi
+    # phi_points = [float(i[3]) for i in scan_points] # Get only the points related to phi
+    # nu_points = [float(i[4]) for i in scan_points] # Get only the points related to nu
+    # del_points = [float(i[5]) for i in scan_points] # Get only the points related to del
+
+    # PVS = du.PVS
+
+    # for motor_name, motor in PVS.items():
+    #     createMotor(motor_name, motor)
+
+
+    # scan_daf('Mu', mu_points, 'Eta', eta_points, 'Chi', chi_points, 
+    #     'Phi', phi_points, 'Nu', nu_points, 'Del', del_points, len(del_points), 0.5)
+
+
+    
+
 
 
 if float(angs[16]) < 1e-4:
