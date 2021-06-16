@@ -97,8 +97,9 @@ if args.verbose:
 
 angs = exp.export_angles()
 exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs[4], 'Del':angs[5], 'tt':angs[6],
-            'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':list(angs[15])}
-exp_dict['hklnow'] = [float(i) for i in exp_dict['hklnow']]
+            'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 
+            'beta':angs[13], 'omega':angs[14], 'hnow':list(angs[15]), 'know':list(angs[16]), 'lnow':list(angs[17])}
+exp_dict['hklnow'] = [float(exp_dict['hnow']), float(exp_dict['know']), float(exp_dict['lnow'])]
 
 
 if args.perform:

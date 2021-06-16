@@ -1323,7 +1323,7 @@ class Control(object):
         self.isscan = True
 
         self.formscantxt = pd.DataFrame(angslist, columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2theta', 'theta', 'alpha', 'qaz', 'naz',
-                                                                                             'tau', 'psi', 'beta', 'omega','HKL Calc', 'Error'])
+                                                                                             'tau', 'psi', 'beta', 'omega','H', 'K', 'L', 'Calc', 'Error'])
 
         self.formscan = self.formscantxt[['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', 'Error']]
 
