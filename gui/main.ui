@@ -62,7 +62,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(ETA_MOTOR).VAL</string>
+                <string>ca://${ETA_MOTOR}.VAL</string>
                </property>
               </widget>
              </item>
@@ -82,7 +82,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(ETA_MOTOR).RBV</string>
+                <string>ca://${ETA_MOTOR}.RBV</string>
                </property>
               </widget>
              </item>
@@ -122,7 +122,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(DEL_MOTOR).VAL</string>
+                <string>ca://${DEL_MOTOR}.VAL</string>
                </property>
               </widget>
              </item>
@@ -142,7 +142,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(MU_MOTOR).RBV</string>
+                <string>ca://${MU_MOTOR}.RBV</string>
                </property>
               </widget>
              </item>
@@ -182,7 +182,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(MU_MOTOR).VAL</string>
+                <string>ca://${MU_MOTOR}.VAL</string>
                </property>
               </widget>
              </item>
@@ -202,7 +202,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(MU_MOTOR).RBV</string>
+                <string>ca://${MU_MOTOR}.RBV</string>
                </property>
               </widget>
              </item>
@@ -242,7 +242,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(NU_MOTOR).VAL</string>
+                <string>ca://${NU_MOTOR}.VAL</string>
                </property>
               </widget>
              </item>
@@ -262,7 +262,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(NU_MOTOR).RBV</string>
+                <string>ca://${NU_MOTOR}.RBV</string>
                </property>
               </widget>
              </item>
@@ -302,7 +302,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(PHI_MOTOR).VAL</string>
+                <string>ca://${PHI_MOTOR}.VAL</string>
                </property>
               </widget>
              </item>
@@ -322,7 +322,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(PHI_MOTOR).RBV</string>
+                <string>ca://${PHI_MOTOR}.RBV</string>
                </property>
               </widget>
              </item>
@@ -362,7 +362,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(CHI_MOTOR).VAL</string>
+                <string>ca://${CHI_MOTOR}.VAL</string>
                </property>
               </widget>
              </item>
@@ -382,7 +382,7 @@
                 <set>Qt::AlignCenter</set>
                </property>
                <property name="channel" stdset="0">
-                <string>ca://$(CHI_MOTOR).RBV</string>
+                <string>ca://${CHI_MOTOR}.RBV</string>
                </property>
               </widget>
              </item>
