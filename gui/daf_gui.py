@@ -24,8 +24,8 @@ class MyDisplay(Display):
 
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.update)
-		self.timer.start(6000) #trigger every minute.
-
+		self.timer.start(5000) #trigger every minute.
+		self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
 
 	def ui_filename(self):
 		return 'main.ui'
@@ -42,6 +42,20 @@ class MyDisplay(Display):
 	def ret_list(self, string):
 
 		return [float(i) for i in string.strip('][').split(', ')]
+
+	def move_in_hkl(self):
+
+		H = self.ui.H_set.getText()
+		K = self.ui.K_set.getText()
+		L = self.ui.L_set.getText()
+
+		os.system("daf.mv {} {} {} -q".format(H, K, L))
+
+		self.H_set.setText('')
+		self.K_set.setText('')
+		self.L_set.setText('')
+
+
 
 	def update(self):
 
@@ -72,9 +86,9 @@ class MyDisplay(Display):
 		lb = lambda x: "{:.5f}".format(float(x))
 
 		self.get_experiment_data()
-		self.ui.H_val.setText(str(hklnow[0]))
-		self.ui.K_val.setText(str(hklnow[1]))
-		self.ui.L_val.setText(str(hklnow[2]))
+		self.ui.H_val.setText(str(lb(hklnow[0])))
+		self.ui.K_val.setText(str(lb(hklnow[1])))
+		self.ui.L_val.setText(str(lb(hklnow[2])))
 
 
 	    	
