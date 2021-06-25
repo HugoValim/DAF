@@ -30,9 +30,29 @@ def ret_list(string):
     return [float(i) for i in string.strip('][').split(', ')]
 
 
-lb = lambda x: "{:.5f}".format(float(x))
+Uw = dict_args['U_mat'].split(',')
 
-hklnow = ret_list(dict_args["hklnow"])
+
+U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
+U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
+U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
+U = np.array([U1, U2, U3])
+
+
+mode = [int(i) for i in dict_args['Mode']]
+idir = ret_list(dict_args['IDir'])
+ndir = ret_list(dict_args['NDir'])
+rdir = ret_list(dict_args['RDir'])
+
+exp = daf.Control(*mode)
+exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
+exp.set_U(U)
+hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
+hklnow = list(hklnow)
+
+
+lb = lambda x: "{:.5f}".format(float(x))
 
 print('')
 print('HKL now =   ', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))

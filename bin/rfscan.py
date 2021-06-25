@@ -34,7 +34,7 @@ dict_args = du.read()
 for j,k in dic.items():
     if j in dict_args and k is not None:
         dict_args[j] = str(k)
-du.write(dict_args)
+du.write(dict_args, is_scan = True)
 
 
 dict_args = du.read()

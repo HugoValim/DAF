@@ -41,7 +41,7 @@ dict_args = du.read()
 for j,k in dic.items():
     if j in dict_args and k is not None:
         dict_args[j] = str(k)
-du.write(dict_args)
+du.write(dict_args, is_scan = True)
 
 
 dict_args = du.read()
@@ -140,7 +140,7 @@ if float(angs[16]) < 1e-4:
     for j,k in exp_dict.items():
         if j in dict_args:
             dict_args[j] = str(k)
-    du.write(dict_args)
+    du.write(dict_args, is_scan = True)
 
 
 log = sys.argv.pop(0).split('command_line/')[1]
