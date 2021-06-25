@@ -45,9 +45,9 @@ class MyDisplay(Display):
 
 	def move_in_hkl(self):
 
-		H = self.ui.H_set.getText()
-		K = self.ui.K_set.getText()
-		L = self.ui.L_set.getText()
+		H = self.ui.H_set.text()
+		K = self.ui.K_set.text()
+		L = self.ui.L_set.text()
 
 		os.system("daf.mv {} {} {} -q".format(H, K, L))
 
