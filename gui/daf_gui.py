@@ -72,9 +72,9 @@ class MyDisplay(Display):
 		lb = lambda x: "{:.5f}".format(float(x))
 
 		self.get_experiment_data()
-		self.ui.H_val.setText(str(hkl_now[0]))
-		self.ui.K_val.setText(str(hkl_now[1]))
-		self.ui.L_val.setText(str(hkl_now[2]))
+		self.ui.H_val.setText(str(hklnow[0]))
+		self.ui.K_val.setText(str(hklnow[1]))
+		self.ui.L_val.setText(str(hklnow[2]))
 
 
 	    	
