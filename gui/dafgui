@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Call './motors_gui --help' for options
+pydm --hide-nav-bar ../gui/daf_gui.py $@
+
+# It is also possible to call it in pydm traditional way. For example:
+
+# pydm -m "ENABLE_SETTINGS=True, M1=SOL:m1, M2=SOL:m2, M3=SOL:m3, ..., MN=SOL:mN" \
+# motors_gui.py --debug
