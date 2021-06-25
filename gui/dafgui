@@ -4,8 +4,13 @@ import yaml
 import os
 
 
+def yaml_filepath():
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'motor_fields_default.yml')
 
-def read(filepath='../gui/motor_fields_default.yml'):
+yaml_path = yaml_filepath()
+print(yaml_path)
+
+def read(filepath=yaml_path):
     with open(filepath) as file:
         data = yaml.safe_load(file)
         return data
