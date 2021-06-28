@@ -25,7 +25,7 @@ class MyDisplay(Display):
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.update)
 		self.timer.start(5000) #trigger every minute.
-		self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
+
 # 
 	def ui_filename(self):
 		return 'main2.ui'
