@@ -6,14 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>410</height>
+    <width>800</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="styleSheet">
@@ -28,29 +43,46 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
+        <widget class="QLabel" name="label_2">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid #088A08;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: #088A08;
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 14px;
+}</string>
+         </property>
+         <property name="text">
+          <string>HKL NOW</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QGridLayout" name="gridLayout">
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="font">
-            <font>
-             <pointsize>22</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>HKL NOW</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="K_val">
+         <item row="0" column="1">
+          <widget class="QLabel" name="H_val">
            <property name="font">
             <font>
              <pointsize>16</pointsize>
@@ -83,8 +115,8 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="H_val">
+         <item row="0" column="2">
+          <widget class="QLabel" name="K_val">
            <property name="font">
             <font>
              <pointsize>16</pointsize>
@@ -100,64 +132,467 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="4">
-          <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton">
+        </layout>
+       </item>
+       <item>
+        <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>0</red>
+               <green>255</green>
+               <blue>0</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>0</red>
+               <green>255</green>
+               <blue>0</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>0</red>
+               <green>255</green>
+               <blue>0</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </disabled>
+          </palette>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Move In HKL</string>
+         </property>
+         <property name="filenames" stdset="0">
+          <stringlist>
+           <string>goto_hkl.py</string>
+          </stringlist>
+         </property>
+         <property name="openInNewWindow" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid #088A08;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: #088A08;
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 14px;
+}</string>
+         </property>
+         <property name="text">
+          <string>Pseudo-Angles</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="4" column="1">
+          <widget class="QLabel" name="label_qaz">
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>32</height>
+             <height>30</height>
             </size>
            </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>255</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>255</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>255</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
            </property>
-           <property name="toolTip">
-            <string/>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
            </property>
            <property name="text">
-            <string>Move In HKL</string>
+            <string>Alpha</string>
            </property>
-           <property name="filenames" stdset="0">
-            <stringlist>
-             <string>goto_hkl.py</string>
-            </stringlist>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_alpha">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="openInNewWindow" stdset="0">
-            <bool>true</bool>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLabel" name="label_omega">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_15">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Omega</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Psi</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Beta</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>NAZ</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="label_naz">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_psi">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Tau</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_beta">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>QAZ</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_tau">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Alpha</string>
            </property>
           </widget>
          </item>
@@ -165,69 +600,7 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="1" column="0">
-          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>38</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="macros" stdset="0">
-            <string>{&quot;MOTOR&quot;:&quot;${CHI_MOTOR}&quot;}</string>
-           </property>
-           <property name="filename" stdset="0">
-            <string>motors.ui</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0">
-          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>38</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="macros" stdset="0">
-            <string>{&quot;MOTOR&quot;:&quot;${MU_MOTOR}&quot;}</string>
-           </property>
-           <property name="filename" stdset="0">
-            <string>motors.ui</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
           <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -259,68 +632,6 @@
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_6">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>38</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="macros" stdset="0">
-            <string>{&quot;MOTOR&quot;:&quot;${DEL_MOTOR}&quot;}</string>
-           </property>
-           <property name="filename" stdset="0">
-            <string>motors.ui</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_4">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>38</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="macros" stdset="0">
-            <string>{&quot;MOTOR&quot;:&quot;${NU_MOTOR}&quot;}</string>
-           </property>
-           <property name="filename" stdset="0">
-            <string>motors.ui</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
           <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_5">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -351,11 +662,44 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="2" column="0">
+          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="macros" stdset="0">
+            <string>{&quot;MOTOR&quot;:&quot;${CHI_MOTOR}&quot;}</string>
+           </property>
+           <property name="filename" stdset="0">
+            <string>motors.ui</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
           <widget class="QLabel" name="label">
            <property name="font">
             <font>
              <pointsize>-1</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -372,9 +716,118 @@
 }</string>
            </property>
            <property name="text">
-            <string>REAL MOTORS</string>
+            <string>Real Angles</string>
            </property>
           </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_6">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="macros" stdset="0">
+            <string>{&quot;MOTOR&quot;:&quot;${DEL_MOTOR}&quot;}</string>
+           </property>
+           <property name="filename" stdset="0">
+            <string>motors.ui</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="macros" stdset="0">
+            <string>{&quot;MOTOR&quot;:&quot;${NU_MOTOR}&quot;}</string>
+           </property>
+           <property name="filename" stdset="0">
+            <string>motors.ui</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="macros" stdset="0">
+            <string>{&quot;MOTOR&quot;:&quot;${MU_MOTOR}&quot;}</string>
+           </property>
+           <property name="filename" stdset="0">
+            <string>motors.ui</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>

@@ -24,7 +24,7 @@ class MyDisplay(Display):
 
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.update)
-		self.timer.start(5000) #trigger every minute.
+		self.timer.start(1000) #trigger every minute.
 
 # 
 	def ui_filename(self):
@@ -67,15 +67,35 @@ class MyDisplay(Display):
 		exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
 		exp.set_U(U)
 		hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
+		
+		pseudo = exp.calc_pseudo(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
+		pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
+
+
+
 		hklnow = list(hklnow)
 
 
 		lb = lambda x: "{:.5f}".format(float(x))
 
 		self.get_experiment_data()
+
+		# Update HKL pos labels
 		self.ui.H_val.setText(str(lb(hklnow[0])))
 		self.ui.K_val.setText(str(lb(hklnow[1])))
 		self.ui.L_val.setText(str(lb(hklnow[2])))
+
+		# Update pseudo-angle pos labels
+		self.ui.label_alpha.setText(str(lb(pseudo_dict['alpha'])))
+		self.ui.label_beta.setText(str(lb(pseudo_dict['beta'])))
+		self.ui.label_psi.setText(str(lb(pseudo_dict['psi'])))
+		self.ui.label_tau.setText(str(lb(pseudo_dict['tau'])))
+		self.ui.label_qaz.setText(str(lb(pseudo_dict['qaz'])))
+		self.ui.label_naz.setText(str(lb(pseudo_dict['naz'])))
+		self.ui.label_omega.setText(str(lb(pseudo_dict['omega'])))
+
+
+
 
 
 	    	
