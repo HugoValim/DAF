@@ -8,10 +8,7 @@ import daf
 import numpy as np
 import dafutilities as du
 import pandas as pd
-import py4syn.utils.scan as ps
-from py4syn.utils.motor import *
-from py4syn.utils.counter import createCounter, ct, disableCounter
-from py4syn.epics.ScalerClass import Scaler
+import yaml
 
 epi = '''
 Eg:
@@ -56,27 +53,15 @@ phi_points = [float(i) for i in scan_points["Phi"]] # Get only the points relate
 nu_points = [float(i) for i in scan_points["Nu"]] # Get only the points related to nu
 del_points = [float(i) for i in scan_points["Del"]] # Get only the points related to del
 
-PVS = du.PVS
+data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
+        'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
 
-for motor_name, motor in PVS.items():
-    createMotor(motor_name, motor)
-
-
-# time = [time for i in range(len(del_points))]
-
-# writer = ps.DefaultWriter("test.txt")
-# ps.setFileWriter(writer)
+with open('.points.yaml', 'w') as stream:
+    yaml.dump(data, stream, allow_unicode=False)
 
 
-ps.setPlotGraph(False) # Error with multiprocessing.
+os.system("scan -c default -o test --motor huber_mu huber_eta huber_chi huber_phi huber_nu huber_del -s --calculated-points .points.yaml --xlabel huber_eta --time 1")
 
-ps.scan('Mu', mu_points, 'Eta', eta_points, 'Chi', chi_points, 
-    'Phi', phi_points, 'Nu', nu_points, 'Del', del_points, len(del_points), time, time)
-
-
-print('')
-print("Scan Ended")
-print("Time elapsed: ", ps.SCAN_DATA['scan_duration'])
 
 log = sys.argv.pop(0).split('command_line/')[1]
 
