@@ -43,19 +43,6 @@ class MyDisplay(Display):
 
 		return [float(i) for i in string.strip('][').split(', ')]
 
-	def move_in_hkl(self):
-
-		H = self.ui.H_set.text()
-		K = self.ui.K_set.text()
-		L = self.ui.L_set.text()
-
-		os.system("daf.mv {} {} {} -q".format(H, K, L))
-
-		self.H_set.setText('')
-		self.K_set.setText('')
-		self.L_set.setText('')
-
-
 
 	def update(self):
 
