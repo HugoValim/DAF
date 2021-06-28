@@ -20,12 +20,12 @@ class MyDisplay(Display):
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
-		# self.update()
+		self.update()
 
-		# self.timer = QtCore.QTimer()
-		# self.timer.timeout.connect(self.update)
-		# self.timer.start(5000) #trigger every minute.
-		# self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
+		self.timer = QtCore.QTimer()
+		self.timer.timeout.connect(self.update)
+		self.timer.start(5000) #trigger every minute.
+		self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
 # 
 	def ui_filename(self):
 		return 'main2.ui'
@@ -43,52 +43,52 @@ class MyDisplay(Display):
 
 		return [float(i) for i in string.strip('][').split(', ')]
 
-	# def move_in_hkl(self):
+	def move_in_hkl(self):
 
-	# 	H = self.ui.H_set.text()
-	# 	K = self.ui.K_set.text()
-	# 	L = self.ui.L_set.text()
+		H = self.ui.H_set.text()
+		K = self.ui.K_set.text()
+		L = self.ui.L_set.text()
 
-	# 	os.system("daf.mv {} {} {} -q".format(H, K, L))
+		os.system("daf.mv {} {} {} -q".format(H, K, L))
 
-	# 	self.H_set.setText('')
-	# 	self.K_set.setText('')
-	# 	self.L_set.setText('')
-
-
-
-	# def update(self):
+		self.H_set.setText('')
+		self.K_set.setText('')
+		self.L_set.setText('')
 
 
-	# 	dict_args = du.read()
-	# 	Uw = dict_args['U_mat'].split(',')
+
+	def update(self):
 
 
-	# 	U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-	# 	U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-	# 	U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-	# 	U = np.array([U1, U2, U3])
+		dict_args = du.read()
+		Uw = dict_args['U_mat'].split(',')
 
 
-	# 	mode = [int(i) for i in dict_args['Mode']]
-	# 	idir = self.ret_list(dict_args['IDir'])
-	# 	ndir = self.ret_list(dict_args['NDir'])
-	# 	rdir = self.ret_list(dict_args['RDir'])
-
-	# 	exp = daf.Control(*mode)
-	# 	exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
-	# 	exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
-	# 	exp.set_U(U)
-	# 	hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
-	# 	hklnow = list(hklnow)
+		U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
+		U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
+		U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
+		U = np.array([U1, U2, U3])
 
 
-	# 	lb = lambda x: "{:.5f}".format(float(x))
+		mode = [int(i) for i in dict_args['Mode']]
+		idir = self.ret_list(dict_args['IDir'])
+		ndir = self.ret_list(dict_args['NDir'])
+		rdir = self.ret_list(dict_args['RDir'])
 
-	# 	self.get_experiment_data()
-	# 	self.ui.H_val.setText(str(lb(hklnow[0])))
-	# 	self.ui.K_val.setText(str(lb(hklnow[1])))
-	# 	self.ui.L_val.setText(str(lb(hklnow[2])))
+		exp = daf.Control(*mode)
+		exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+		exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
+		exp.set_U(U)
+		hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
+		hklnow = list(hklnow)
+
+
+		lb = lambda x: "{:.5f}".format(float(x))
+
+		self.get_experiment_data()
+		self.ui.H_val.setText(str(lb(hklnow[0])))
+		self.ui.K_val.setText(str(lb(hklnow[1])))
+		self.ui.L_val.setText(str(lb(hklnow[2])))
 
 
 	    	
