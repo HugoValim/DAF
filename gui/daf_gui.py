@@ -28,7 +28,7 @@ class MyDisplay(Display):
 		self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
 
 	def ui_filename(self):
-		return 'main.ui'
+		return 'main2.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
