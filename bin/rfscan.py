@@ -60,7 +60,7 @@ with open('.points.yaml', 'w') as stream:
     yaml.dump(data, stream, allow_unicode=False)
 
 
-os.system("scan -c default -o test --motor huber_mu huber_eta huber_chi huber_phi huber_nu huber_del -s --calculated-points .points.yaml --xlabel huber_eta --time 1")
+os.system("scan -c default -o test --motor huber_mu huber_eta huber_chi -s --calculated-points .points.yaml --xlabel huber_eta --time 1")
 
 
 log = sys.argv.pop(0).split('command_line/')[1]
