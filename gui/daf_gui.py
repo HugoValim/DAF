@@ -24,7 +24,7 @@ class MyDisplay(Display):
 
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.update)
-		self.timer.start(5000) #trigger 5 seconds.
+		self.timer.start(10000) #trigger 5 seconds.
 
 # 
 	def ui_filename(self):
