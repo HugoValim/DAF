@@ -78,8 +78,10 @@ class MyDisplay(Display):
 
 		lb = lambda x: "{:.5f}".format(float(x))
 
-		mode, cons = exp.show(sh = 'gui')
+		mode, mode_num, cons = exp.show(sh = 'gui')
 
+		mode = [i for i in mode if i != '--' else '']
+		cons = [i for i in mode if i != '--' else '']
 
 		self.get_experiment_data()
 
@@ -98,7 +100,7 @@ class MyDisplay(Display):
 		self.ui.label_omega.setText(str(lb(pseudo_dict['omega'])))
 
 		# Update status mode label
-		mode_text = 'MODE: ' + str(dict_args["Mode"])
+		mode_text = 'MODE: ' + str(mode_num[0])+str(mode_num[1])+str(mode_num[2])+str(mode_num[3])+str(mode_num[4])
 		self.ui.label_mode.setText(mode_text)
 		self.ui.label_mode1.setText(mode[0])
 		self.ui.label_mode2.setText(mode[1])
@@ -107,11 +109,13 @@ class MyDisplay(Display):
 		self.ui.label_mode5.setText(mode[4])
 
 		# Update status constraints label
-		self.ui.label_cons1.setText(str(cons[0]))
-		self.ui.label_cons2.setText(str(cons[1]))
-		self.ui.label_cons3.setText(str(cons[2]))
-		self.ui.label_cons4.setText(str(cons[3]))
-		self.ui.label_cons5.setText(str(cons[4]))
+
+
+		self.ui.label_cons1.setText(str(cons[0][1]) + 'deg')
+		self.ui.label_cons2.setText(str(cons[1][1]) + 'deg')
+		self.ui.label_cons3.setText(str(cons[2][1]) + 'deg')
+		self.ui.label_cons4.setText(str(cons[3][1]) + 'deg')
+		self.ui.label_cons5.setText(str(cons[4][1]) + 'deg')
 
 
 

@@ -261,7 +261,7 @@ class Control(object):
             return TablePrinter(fmt, ul='')(data)
 
         if sh == 'gui':
-            return self.setup, conscols
+            return self.setup, conscols, self.forprint
 
     def set_hkl(self, HKL):
 
