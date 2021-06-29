@@ -65,13 +65,13 @@ class MyDisplay(Display):
 		U = np.array([U1, U2, U3])
 
 
-	    UBw = dict_args['UB_mat'].split(',')
+		UBw = dict_args['UB_mat'].split(',')
 
 
-	    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
-	    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
-	    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
-	    UB = np.array([UB1, UB2, UB3])
+		UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
+		UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
+		UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
+		UB = np.array([UB1, UB2, UB3])
 
 
 		mode = [int(i) for i in dict_args['Mode']]
@@ -84,7 +84,7 @@ class MyDisplay(Display):
 		exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
 		exp.set_U(U)
 		hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
-		
+
 		pseudo = exp.calc_pseudo(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
 		pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
 
