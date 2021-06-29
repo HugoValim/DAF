@@ -1,7 +1,7 @@
 from os import path
 from pydm import Display
 import os
-
+import subprocess
 
 class MyDisplay(Display):
 
@@ -22,7 +22,8 @@ class MyDisplay(Display):
 		K = self.ui.K_set.text()
 		L = self.ui.L_set.text()
 
-		os.system("daf.mv {} {} {} -q".format(H, K, L))
+		# os.system("daf.mv {} {} {} -q".format(H, K, L))
+		subprocess.Popen("daf.mv {} {} {} -q".format(H, K, L), shell = True)
 
 		self.H_set.setText('')
 		self.K_set.setText('')

@@ -60,12 +60,13 @@ def wait(is_scan):
 
     for key in MOTORS:
         while not MOTORS[key].done_moving:
+            pass
             
-            print_motors = str(lb(MOTORS["Phi"].RBV)) + '  ' + str(lb(MOTORS["Chi"].RBV)) + '  ' + str(lb(MOTORS["Mu"].RBV)) + '  ' + str(lb(MOTORS["Nu"].RBV)) + '  ' + str(lb(MOTORS["Eta"].RBV)) + '  ' + str(lb(MOTORS["Del"].RBV)) + '  '
+            # print_motors = str(lb(MOTORS["Phi"].RBV)) + '  ' + str(lb(MOTORS["Chi"].RBV)) + '  ' + str(lb(MOTORS["Mu"].RBV)) + '  ' + str(lb(MOTORS["Nu"].RBV)) + '  ' + str(lb(MOTORS["Eta"].RBV)) + '  ' + str(lb(MOTORS["Del"].RBV)) + '  '
                 
-            print(print_motors)
-            time.sleep(0.5)
-    print('')
+            # print(print_motors)
+            # time.sleep(0.5)
+    # print('')
 
 
 
