@@ -177,6 +177,12 @@
      </item>
      <item row="0" column="5">
       <widget class="PyDMPushButton" name="PyDMPushButton">
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="palette">
         <palette>
          <active>

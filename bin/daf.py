@@ -229,6 +229,7 @@ class Control(object):
                     self.forprint.append((i,dprint[i]))
 
         conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
+        experiment_list = [self.samp.name, self.lam, lb(self.en/1000),str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2]), str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2]), str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2])]
 
         fmt = [
                     ('', 'ident',   ident),
@@ -260,8 +261,12 @@ class Control(object):
                    ]
             return TablePrinter(fmt, ul='')(data)
 
+
+        
+        
+
         if sh == 'gui':
-            return self.setup, conscols, self.forprint
+            return self.setup, conscols, self.forprint, experiment_list
 
     def set_hkl(self, HKL):
 
