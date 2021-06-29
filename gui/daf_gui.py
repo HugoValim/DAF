@@ -22,9 +22,10 @@ class MyDisplay(Display):
 
 		self.update()
 
+		self.data = self.get_experiment_data()
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.update)
-		self.timer.start(10000) #trigger 5 seconds.
+		self.timer.start(1000) #trigger 5 seconds.
 
 # 
 	def ui_filename(self):
@@ -36,12 +37,19 @@ class MyDisplay(Display):
 	def get_experiment_data(self, filepath=DEFAULT):
 		with open(filepath) as file:
 			data = yaml.safe_load(file)
-		self.data = data
+		
 		return data
 
 	def ret_list(self, string):
 
 		return [float(i) for i in string.strip('][').split(', ')]
+
+	def call_update(self):
+
+		data = self.get_experiment_data()
+		if data != self.data:
+			self.update()
+			self.data = data
 
 
 	def update(self):
@@ -83,7 +91,7 @@ class MyDisplay(Display):
 		# mode = [i if i != '--' else '' for i in mode]
 		# cons = [i if i != '--' else '' for i in mode]
 
-		self.get_experiment_data()
+		# self.get_experiment_data()
 
 		# Update HKL pos labels
 		self.ui.H_val.setText(str(lb(hklnow[0])))
