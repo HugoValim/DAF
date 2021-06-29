@@ -80,8 +80,8 @@ class MyDisplay(Display):
 
 		mode, mode_num, cons = exp.show(sh = 'gui')
 
-		mode = [i for i in mode if i != '--' else '']
-		cons = [i for i in mode if i != '--' else '']
+		mode = [i if i != '--' else '' for i in mode]
+		cons = [i if i != '--' else '' for i in mode]
 
 		self.get_experiment_data()
 
