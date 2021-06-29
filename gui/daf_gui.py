@@ -65,6 +65,15 @@ class MyDisplay(Display):
 		U = np.array([U1, U2, U3])
 
 
+	    UBw = dict_args['UB_mat'].split(',')
+
+
+	    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
+	    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
+	    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
+	    UB = np.array([UB1, UB2, UB3])
+
+
 		mode = [int(i) for i in dict_args['Mode']]
 		idir = self.ret_list(dict_args['IDir'])
 		ndir = self.ret_list(dict_args['NDir'])
@@ -130,6 +139,32 @@ class MyDisplay(Display):
 		self.ui.label_exp4.setText(str(exp_list[3]))
 		self.ui.label_exp5.setText(str(exp_list[4]))
 		self.ui.label_exp6.setText(str(exp_list[5]))
+
+		#Update status Matrixes label
+
+		self.ui.label_u00.setText(str(U[0][0]))
+		self.ui.label_u01.setText(str(U[0][1]))
+		self.ui.label_u02.setText(str(U[0][2]))
+		self.ui.label_u10.setText(str(U[1][0]))
+		self.ui.label_u11.setText(str(U[1][1]))
+		self.ui.label_u12.setText(str(U[1][2]))
+		self.ui.label_u20.setText(str(U[2][0]))
+		self.ui.label_u21.setText(str(U[2][1]))
+		self.ui.label_u22.setText(str(U[2][2]))
+
+
+		self.ui.label_ub00.setText(str(UB[0][0]))
+		self.ui.label_ub01.setText(str(UB[0][1]))
+		self.ui.label_ub02.setText(str(UB[0][2]))
+		self.ui.label_ub10.setText(str(UB[1][0]))
+		self.ui.label_ub11.setText(str(UB[1][1]))
+		self.ui.label_ub12.setText(str(UB[1][2]))
+		self.ui.label_ub20.setText(str(UB[2][0]))
+		self.ui.label_ub21.setText(str(UB[2][1]))
+		self.ui.label_ub22.setText(str(UB[2][2]))
+
+
+
 
 
 
