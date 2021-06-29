@@ -228,6 +228,8 @@ class Control(object):
                 for i in self.motcon:
                     self.forprint.append((i,dprint[i]))
 
+        conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
+
         fmt = [
                     ('', 'ident',   ident),
                     ('', 'col1',   space),
@@ -257,6 +259,9 @@ class Control(object):
                     {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6': self.centshow.format(str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2]))}
                    ]
             return TablePrinter(fmt, ul='')(data)
+
+        if sh == 'gui':
+            return self.setup, conscols
 
     def set_hkl(self, HKL):
 

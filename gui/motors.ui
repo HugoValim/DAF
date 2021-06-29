@@ -75,6 +75,11 @@
          <height>0</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string/>
        </property>
@@ -90,6 +95,7 @@
       <widget class="PyDMLabel" name="PyDMLabel">
        <property name="font">
         <font>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -152,6 +158,11 @@
          <width>75</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
        </property>
        <property name="toolTip">
         <string/>

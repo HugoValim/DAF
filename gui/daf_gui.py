@@ -28,7 +28,7 @@ class MyDisplay(Display):
 
 # 
 	def ui_filename(self):
-		return 'main2.ui'
+		return 'main.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
@@ -78,6 +78,9 @@ class MyDisplay(Display):
 
 		lb = lambda x: "{:.5f}".format(float(x))
 
+		mode, cons = exp.show(sh = 'gui')
+
+
 		self.get_experiment_data()
 
 		# Update HKL pos labels
@@ -93,6 +96,24 @@ class MyDisplay(Display):
 		self.ui.label_qaz.setText(str(lb(pseudo_dict['qaz'])))
 		self.ui.label_naz.setText(str(lb(pseudo_dict['naz'])))
 		self.ui.label_omega.setText(str(lb(pseudo_dict['omega'])))
+
+		# Update status mode label
+		mode_text = 'MODE: ' + str(dict_args["Mode"])
+		self.ui.label_mode.setText(mode_text)
+		self.ui.label_mode1.setText(mode[0])
+		self.ui.label_mode2.setText(mode[1])
+		self.ui.label_mode3.setText(mode[2])
+		self.ui.label_mode4.setText(mode[3])
+		self.ui.label_mode5.setText(mode[4])
+
+		# Update status constraints label
+		self.ui.label_cons1.setText(cons[0])
+		self.ui.label_cons2.setText(cons[1])
+		self.ui.label_cons3.setText(cons[2])
+		self.ui.label_cons4.setText(cons[3])
+		self.ui.label_cons5.setText(cons[4])
+
+
 
 
 
