@@ -53,7 +53,7 @@ def stop():
 
 
 def wait(is_scan):
-    if not is_scan:
+    # if not is_scan:
         # print("   PHI       CHI       MU       NU      ETA       DEL")
     lb = lambda x: "{:.5f}".format(float(x))
 
