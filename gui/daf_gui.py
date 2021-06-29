@@ -107,11 +107,11 @@ class MyDisplay(Display):
 		self.ui.label_mode5.setText(mode[4])
 
 		# Update status constraints label
-		self.ui.label_cons1.setText(cons[0])
-		self.ui.label_cons2.setText(cons[1])
-		self.ui.label_cons3.setText(cons[2])
-		self.ui.label_cons4.setText(cons[3])
-		self.ui.label_cons5.setText(cons[4])
+		self.ui.label_cons1.setText(str(cons[0]))
+		self.ui.label_cons2.setText(str(cons[1]))
+		self.ui.label_cons3.setText(str(cons[2]))
+		self.ui.label_cons4.setText(str(cons[3]))
+		self.ui.label_cons5.setText(str(cons[4]))
 
 
 
