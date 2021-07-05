@@ -61,56 +61,6 @@
      <property name="verticalSpacing">
       <number>5</number>
      </property>
-     <item row="0" column="2">
-      <widget class="PyDMLineEdit" name="PyDMLineEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>75</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="channel" stdset="0">
-        <string>ca://${MOTOR}.VAL</string>
-       </property>
-       <property name="displayFormat" stdset="0">
-        <enum>PyDMLineEdit::Decimal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="PyDMLabel" name="PyDMLabel">
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="channel" stdset="0">
-        <string>ca://${MOTOR}.DESC</string>
-       </property>
-       <property name="displayFormat" stdset="0">
-        <enum>PyDMLabel::String</enum>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="4">
       <widget class="PyDMByteIndicator" name="PyDMByteIndicator">
        <property name="sizePolicy">
@@ -175,6 +125,26 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <widget class="PyDMLabel" name="PyDMLabel">
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="channel" stdset="0">
+        <string>ca://${MOTOR}.DESC</string>
+       </property>
+       <property name="displayFormat" stdset="0">
+        <enum>PyDMLabel::String</enum>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="5">
       <widget class="PyDMPushButton" name="PyDMPushButton">
        <property name="maximumSize">
@@ -234,6 +204,23 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="2">
+      <widget class="PyDMLabel" name="PyDMLabel_3">
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="channel" stdset="0">
+        <string>ca://${MOTOR}.VAL</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -248,11 +235,6 @@
    <class>PyDMByteIndicator</class>
    <extends>QWidget</extends>
    <header>pydm.widgets.byte</header>
-  </customwidget>
-  <customwidget>
-   <class>PyDMLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>pydm.widgets.line_edit</header>
   </customwidget>
   <customwidget>
    <class>PyDMPushButton</class>

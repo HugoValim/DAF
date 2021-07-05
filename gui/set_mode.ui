@@ -1,0 +1,1160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>698</width>
+    <height>497</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_9">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Set Mode To:</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="mode_input">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set a mode by passing the number correspondig to the table columns. Eg: 215 will set Nu Fixed, Alpha=Beta, Eta=Del/2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="mode_input_button">
+        <property name="text">
+         <string>Set</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="4" column="5">
+      <widget class="QLabel" name="label_mode34">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Chi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="label_mode30">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>QAZ Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="4">
+      <widget class="QLabel" name="label_mode43">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Phi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4">
+      <widget class="QLabel" name="label_mode23">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Mu Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <widget class="QLabel" name="label_mode52">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Eta=Del/2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_29">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QLabel" name="label_mode03">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="6">
+      <widget class="QLabel" name="label_7">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="4">
+      <widget class="QLabel" name="label_mode53">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="label_mode00">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="label_mode40">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>NAZ Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_43">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>5</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="3">
+      <widget class="QLabel" name="label_mode62">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Mu=Nu/2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLabel" name="label_mode11">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Alpha=Beta</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="4">
+      <widget class="QLabel" name="label_mode33">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Chi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="6">
+      <widget class="QLabel" name="label_35">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="5">
+      <widget class="QLabel" name="label_mode54">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="5">
+      <widget class="QLabel" name="label_mode44">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Phi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="6">
+      <widget class="QLabel" name="label_49">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>5</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QLabel" name="label_6">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Sample</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5">
+      <widget class="QLabel" name="label_mode14">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Eta Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_50">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>6</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QLabel" name="label_mode61">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label_4">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Sample</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="4">
+      <widget class="QLabel" name="label_mode63">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLabel" name="label_mode50">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Zone*</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6">
+      <widget class="QLabel" name="label_14">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="label_mode01">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_3">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Reference</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLabel" name="label_mode60">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Energy*</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="5">
+      <widget class="QLabel" name="label_mode64">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QLabel" name="label_mode04">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QLabel" name="label_mode31">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Beta Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="6">
+      <widget class="QLabel" name="label_42">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>4</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLabel" name="label_mode02">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Omega Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="6">
+      <widget class="QLabel" name="label_28">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QLabel" name="label_mode22">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Mu Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QLabel" name="label_mode13">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Eta Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QLabel" name="label_mode12">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Eta Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_36">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>4</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_2">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Detector</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QLabel" name="label_5">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Sample</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="6">
+      <widget class="QLabel" name="label_56">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>6</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLabel" name="label_mode41">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Psi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="5">
+      <widget class="QLabel" name="label_mode24">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Mu Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QLabel" name="label_mode32">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Chi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="label_mode20">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Nu Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="label_mode21">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Alpha Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="6">
+      <widget class="QLabel" name="label_21">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3">
+      <widget class="QLabel" name="label_mode42">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Phi Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QLabel" name="label_mode51">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="label_mode10">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Delta Fixed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_22">
+       <property name="styleSheet">
+        <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 16px;
+    font-size: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QFrame" name="frame_2">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_set_cons1">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Constraint 1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_set_cons3">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Constraint 3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_set_cons2">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Constraint 2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_set_cons1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_set_cons2">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_set_cons3">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

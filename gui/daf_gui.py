@@ -15,6 +15,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 
 DEFAULT = ".Experiment"
 
+
 class MyDisplay(Display):
 
 	def __init__(self, parent=None, args=None, macros=None):
@@ -142,6 +143,7 @@ class MyDisplay(Display):
 
 		#Update status Matrixes label
 
+		#U
 		self.ui.label_u00.setText(str(U[0][0]))
 		self.ui.label_u01.setText(str(U[0][1]))
 		self.ui.label_u02.setText(str(U[0][2]))
@@ -152,7 +154,7 @@ class MyDisplay(Display):
 		self.ui.label_u21.setText(str(U[2][1]))
 		self.ui.label_u22.setText(str(U[2][2]))
 
-
+		#UB
 		self.ui.label_ub00.setText(str(UB[0][0]))
 		self.ui.label_ub01.setText(str(UB[0][1]))
 		self.ui.label_ub02.setText(str(UB[0][2]))
@@ -162,6 +164,17 @@ class MyDisplay(Display):
 		self.ui.label_ub20.setText(str(UB[2][0]))
 		self.ui.label_ub21.setText(str(UB[2][1]))
 		self.ui.label_ub22.setText(str(UB[2][2]))
+
+		#Update motor bounds
+
+
+		self.ui.label_mu_bounds.setText(dict_args["bound_Mu"])
+		self.ui.label_eta_bounds.setText(dict_args["bound_Eta"])
+		self.ui.label_chi_bounds.setText(dict_args["bound_Chi"])
+		self.ui.label_phi_bounds.setText(dict_args["bound_Phi"])
+		self.ui.label_nu_bounds.setText(dict_args["bound_Nu"])
+		self.ui.label_del_bounds.setText(dict_args["bound_Del"])
+		
 
 
 

@@ -34,19 +34,17 @@
      <property name="font">
       <font>
        <pointsize>-1</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
-    border: 1px solid #088A08;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    background-color: #088A08;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 14px;
+    max-height: 18px;
+    font-size: 16px;
 }</string>
      </property>
      <property name="text">
@@ -210,9 +208,9 @@
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>0</blue>
+           <red>239</red>
+           <green>235</green>
+           <blue>231</blue>
           </color>
          </brush>
         </colorrole>
@@ -221,9 +219,9 @@
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>0</blue>
+           <red>239</red>
+           <green>235</green>
+           <blue>231</blue>
           </color>
          </brush>
         </colorrole>
@@ -232,9 +230,9 @@
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>0</blue>
+           <red>239</red>
+           <green>235</green>
+           <blue>231</blue>
           </color>
          </brush>
         </colorrole>
