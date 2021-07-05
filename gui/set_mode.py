@@ -2,8 +2,14 @@ from os import path
 from pydm import Display
 import os
 import subprocess
+import dafutilities as du
+
+DEFAULT = ".Experiment"
 
 class MyDisplay(Display):
+
+
+	
 
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
@@ -26,6 +32,29 @@ class MyDisplay(Display):
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+	def update_labels(self):
+		
+
+		cons_dict = {'1' : self.ui.label_set_cons1, '2' : self.ui.label_set_cons2, '3' : self.ui.label_set_cons3}
+		set_cons_dict = {'1' : self.ui.lineEdit_set_cons1, '2' : self.ui.lineEdit_set_cons2, '3' : self.ui.lineEdit_set_cons3}
+		
+		# Update constraint fields with the angles written in .Experement file
+
+		dict_args = du.read()
+		dict_cons_angles = {'chi' : 'cons_Chi', 'del' : 'cons_Del', 'eta' : 'cons_Eta', 'mu' : 'cons_Mu', 'nu' : 'cons_Nu', 'phi' : 'cons_Phi', 'alpha' : 'cons_alpha',
+							'beta' : 'cons_beta', 'naz' : 'cons_naz', 'omega' : 'cons_omega', 'psi' : 'cons_psi', 'qaz' : 'cons_qaz'}
+		
+		
+		for key in cons_dict.keys():
+
+			if '=' not in cons_dict[key].text() and 'Constraint' not in cons_dict[key].text():
+				angle_now = cons_dict[key].text().lower().split(' ')[0]
+			
+				if angle_now in dict_cons_angles.keys():
+					set_cons_dict[key].setText(dict_args[dict_cons_angles[angle_now]])
+
+
 
 	def highlight_table(self):
 
@@ -73,6 +102,8 @@ class MyDisplay(Display):
 			if column > 4: 
 				break
 
+
+
 	def get_cons(self):
 
 
@@ -110,7 +141,7 @@ class MyDisplay(Display):
 				cons_dict[key].setEnabled(False)
 
 		
-
+		self.update_labels()
 
 	def set_mode(self):
 
@@ -122,6 +153,9 @@ class MyDisplay(Display):
 				ang = i[0].split(' ')[0].lower() # get only the angle name in lower case
 				fix_in = i[1]
 				arg = 'cons_'+str(ang) + ' ' + str(fix_in)
+				
+				if str(ang) in ['mu', 'eta', 'chi', 'phi', 'nu', 'del']:
+					ang.capitalize()
 				
 				subprocess.Popen("daf.cons --{} ".format(arg), shell = True)
 

@@ -2,7 +2,7 @@
 
 import yaml
 import os
-
+import subprocess
 
 def yaml_filepath():
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'motor_fields_default.yml')
@@ -27,8 +27,4 @@ delta = "DEL_MOTOR"+'='+motors["DEL_MOTOR"]
 print(mu)
 # Call './motors_gui --help' for options
 os.system("pydm --hide-nav-bar -m '{}, {}, {}, {}, {}, {}' ../gui/daf_gui.py &".format(mu,eta,chi,phi,nu,delta))
-
-# It is also possible to call it in pydm traditional way. For example:
-
-# pydm -m "ENABLE_SETTINGS=True, M1=SOL:m1, M2=SOL:m2, M3=SOL:m3, ..., MN=SOL:mN" \
-# motors_gui.py --debug
+# subprocess.Popen("pydm --hide-nav-bar -m '{}, {}, {}, {}, {}, {}' ../gui/daf_gui.py".format(mu,eta,chi,phi,nu,delta), shell = False)

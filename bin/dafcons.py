@@ -12,7 +12,7 @@ import dafutilities as du
 
 epi = '''
 Eg:
-    daf.cons --cons_del 30 --cons_naz 15
+    daf.cons --cons_Del 30 --cons_naz 15
     daf.amv -d 30 -cnaz 15
     '''
 
@@ -20,12 +20,12 @@ Eg:
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 
-parser.add_argument('-m', '--cons_mu', metavar='ang', type=float, help='Constrain Mu, default: 0')
-parser.add_argument('-e', '--cons_eta', metavar='ang', type=float, help='Constrain Eta, default: 0')
-parser.add_argument('-c', '--cons_chi', metavar='ang', type=float, help='Constrain Chi, default: 0')
-parser.add_argument('-p', '--cons_phi', metavar='ang', type=float, help='Constrain Phi, default: 0')
-parser.add_argument('-n', '--cons_nu', metavar='ang', type=float, help='Constrain Nu, default: 0')
-parser.add_argument('-d', '--cons_del', metavar='ang', type=float, help='Constrain Del, default: 0')
+parser.add_argument('-m', '--cons_Mu', metavar='ang', type=float, help='Constrain Mu, default: 0')
+parser.add_argument('-e', '--cons_Eta', metavar='ang', type=float, help='Constrain Eta, default: 0')
+parser.add_argument('-c', '--cons_Chi', metavar='ang', type=float, help='Constrain Chi, default: 0')
+parser.add_argument('-p', '--cons_Phi', metavar='ang', type=float, help='Constrain Phi, default: 0')
+parser.add_argument('-n', '--cons_Nu', metavar='ang', type=float, help='Constrain Nu, default: 0')
+parser.add_argument('-d', '--cons_Del', metavar='ang', type=float, help='Constrain Del, default: 0')
 parser.add_argument('-a', '--cons_alpha', metavar='ang', type=float, help='Constrain alpha, default: 0')
 parser.add_argument('-b', '--cons_beta', metavar='ang', type=float, help='Constrain beta, default: 0')
 parser.add_argument('-psi', '--cons_psi', metavar='ang', type=float, help='Constrain psi, default: 0')
@@ -39,7 +39,7 @@ args = parser.parse_args()
 dic = vars(args)
 
 
-angs = ['cons_mu','cons_eta', 'cons_chi', 'cons_phi', 'cons_nu', 'cons_del', 'cons_alpha', 'cons_beta', 'cons_psi', 'cons_omega', 'cons_qaz', 'cons_naz']
+angs = ['cons_Mu','cons_Eta', 'cons_Chi', 'cons_Phi', 'cons_Nu', 'cons_Del', 'cons_alpha', 'cons_beta', 'cons_psi', 'cons_omega', 'cons_qaz', 'cons_naz']
 
 
 dict_args = du.read()
@@ -71,12 +71,12 @@ if args.List:
     print('Naz   =    {}'.format(dict_args["cons_naz"]))
     print('Omega =    {}'.format(dict_args["cons_omega"]))
     print('')
-    print('Mu    =    {}'.format(dict_args["cons_mu"]))
-    print('Eta   =    {}'.format(dict_args["cons_eta"]))
-    print('Chi   =    {}'.format(dict_args["cons_chi"]))
-    print('Phi   =    {}'.format(dict_args["cons_phi"]))
-    print('Nu    =    {}'.format(dict_args["cons_nu"]))
-    print('Del   =    {}'.format(dict_args["cons_del"]))
+    print('Mu    =    {}'.format(dict_args["cons_Mu"]))
+    print('Eta   =    {}'.format(dict_args["cons_Eta"]))
+    print('Chi   =    {}'.format(dict_args["cons_Chi"]))
+    print('Phi   =    {}'.format(dict_args["cons_Phi"]))
+    print('Nu    =    {}'.format(dict_args["cons_Nu"]))
+    print('Del   =    {}'.format(dict_args["cons_Del"]))
     print('')
 
 log = sys.argv.pop(0).split('command_line/')[1]
