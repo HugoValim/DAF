@@ -16,6 +16,8 @@ class MyDisplay(Display):
 
 		self.ui.mode_input.textChanged.connect(self.highlight_table)
 		self.ui.mode_input.textChanged.connect(self.get_cons)
+		self.ui.mode_input.textChanged.connect(self.update_labels)
+
 
 		self.ui.mode_input_button.clicked.connect(self.set_mode)
 		
@@ -26,6 +28,8 @@ class MyDisplay(Display):
 		self.ui.label_set_cons1.setEnabled(False)
 		self.ui.label_set_cons2.setEnabled(False)
 		self.ui.label_set_cons3.setEnabled(False)
+		self.highlight_table()
+		self.default_labels()
 # 
 	def ui_filename(self):
 		return 'set_mode.ui'
@@ -33,24 +37,42 @@ class MyDisplay(Display):
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
-	def update_labels(self):
+	def setup_dicts(self):
 		
-
 		cons_dict = {'1' : self.ui.label_set_cons1, '2' : self.ui.label_set_cons2, '3' : self.ui.label_set_cons3}
 		set_cons_dict = {'1' : self.ui.lineEdit_set_cons1, '2' : self.ui.lineEdit_set_cons2, '3' : self.ui.lineEdit_set_cons3}
+
+		return cons_dict, set_cons_dict
+
+
+	def default_labels(self):
+
+		cons_dict, set_cons_dict = self.setup_dicts()
+
+		for key in cons_dict.keys():
+			if cons_dict[key].text() not in self.mode_list:
+				cons_dict[key].setText('Constraint')
+				set_cons_dict[key].setText('N/A')
+				set_cons_dict[key].setEnabled(False)
+				cons_dict[key].setEnabled(False)
+
+	def update_labels(self):
+
+		cons_dict, set_cons_dict = self.setup_dicts()
+		
 		
 		# Update constraint fields with the angles written in .Experement file
 
 		dict_args = du.read()
-		dict_cons_angles = {'chi' : 'cons_Chi', 'del' : 'cons_Del', 'eta' : 'cons_Eta', 'mu' : 'cons_Mu', 'nu' : 'cons_Nu', 'phi' : 'cons_Phi', 'alpha' : 'cons_alpha',
+		dict_cons_angles = {'chi' : 'cons_Chi', 'delta' : 'cons_Del', 'eta' : 'cons_Eta', 'mu' : 'cons_Mu', 'nu' : 'cons_Nu', 'phi' : 'cons_Phi', 'alpha' : 'cons_alpha',
 							'beta' : 'cons_beta', 'naz' : 'cons_naz', 'omega' : 'cons_omega', 'psi' : 'cons_psi', 'qaz' : 'cons_qaz'}
 		
 		
 		for key in cons_dict.keys():
-
+			print(cons_dict[key].text().lower().split(' ')[0])
 			if '=' not in cons_dict[key].text() and 'Constraint' not in cons_dict[key].text():
 				angle_now = cons_dict[key].text().lower().split(' ')[0]
-			
+				
 				if angle_now in dict_cons_angles.keys():
 					set_cons_dict[key].setText(dict_args[dict_cons_angles[angle_now]])
 
@@ -102,13 +124,13 @@ class MyDisplay(Display):
 			if column > 4: 
 				break
 
+		
 
 
 	def get_cons(self):
 
 
-		cons_dict = {'1' : self.ui.label_set_cons1, '2' : self.ui.label_set_cons2, '3' : self.ui.label_set_cons3}
-		set_cons_dict = {'1' : self.ui.lineEdit_set_cons1, '2' : self.ui.lineEdit_set_cons2, '3' : self.ui.lineEdit_set_cons3}
+		cons_dict, set_cons_dict = self.setup_dicts()
 		
 		mode_cont = 1
 		self.cons_table = [] # table to store the constraints to be passed to daf.cons
@@ -122,7 +144,9 @@ class MyDisplay(Display):
 				if mode_cont <= 3:
 					cons_dict[str(mode_cont)].setText(i)
 					self.cons_table.append((i,set_cons_dict[str(mode_cont)].text()))
+					
 					if '=' in i:
+						set_cons_dict[str(mode_cont)].setText('N/A')
 						set_cons_dict[str(mode_cont)].setEnabled(False)
 						cons_dict[str(mode_cont)].setEnabled(False)
 					else:
@@ -134,14 +158,10 @@ class MyDisplay(Display):
 					mode_cont += 1
 
 
-		for key in cons_dict.keys():
-			if cons_dict[key].text() not in self.mode_list:
-				cons_dict[key].setText('Constraint')
-				set_cons_dict[key].setEnabled(False)
-				cons_dict[key].setEnabled(False)
+		self.default_labels()
 
 		
-		self.update_labels()
+		
 
 	def set_mode(self):
 
@@ -152,11 +172,12 @@ class MyDisplay(Display):
 			if not '=' in i[0]:
 				ang = i[0].split(' ')[0].lower() # get only the angle name in lower case
 				fix_in = i[1]
+				
+				if ang in ['mu', 'eta', 'chi', 'phi', 'nu', 'del']:
+					ang = ang.capitalize()
+				
 				arg = 'cons_'+str(ang) + ' ' + str(fix_in)
-				
-				if str(ang) in ['mu', 'eta', 'chi', 'phi', 'nu', 'del']:
-					ang.capitalize()
-				
+				print(arg)
 				subprocess.Popen("daf.cons --{} ".format(arg), shell = True)
 
 
