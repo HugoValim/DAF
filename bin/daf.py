@@ -274,6 +274,17 @@ class Control(object):
         
 
         if sh == 'gui':
+            fmt = [
+                    ('', 'ident',   ident),
+                    ('', 'col1',   space),
+                    ('', 'col2',   space),
+                    ('', 'col3',   space),
+                    ('', 'col4',   space),
+                    ('', 'col5',   space),
+                    ('', 'col6',   space),
+                    ('', 'col6',   space), 
+                   ]
+
             return self.setup, conscols, self.forprint, experiment_list
 
     def set_hkl(self, HKL):
