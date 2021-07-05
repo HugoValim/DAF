@@ -270,6 +270,8 @@ class Control(object):
                     {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.samp.a))), 'col3':self.centshow.format(str(lb(self.samp.b))),'col4':self.centshow.format(str(lb(self.samp.c))), 'col5' : self.centshow.format(str(lb(self.samp.alpha))), 'col6': self.centshow.format(str(lb(self.samp.beta))), 'col7' : self.centshow.format(str(lb(self.samp.gamma)))}
                    ]
         
+            return TablePrinter(fmt, ul='')(data)
+        
 
         if sh == 'gui':
             return self.setup, conscols, self.forprint, experiment_list
