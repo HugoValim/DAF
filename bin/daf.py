@@ -229,7 +229,8 @@ class Control(object):
                     self.forprint.append((i,dprint[i]))
 
         conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
-        experiment_list = [self.samp.name, lb(self.lam), lb(self.en/1000),'[' + str(self.idir[0]) +','+ str(self.idir[1]) +',' + str(self.idir[2]) + ']', '[' + str(self.ndir[0]) + ',' + str(self.ndir[1]) + ',' +str(self.ndir[2]) + ']', '[' + str(self.nref[0]) + ',' + str(self.nref[1]) + ',' +str(self.nref[2]) + ']']
+        experiment_list = [self.sampleor, lb(self.lam), lb(self.en/1000),'[' + str(self.idir[0]) +','+ str(self.idir[1]) +',' + str(self.idir[2]) + ']', '[' + str(self.ndir[0]) + ',' + str(self.ndir[1]) + ',' +str(self.ndir[2]) + ']', '[' + str(self.nref[0]) + ',' + str(self.nref[1]) + ',' +str(self.nref[2]) + ']']
+        sample_info = [self.samp.name, self.samp.a, self.samp.b, self.samp.c, self.samp.alpha, self.samp.beta, self.samp.gamma]
 
         fmt = [
                     ('', 'ident',   ident),
@@ -276,7 +277,7 @@ class Control(object):
                     ('', 'col6',   space),
                     ('', 'col7',   space), 
                    ]
-                   
+
             data = [{'col1':self.centshow.format('Sample'), 'col2':self.centshow.format('a'), 'col3':self.centshow.format('b'), 'col4':self.centshow.format('c'), 'col5' : self.centshow.format('Alpha'), 'col6':self.centshow.format('Beta'), 'col7':self.centshow.format('Gamma')},
                     {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.samp.a))), 'col3':self.centshow.format(str(lb(self.samp.b))),'col4':self.centshow.format(str(lb(self.samp.c))), 'col5' : self.centshow.format(str(lb(self.samp.alpha))), 'col6': self.centshow.format(str(lb(self.samp.beta))), 'col7' : self.centshow.format(str(lb(self.samp.gamma)))}
                    ]
@@ -287,7 +288,7 @@ class Control(object):
         if sh == 'gui':
             
 
-            return self.setup, conscols, self.forprint, experiment_list
+            return self.setup, conscols, self.forprint, experiment_list, sample_info
 
     def set_hkl(self, HKL):
 

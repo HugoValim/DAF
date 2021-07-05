@@ -96,7 +96,7 @@ class MyDisplay(Display):
 
 		lb = lambda x: "{:.5f}".format(float(x))
 
-		mode, mode_num, cons, exp_list = exp.show(sh = 'gui')
+		mode, mode_num, cons, exp_list, samp_info = exp.show(sh = 'gui')
 
 		# mode = [i if i != '--' else '' for i in mode]
 		# cons = [i if i != '--' else '' for i in mode]
@@ -140,6 +140,16 @@ class MyDisplay(Display):
 		self.ui.label_exp4.setText(str(exp_list[3]))
 		self.ui.label_exp5.setText(str(exp_list[4]))
 		self.ui.label_exp6.setText(str(exp_list[5]))
+
+		# Update sample info label
+		self.ui.label_samp_name.setText(str(samp_info[0]))
+		self.ui.label_samp_a.setText(str(samp_info[1]))
+		self.ui.label_samp_b.setText(str(samp_info[2]))
+		self.ui.label_samp_c.setText(str(samp_info[3]))
+		self.ui.label_samp_alpha.setText(str(samp_info[4]))
+		self.ui.label_samp_beta.setText(str(samp_info[5]))
+		self.ui.label_samp_gamma.setText(str(samp_info[6]))
+		
 
 		#Update status Matrixes label
 
