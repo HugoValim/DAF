@@ -266,14 +266,6 @@ class Control(object):
 
         if sh == 'sample':
 
-            data = [{'col1':self.centshow.format('Sample'), 'col2':self.centshow.format('a'), 'col3':self.centshow.format('b'), 'col4':self.centshow.format('c'), 'col5' : self.centshow.format('Alpha'), 'col6':self.centshow.format('Beta'), 'col7':self.centshow.format('Gamma')},
-                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.samp.a))), 'col3':self.centshow.format(str(lb(self.samp.b))),'col4':self.centshow.format(str(lb(self.samp.c))), 'col5' : self.centshow.format(str(lb(self.samp.alpha))), 'col6': self.centshow.format(str(lb(self.samp.beta))), 'col7' : self.centshow.format(str(lb(self.samp.gamma)))}
-                   ]
-        
-            return TablePrinter(fmt, ul='')(data)
-        
-
-        if sh == 'gui':
             fmt = [
                     ('', 'ident',   ident),
                     ('', 'col1',   space),
@@ -284,6 +276,16 @@ class Control(object):
                     ('', 'col6',   space),
                     ('', 'col7',   space), 
                    ]
+                   
+            data = [{'col1':self.centshow.format('Sample'), 'col2':self.centshow.format('a'), 'col3':self.centshow.format('b'), 'col4':self.centshow.format('c'), 'col5' : self.centshow.format('Alpha'), 'col6':self.centshow.format('Beta'), 'col7':self.centshow.format('Gamma')},
+                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.samp.a))), 'col3':self.centshow.format(str(lb(self.samp.b))),'col4':self.centshow.format(str(lb(self.samp.c))), 'col5' : self.centshow.format(str(lb(self.samp.alpha))), 'col6': self.centshow.format(str(lb(self.samp.beta))), 'col7' : self.centshow.format(str(lb(self.samp.gamma)))}
+                   ]
+        
+            return TablePrinter(fmt, ul='')(data)
+        
+
+        if sh == 'gui':
+            
 
             return self.setup, conscols, self.forprint, experiment_list
 
