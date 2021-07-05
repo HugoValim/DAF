@@ -256,13 +256,19 @@ class Control(object):
 
         if sh == 'expt':
 
-            data = [{'col1':self.centshow.format('Material'), 'col2':self.centshow.format('WaveLength (angstrom)'), 'col3':self.centshow.format('Energy (keV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
-                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6': self.centshow.format(str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2]))}
+            data = [{'col1':self.centshow.format('Sampleor'), 'col2':self.centshow.format('WaveLength (angstrom)'), 'col3':self.centshow.format('Energy (keV)'), 'col4':self.centshow.format('Incidence Dir'), 'col5' : self.centshow.format('Normal Dir'), 'col6':self.centshow.format('Reference Dir')},
+                    {'col1':self.centshow.format(self.sampleor), 'col2':self.centshow.format(lb(str(self.lam))), 'col3':self.centshow.format(str(lb(self.en/1000))),'col4':self.centshow.format(str(self.idir[0]) +' '+ str(self.idir[1]) +' ' + str(self.idir[2])), 'col5' : self.centshow.format(str(self.ndir[0]) + ' ' + str(self.ndir[1]) + ' ' +str(self.ndir[2])), 'col6': self.centshow.format(str(self.nref[0]) + ' ' + str(self.nref[1]) + ' ' +str(self.nref[2]))}
                    ]
+
+                   self.sampleor
             return TablePrinter(fmt, ul='')(data)
 
 
-        
+        if sh == 'sample':
+
+            data = [{'col1':self.centshow.format('Sample'), 'col2':self.centshow.format('a'), 'col3':self.centshow.format('b'), 'col4':self.centshow.format('c'), 'col5' : self.centshow.format('Alpha'), 'col6':self.centshow.format('Beta'), 'col7':self.centshow.format('Gamma')},
+                    {'col1':self.centshow.format(self.samp.name), 'col2':self.centshow.format(lb(str(self.samp.a))), 'col3':self.centshow.format(str(lb(self.samp.b))),'col4':self.centshow.format(str(lb(self.samp.c))), 'col5' : self.centshow.format(str(lb(self.samp.alpha))), 'col6': self.centshow.format(str(lb(self.samp.beta))), 'col7' : self.centshow.format(str(lb(self.samp.gamma)))}
+                   ]
         
 
         if sh == 'gui':

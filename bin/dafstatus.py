@@ -21,6 +21,7 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 
 parser.add_argument('-m', '--Mode', action='store_true', help='Show current operating mode of the diffractometer')
 parser.add_argument('-e', '--Experiment', action='store_true', help='Show experiment information')
+parser.add_argument('-s', '--Sample', action='store_true', help='Show sample information')
 parser.add_argument('-u', '--umatrix', action='store_true', help='Show current orientation matrix')
 parser.add_argument('-b', '--bounds', action='store_true', help='Show current setted bounds')
 parser.add_argument('-a', '--All', action='store_true', help='Show all information')
@@ -69,6 +70,11 @@ if args.Mode:
 
 if args.Experiment:
     mode = exp.show(sh = 'expt')
+    print(mode)
+    print('')
+
+if args.Sample:
+    mode = exp.show(sh = 'sample')
     print(mode)
     print('')
 
@@ -140,6 +146,10 @@ if args.All:
     print('')
 
     mode = exp.show(sh = 'expt')
+    print(mode)
+    print('')
+
+    mode = exp.show(sh = 'sample')
     print(mode)
     print('')
 

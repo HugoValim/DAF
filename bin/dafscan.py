@@ -140,7 +140,7 @@ if float(angs[16]) < 1e-4:
     for j,k in exp_dict.items():
         if j in dict_args:
             dict_args[j] = str(k)
-    du.write(dict_args, is_scan = True)
+    # du.write(dict_args, is_scan = True)
 
 
 log = sys.argv.pop(0).split('command_line/')[1]
