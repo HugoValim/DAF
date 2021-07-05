@@ -282,7 +282,7 @@ class Control(object):
                     ('', 'col4',   space),
                     ('', 'col5',   space),
                     ('', 'col6',   space),
-                    ('', 'col6',   space), 
+                    ('', 'col7',   space), 
                    ]
 
             return self.setup, conscols, self.forprint, experiment_list
