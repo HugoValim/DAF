@@ -69,7 +69,7 @@ class MyDisplay(Display):
 		
 		
 		for key in cons_dict.keys():
-			print(cons_dict[key].text().lower().split(' ')[0])
+			# print(cons_dict[key].text().lower().split(' ')[0])
 			if '=' not in cons_dict[key].text() and 'Constraint' not in cons_dict[key].text():
 				angle_now = cons_dict[key].text().lower().split(' ')[0]
 				
@@ -168,6 +168,8 @@ class MyDisplay(Display):
 
 		subprocess.Popen("daf.mode {} ".format(str(self.ui.mode_input.text())), shell = True)
 		
+
+		daf_cons_args = ''
 		for i in self.cons_table:
 			if not '=' in i[0]:
 				ang = i[0].split(' ')[0].lower() # get only the angle name in lower case
@@ -176,9 +178,12 @@ class MyDisplay(Display):
 				if ang in ['mu', 'eta', 'chi', 'phi', 'nu', 'del']:
 					ang = ang.capitalize()
 				
-				arg = 'cons_'+str(ang) + ' ' + str(fix_in)
-				print(arg)
-				subprocess.Popen("daf.cons --{} ".format(arg), shell = True)
+				arg = '--cons_'+str(ang) + ' ' + str(fix_in) + ' '
+
+				daf_cons_args += arg 
+				
+
+		subprocess.Popen("daf.cons {} ".format(daf_cons_args), shell = True)
 
 
 			

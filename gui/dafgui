@@ -8,7 +8,7 @@ def yaml_filepath():
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'motor_fields_default.yml')
 
 yaml_path = yaml_filepath()
-print(yaml_path)
+
 
 def read(filepath=yaml_path):
     with open(filepath) as file:
@@ -24,7 +24,7 @@ phi = "PHI_MOTOR"+'='+motors["PHI_MOTOR"]
 nu = "NU_MOTOR"+'='+motors["NU_MOTOR"]
 delta = "DEL_MOTOR"+'='+motors["DEL_MOTOR"]
 
-print(mu)
+
 # Call './motors_gui --help' for options
 os.system("pydm --hide-nav-bar -m '{}, {}, {}, {}, {}, {}' ../gui/daf_gui.py &".format(mu,eta,chi,phi,nu,delta))
 # subprocess.Popen("pydm --hide-nav-bar -m '{}, {}, {}, {}, {}, {}' ../gui/daf_gui.py".format(mu,eta,chi,phi,nu,delta), shell = False)

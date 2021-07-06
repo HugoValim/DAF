@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>956</height>
+    <height>1001</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>DAF GUI</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -31,6 +31,12 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
@@ -53,13 +59,21 @@
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <widget class="QLabel" name="label_mode">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="styleSheet">
              <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -77,8 +91,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -145,8 +159,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -179,8 +193,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -196,8 +210,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -213,8 +227,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -328,7 +342,9 @@
            <widget class="QLabel" name="label_6">
             <property name="font">
              <font>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="styleSheet">
@@ -336,8 +352,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -350,44 +367,8 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_10">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Wave Length 
- (angstrom)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_12">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Energy 
- (keV)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_exp2">
+            <item row="1" column="5">
+             <widget class="QLabel" name="label_exp6">
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -438,8 +419,8 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_8">
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_10">
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -448,15 +429,34 @@
                </font>
               </property>
               <property name="text">
-               <string>Sampleor</string>
+               <string>Wave Length 
+ (angstrom)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
-            <item row="1" column="2">
-             <widget class="QLabel" name="label_exp3">
+            <item row="0" column="4">
+             <widget class="QLabel" name="label_16">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Normal 
+ Direction</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_exp2">
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -472,8 +472,8 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="5">
-             <widget class="QLabel" name="label_exp6">
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_exp3">
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -500,6 +500,24 @@
               </property>
               <property name="text">
                <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_12">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Energy 
+ (keV)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -557,8 +575,8 @@
               </property>
              </spacer>
             </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="label_16">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_8">
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -567,8 +585,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Normal 
- Direction</string>
+               <string>Sampleor</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -576,7 +593,7 @@
              </widget>
             </item>
             <item row="1" column="7">
-             <widget class="QPushButton" name="pushButton_5">
+             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_3">
               <property name="minimumSize">
                <size>
                 <width>150</width>
@@ -589,8 +606,19 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string/>
+              </property>
               <property name="text">
-               <string>PushButton</string>
+               <string>Set Experiment</string>
+              </property>
+              <property name="filenames" stdset="0">
+               <stringlist>
+                <string>experiment.py</string>
+               </stringlist>
+              </property>
+              <property name="openInNewWindow" stdset="0">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -631,8 +659,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -946,7 +975,9 @@
            <widget class="QLabel" name="label_18">
             <property name="font">
              <font>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="styleSheet">
@@ -954,8 +985,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -1444,7 +1476,9 @@
            <widget class="QLabel" name="label_20">
             <property name="font">
              <font>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="styleSheet">
@@ -1452,8 +1486,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -1724,7 +1759,9 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="styleSheet">
@@ -1732,8 +1769,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -1892,7 +1930,9 @@
            <widget class="QLabel" name="label_4">
             <property name="font">
              <font>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="styleSheet">
@@ -1900,8 +1940,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
             </property>
             <property name="text">
@@ -2338,7 +2379,9 @@
              <widget class="QLabel" name="label">
               <property name="font">
                <font>
-                <pointsize>-1</pointsize>
+                <pointsize>16</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="styleSheet">
@@ -2346,8 +2389,9 @@
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
-    max-height: 18px;
-    font-size: 16px;
+    max-height: 22px;
+    font-size: 16pt;
+	font-weight: bold; 
 }</string>
               </property>
               <property name="text">
