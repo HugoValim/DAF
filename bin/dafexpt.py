@@ -23,7 +23,9 @@ parser.add_argument('-p', '--Lattice_parameters', metavar=('a', 'b', 'c', 'alpha
 parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the reflection paralel to the incident beam')
 parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the reflection perpendicular to the incident beam')
 parser.add_argument('-r', '--RDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the reference vector')
+parser.add_argument('-s', '--Sampleor', metavar='or', type=str,help='Sets the sample orientation at Phi axis')
 parser.add_argument('-e', '--Energy', metavar='en', type=float, help='Sets the energy of the experiment (eV), wavelength can also be given (angstrom)')
+
 args = parser.parse_args()
 dic = vars(args)
 
