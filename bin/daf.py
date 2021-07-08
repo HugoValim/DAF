@@ -298,8 +298,30 @@ class Control(object):
 
         materiais = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
                      'Cu' : xu.materials.Cu, 'Cr' : xu.materials.Cr, 'Fe' : xu.materials.Fe,
-                     'Ge' : xu.materials.Ge, 'MgO' : xu.materials.MgO, 'Sn' : xu.materials.Sn,
-                     'LaB6' : xu.materials.LaB6, 'Al2O3' : xu.materials.Al2O3}
+                     'Ge' : xu.materials.Ge, 'Sn' : xu.materials.Sn,
+                     'LaB6' : xu.materials.LaB6, 'Al2O3' : xu.materials.Al2O3, 'C' : xu.materials.C,
+                     'C_HOPG' : xu.materials.C_HOPG, 'InAs' : xu.materials.InAs, 'InP' : xu.materials.InP,
+                     'InSb' : xu.materials.InSb, 'GaP' : xu.materials.GaP, 'GaAs' : xu.materials.GaAs,
+                     'AlAs' : xu.materials.AlAs, 'GaSb' : xu.materials.GaSb, 'GaAsWZ' : xu.materials.GaAsWZ,
+                     'GaAs4H' : xu.materials.GaAs4H, 'GaPWZ' : xu.materials.GaPWZ, 'InPWZ' : xu.materials.InPWZ,
+                     'InAs4H' : xu.materials.InAs4H, 'InSbWZ' : xu.materials.InSbWZ, 'InSb4H' : xu.materials.InSb4H,
+                     'PbTe' : xu.materials.PbTe, 'PbSe' : xu.materials.PbSe, 'CdTe' : xu.materials.CdTe,
+                     'CdSe' : xu.materials.CdSe, 'CdSe_ZB' : xu.materials.CdSe_ZB, 'HgSe' : xu.materials.HgSe,
+                     'NaCl' : xu.materials.NaCl, 'MgO' : xu.materials.MgO, 'GaN' : xu.materials.GaN,
+                     'BaF2' : xu.materials.BaF2, 'SrF2' : xu.materials.SrF2, 'CaF2' : xu.materials.CaF2,
+                     'MnO' : xu.materials.MnO, 'MnTe' : xu.materials.MnTe, 'GeTe' : xu.materials.GeTe,
+                     'SnTe' : xu.materials.SnTe, 'Au' : xu.materials.Au, 'Ti' : xu.materials.Ti,
+                     'Mo' : xu.materials.Mo, 'Ru' : xu.materials.Ru, 'Rh' : xu.materials.Rh,
+                     'V' : xu.materials.V, 'Ta' : xu.materials.Ta, 'Nb' : xu.materials.Nb,
+                     'Pt' : xu.materials.Pt, 'Ag2Se' : xu.materials.Ag2Se, 'TiO2' : xu.materials.TiO2,
+                     'MnO2' : xu.materials.MnO2, 'VO2_Rutile' : xu.materials.VO2_Rutile, 'VO2_Baddeleyite' : xu.materials.VO2_Baddeleyite,
+                     'SiO2' : xu.materials.SiO2, 'In' : xu.materials.In, 'Sb' : xu.materials.Sb, 
+                     'Ag' : xu.materials.Ag, 'SnAlpha' : xu.materials.SnAlpha, 'CaTiO3' : xu.materials.CaTiO3,
+                     'SrTiO3' : xu.materials.SrTiO3, 'BaTiO3' : xu.materials.BaTiO3, 'FeO' : xu.materials.FeO,
+                     'CoO' : xu.materials.CoO, 'Fe3O4' : xu.materials.Fe3O4, 'Co3O4' : xu.materials.Co3O4,
+                     'FeRh' : xu.materials.FeRh, 'Ir20Mn80' : xu.materials.Ir20Mn80, 'CoFe' : xu.materials.CoFe,
+                     'CoGa' : xu.materials.CoFe, 'CuMnAs' : xu.materials.CuMnAs, 'Mn3Ge_cub' : xu.materials.Mn3Ge_cub,
+                     'Mn3Ge' : xu.materials.Mn3Ge, 'Pt3Cr' : xu.materials.Pt3Cr, 'TiN' : xu.materials.TiN}
 
         if sample in materiais.keys():
             self.samp = materiais[sample]
