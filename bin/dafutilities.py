@@ -9,8 +9,8 @@ import time
 
 DEFAULT = ".Experiment"
 PV_PREFIX = "EMA:B:PB18"
-# PV_PREFIX = "SOL:S"
-# PV_PREFIX = "IOC"
+PV_PREFIX = "SOL:S"
+PV_PREFIX = "IOC"
 
 
 PVS = {
