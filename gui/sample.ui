@@ -129,7 +129,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_3">
+                 <widget class="QLineEdit" name="lineEdit_b">
                   <property name="minimumSize">
                    <size>
                     <width>75</width>
@@ -175,7 +175,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_2">
+                 <widget class="QLineEdit" name="lineEdit_a">
                   <property name="minimumSize">
                    <size>
                     <width>75</width>
@@ -221,7 +221,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_4">
+                 <widget class="QLineEdit" name="lineEdit_c">
                   <property name="minimumSize">
                    <size>
                     <width>75</width>
@@ -281,7 +281,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_5">
+                 <widget class="QLineEdit" name="lineEdit_alpha">
                   <property name="minimumSize">
                    <size>
                     <width>75</width>
@@ -327,7 +327,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_6">
+                 <widget class="QLineEdit" name="lineEdit_beta">
                   <property name="minimumSize">
                    <size>
                     <width>75</width>
@@ -373,7 +373,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_7">
+                 <widget class="QLineEdit" name="lineEdit_gamma">
                   <property name="minimumSize">
                    <size>
                     <width>75</width>
@@ -394,7 +394,7 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLineEdit" name="lineEdit_8"/>
+            <widget class="QLineEdit" name="lineEdit_samp_name"/>
            </item>
           </layout>
          </item>

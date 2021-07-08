@@ -82,16 +82,17 @@ class MyDisplay(Display):
 	def set_sample(self):
 
 		if self.ui.checkBox_new_mat.isChecked():
-			if self.ui.lineEdit_samp_name.text() != '':
-				samp = self.ui.lineEdit_samp_name.text()
-				a = self.ui.lineEdit_a.text()
-				b = self.ui.lineEdit_b.text()
-				c = self.ui.lineEdit_c.text()
-				alpha = self.ui.lineEdit_alpha.text()
-				beta = self.ui.lineEdit_beta.text()
-				gamma = self.ui.lineEdit_gamma.text()
 			
-				subprocess.Popen("daf.expt -m {} -p ".format(samp, a, b, c, alpha, beta, gamma), shell = True)
+			samp = self.ui.lineEdit_samp_name.text()
+			a = self.ui.lineEdit_a.text()
+			b = self.ui.lineEdit_b.text()
+			c = self.ui.lineEdit_c.text()
+			alpha = self.ui.lineEdit_alpha.text()
+			beta = self.ui.lineEdit_beta.text()
+			gamma = self.ui.lineEdit_gamma.text()
+		
+			# print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
+			subprocess.Popen("daf.expt -m {} -p ".format(samp, a, b, c, alpha, beta, gamma), shell = True)
 
 		else:
 
