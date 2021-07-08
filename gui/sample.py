@@ -92,7 +92,7 @@ class MyDisplay(Display):
 			gamma = self.ui.lineEdit_gamma.text()
 		
 			# print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-			subprocess.Popen("daf.expt -m {} -p ".format(samp, a, b, c, alpha, beta, gamma), shell = True)
+			subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma), shell = True)
 
 		else:
 
