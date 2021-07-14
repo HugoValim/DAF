@@ -98,7 +98,8 @@ class MyDisplay(Display):
 
 			samp = self.ui.comboBox_materials.currentText()
 
-			subprocess.Popen("daf.expt -m {}".format(samp), shell = True)
+			# subprocess.Popen("daf.expt -m {}".format(samp), shell = True)
+			os.system("daf.expt -m {}".format(samp))
 
 
 		

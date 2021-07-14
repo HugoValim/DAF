@@ -102,8 +102,8 @@ class MyDisplay(Display):
 		rdir = self.ui.lineEdit_r_1.text() + ' ' + self.ui.lineEdit_r_2.text() + ' ' + self.ui.lineEdit_r_3.text() 
 
 		# print("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir))
-		subprocess.Popen("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir), shell = True)
-		
+		# subprocess.Popen("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir), shell = True)
+		os.system("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir))
 			
 
 
