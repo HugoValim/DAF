@@ -175,7 +175,7 @@ if args.Umatrix:
     dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
     du.write(dict_args)
 
-
+print(args.Calc2)
 if  args.Calc2 is not None:
     mode = [int(i) for i in dict_args['Mode']]
 
