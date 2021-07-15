@@ -176,7 +176,7 @@ if args.Umatrix:
     du.write(dict_args)
 
 
-if  args.Calc2[0]:
+if  args.Calc2 is not None:
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
