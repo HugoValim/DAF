@@ -9,9 +9,9 @@ import dafutilities as du
 import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import QObject, QThread, pyqtSignal
-
-
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
+from pydm.widgets import PyDMEmbeddedDisplay
+import json
 
 DEFAULT = ".Experiment"
 
@@ -115,6 +115,19 @@ class MyDisplay(Display):
 
 		self.runLongTask()
 	
+
+	def load_data(self):
+		# Extract the directory of this file...
+		base_dir = os.path.dirname(os.path.realpath(__file__))
+		# Concatenate the directory with the file name...
+		data_file = os.path.join(base_dir, "motor_fields_default.yml")
+		# Open the file so we can read the data...
+		with open(data_file, 'r') as file:
+			data = yaml.safe_load(file)
+			return data
+
+
+
 	def runLongTask(self):
 		# Step 2: Create a QThread object
 		self.thread = QThread()
@@ -128,12 +141,78 @@ class MyDisplay(Display):
 		self.worker.update_labels.connect(self.update)
 
 	def ui_filename(self):
-		return 'main.ui'
+		return 'main_teste.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
+	def refresh_pydm_motors(self):
+
+		data = self.load_data()
+
+		
+
+		translate = QCoreApplication.translate
+		
+		# set del motor labels
+
+		del_channel = 'ca://' + data['DEL_MOTOR']
+		self.ui.PyDMLabel_del_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+		self.ui.PyDMLabel_del_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
+		self.ui.PyDMLabel_del_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
+		self.ui.PyDMByteIndicator_del.setProperty("channel", translate("Form", del_channel + '.MOVN'))
+		self.ui.PyDMPushButton_del.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+		# set eta motor labels
+
+		del_channel = 'ca://' + data['ETA_MOTOR']
+		self.ui.PyDMLabel_eta_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+		self.ui.PyDMLabel_eta_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
+		self.ui.PyDMLabel_eta_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
+		self.ui.PyDMByteIndicator_eta.setProperty("channel", translate("Form", del_channel + '.MOVN'))
+		self.ui.PyDMPushButton_eta.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+		# set chi motor labels
+
+		del_channel = 'ca://' + data['CHI_MOTOR']
+		self.ui.PyDMLabel_chi_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+		self.ui.PyDMLabel_chi_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
+		self.ui.PyDMLabel_chi_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
+		self.ui.PyDMByteIndicator_chi.setProperty("channel", translate("Form", del_channel + '.MOVN'))
+		self.ui.PyDMPushButton_chi.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+		# set phi motor labels
+
+		del_channel = 'ca://' + data['PHI_MOTOR']
+		self.ui.PyDMLabel_phi_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+		self.ui.PyDMLabel_phi_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
+		self.ui.PyDMLabel_phi_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
+		self.ui.PyDMByteIndicator_phi.setProperty("channel", translate("Form", del_channel + '.MOVN'))
+		self.ui.PyDMPushButton_phi.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+		# set nu motor labels
+
+		del_channel = 'ca://' + data['NU_MOTOR']
+		self.ui.PyDMLabel_nu_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+		self.ui.PyDMLabel_nu_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
+		self.ui.PyDMLabel_nu_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
+		self.ui.PyDMByteIndicator_nu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
+		self.ui.PyDMPushButton_nu.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+		# set mu motor labels
+
+		del_channel = 'ca://' + data['MU_MOTOR']
+		self.ui.PyDMLabel_mu_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+		self.ui.PyDMLabel_mu_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
+		self.ui.PyDMLabel_mu_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
+		self.ui.PyDMByteIndicator_mu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
+		self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+
 	def update(self):
+
+		
+		self.refresh_pydm_motors()
 
 		lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
 
