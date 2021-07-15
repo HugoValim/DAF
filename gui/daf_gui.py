@@ -32,6 +32,19 @@ class Worker(QObject):
 
 		return [float(i) for i in string.strip('][').split(', ')]
 
+	def format_decimals(self, x):
+			
+			if type(x) == float:
+				return "{:.5f}".format(float(x)) # format float with 5 decimals
+
+			else:
+				result = []
+				for i in x:
+					result.append("{:.5f}".format(float(i)))
+
+				return result
+
+
 	def call_update(self):
 
 		data = self.get_experiment_data()
@@ -51,6 +64,7 @@ class Worker(QObject):
 		U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
 		U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
 		U = np.array([U1, U2, U3])
+		U_print = np.array([self.format_decimals(U1), self.format_decimals(U2), self.format_decimals(U3)])
 
 
 		UBw = dict_args['UB_mat'].split(',')
@@ -60,6 +74,7 @@ class Worker(QObject):
 		UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
 		UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
 		UB = np.array([UB1, UB2, UB3])
+		UB_print = np.array([self.format_decimals(UB1), self.format_decimals(UB2), self.format_decimals(UB3)])
 
 
 		mode = [int(i) for i in dict_args['Mode']]
@@ -96,7 +111,7 @@ class Worker(QObject):
 		global data_to_update # This variable holds the data processed in another Qthread and then the labels are updated in MyDisplay class
 		
 		data_to_update = {'hklnow' : hklnow, 'mode' : mode, 'mode_num' : mode_num, 'cons' : cons, 'exp_list' : exp_list, 'samp_info' : samp_info,
-							'U' : U, 'UB' : UB, 'bounds' : bounds , 'pseudo_dict' : pseudo_dict}
+							'U' : U_print, 'UB' : UB_print, 'bounds' : bounds , 'pseudo_dict' : pseudo_dict}
 
 		
 
@@ -141,14 +156,14 @@ class MyDisplay(Display):
 		self.worker.update_labels.connect(self.update)
 
 	def ui_filename(self):
-		return 'main_teste.ui'
+		return 'main.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
 	def refresh_pydm_motors(self):
 
-		data = self.load_data()
+		data = du.PVS
 
 		
 
@@ -156,7 +171,7 @@ class MyDisplay(Display):
 		
 		# set del motor labels
 
-		del_channel = 'ca://' + data['DEL_MOTOR']
+		del_channel = 'ca://' + data['Del']
 		self.ui.PyDMLabel_del_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
 		self.ui.PyDMLabel_del_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
 		self.ui.PyDMLabel_del_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
@@ -165,7 +180,7 @@ class MyDisplay(Display):
 
 		# set eta motor labels
 
-		del_channel = 'ca://' + data['ETA_MOTOR']
+		del_channel = 'ca://' + data['Eta']
 		self.ui.PyDMLabel_eta_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
 		self.ui.PyDMLabel_eta_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
 		self.ui.PyDMLabel_eta_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
@@ -174,7 +189,7 @@ class MyDisplay(Display):
 
 		# set chi motor labels
 
-		del_channel = 'ca://' + data['CHI_MOTOR']
+		del_channel = 'ca://' + data['Chi']
 		self.ui.PyDMLabel_chi_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
 		self.ui.PyDMLabel_chi_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
 		self.ui.PyDMLabel_chi_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
@@ -183,7 +198,7 @@ class MyDisplay(Display):
 
 		# set phi motor labels
 
-		del_channel = 'ca://' + data['PHI_MOTOR']
+		del_channel = 'ca://' + data['Phi']
 		self.ui.PyDMLabel_phi_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
 		self.ui.PyDMLabel_phi_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
 		self.ui.PyDMLabel_phi_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
@@ -192,7 +207,7 @@ class MyDisplay(Display):
 
 		# set nu motor labels
 
-		del_channel = 'ca://' + data['NU_MOTOR']
+		del_channel = 'ca://' + data['Nu']
 		self.ui.PyDMLabel_nu_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
 		self.ui.PyDMLabel_nu_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
 		self.ui.PyDMLabel_nu_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
@@ -201,7 +216,7 @@ class MyDisplay(Display):
 
 		# set mu motor labels
 
-		del_channel = 'ca://' + data['MU_MOTOR']
+		del_channel = 'ca://' + data['Mu']
 		self.ui.PyDMLabel_mu_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
 		self.ui.PyDMLabel_mu_val.setProperty("channel", translate("Form", del_channel + '.VAL'))
 		self.ui.PyDMLabel_mu_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
@@ -256,12 +271,12 @@ class MyDisplay(Display):
 
 		# Update sample info label
 		self.ui.label_samp_name.setText(str(data_to_update['samp_info'][0]))
-		self.ui.label_samp_a.setText(str(data_to_update['samp_info'][1]))
-		self.ui.label_samp_b.setText(str(data_to_update['samp_info'][2]))
-		self.ui.label_samp_c.setText(str(data_to_update['samp_info'][3]))
-		self.ui.label_samp_alpha.setText(str(data_to_update['samp_info'][4]))
-		self.ui.label_samp_beta.setText(str(data_to_update['samp_info'][5]))
-		self.ui.label_samp_gamma.setText(str(data_to_update['samp_info'][6]))
+		self.ui.label_samp_a.setText(lb(str(data_to_update['samp_info'][1])))
+		self.ui.label_samp_b.setText(lb(str(data_to_update['samp_info'][2])))
+		self.ui.label_samp_c.setText(lb(str(data_to_update['samp_info'][3])))
+		self.ui.label_samp_alpha.setText(lb(str(data_to_update['samp_info'][4])))
+		self.ui.label_samp_beta.setText(lb(str(data_to_update['samp_info'][5])))
+		self.ui.label_samp_gamma.setText(lb(str(data_to_update['samp_info'][6])))
 		
 
 		#Update status Matrixes label

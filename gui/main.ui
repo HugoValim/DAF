@@ -31,6 +31,13 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="palette">
+      <palette>
+       <active/>
+       <inactive/>
+       <disabled/>
+      </palette>
+     </property>
      <property name="font">
       <font>
        <weight>50</weight>
@@ -1198,7 +1205,7 @@
              </widget>
             </item>
             <item row="1" column="5">
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QLabel" name="label_24">
               <property name="minimumSize">
                <size>
                 <width>150</width>
@@ -1212,7 +1219,7 @@
                </size>
               </property>
               <property name="text">
-               <string>PushButton</string>
+               <string/>
               </property>
              </widget>
             </item>
@@ -1248,91 +1255,6 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <item row="2" column="2">
-             <widget class="QLabel" name="label_ub21">
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
-    qproperty-alignment: AlignCenter;
-    border: 1px solid rgb(0, 0, 0);
-    padding: 5px 0px;
-    color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 20px;
-}</string>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="label_ub12">
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
-    qproperty-alignment: AlignCenter;
-    border: 1px solid rgb(0, 0, 0);
-    padding: 5px 0px;
-    color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 20px;
-}</string>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_ub01">
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
-    qproperty-alignment: AlignCenter;
-    border: 1px solid rgb(0, 0, 0);
-    padding: 5px 0px;
-    color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 20px;
-}</string>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_ub00">
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
-    qproperty-alignment: AlignCenter;
-    border: 1px solid rgb(0, 0, 0);
-    padding: 5px 0px;
-    color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 20px;
-}</string>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="label_ub20">
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
-    qproperty-alignment: AlignCenter;
-    border: 1px solid rgb(0, 0, 0);
-    padding: 5px 0px;
-    color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 20px;
-}</string>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="3">
              <widget class="QLabel" name="label_ub22">
               <property name="styleSheet">
@@ -1350,41 +1272,8 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="4">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_ub02">
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
-    qproperty-alignment: AlignCenter;
-    border: 1px solid rgb(0, 0, 0);
-    padding: 5px 0px;
-    color: rgb(0, 0, 0);
-    max-height: 25px;
-    font-size: 20px;
-}</string>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_ub10">
+            <item row="1" column="3">
+             <widget class="QLabel" name="label_ub12">
               <property name="styleSheet">
                <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1434,8 +1323,126 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="5">
-             <widget class="QPushButton" name="pushButton">
+            <item row="1" column="4">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_ub00">
+              <property name="styleSheet">
+               <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 20px;
+}</string>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_ub01">
+              <property name="styleSheet">
+               <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 20px;
+}</string>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_ub20">
+              <property name="styleSheet">
+               <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 20px;
+}</string>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_ub21">
+              <property name="styleSheet">
+               <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 20px;
+}</string>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_ub10">
+              <property name="styleSheet">
+               <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 20px;
+}</string>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="label_ub02">
+              <property name="styleSheet">
+               <string notr="true"> QLabel {
+    qproperty-alignment: AlignCenter;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 5px 0px;
+    color: rgb(0, 0, 0);
+    max-height: 25px;
+    font-size: 20px;
+}</string>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="5">
+             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_5">
               <property name="minimumSize">
                <size>
                 <width>150</width>
@@ -1448,8 +1455,19 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string/>
+              </property>
               <property name="text">
-               <string>PushButton</string>
+               <string>Set U and UB</string>
+              </property>
+              <property name="filenames" stdset="0">
+               <stringlist>
+                <string>ub.py</string>
+               </stringlist>
+              </property>
+              <property name="openInNewWindow" stdset="0">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -1849,64 +1867,118 @@
            </layout>
           </item>
           <item>
-           <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton">
-            <property name="minimumSize">
+           <widget class="QFrame" name="frame_7">
+            <property name="maximumSize">
              <size>
-              <width>0</width>
-              <height>0</height>
+              <width>16777215</width>
+              <height>50</height>
              </size>
             </property>
-            <property name="palette">
-             <palette>
-              <active>
-               <colorrole role="Button">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>255</red>
-                  <green>255</green>
-                  <blue>255</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </active>
-              <inactive>
-               <colorrole role="Button">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>255</red>
-                  <green>255</green>
-                  <blue>255</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </inactive>
-              <disabled>
-               <colorrole role="Button">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>255</red>
-                  <green>255</green>
-                  <blue>255</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </disabled>
-             </palette>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
             </property>
-            <property name="toolTip">
-             <string/>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
             </property>
-            <property name="text">
-             <string>Move In HKL</string>
-            </property>
-            <property name="filenames" stdset="0">
-             <stringlist>
-              <string>goto_hkl.py</string>
-             </stringlist>
-            </property>
-            <property name="openInNewWindow" stdset="0">
-             <bool>true</bool>
-            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <spacer name="horizontalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton">
+                 <property name="minimumSize">
+                  <size>
+                   <width>150</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="palette">
+                  <palette>
+                   <active>
+                    <colorrole role="Button">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </active>
+                   <inactive>
+                    <colorrole role="Button">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </inactive>
+                   <disabled>
+                    <colorrole role="Button">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </disabled>
+                  </palette>
+                 </property>
+                 <property name="toolTip">
+                  <string/>
+                 </property>
+                 <property name="text">
+                  <string>Move In HKL</string>
+                 </property>
+                 <property name="filenames" stdset="0">
+                  <stringlist>
+                   <string>goto_hkl.py</string>
+                  </stringlist>
+                 </property>
+                 <property name="openInNewWindow" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -1923,7 +1995,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>20</height>
+           <height>40</height>
           </size>
          </property>
         </spacer>
@@ -2035,8 +2107,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2087,8 +2159,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2113,8 +2185,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2139,8 +2211,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2165,8 +2237,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2275,8 +2347,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2327,8 +2399,8 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -2352,13 +2424,13 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>20</height>
+           <height>40</height>
           </size>
          </property>
         </spacer>
        </item>
        <item>
-        <widget class="QFrame" name="frame_7">
+        <widget class="QFrame" name="frame_motors">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -2382,21 +2454,134 @@
            <number>9</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_10">
-            <property name="topMargin">
-             <number>6</number>
+           <widget class="QLabel" name="label">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Button">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Button">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Button">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
             </property>
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="font">
-               <font>
-                <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"> QLabel {
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
     padding: 5px 0px;
     color: rgb(0, 0, 0);
@@ -2404,197 +2589,1049 @@
     font-size: 16pt;
 	font-weight: bold; 
 }</string>
-              </property>
-              <property name="text">
-               <string>Real Angles</string>
-              </property>
-             </widget>
-            </item>
+            </property>
+            <property name="text">
+             <string>Real Angles</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
             <item>
-             <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <property name="leftMargin">
+               <number>20</number>
               </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>32</height>
-               </size>
+              <property name="rightMargin">
+               <number>20</number>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>38</height>
-               </size>
+              <property name="horizontalSpacing">
+               <number>40</number>
               </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="macros" stdset="0">
-               <string>{&quot;MOTOR&quot;:&quot;${CHI_MOTOR}&quot;}</string>
-              </property>
-              <property name="filename" stdset="0">
-               <string>motors.ui</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_2">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="macros" stdset="0">
-               <string>{&quot;MOTOR&quot;:&quot;${PHI_MOTOR}&quot;}</string>
-              </property>
-              <property name="filename" stdset="0">
-               <string>motors.ui</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="macros" stdset="0">
-               <string>{&quot;MOTOR&quot;:&quot;${MU_MOTOR}&quot;}</string>
-              </property>
-              <property name="filename" stdset="0">
-               <string>motors.ui</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_4">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="macros" stdset="0">
-               <string>{&quot;MOTOR&quot;:&quot;${NU_MOTOR}&quot;}</string>
-              </property>
-              <property name="filename" stdset="0">
-               <string>motors.ui</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_5">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="macros" stdset="0">
-               <string>{&quot;MOTOR&quot;:&quot;${ETA_MOTOR}&quot;}</string>
-              </property>
-              <property name="filename" stdset="0">
-               <string>motors.ui</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="PyDMEmbeddedDisplay" name="PyDMEmbeddedDisplay_6">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="macros" stdset="0">
-               <string>{&quot;MOTOR&quot;:&quot;${DEL_MOTOR}&quot;}</string>
-              </property>
-              <property name="filename" stdset="0">
-               <string>motors.ui</string>
-              </property>
-             </widget>
+              <item row="1" column="2">
+               <widget class="PyDMLabel" name="PyDMLabel_del_rbv">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_del">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active/>
+                  <inactive/>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="showLabels" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="circles" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="5">
+               <widget class="PyDMPushButton" name="PyDMPushButton_del">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+                <property name="pressValue" stdset="0">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="PyDMLabel" name="PyDMLabel_nu_rbv">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="PyDMLabel" name="PyDMLabel_phi_val">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="PyDMLabel" name="PyDMLabel_eta_rbv">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="PyDMLabel" name="PyDMLabel_nu_desc">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="PyDMLabel" name="PyDMLabel_nu_val">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_chi">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active/>
+                  <inactive/>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="showLabels" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="circles" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="PyDMLabel" name="PyDMLabel_chi_rbv">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="PyDMLabel" name="PyDMLabel_eta_desc">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="PyDMLabel" name="PyDMLabel_phi_rbv">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="PyDMLabel" name="PyDMLabel_del_desc">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_eta">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active/>
+                  <inactive/>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="showLabels" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="circles" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="PyDMLabel" name="PyDMLabel_eta_val">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="PyDMPushButton" name="PyDMPushButton_eta">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+                <property name="pressValue" stdset="0">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="5">
+               <widget class="PyDMPushButton" name="PyDMPushButton_phi">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+                <property name="pressValue" stdset="0">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="PyDMLabel" name="PyDMLabel_del_val">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="5">
+               <widget class="PyDMPushButton" name="PyDMPushButton_chi">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+                <property name="pressValue" stdset="0">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="PyDMLabel" name="PyDMLabel_chi_desc">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="PyDMLabel" name="PyDMLabel_mu_rbv">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="PyDMLabel" name="PyDMLabel_chi_val">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="PyDMLabel" name="PyDMLabel_phi_desc">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="3">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_nu">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active/>
+                  <inactive/>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="showLabels" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="circles" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="PyDMLabel" name="PyDMLabel_mu_val">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="PyDMLabel" name="PyDMLabel_mu_desc">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_mu">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active/>
+                  <inactive/>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="showLabels" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="circles" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_phi">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active/>
+                  <inactive/>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="showLabels" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="circles" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="5">
+               <widget class="PyDMPushButton" name="PyDMPushButton_nu">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+                <property name="pressValue" stdset="0">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="5">
+               <widget class="PyDMPushButton" name="PyDMPushButton_mu">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Button">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>255</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+                <property name="pressValue" stdset="0">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="4">
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="3" column="4">
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="4" column="4">
+               <spacer name="horizontalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="5" column="4">
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="6" column="4">
+               <spacer name="horizontalSpacer_14">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -2609,9 +3646,19 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PyDMEmbeddedDisplay</class>
-   <extends>QFrame</extends>
-   <header>pydm.widgets.embedded_display</header>
+   <class>PyDMLabel</class>
+   <extends>QLabel</extends>
+   <header>pydm.widgets.label</header>
+  </customwidget>
+  <customwidget>
+   <class>PyDMByteIndicator</class>
+   <extends>QWidget</extends>
+   <header>pydm.widgets.byte</header>
+  </customwidget>
+  <customwidget>
+   <class>PyDMPushButton</class>
+   <extends>QPushButton</extends>
+   <header>pydm.widgets.pushbutton</header>
   </customwidget>
   <customwidget>
    <class>PyDMRelatedDisplayButton</class>

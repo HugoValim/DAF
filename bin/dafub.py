@@ -14,7 +14,8 @@ epi = '''
 Eg:
     daf.ub -r1 1 0 0 0 5.28232 0 2 0 10.5647
     daf.ub -r2 0 1 0 0 5.28232 2 92 0 10.5647
-    daf.ub -c2
+    daf.ub -c2 1 2
+    daf.ub -c2 2 3
     daf.ub -U 1 0 0 0 1 0 0 0 1
     daf.up -s
     daf.up -s -p
@@ -28,7 +29,7 @@ parser.add_argument('-r2', '--hkl2', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi',
 parser.add_argument('-r3', '--hkl3', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'),type=float, nargs=9, help='HKL and angles for third reflection')
 parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
 parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
-parser.add_argument('-c2', '--Calc2', action='store_true', help='Calculate UB for 2 reflections')
+parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=float, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
 parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections, the right energy must be setted in this case')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
@@ -175,14 +176,22 @@ if args.Umatrix:
     du.write(dict_args)
 
 
-if  args.Calc2:
+if  args.Calc2[0]:
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
     exp.set_exp_conditions(en = float(dict_args['Energy']))
 
-    U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+    if args.Calc2[0] == 1 and args.Calc2[1] == 2:
+        U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+
+    elif args.Calc2[0] == 1 and args.Calc2[1] == 3:
+        U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl3, angs3)
+
+    elif args.Calc2[0] == 2 and args.Calc2[1] == 3:
+        U, UB = exp.calc_U_2HKL(hkl2, angs2, hkl3, angs3)
+
 
 
     dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
@@ -200,12 +209,12 @@ if  args.Calc3:
 
     dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
     dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
-    dict_args['lparam_a'] = str(args.Lattice_parameters[0])
-    dict_args['lparam_b'] = str(args.Lattice_parameters[1])
-    dict_args['lparam_c'] = str(args.Lattice_parameters[2])
-    dict_args['lparam_alpha'] = str(args.Lattice_parameters[3])
-    dict_args['lparam_beta'] = str(args.Lattice_parameters[4])
-    dict_args['lparam_gama'] = str(args.Lattice_parameters[5])
+    dict_args['lparam_a'] = str(rp[0])
+    dict_args['lparam_b'] = str(rp[1])
+    dict_args['lparam_c'] = str(rp[2])
+    dict_args['lparam_alpha'] = str(rp[3])
+    dict_args['lparam_beta'] = str(rp[4])
+    dict_args['lparam_gama'] = str(rp[5])
     du.write(dict_args)
 
 
