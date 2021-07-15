@@ -186,13 +186,13 @@ class MyDisplay(Display):
 
 		refs_to_use = self.ui.comboBox_2_ref.currentText().split(',')
 
-		if refs_to_use[0] == 1 and rerefs_to_use[0] == 2:
+		if refs_to_use[0] == 1 and refs_to_use[1] == 2:
 			subprocess.Popen("daf.ub -c2 1 2", shell = True)
 
-		elif refs_to_use[0] == 1 and rerefs_to_use[0] == 3:
+		elif refs_to_use[0] == 1 and refs_to_use[1] == 3:
 			subprocess.Popen("daf.ub -c2 1 3", shell = True)
 
-		elif refs_to_use[0] == 2 and rerefs_to_use[0] == 3:
+		elif refs_to_use[0] == 2 and refs_to_use[1] == 3:
 			subprocess.Popen("daf.ub -c2 2 3", shell = True)
 
 	def calc_from_3_ref(self):
