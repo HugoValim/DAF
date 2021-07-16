@@ -186,14 +186,10 @@ class MyDisplay(Display):
 
 		refs_to_use = self.ui.comboBox_2_ref.currentText().split(',')
 
-		if refs_to_use[0] == 1 and refs_to_use[1] == 2:
-			subprocess.Popen("daf.ub -c2 1 2", shell = True)
 
-		elif refs_to_use[0] == 1 and refs_to_use[1] == 3:
-			subprocess.Popen("daf.ub -c2 1 3", shell = True)
+		os.system("daf.ub -c2 {} {}".format(refs_to_use[0], refs_to_use[1]))
 
-		elif refs_to_use[0] == 2 and refs_to_use[1] == 3:
-			subprocess.Popen("daf.ub -c2 2 3", shell = True)
+
 
 	def calc_from_3_ref(self):
 
@@ -304,7 +300,7 @@ class MyDisplay(Display):
 		ub_22 = self.ui.lineEdit_ub_22.text()
 		
 		# print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-		subprocess.Popen("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22), shell = True)
+		os.system("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
 
 
 

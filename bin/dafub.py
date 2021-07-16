@@ -29,7 +29,7 @@ parser.add_argument('-r2', '--hkl2', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi',
 parser.add_argument('-r3', '--hkl3', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'),type=float, nargs=9, help='HKL and angles for third reflection')
 parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
 parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
-parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=float, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
+parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=int, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
 parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections, the right energy must be setted in this case')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
