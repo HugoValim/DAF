@@ -13,6 +13,7 @@ class MyDisplay(Display):
 
 
 		self.set_combobox_options()
+		self.set_comboBox_materials_default()
 		self.ui.frame_new_mat.setEnabled(False)
 		self.ui.checkBox_new_mat.stateChanged.connect(self.checkbox_state_changed)
 		self.ui.pushButton_set.clicked.connect(self.set_sample)
@@ -63,6 +64,15 @@ class MyDisplay(Display):
 
 		return materials
 
+	def set_comboBox_materials_default(self):
+
+		AllItems = [self.ui.comboBox_materials.itemText(i) for i in range(self.ui.comboBox_materials.count())]
+		
+		sample_now = self.get_experiment_file()['Material']
+
+		if sample_now in AllItems:
+
+			self.ui.comboBox_materials.setCurrentIndex(AllItems.index(sample_now))
 
 	def set_combobox_options(self):
 

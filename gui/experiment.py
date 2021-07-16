@@ -10,6 +10,7 @@ class MyDisplay(Display):
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
+		
 		self.ui.pushButton_reset.clicked.connect(self.set_labels)
 		self.ui.pushButton_set.clicked.connect(self.set_new_exp_conditions)
 		self.ui.comboBox_sor.currentTextChanged.connect(self.on_combobox_sor_changed)
@@ -17,6 +18,7 @@ class MyDisplay(Display):
 
 
 		self.set_labels()
+		self.set_combobox_sor_default()
 # 
 	def ui_filename(self):
 		return 'experiment.ui'
@@ -32,6 +34,12 @@ class MyDisplay(Display):
 	def ret_list(self, string):
 
 		return [float(i) for i in string.strip('][').split(', ')]
+
+	def set_combobox_sor_default(self):
+
+		AllItems = [self.ui.comboBox_sor.itemText(i) for i in range(self.ui.comboBox_sor.count())]
+
+		self.ui.comboBox_sor.setCurrentIndex(AllItems.index(self.ui.lineEdit_sor.text()))
 
 	def on_combobox_sor_changed(self):
 

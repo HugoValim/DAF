@@ -186,7 +186,6 @@ class MyDisplay(Display):
 
 		refs_to_use = self.ui.comboBox_2_ref.currentText().split(',')
 
-
 		os.system("daf.ub -c2 {} {}".format(refs_to_use[0], refs_to_use[1]))
 
 
