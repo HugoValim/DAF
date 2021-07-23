@@ -53,15 +53,20 @@ phi_points = [float(i) for i in scan_points["Phi"]] # Get only the points relate
 nu_points = [float(i) for i in scan_points["Nu"]] # Get only the points related to nu
 del_points = [float(i) for i in scan_points["Del"]] # Get only the points related to del
 
-data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
-        'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
+# data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
+#         'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
+
+data = {'debug1':mu_points, 'debug2':eta_points, 'debug3':chi_points,
+        'debug4':phi_points, 'debug5':nu_points, 'debug6':del_points}
+
+motors = data.keys()
 
 with open('.points.yaml', 'w') as stream:
     yaml.dump(data, stream, allow_unicode=False)
 
 
-os.system("scan -c default -o test --motor huber_mu huber_eta huber_chi -s --calculated-points .points.yaml --xlabel huber_eta --time 1")
-
+# os.system("scan -c default -o test --motor huber_mu huber_eta huber_chi huber_phi huber_nu huber_del -s --calculated-points .points.yaml --xlabel huber_eta --time 1")
+os.system("scan -c default -o test --motor {} {} {} {} {} {} -s --calculated-points .points.yaml --xlabel {} --time 1".format(motors[0], motors[1], motors[2], motors[3], motors[4], motors[5], motors[1]))
 
 log = sys.argv.pop(0).split('command_line/')[1]
 
