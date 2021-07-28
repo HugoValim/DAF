@@ -43,7 +43,7 @@ parser.add_argument('-c', '--configuration', type=str, help='choose a counter co
 parser.add_argument('-t', '--time', metavar='', type=float, help='Acquisition time in each point in seconds. Default is 0.01s.')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn')
 parser.add_argument('-s', '--sync', help='write to the output file after each point', action='store_true')
-parser.add_argument('--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
+parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -65,6 +65,7 @@ else:
 	time = [[args.time]]
 
 scan_points = pd.read_csv(args.file_name)
+print(scan_points)
 
 
 mu_points = [float(i) for i in scan_points["Mu"]] # Get only the points related to mu

@@ -74,7 +74,7 @@ class MyDisplay(Display):
 				angle_now = cons_dict[key].text().lower().split(' ')[0]
 				
 				if angle_now in dict_cons_angles.keys():
-					set_cons_dict[key].setText(dict_args[dict_cons_angles[angle_now]])
+					set_cons_dict[key].setText(str(dict_args[dict_cons_angles[angle_now]]))
 
 
 

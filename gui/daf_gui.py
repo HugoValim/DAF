@@ -28,10 +28,6 @@ class Worker(QObject):
 		
 		return data
 
-	def ret_list(self, string):
-
-		return [float(i) for i in string.strip('][').split(', ')]
-
 	def format_decimals(self, x):
 			
 			if type(x) == float:
@@ -57,42 +53,30 @@ class Worker(QObject):
 
 
 		dict_args = du.read()
-		Uw = dict_args['U_mat'].split(',')
 
+		U = np.array(dict_args['U_mat'])
+		U_print = np.array([self.format_decimals(U[0]), self.format_decimals(U[1]), self.format_decimals(U[2])])
 
-		U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-		U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-		U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-		U = np.array([U1, U2, U3])
-		U_print = np.array([self.format_decimals(U1), self.format_decimals(U2), self.format_decimals(U3)])
-
-
-		UBw = dict_args['UB_mat'].split(',')
-
-
-		UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
-		UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
-		UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
-		UB = np.array([UB1, UB2, UB3])
-		UB_print = np.array([self.format_decimals(UB1), self.format_decimals(UB2), self.format_decimals(UB3)])
+		UB = np.array(dict_args['UB_mat'])
+		UB_print = np.array([self.format_decimals(UB[0]), self.format_decimals(UB[0]), self.format_decimals(UB[0])])
 
 
 		mode = [int(i) for i in dict_args['Mode']]
-		idir = self.ret_list(dict_args['IDir'])
-		ndir = self.ret_list(dict_args['NDir'])
-		rdir = self.ret_list(dict_args['RDir'])
+		idir = dict_args['IDir']
+		ndir = dict_args['NDir']
+		rdir = dict_args['RDir']
 
 		exp = daf.Control(*mode)
-		exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
-		exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
+		exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['Energy'], sampleor = dict_args['Sampleor'])
+		exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
 		exp.set_U(U)
-		exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
-                    Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
-                    psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
+		exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+                    Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+                    psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
 		
-		hklnow = exp.calc_from_angs(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
+		hklnow = exp.calc_from_angs(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
 
-		pseudo = exp.calc_pseudo(float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"]))
+		pseudo = exp.calc_pseudo(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
 		pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
 
 
@@ -306,12 +290,12 @@ class MyDisplay(Display):
 		#Update motor bounds
 
 
-		self.ui.label_mu_bounds.setText(data_to_update['bounds']["mu"])
-		self.ui.label_eta_bounds.setText(data_to_update['bounds']["eta"])
-		self.ui.label_chi_bounds.setText(data_to_update['bounds']["chi"])
-		self.ui.label_phi_bounds.setText(data_to_update['bounds']["phi"])
-		self.ui.label_nu_bounds.setText(data_to_update['bounds']["nu"])
-		self.ui.label_del_bounds.setText(data_to_update['bounds']["del"])
+		self.ui.label_mu_bounds.setText('low: ' + str(data_to_update['bounds']["mu"][0]) + '   high: ' + str(data_to_update['bounds']["mu"][1]))
+		self.ui.label_eta_bounds.setText('low: ' + str(data_to_update['bounds']["eta"][0]) + '   high: ' + str(data_to_update['bounds']["eta"][1]))
+		self.ui.label_chi_bounds.setText('low: ' + str(data_to_update['bounds']["chi"][0]) + '   high: ' + str(data_to_update['bounds']["chi"][1]))
+		self.ui.label_phi_bounds.setText('low: ' + str(data_to_update['bounds']["phi"][0]) + '   high: ' + str(data_to_update['bounds']["phi"][1]))
+		self.ui.label_nu_bounds.setText('low: ' + str(data_to_update['bounds']["nu"][0]) + '   high: ' + str(data_to_update['bounds']["nu"][1]))
+		self.ui.label_del_bounds.setText('low: ' + str(data_to_update['bounds']["del"][0]) + '   high: ' + str(data_to_update['bounds']["del"][1]))
 		
 
 

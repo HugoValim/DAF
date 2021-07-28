@@ -22,14 +22,6 @@ Eg:
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
-# parser.add_argument('hkli', metavar='', type=float, nargs=3, help='Initial HKL for scan')
-# parser.add_argument('hklf', metavar='', type=float, nargs=3, help='Final HKL for scan')
-# parser.add_argument('points', metavar='', type=int, help='Number of points for the scan')
-# parser.add_argument('-n', '--scan_name', metavar='', type=str, help='Name of the scan')
-# parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the scan')
-# parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, default: ,')
-# parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation, if 0 is given no verification will be done')
-# parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
 parser.add_argument('-i', '--IDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the plane paralel to x axis')
 parser.add_argument('-n', '--NDir', metavar=('x', 'y', 'z'), type=float, nargs=3,help='Sets the plane perpendicular to x axis')
 parser.add_argument('-m', '--materials', metavar = 'sample', nargs = '*', help='Add a predefined material to rmap visualization')
@@ -40,46 +32,17 @@ dic = vars(args)
 
 
 matplotlib.pyplot.show(block=True)
-# with open('.Experiment', 'r+') as exp:
-
-#     lines = exp.readlines()
-
-
-#     for i, line in enumerate(lines):
-#         for j,k in dic.items():
-
-
-#             if line.startswith(str(j)):
-#                 if k != None:
-#                     lines[i] = str(j)+'='+str(k)+'\n'
-
-#             exp.seek(0)
-
-
-#     for line in lines:
-#         exp.write(line)
 
 
 dict_args = du.read()
 
-def ret_list(string):
-
-    return [float(i) for i in string.strip('][').split(', ')]
-
-
-Uw = dict_args['U_mat'].split(',')
-
-
-U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-U = np.array([U1, U2, U3])
+U = np.array(dict_args['U_mat'])
 
 
 mode = [int(i) for i in dict_args['Mode']]
-idir = ret_list(dict_args['IDir'])
-ndir = ret_list(dict_args['NDir'])
-rdir = ret_list(dict_args['RDir'])
+idir = dict_args['IDir']
+ndir = dict_args['NDir']
+rdir = dict_args['RDir']
 
 
 if args.IDir == None:
@@ -96,33 +59,26 @@ if args.scale == None:
     args.scale = 100
 
 
-Mu_bound = ret_list(dict_args['bound_Mu'])
-Eta_bound = ret_list(dict_args['bound_Eta'])
-Chi_bound = ret_list(dict_args['bound_Chi'])
-Phi_bound = ret_list(dict_args['bound_Phi'])
-Nu_bound = ret_list(dict_args['bound_Nu'])
-Del_bound = ret_list(dict_args['bound_Del'])
+Mu_bound = dict_args['bound_Mu']
+Eta_bound = dict_args['bound_Eta']
+Chi_bound = dict_args['bound_Chi']
+Phi_bound = dict_args['bound_Phi']
+Nu_bound = dict_args['bound_Nu']
+Del_bound = dict_args['bound_Del']
 
 exp = daf.Control(*mode)
-exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
-exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['Energy'], sampleor = dict_args['Sampleor'])
 exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
 exp.set_U(U)
-exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
-                    Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
-                    psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
-
-
-# startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
-
-#
-# exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
-
-# startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+                    Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+                    psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
 
 exp(calc=False)
+
 ttmax, ttmin = exp.two_theta_max()
-# print(ttmax)
+
 ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale)
 
 
@@ -131,24 +87,15 @@ if args.materials:
 
         exp = daf.Control(*mode)
         exp.set_material(str(i))
-        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['Energy'], sampleor = dict_args['Sampleor'])
         exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
         exp.set_U(U)
-        exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
-                            Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
-                            psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
-
-
-        # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
-
-        #
-        # exp.scan(args.hkli, args.hklf, args.points, diflimit = float(dict_args['Max_diff']), name = dict_args['scan_name'], write=True, sep=dict_args['separator'])
-
-        # startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
+        exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+                            Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+                            psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
 
         exp(calc=False)
         ttmax, ttmin = exp.two_theta_max()
-        # print(ttmax)
 
         ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale, ax = ax)
 

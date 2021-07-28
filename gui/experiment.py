@@ -31,10 +31,6 @@ class MyDisplay(Display):
 		dict_args = du.read()
 		return dict_args
 
-	def ret_list(self, string):
-
-		return [float(i) for i in string.strip('][').split(', ')]
-
 	def set_combobox_sor_default(self):
 
 		AllItems = [self.ui.comboBox_sor.itemText(i) for i in range(self.ui.comboBox_sor.count())]
@@ -56,7 +52,7 @@ class MyDisplay(Display):
 		elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
 			
 			# lb = lambda x: "{:.5f}".format(float(x))
-			wl = xu.en2lam(float(dict_args['Energy']))
+			wl = xu.en2lam(dict_args['Energy'])
 			self.ui.lineEdit_e_wl.setText(str(wl))
 
 	def set_labels(self):
@@ -68,25 +64,25 @@ class MyDisplay(Display):
 
 		if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
 			
-			self.ui.lineEdit_e_wl.setText(dict_args['Energy'])
+			self.ui.lineEdit_e_wl.setText(str(dict_args['Energy']))
 		
 		elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
 			
 			# lb = lambda x: "{:.5f}".format(float(x))
-			wl = xu.en2lam(float(dict_args['Energy']))
+			wl = xu.en2lam(dict_args['Energy'])
 			self.ui.lineEdit_e_wl.setText(str(wl))
 
-		idir = self.ret_list(dict_args['IDir'])
+		idir = dict_args['IDir']
 		self.ui.lineEdit_i_1.setText(str(idir[0]))
 		self.ui.lineEdit_i_2.setText(str(idir[1]))
 		self.ui.lineEdit_i_3.setText(str(idir[2]))
 
-		ndir = self.ret_list(dict_args['NDir'])
+		ndir = dict_args['NDir']
 		self.ui.lineEdit_n_1.setText(str(ndir[0]))
 		self.ui.lineEdit_n_2.setText(str(ndir[1]))
 		self.ui.lineEdit_n_3.setText(str(ndir[2]))
 
-		rdir = self.ret_list(dict_args['RDir'])
+		rdir = dict_args['RDir']
 		self.ui.lineEdit_r_1.setText(str(rdir[0]))
 		self.ui.lineEdit_r_2.setText(str(rdir[1]))
 		self.ui.lineEdit_r_3.setText(str(rdir[2]))

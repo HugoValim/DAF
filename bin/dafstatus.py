@@ -32,34 +32,30 @@ dic = vars(args)
 
 dict_args = du.read()
 
-def ret_list(string):
-
-    return [float(i) for i in string.strip('][').split(', ')]
-
 
 lb = lambda x: "{:.5f}".format(float(x))
 
 mode = [int(i) for i in dict_args['Mode']]
-idir = ret_list(dict_args['IDir'])
-ndir = ret_list(dict_args['NDir'])
-rdir = ret_list(dict_args['RDir'])
+idir = dict_args['IDir']
+ndir = dict_args['NDir']
+rdir = dict_args['RDir']
 
-Mu_bound = ret_list(dict_args['bound_Mu'])
-Eta_bound = ret_list(dict_args['bound_Eta'])
-Chi_bound = ret_list(dict_args['bound_Chi'])
-Phi_bound = ret_list(dict_args['bound_Phi'])
-Nu_bound = ret_list(dict_args['bound_Nu'])
-Del_bound = ret_list(dict_args['bound_Del'])
+Mu_bound = dict_args['bound_Mu']
+Eta_bound = dict_args['bound_Eta']
+Chi_bound = dict_args['bound_Chi']
+Phi_bound = dict_args['bound_Phi']
+Nu_bound = dict_args['bound_Nu']
+Del_bound = dict_args['bound_Del']
 
 exp = daf.Control(*mode)
 # exp.set_hkl(args.Move)
-exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
-exp.set_exp_conditions(idir = idir, ndir = ndir, rdir=rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+exp.set_exp_conditions(idir = idir, ndir = ndir, rdir=rdir, en = dict_args['Energy'], sampleor = dict_args['Sampleor'])
 exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
 # exp.set_U(U)
-exp.set_constraints(Mu = float(dict_args['cons_Mu']), Eta = float(dict_args['cons_Eta']), Chi = float(dict_args['cons_Chi']), Phi = float(dict_args['cons_Phi']),
-                    Nu = float(dict_args['cons_Nu']), Del = float(dict_args['cons_Del']), alpha = float(dict_args['cons_alpha']), beta = float(dict_args['cons_beta']),
-                    psi = float(dict_args['cons_psi']), omega = float(dict_args['cons_omega']), qaz = float(dict_args['cons_qaz']), naz = float(dict_args['cons_naz']))
+exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+                    Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+                    psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
 
 
 if args.Mode:
@@ -82,21 +78,9 @@ if args.umatrix:
 
     dict_args = du.read()
 
-    Uw = dict_args['U_mat'].split(',')
+    U = np.array(dict_args['U_mat'])
 
-
-    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-    U = np.array([U1, U2, U3])
-
-    UBw = dict_args['UB_mat'].split(',')
-
-
-    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
-    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
-    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
-    UB = np.array([UB1, UB2, UB3])
+    UB = np.array(dict_args['UB_mat'])
 
     center1 = "|{:^11}"
     center2 = "{:^11}"
@@ -156,21 +140,9 @@ if args.All:
 
     # dict_args = du.read()
 
-    Uw = dict_args['U_mat'].split(',')
+    U = np.array(dict_args['U_mat'])
 
-
-    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-    U = np.array([U1, U2, U3])
-
-    UBw = dict_args['UB_mat'].split(',')
-
-
-    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
-    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
-    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
-    UB = np.array([UB1, UB2, UB3])
+    UB = np.array(dict_args['UB_mat'])
 
     center1 = "|{:^11}"
     center2 = "{:^11}"
@@ -183,14 +155,14 @@ if args.All:
 
                    ]
 
-    data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
-             {'ident':'U    =   ','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
-             {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
+    data1 = [{'ident':'', 'col1': center1.format(lb(U[0][0])), 'col2':center2.format(lb(U[0][1])), 'col3':center3.format(lb(U[0][2]))},
+             {'ident':'U    =   ','col1': center1.format(lb(U[1][0])), 'col2':center2.format(lb(U[1][1])), 'col3':center3.format(lb(U[1][2]))},
+             {'ident':'','col1': center1.format(lb(U[2][0])), 'col2':center2.format(lb(U[2][1])), 'col3':center3.format(lb(U[2][2]))}
              ]
 
-    data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
-             {'ident':'UB   = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
-             {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
+    data2 = [{'ident':'','col1': center1.format(lb(UB[0][0])), 'col2':center2.format(lb(UB[0][1])), 'col3':center3.format(lb(UB[0][2]))},
+             {'ident':'UB   = ','col1': center1.format(lb(UB[1][0])), 'col2':center2.format(lb(UB[1][1])), 'col3':center3.format(lb(UB[1][2]))},
+             {'ident':'','col1': center1.format(lb(UB[2][0])), 'col2':center2.format(lb(UB[2][1])), 'col3':center3.format(lb(UB[2][2]))}
              ]
 
     Utp = daf.TablePrinter(fmt1, ul='')(data1)
@@ -203,12 +175,12 @@ if args.All:
     print('')
 
     print('')
-    print('Mu    =    {}'.format(dict_args["bound_Mu"]))
-    print('Eta   =    {}'.format(dict_args["bound_Eta"]))
-    print('Chi   =    {}'.format(dict_args["bound_Chi"]))
-    print('Phi   =    {}'.format(dict_args["bound_Phi"]))
-    print('Nu    =    {}'.format(dict_args["bound_Nu"]))
-    print('Del   =    {}'.format(dict_args["bound_Del"]))
+    print('Mu bounds    =    {}'.format(dict_args["bound_Mu"]))
+    print('Eta bounds   =    {}'.format(dict_args["bound_Eta"]))
+    print('Chi bounds   =    {}'.format(dict_args["bound_Chi"]))
+    print('Phi bounds   =    {}'.format(dict_args["bound_Phi"]))
+    print('Nu bounds    =    {}'.format(dict_args["bound_Nu"]))
+    print('Del bounds   =    {}'.format(dict_args["bound_Del"]))
     print('')
 
 

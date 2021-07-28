@@ -34,39 +34,34 @@ dict_args = du.read()
 
 for j,k in dic.items():
     if j in dict_args and k is not None:
-        dict_args[j] = str(k)
+        dict_args[j] = k
 du.write(dict_args)
 
 
 if args.Lattice_parameters:
-    dict_args['lparam_a'] = str(args.Lattice_parameters[0])
-    dict_args['lparam_b'] = str(args.Lattice_parameters[1])
-    dict_args['lparam_c'] = str(args.Lattice_parameters[2])
-    dict_args['lparam_alpha'] = str(args.Lattice_parameters[3])
-    dict_args['lparam_beta'] = str(args.Lattice_parameters[4])
-    dict_args['lparam_gama'] = str(args.Lattice_parameters[5])
+    dict_args['lparam_a'] = args.Lattice_parameters[0]
+    dict_args['lparam_b'] = args.Lattice_parameters[1]
+    dict_args['lparam_c'] = args.Lattice_parameters[2]
+    dict_args['lparam_alpha'] = args.Lattice_parameters[3]
+    dict_args['lparam_beta'] = args.Lattice_parameters[4]
+    dict_args['lparam_gama'] = args.Lattice_parameters[5]
     du.write(dict_args)
 
 
 dict_args = du.read()
 
 if args.Material:
-    Uw = dict_args['U_mat'].split(',')
 
-
-    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-    U = np.array([U1, U2, U3])
+    U = np.array(dict_args['U_mat'])
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
-    exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
-    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    exp.set_exp_conditions(en = dict_args['Energy'])
     exp.set_U(U)
     UB = exp.calcUB()
-    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
-    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    dict_args['U_mat'] = U.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+    dict_args['UB_mat'] = UB.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
     du.write(dict_args)
 
 
