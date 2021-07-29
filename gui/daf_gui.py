@@ -58,7 +58,7 @@ class Worker(QObject):
 		U_print = np.array([self.format_decimals(U[0]), self.format_decimals(U[1]), self.format_decimals(U[2])])
 
 		UB = np.array(dict_args['UB_mat'])
-		UB_print = np.array([self.format_decimals(UB[0]), self.format_decimals(UB[0]), self.format_decimals(UB[0])])
+		UB_print = np.array([self.format_decimals(UB[0]), self.format_decimals(UB[1]), self.format_decimals(UB[2])])
 
 
 		mode = [int(i) for i in dict_args['Mode']]

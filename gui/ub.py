@@ -224,15 +224,15 @@ class MyDisplay(Display):
 		U = np.array(data['U_mat'])
 
 		
-		self.ui.lineEdit_u_00.setText(str(U[0][0]))
-		self.ui.lineEdit_u_01.setText(str(U[0][1]))
-		self.ui.lineEdit_u_02.setText(str(U[0][2]))
-		self.ui.lineEdit_u_10.setText(str(U[1][0]))
-		self.ui.lineEdit_u_11.setText(str(U[1][1]))
-		self.ui.lineEdit_u_12.setText(str(U[1][2]))
-		self.ui.lineEdit_u_20.setText(str(U[2][0]))
-		self.ui.lineEdit_u_21.setText(str(U[2][1]))
-		self.ui.lineEdit_u_22.setText(str(U[2][2]))
+		self.ui.lineEdit_u_00.setText(self.format_decimals(str(U[0][0])))
+		self.ui.lineEdit_u_01.setText(self.format_decimals(str(U[0][1])))
+		self.ui.lineEdit_u_02.setText(self.format_decimals(str(U[0][2])))
+		self.ui.lineEdit_u_10.setText(self.format_decimals(str(U[1][0])))
+		self.ui.lineEdit_u_11.setText(self.format_decimals(str(U[1][1])))
+		self.ui.lineEdit_u_12.setText(self.format_decimals(str(U[1][2])))
+		self.ui.lineEdit_u_20.setText(self.format_decimals(str(U[2][0])))
+		self.ui.lineEdit_u_21.setText(self.format_decimals(str(U[2][1])))
+		self.ui.lineEdit_u_22.setText(self.format_decimals(str(U[2][2])))
 
 	def set_u_matrix(self):
 
@@ -260,15 +260,15 @@ class MyDisplay(Display):
 		UB = np.array(data['UB_mat'])
 
 		
-		self.ui.lineEdit_ub_00.setText(str(UB[0][0]))
-		self.ui.lineEdit_ub_01.setText(str(UB[0][1]))
-		self.ui.lineEdit_ub_02.setText(str(UB[0][2]))
-		self.ui.lineEdit_ub_10.setText(str(UB[1][0]))
-		self.ui.lineEdit_ub_11.setText(str(UB[1][1]))
-		self.ui.lineEdit_ub_12.setText(str(UB[1][2]))
-		self.ui.lineEdit_ub_20.setText(str(UB[2][0]))
-		self.ui.lineEdit_ub_21.setText(str(UB[2][1]))
-		self.ui.lineEdit_ub_22.setText(str(UB[2][2]))
+		self.ui.lineEdit_ub_00.setText(self.format_decimals(str(UB[0][0])))
+		self.ui.lineEdit_ub_01.setText(self.format_decimals(str(UB[0][1])))
+		self.ui.lineEdit_ub_02.setText(self.format_decimals(str(UB[0][2])))
+		self.ui.lineEdit_ub_10.setText(self.format_decimals(str(UB[1][0])))
+		self.ui.lineEdit_ub_11.setText(self.format_decimals(str(UB[1][1])))
+		self.ui.lineEdit_ub_12.setText(self.format_decimals(str(UB[1][2])))
+		self.ui.lineEdit_ub_20.setText(self.format_decimals(str(UB[2][0])))
+		self.ui.lineEdit_ub_21.setText(self.format_decimals(str(UB[2][1])))
+		self.ui.lineEdit_ub_22.setText(self.format_decimals(str(UB[2][2])))
 
 	def set_ub_matrix(self):
 
@@ -283,6 +283,7 @@ class MyDisplay(Display):
 		ub_22 = self.ui.lineEdit_ub_22.text()
 		
 		# print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
+		print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
 		os.system("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
 
 
