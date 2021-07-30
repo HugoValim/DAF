@@ -296,7 +296,7 @@ class Control(object):
 
     def set_material(self, sample, *args):
 
-        materiais = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
+        self.predefined_samples = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
                      'Cu' : xu.materials.Cu, 'Cr' : xu.materials.Cr, 'Fe' : xu.materials.Fe,
                      'Ge' : xu.materials.Ge, 'Sn' : xu.materials.Sn,
                      'LaB6' : xu.materials.LaB6, 'Al2O3' : xu.materials.Al2O3, 'C' : xu.materials.C,
@@ -323,8 +323,8 @@ class Control(object):
                      'CoGa' : xu.materials.CoFe, 'CuMnAs' : xu.materials.CuMnAs, 'Mn3Ge_cub' : xu.materials.Mn3Ge_cub,
                      'Mn3Ge' : xu.materials.Mn3Ge, 'Pt3Cr' : xu.materials.Pt3Cr, 'TiN' : xu.materials.TiN}
 
-        if sample in materiais.keys():
-            self.samp = materiais[sample]
+        if sample in self.predefined_samples.keys():
+            self.samp = self.predefined_samples[sample]
 
         else:
             self.samp = xu.materials.Crystal(str(sample),xu.materials.SGLattice(1, args[0], args[1], args[2], args[3], args[4], args[5]))

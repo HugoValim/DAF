@@ -17,6 +17,9 @@ class MyDisplay(Display):
 		self.ui.frame_new_mat.setEnabled(False)
 		self.ui.checkBox_new_mat.stateChanged.connect(self.checkbox_state_changed)
 		self.ui.pushButton_set.clicked.connect(self.set_sample)
+		self.ui.pushButton_set.clicked.connect(self.set_combobox_options)
+		self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
+
 
 	def ui_filename(self):
 		return 'sample.ui'
@@ -28,10 +31,6 @@ class MyDisplay(Display):
 
 		dict_args = du.read()
 		return dict_args
-
-	def ret_list(self, string):
-
-		return [float(i) for i in string.strip('][').split(', ')]
 
 	def materials(self):
 
@@ -76,17 +75,24 @@ class MyDisplay(Display):
 
 	def set_combobox_options(self):
 
+		user_samples = self.get_experiment_file()['user_samples']
 		items = self.materials()
-		items_sorted = list(items.keys())
-		items_sorted.sort()
-		self.ui.comboBox_materials.addItems(items_sorted)
+		items = list(items.keys())
+		
+		for sample in user_samples.keys():
+			items.append(sample)
+
+		items.sort()
+		self.ui.comboBox_materials.addItems(items)
 		
 	def checkbox_state_changed(self):
 
 		if self.ui.checkBox_new_mat.isChecked():
 		    self.ui.frame_new_mat.setEnabled(True)
+		    self.ui.comboBox_materials.setEnabled(False)
 		else:
 		    self.ui.frame_new_mat.setEnabled(False)
+		    self.ui.comboBox_materials.setEnabled(True)
 
 
 	def set_sample(self):

@@ -56,13 +56,30 @@ if args.Material:
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
-    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    
+    if args.Material in dict_args['user_samples'].keys():
+        exp.set_material(args.Material, *dict_args['user_samples'][args.Material])
+    
+    else: 
+        exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    
     exp.set_exp_conditions(en = dict_args['Energy'])
     exp.set_U(U)
     UB = exp.calcUB()
     dict_args['U_mat'] = U.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
     dict_args['UB_mat'] = UB.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+    predef = exp.predefined_samples
+    
+
+    if args.Material not in predef:
+        if args.Material not in dict_args['user_samples'].keys():       
+            nsamp_dict = dict_args['user_samples']       
+            nsamp_dict[args.Material] = [dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"]]
+            dict_args['user_samples'] = nsamp_dict
+
+    
     du.write(dict_args)
+
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

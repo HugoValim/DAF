@@ -105,3 +105,4 @@ setup: default
 tau: 0.0
 theta: 0.0
 tt: 0.0
+user_samples: {}

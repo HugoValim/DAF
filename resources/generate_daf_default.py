@@ -68,7 +68,8 @@ data = {'Mode': '2052',
 		'separator' : ',',
 		'macro_flag' : False,
 		'macro_file' : 'macro',
-		'setup' : 'default'
+		'setup' : 'default',
+		'user_samples' : {}
 
 
 

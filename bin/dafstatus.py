@@ -49,7 +49,13 @@ Del_bound = dict_args['bound_Del']
 
 exp = daf.Control(*mode)
 # exp.set_hkl(args.Move)
-exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+if dict_args['Material'] in dict_args['user_samples'].keys():
+    exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+
+else: 
+    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    
+# exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
 exp.set_exp_conditions(idir = idir, ndir = ndir, rdir=rdir, en = dict_args['Energy'], sampleor = dict_args['Sampleor'])
 exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
 # exp.set_U(U)
