@@ -46,7 +46,7 @@ dict_args = du.read()
 
 for j,k in dic.items():
     if j in dict_args and k is not None:
-        dict_args[j] = str(k)
+        dict_args[j] = k
 du.write(dict_args)
 
 
@@ -54,7 +54,7 @@ if args.Reset:
 
     for j in angs:
         if j in dict_args:
-            dict_args[j] = '0'
+            dict_args[j] = 0
     du.write(dict_args)
 
 dict_args = du.read()

@@ -27,25 +27,6 @@ if args.All:
     os.system('cp -r "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
     os.system('cp "$HOME/.daf/default" .Experiment')
 
-# with open('Experiment', 'r+') as exp:
-
-#     lines = exp.readlines()
-
-
-#     for i, line in enumerate(lines):
-#         for j,k in dic.items():
-
-
-#             if line.startswith(str(j)):
-#                 if k != None:
-#                     lines[i] = str(j)+'='+str(k)+'\n'
-
-#             exp.seek(0)
-
-
-#     for line in lines:
-#         exp.write(line)
-
 
 dict_args = du.read()
 

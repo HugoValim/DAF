@@ -8,8 +8,7 @@ import dafutilities as du
 
 epi = '''
 Eg:
-    daf.bounds --Mu -180 180 --Nu -180 180
-    daf.bouns -m -180 180 -n -180 180
+    daf.bounds -m -180 180 -n -180 180
     '''
 
 
@@ -26,11 +25,7 @@ parser.add_argument('-r', '--Reset', action='store_true', help='Reset all bounds
 
 args = parser.parse_args()
 dic = vars(args)
-# print([(i,j) for i,j in dic.items()])
-# with open ('Experiment', 'w') as doc:
-#     for i,j in dic.items():
-#         doc.write(str(i)+': '+str(j)+'\n')
-# ndir = list2str(args.NDir)
+
 
 bounds = {'bound_Mu' : [-20.0, 160.0], 'bound_Eta' : [-20.0, 160.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-400.0, 400.0], 'bound_Nu' : [-20.0, 160.0], 'bound_Del' : [-20.0, 160.0]}
 
@@ -38,14 +33,14 @@ dict_args = du.read()
 
 for j,k in dic.items():
     if j in dict_args and k is not None:
-        dict_args[j] = str(k)
+        dict_args[j] = k
 du.write(dict_args)
 
 if args.Reset:
 
     for j,k in bounds.items():
         if j in dict_args:
-            dict_args[j] = str(k)
+            dict_args[j] = k
     du.write(dict_args)
 
 

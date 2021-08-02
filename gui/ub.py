@@ -45,10 +45,6 @@ class MyDisplay(Display):
 		dict_args = du.read()
 		return dict_args
 
-	def ret_list(self, string):
-
-		return [float(i) for i in string.strip('][').split(', ')]
-
 	def format_decimals(self, x):
 		return "{:.5f}".format(float(x)) # format float with 5 decimals
 
@@ -59,7 +55,7 @@ class MyDisplay(Display):
 		if data['hkl1'] != '':
 			
 			self.hkl1 = True
-			r1 = self.ret_list(data['hkl1'])
+			r1 = data['hkl1']
 			hkl1 = r1[:3]
 			angs1 = r1[3:9]
 
@@ -82,7 +78,7 @@ class MyDisplay(Display):
 		if data['hkl2'] != '':
 			
 			self.hkl2 = True
-			r2 = self.ret_list(data['hkl2'])
+			r2 = data['hkl2']
 			hkl2 = r2[:3] 
 			angs2 = r2[3:9]
 
@@ -105,7 +101,7 @@ class MyDisplay(Display):
 		if data['hkl3'] != '':
 			
 			self.hkl3 = True
-			r3 = self.ret_list(data['hkl3'])
+			r3 = data['hkl3']
 			hkl3 = r3[:3]
 			angs3 = r3[3:9]
 
@@ -224,25 +220,19 @@ class MyDisplay(Display):
 	def update_u_labels(self):
 
 		data = self.get_experiment_file()
-
-		Uw = data['U_mat'].split(',')
-
-
-		U1 = [self.format_decimals(float(i)) for i in Uw[0].strip('][').split(' ') if i != '']
-		U2 = [self.format_decimals(float(i)) for i in Uw[1].strip('][').split(' ') if i != '']
-		U3 = [self.format_decimals(float(i)) for i in Uw[2].strip('][').split(' ') if i != '']
-		U = np.array([U1, U2, U3])
+		
+		U = np.array(data['U_mat'])
 
 		
-		self.ui.lineEdit_u_00.setText(str(U[0][0]))
-		self.ui.lineEdit_u_01.setText(str(U[0][1]))
-		self.ui.lineEdit_u_02.setText(str(U[0][2]))
-		self.ui.lineEdit_u_10.setText(str(U[1][0]))
-		self.ui.lineEdit_u_11.setText(str(U[1][1]))
-		self.ui.lineEdit_u_12.setText(str(U[1][2]))
-		self.ui.lineEdit_u_20.setText(str(U[2][0]))
-		self.ui.lineEdit_u_21.setText(str(U[2][1]))
-		self.ui.lineEdit_u_22.setText(str(U[2][2]))
+		self.ui.lineEdit_u_00.setText(self.format_decimals(str(U[0][0])))
+		self.ui.lineEdit_u_01.setText(self.format_decimals(str(U[0][1])))
+		self.ui.lineEdit_u_02.setText(self.format_decimals(str(U[0][2])))
+		self.ui.lineEdit_u_10.setText(self.format_decimals(str(U[1][0])))
+		self.ui.lineEdit_u_11.setText(self.format_decimals(str(U[1][1])))
+		self.ui.lineEdit_u_12.setText(self.format_decimals(str(U[1][2])))
+		self.ui.lineEdit_u_20.setText(self.format_decimals(str(U[2][0])))
+		self.ui.lineEdit_u_21.setText(self.format_decimals(str(U[2][1])))
+		self.ui.lineEdit_u_22.setText(self.format_decimals(str(U[2][2])))
 
 	def set_u_matrix(self):
 
@@ -267,24 +257,18 @@ class MyDisplay(Display):
 
 		data = self.get_experiment_file()
 
-		UBw = data['UB_mat'].split(',')
-
-
-		UB1 = [self.format_decimals(float(i)) for i in UBw[0].strip('][').split(' ') if i != '']
-		UB2 = [self.format_decimals(float(i)) for i in UBw[1].strip('][').split(' ') if i != '']
-		UB3 = [self.format_decimals(float(i)) for i in UBw[2].strip('][').split(' ') if i != '']
-		UB = np.array([UB1, UB2, UB3])
+		UB = np.array(data['UB_mat'])
 
 		
-		self.ui.lineEdit_ub_00.setText(str(UB[0][0]))
-		self.ui.lineEdit_ub_01.setText(str(UB[0][1]))
-		self.ui.lineEdit_ub_02.setText(str(UB[0][2]))
-		self.ui.lineEdit_ub_10.setText(str(UB[1][0]))
-		self.ui.lineEdit_ub_11.setText(str(UB[1][1]))
-		self.ui.lineEdit_ub_12.setText(str(UB[1][2]))
-		self.ui.lineEdit_ub_20.setText(str(UB[2][0]))
-		self.ui.lineEdit_ub_21.setText(str(UB[2][1]))
-		self.ui.lineEdit_ub_22.setText(str(UB[2][2]))
+		self.ui.lineEdit_ub_00.setText(self.format_decimals(str(UB[0][0])))
+		self.ui.lineEdit_ub_01.setText(self.format_decimals(str(UB[0][1])))
+		self.ui.lineEdit_ub_02.setText(self.format_decimals(str(UB[0][2])))
+		self.ui.lineEdit_ub_10.setText(self.format_decimals(str(UB[1][0])))
+		self.ui.lineEdit_ub_11.setText(self.format_decimals(str(UB[1][1])))
+		self.ui.lineEdit_ub_12.setText(self.format_decimals(str(UB[1][2])))
+		self.ui.lineEdit_ub_20.setText(self.format_decimals(str(UB[2][0])))
+		self.ui.lineEdit_ub_21.setText(self.format_decimals(str(UB[2][1])))
+		self.ui.lineEdit_ub_22.setText(self.format_decimals(str(UB[2][2])))
 
 	def set_ub_matrix(self):
 
@@ -299,6 +283,7 @@ class MyDisplay(Display):
 		ub_22 = self.ui.lineEdit_ub_22.text()
 		
 		# print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
+		print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
 		os.system("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
 
 

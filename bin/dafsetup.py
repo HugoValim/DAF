@@ -31,12 +31,10 @@ parser.add_argument('-l', '--list', action='store_true', help='List all setups, 
 args = parser.parse_args()
 dic = vars(args)
 
-
-dict_args = du.read()
-
 if args.change:
-    os.system('cp "$HOME/.daf/{}" .Experiment'.format(args.change))
+    os.system("cat /home/ABTLUS/hugo.campos/.daf/{} > .Experiment".format(args.change))
 
+    dict_args = du.read()
     dict_args['setup'] = str(args.change)
     du.write(dict_args)
 
@@ -54,7 +52,7 @@ if args.save:
 
 
 if args.list:
-    os.system("ls -A1 \"$HOME/.daf/\" | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(setup_now, setup_now))
+    os.system("ls -A1 --ignore=*.py $HOME/.daf/ | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(setup_now, setup_now))
 
 if args.remove:
 

@@ -44,14 +44,14 @@ dict_args = du.read()
 
 for j,k in dic.items():
     if j in dict_args and k is not None:
-        dict_args[j] = str(k)
+        dict_args[j] = k
 du.write(dict_args)
 
 
 if args.UBmatrix:
     UB = np.array(args.UBmatrix).reshape(3,3)
     #dict_args['U'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
-    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
 
@@ -62,21 +62,9 @@ if args.Show:
 
     dict_args = du.read()
 
-    Uw = dict_args['U_mat'].split(',')
+    U = np.array(dict_args['U_mat'])
 
-
-    U1 = [float(i) for i in Uw[0].strip('][').split(' ') if i != '']
-    U2 = [float(i) for i in Uw[1].strip('][').split(' ') if i != '']
-    U3 = [float(i) for i in Uw[2].strip('][').split(' ') if i != '']
-    U = np.array([U1, U2, U3])
-
-    UBw = dict_args['UB_mat'].split(',')
-
-
-    UB1 = [float(i) for i in UBw[0].strip('][').split(' ') if i != '']
-    UB2 = [float(i) for i in UBw[1].strip('][').split(' ') if i != '']
-    UB3 = [float(i) for i in UBw[2].strip('][').split(' ') if i != '']
-    UB = np.array([UB1, UB2, UB3])
+    UB = np.array(dict_args['UB_mat'])
 
     center1 = "|{:^11}"
     center2 = "{:^11}"
@@ -89,14 +77,14 @@ if args.Show:
 
                    ]
 
-    data1 = [{'ident':'', 'col1': center1.format(lb(U1[0])), 'col2':center2.format(lb(U1[1])), 'col3':center3.format(lb(U1[2]))},
-             {'ident':'U    =   ','col1': center1.format(lb(U2[0])), 'col2':center2.format(lb(U2[1])), 'col3':center3.format(lb(U2[2]))},
-             {'ident':'','col1': center1.format(lb(U3[0])), 'col2':center2.format(lb(U3[1])), 'col3':center3.format(lb(U3[2]))}
+    data1 = [{'ident':'', 'col1': center1.format(lb(U[0][0])), 'col2':center2.format(lb(U[0][1])), 'col3':center3.format(lb(U[0][2]))},
+             {'ident':'U    =   ','col1': center1.format(lb(U[1][0])), 'col2':center2.format(lb(U[1][1])), 'col3':center3.format(lb(U[1][2]))},
+             {'ident':'','col1': center1.format(lb(U[2][0])), 'col2':center2.format(lb(U[2][1])), 'col3':center3.format(lb(U[2][2]))}
              ]
 
-    data2 = [{'ident':'','col1': center1.format(lb(UB1[0])), 'col2':center2.format(lb(UB1[1])), 'col3':center3.format(lb(UB1[2]))},
-             {'ident':'UB   = ','col1': center1.format(lb(UB2[0])), 'col2':center2.format(lb(UB2[1])), 'col3':center3.format(lb(UB2[2]))},
-             {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
+    data2 = [{'ident':'','col1': center1.format(lb(UB[0][0])), 'col2':center2.format(lb(UB[0][1])), 'col3':center3.format(lb(UB[0][2]))},
+             {'ident':'UB   = ','col1': center1.format(lb(UB[1][0])), 'col2':center2.format(lb(UB[1][1])), 'col3':center3.format(lb(UB[1][2]))},
+             {'ident':'','col1': center1.format(lb(UB[2][0])), 'col2':center2.format(lb(UB[2][1])), 'col3':center3.format(lb(UB[2][2]))}
              ]
 
     Utp = daf.TablePrinter(fmt1, ul='')(data1)
@@ -123,14 +111,11 @@ if args.Params:
     print('')
 
 
-def ret_list(string):
-
-    return [float(i) for i in string.strip('][').split(', ')]
 
 dict_args = du.read()
 
 if dict_args['hkl1'] != '':
-    r1 = ret_list(dict_args['hkl1'])
+    r1 = dict_args['hkl1']
     hkl1 = r1[:3]
     angs1 = r1[3:9]
 else:
@@ -138,14 +123,14 @@ else:
 
 
 if dict_args['hkl2'] != '':
-    r2 = ret_list(dict_args['hkl2'])
+    r2 = dict_args['hkl2']
     hkl2 = r2[:3]
     angs2 = r2[3:9]
 else:
     hkl2 = None
 
 if dict_args['hkl3'] != '':
-    r3 = ret_list(dict_args['hkl3'])
+    r3 = dict_args['hkl3']
     hkl3 = r3[:3]
     angs3 = r3[3:9]
 else:
@@ -167,12 +152,19 @@ if args.Umatrix:
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
-    exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
+
+    if dict_args['Material'] in dict_args['user_samples'].keys():
+        exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+
+    else: 
+        exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    
+    # exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
     exp.set_exp_conditions(en = float(dict_args['Energy']))
     exp.set_U(U)
     UB = exp.calcUB()
-    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
-    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    dict_args['U_mat'] = U.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+    dict_args['UB_mat'] = UB.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
     du.write(dict_args)
 
 
@@ -180,8 +172,8 @@ if  args.Calc2 is not None:
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
-    exp.set_material(dict_args['Material'], float(dict_args["lparam_a"]), float(dict_args["lparam_b"]), float(dict_args["lparam_c"]), float(dict_args["lparam_alpha"]), float(dict_args["lparam_beta"]), float(dict_args["lparam_gama"]))
-    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    exp.set_exp_conditions(en = dict_args['Energy'])
 
     if args.Calc2[0] == 1 and args.Calc2[1] == 2:
         U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
@@ -194,8 +186,8 @@ if  args.Calc2 is not None:
 
 
 
-    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
-    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
+    dict_args['U_mat'] = U.tolist()
+    dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
 if  args.Calc3:
@@ -203,18 +195,20 @@ if  args.Calc3:
 
     exp = daf.Control(*mode)
     # exp.set_material(dict_args['Material'])
-    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_exp_conditions(en = dict_args['Energy'])
 
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
 
-    dict_args['U_mat'] = str(U[0]) + ',' + str(U[1]) + ',' + str(U[2])
-    dict_args['UB_mat'] = str(UB[0]) + ',' + str(UB[1]) + ',' + str(UB[2])
-    dict_args['lparam_a'] = str(rp[0])
-    dict_args['lparam_b'] = str(rp[1])
-    dict_args['lparam_c'] = str(rp[2])
-    dict_args['lparam_alpha'] = str(rp[3])
-    dict_args['lparam_beta'] = str(rp[4])
-    dict_args['lparam_gama'] = str(rp[5])
+    rpf = [float(i) for i in rp]# Problems when saving numpy64floats, better to use python's float
+
+    dict_args['U_mat'] = U.tolist()
+    dict_args['UB_mat'] = UB.tolist()
+    dict_args['lparam_a'] = rpf[0]
+    dict_args['lparam_b'] = rpf[1]
+    dict_args['lparam_c'] = rpf[2]
+    dict_args['lparam_alpha'] = rpf[3]
+    dict_args['lparam_beta'] = rpf[4]
+    dict_args['lparam_gama'] = rpf[5]
     du.write(dict_args)
 
 

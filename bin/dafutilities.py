@@ -5,6 +5,7 @@ import atexit
 import epics
 import yaml
 import time
+import numpy as np
 
 
 DEFAULT = ".Experiment"
@@ -22,20 +23,14 @@ PVS = {
 "Del" : PV_PREFIX + ":m6",
 }
 
+
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
 
 
-# original values for mu, eta, chi, phi nu and del: 0.0
-# original value for bound_Mu: "[-20.0, 160.0]"
-# original value for bound_Eta: "[-20.0, 160.0]"
-# original value for bound_Chi: "[-5.0, 95.0]"
-# original value for bound_Phi: "[-400.0, 400.0]"
-# original value for bound_Nu: "[-20.0, 160.0]"
-# original value for bound_Del: "[-20.0, 160.0]"
 def epics_get(dict_):
     for key in MOTORS:
-        dict_[key] = str(MOTORS[key].readback)
-        dict_["bound_" + key] = "[{}, {}]".format(MOTORS[key].low_limit, MOTORS[key].high_limit)
+        dict_[key] = MOTORS[key].readback
+        dict_["bound_" + key] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
 
 
 def read(filepath=DEFAULT):
@@ -45,8 +40,6 @@ def read(filepath=DEFAULT):
         return data
 
 
-def ret_list(string):
-    return [float(i) for i in string.strip("][").split(", ")]
 
 
 def stop():
@@ -71,17 +64,11 @@ def wait(is_scan):
     # print('')
 
 
-
-
-
-            
-
-
 def epics_put(dict_, is_scan):
     # Make sure we stop all motors.
     atexit.register(stop)
     for key in MOTORS:
-        aux = ret_list(dict_["bound_" + key])
+        aux = dict_["bound_" + key]
         MOTORS[key].low_limit = aux[0]
         MOTORS[key].high_limit = aux[1]
         MOTORS[key].move(dict_[key], ignore_limits=True, confirm_move=True)
