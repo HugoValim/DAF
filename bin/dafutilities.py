@@ -2,12 +2,13 @@
 """Library for reading and writing experiment files"""
 
 import atexit
+import os
 import epics
 import yaml
 import time
 import numpy as np
 
-
+HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
 PV_PREFIX = "EMA:B:PB18"
 PV_PREFIX = "SOL:S"

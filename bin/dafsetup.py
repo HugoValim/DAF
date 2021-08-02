@@ -23,26 +23,39 @@ Eg:
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 
-parser.add_argument('-c', '--change', metavar = '[file]', type=str, help='Change current setup to another')
+parser.add_argument('-c', '--checkout', metavar = '[file]', type=str, help='Change current setup to another')
 parser.add_argument('-s', '--save', metavar = 'file', nargs = '?', const = 'no_args', help='Save the current setup, if only -s is passed them de command will overwrite de current setup')
 parser.add_argument('-r', '--remove', metavar = 'file', nargs = '*', help='Remove a setup')
 parser.add_argument('-l', '--list', action='store_true', help='List all setups, showing in which one you are')
+parser.add_argument('-d', '--description', metavar = 'desc', type=str, help='Add a description to this setup')
+parser.add_argument('-i', '--info', metavar = 'setup', type=str, help='Print detailed information about a specific setup')
 
 args = parser.parse_args()
 dic = vars(args)
 
-if args.change:
-    os.system("cat /home/ABTLUS/hugo.campos/.daf/{} > .Experiment".format(args.change))
+if args.checkout:
+    
+    dict_args = du.read()
+    setup_now = dict_args['setup']
+
+
+    os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
+    os.system("cat /home/ABTLUS/hugo.campos/.daf/{} > .Experiment".format(args.checkout))
 
     dict_args = du.read()
-    dict_args['setup'] = str(args.change)
+
+    dict_args['setup'] = str(args.checkout)
+
+
     du.write(dict_args)
 
 
-dict_args = du.read()
-setup_now = dict_args['setup']
 
 if args.save:
+    
+    dict_args = du.read()
+    setup_now = dict_args['setup']
+    
     if args.save == 'no_args':
         os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
 
@@ -52,10 +65,17 @@ if args.save:
 
 
 if args.list:
+
+    dict_args = du.read()
+    setup_now = dict_args['setup']
+
     os.system("ls -A1 --ignore=*.py $HOME/.daf/ | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(setup_now, setup_now))
 
 if args.remove:
 
+    dict_args = du.read()
+    setup_now = dict_args['setup']
+    
     for i in args.remove:
         if setup_now != i:
             os.system('rm -f "$HOME/.daf/{}"'.format(i))
@@ -63,6 +83,25 @@ if args.remove:
             print('')
             print('Leave the setup before removing it')
             print('')
+
+if args.description:
+
+    dict_args = du.read()
+    dict_args['setup_desc'] = args.description
+    du.write(dict_args)
+
+if args.info:
+
+    dict_args = du.read()
+    if dict_args['setup'] == args.info:
+        desc = dict_args['setup_desc']
+        print(desc)
+
+    else:
+        dict_args = du.read(filepath= du.HOME + '/.daf/' + args.info)
+        desc = dict_args['setup_desc']
+        print(desc)
+
 
 
 log = sys.argv.pop(0).split('command_line/')[1]

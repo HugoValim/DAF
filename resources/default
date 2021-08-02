@@ -102,6 +102,7 @@ qaz: 90.0
 scan_name: scan_test
 separator: ','
 setup: default
+setup_desc: ''
 tau: 0.0
 theta: 0.0
 tt: 0.0
