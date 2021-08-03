@@ -22,7 +22,7 @@ Eg:
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
-
+parser.add_argument('-n', '--new', metavar = 'setup name', type=str, help='Create a new setup')
 parser.add_argument('-c', '--checkout', metavar = '[file]', type=str, help='Change current setup to another')
 parser.add_argument('-s', '--save', metavar = 'file', nargs = '?', const = 'no_args', help='Save the current setup, if only -s is passed them de command will overwrite de current setup')
 parser.add_argument('-r', '--remove', metavar = 'file', nargs = '*', help='Remove a setup')
@@ -32,6 +32,13 @@ parser.add_argument('-i', '--info', metavar = 'setup', type=str, help='Print det
 
 args = parser.parse_args()
 dic = vars(args)
+
+if args.new:
+
+    dict_args = du.read()
+    setup_now = dict_args['setup']
+    os.system('cp "{}/../resources/default" "$HOME/.daf/{}"'.format(os.path.dirname(os.path.realpath(__file__)), args.new))
+
 
 if args.checkout:
     
