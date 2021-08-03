@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>1023</height>
+    <height>930</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -68,7 +68,7 @@
            <widget class="QLabel" name="label_mode">
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <pointsize>14</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -79,7 +79,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -97,7 +97,7 @@
              <widget class="QLabel" name="label_mode5">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -114,7 +114,7 @@
              <widget class="QLabel" name="label_cons1">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -131,7 +131,7 @@
              <widget class="QLabel" name="label_cons4">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -148,7 +148,7 @@
              <widget class="QLabel" name="label_cons5">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -165,7 +165,7 @@
              <widget class="QLabel" name="label_mode4">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -182,7 +182,7 @@
              <widget class="QLabel" name="label_cons2">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -199,7 +199,7 @@
              <widget class="QLabel" name="label_mode3">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -216,7 +216,7 @@
              <widget class="QLabel" name="label_mode2">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -233,7 +233,7 @@
              <widget class="QLabel" name="label_mode1">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -266,7 +266,7 @@
              <widget class="QLabel" name="label_cons3">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -349,7 +349,7 @@
            <widget class="QLabel" name="label_6">
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <pointsize>14</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -360,7 +360,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -378,7 +378,7 @@
              <widget class="QLabel" name="label_exp6">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -395,7 +395,7 @@
              <widget class="QLabel" name="label_exp1">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -412,7 +412,7 @@
              <widget class="QLabel" name="label_17">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -430,7 +430,7 @@
              <widget class="QLabel" name="label_10">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -448,7 +448,7 @@
              <widget class="QLabel" name="label_16">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -466,7 +466,7 @@
              <widget class="QLabel" name="label_exp2">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -483,7 +483,7 @@
              <widget class="QLabel" name="label_exp3">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -500,7 +500,7 @@
              <widget class="QLabel" name="label_exp5">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -517,7 +517,7 @@
              <widget class="QLabel" name="label_12">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -535,7 +535,7 @@
              <widget class="QLabel" name="label_14">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -553,7 +553,7 @@
              <widget class="QLabel" name="label_exp4">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -586,7 +586,7 @@
              <widget class="QLabel" name="label_8">
               <property name="font">
                <font>
-                <pointsize>14</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -667,7 +667,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -682,7 +682,7 @@
              <widget class="QLabel" name="label_34">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -700,7 +700,7 @@
              <widget class="QLabel" name="label_samp_alpha">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -715,7 +715,7 @@
              <widget class="QLabel" name="label_35">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -733,7 +733,7 @@
              <widget class="QLabel" name="label_samp_b">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -748,7 +748,7 @@
              <widget class="QLabel" name="label_22">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -765,7 +765,7 @@
              <widget class="QLabel" name="label_32">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -783,7 +783,7 @@
              <widget class="QLabel" name="label_33">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -801,7 +801,7 @@
              <widget class="QLabel" name="label_samp_c">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -816,7 +816,7 @@
              <widget class="QLabel" name="label_samp_name">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -831,7 +831,7 @@
              <widget class="QLabel" name="label_samp_gamma">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -862,7 +862,7 @@
              <widget class="QLabel" name="label_36">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -880,7 +880,7 @@
              <widget class="QLabel" name="label_30">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -898,7 +898,7 @@
              <widget class="QLabel" name="label_samp_a">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -913,7 +913,7 @@
              <widget class="QLabel" name="label_samp_beta">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -1004,7 +1004,7 @@
                 <widget class="QLabel" name="label_18">
                  <property name="font">
                   <font>
-                   <pointsize>16</pointsize>
+                   <pointsize>14</pointsize>
                    <weight>75</weight>
                    <bold>true</bold>
                   </font>
@@ -1015,7 +1015,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
                  </property>
@@ -1038,7 +1038,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1050,7 +1050,7 @@
                   <widget class="QLabel" name="label_19">
                    <property name="font">
                     <font>
-                     <pointsize>16</pointsize>
+                     <pointsize>12</pointsize>
                      <weight>75</weight>
                      <bold>true</bold>
                     </font>
@@ -1072,7 +1072,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1089,7 +1089,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1106,7 +1106,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1123,7 +1123,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1156,7 +1156,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1173,7 +1173,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1190,7 +1190,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1207,7 +1207,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1256,7 +1256,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1273,7 +1273,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1290,7 +1290,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1307,7 +1307,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1324,7 +1324,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1336,7 +1336,7 @@
                   <widget class="QLabel" name="label_59">
                    <property name="font">
                     <font>
-                     <pointsize>16</pointsize>
+                     <pointsize>12</pointsize>
                      <weight>75</weight>
                      <bold>true</bold>
                     </font>
@@ -1358,7 +1358,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1375,7 +1375,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1392,7 +1392,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1425,7 +1425,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-    font-size: 20px;
+    font-size: 12px;
 }</string>
                    </property>
                    <property name="text">
@@ -1502,7 +1502,7 @@
            <widget class="QLabel" name="label_20">
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <pointsize>14</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -1513,7 +1513,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -1527,30 +1527,15 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_mu_bounds">
+            <item row="1" column="3">
+             <widget class="QLabel" name="label_42">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
-               <string>TextLabel</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_eta_bounds">
-              <property name="font">
-               <font>
-                <pointsize>16</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
+               <string>High limit:</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1558,10 +1543,130 @@
              </widget>
             </item>
             <item row="0" column="3">
-             <widget class="QLabel" name="label_phi_bounds">
+             <widget class="QLabel" name="label_41">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>High limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4">
+             <widget class="QLabel" name="label_eta_bounds_hl">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QLabel" name="label_mu_bounds_hl">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="4">
+             <widget class="QLabel" name="label_chi_bounds_hl">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="8">
+             <widget class="QLabel" name="label_45">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>High limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="6">
+             <widget class="QLabel" name="label_40">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Low limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_mu_bounds_ll">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_eta_bounds_ll">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="7">
+             <widget class="QLabel" name="label_phi_bounds_ll">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -1576,7 +1681,7 @@
              <widget class="QLabel" name="label_25">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1589,11 +1694,11 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="2">
+            <item row="1" column="5">
              <widget class="QLabel" name="label_28">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1606,11 +1711,11 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
+            <item row="0" column="5">
              <widget class="QLabel" name="label_27">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1623,11 +1728,11 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
-             <widget class="QLabel" name="label_del_bounds">
+            <item row="2" column="7">
+             <widget class="QLabel" name="label_del_bounds_ll">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -1642,7 +1747,7 @@
              <widget class="QLabel" name="label_21">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1655,11 +1760,11 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="label_nu_bounds">
+            <item row="1" column="7">
+             <widget class="QLabel" name="label_nu_bounds_ll">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -1670,7 +1775,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="4">
+            <item row="1" column="10">
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1686,11 +1791,11 @@
               </property>
              </spacer>
             </item>
-            <item row="2" column="2">
+            <item row="2" column="5">
              <widget class="QLabel" name="label_29">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1703,11 +1808,11 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="label_chi_bounds">
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_chi_bounds_ll">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
@@ -1718,24 +1823,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_23">
-              <property name="font">
-               <font>
-                <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Mu</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="5">
+            <item row="1" column="11">
              <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_6">
               <property name="minimumSize">
                <size>
@@ -1762,6 +1850,188 @@
               </property>
               <property name="openInNewWindow" stdset="0">
                <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_24">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Low limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="8">
+             <widget class="QLabel" name="label_44">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>High limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_31">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Low limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="6">
+             <widget class="QLabel" name="label_39">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Low limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="8">
+             <widget class="QLabel" name="label_46">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>High limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_37">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Low limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QLabel" name="label_43">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>High limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="6">
+             <widget class="QLabel" name="label_38">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Low limit:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_23">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Mu</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="9">
+             <widget class="QLabel" name="label_phi_bounds_hl">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="9">
+             <widget class="QLabel" name="label_nu_bounds_hl">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="9">
+             <widget class="QLabel" name="label_del_bounds_hl">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -1796,7 +2066,7 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <pointsize>14</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -1807,7 +2077,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -1825,7 +2095,7 @@
              <widget class="QLabel" name="K_val">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1842,7 +2112,7 @@
              <widget class="QLabel" name="H_val">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1859,7 +2129,7 @@
              <widget class="QLabel" name="L_val">
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1966,6 +2236,11 @@
        </item>
        <item>
         <widget class="QFrame" name="frame_6">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -1977,7 +2252,7 @@
            <widget class="QLabel" name="label_4">
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <pointsize>14</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -1988,7 +2263,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -2018,13 +2293,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>Tau</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2044,13 +2322,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>QAZ</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2070,13 +2351,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2096,13 +2380,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>NAZ</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2122,13 +2409,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2148,13 +2438,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2174,13 +2467,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2200,13 +2496,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2226,13 +2525,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2252,13 +2554,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>Psi</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2278,13 +2583,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>Beta</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2310,13 +2618,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2336,13 +2647,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
                <string>Omega</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2362,13 +2676,16 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>16</pointsize>
+                <pointsize>12</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Alpha</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -2539,7 +2856,7 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <pointsize>14</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -2550,7 +2867,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 22px;
-    font-size: 16pt;
+    font-size: 14pt;
 	font-weight: bold; 
 }</string>
             </property>
@@ -2591,7 +2908,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2712,7 +3029,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2727,7 +3044,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_phi_val">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2748,7 +3065,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2763,7 +3080,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_nu_desc">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
@@ -2780,7 +3097,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_nu_val">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2833,7 +3150,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2848,7 +3165,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_eta_desc">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
@@ -2871,7 +3188,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -2886,7 +3203,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_del_desc">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
@@ -2935,7 +3252,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_eta_val">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -3086,7 +3403,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_del_val">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -3169,7 +3486,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_chi_desc">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
@@ -3192,7 +3509,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -3207,7 +3524,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_chi_val">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -3222,7 +3539,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_phi_desc">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
@@ -3271,7 +3588,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_mu_val">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
@@ -3286,7 +3603,7 @@
                <widget class="PyDMLabel" name="PyDMLabel_mu_desc">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
+                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
@@ -3596,6 +3913,58 @@
                </spacer>
               </item>
              </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Setup</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_13">
+       <item>
+        <widget class="QFrame" name="frame_7">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0">
+             <widget class="QScrollArea" name="scrollArea">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetContents_4">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>573</width>
+                 <height>859</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QTextBrowser" name="textBrowser">
+              <property name="html">
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Olá olaolaoala&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
