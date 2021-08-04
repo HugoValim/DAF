@@ -215,6 +215,27 @@ class MyDisplay(Display):
 		self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
 
+	def setup_scroll_area(self):
+
+		self.widget = QtWidgets.QWidget()                 # Widget that contains the collection of Vertical Box
+		self.vbox = QtWidgets.QVBoxLayout()               # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+
+		for i in range(1,5):
+			object = QtWidgets.QLabel("TextLabel")
+			self.vbox.addWidget(object)
+
+		self.widget.setLayout(self.vbox)
+
+		#Scroll Area Properties
+		self.ui.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+		self.ui.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+		self.ui.scrollArea.setWidgetResizable(True)
+		self.ui.scrollArea.setWidget(self.widget)
+
+		return
+
+
+
 	def update(self):
 
 		
@@ -297,12 +318,30 @@ class MyDisplay(Display):
 		#Update motor bounds
 
 
-		self.ui.label_mu_bounds.setText('low: ' + str(data_to_update['bounds']["mu"][0]) + '   high: ' + str(data_to_update['bounds']["mu"][1]))
-		self.ui.label_eta_bounds.setText('low: ' + str(data_to_update['bounds']["eta"][0]) + '   high: ' + str(data_to_update['bounds']["eta"][1]))
-		self.ui.label_chi_bounds.setText('low: ' + str(data_to_update['bounds']["chi"][0]) + '   high: ' + str(data_to_update['bounds']["chi"][1]))
-		self.ui.label_phi_bounds.setText('low: ' + str(data_to_update['bounds']["phi"][0]) + '   high: ' + str(data_to_update['bounds']["phi"][1]))
-		self.ui.label_nu_bounds.setText('low: ' + str(data_to_update['bounds']["nu"][0]) + '   high: ' + str(data_to_update['bounds']["nu"][1]))
-		self.ui.label_del_bounds.setText('low: ' + str(data_to_update['bounds']["del"][0]) + '   high: ' + str(data_to_update['bounds']["del"][1]))
+		self.ui.label_mu_bounds_ll.setText(str(data_to_update['bounds']["mu"][0]))
+		self.ui.label_mu_bounds_hl.setText(str(data_to_update['bounds']["mu"][1]))
+
+		self.ui.label_eta_bounds_ll.setText(str(data_to_update['bounds']["eta"][0]))
+		self.ui.label_eta_bounds_hl.setText(str(data_to_update['bounds']["eta"][1]))
+
+		self.ui.label_chi_bounds_ll.setText(str(data_to_update['bounds']["chi"][0]))
+		self.ui.label_chi_bounds_hl.setText(str(data_to_update['bounds']["chi"][1]))
+
+		self.ui.label_phi_bounds_ll.setText(str(data_to_update['bounds']["phi"][0]))
+		self.ui.label_phi_bounds_hl.setText(str(data_to_update['bounds']["phi"][1]))
+
+		self.ui.label_nu_bounds_ll.setText(str(data_to_update['bounds']["nu"][0]))
+		self.ui.label_nu_bounds_hl.setText(str(data_to_update['bounds']["nu"][1]))
+
+		self.ui.label_del_bounds_ll.setText(str(data_to_update['bounds']["del"][0]))
+		self.ui.label_del_bounds_hl.setText(str(data_to_update['bounds']["del"][1]))
+
+		self.setup_scroll_area()
+
+
+
+
+
 		
 
 
