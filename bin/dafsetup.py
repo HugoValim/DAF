@@ -27,7 +27,7 @@ parser.add_argument('-c', '--checkout', metavar = '[file]', type=str, help='Chan
 parser.add_argument('-s', '--save', metavar = 'file', nargs = '?', const = 'no_args', help='Save the current setup, if only -s is passed them de command will overwrite de current setup')
 parser.add_argument('-r', '--remove', metavar = 'file', nargs = '*', help='Remove a setup')
 parser.add_argument('-l', '--list', action='store_true', help='List all setups, showing in which one you are')
-parser.add_argument('-d', '--description', metavar = 'desc', type=str, help='Add a description to this setup')
+parser.add_argument('-d', '--description', metavar = 'desc', nargs = 2, help='Add a description to this setup')
 parser.add_argument('-i', '--info', metavar = 'setup', type=str, help='Print detailed information about a specific setup')
 
 args = parser.parse_args()
@@ -93,9 +93,16 @@ if args.remove:
 
 if args.description:
 
-    dict_args = du.read()
-    dict_args['setup_desc'] = args.description
-    du.write(dict_args)
+    if args.description[0] != ".":
+        dict_args = du.read(filepath= du.HOME + '/.daf/' + args.description[0])
+        dict_args['setup_desc'] = args.description[1]
+        du.write(dict_args, filepath = du.HOME + '/.daf/' + args.description[0])
+
+    else:
+        dict_args = du.read()
+        dict_args['setup_desc'] = args.description
+        du.write(dict_args)
+
 
 if args.info:
 

@@ -121,6 +121,11 @@ class MyDisplay(Display):
 
 		self.set_main_screen_title()
 		self.ui.listWidget_setup.currentItemChanged.connect(self.on_list_widget_change)
+
+		self.ui.pushButton_change_setup.clicked.connect(self.change_setup)
+		self.ui.pushButton_change_setup.clicked.connect(self.set_main_screen_title)
+		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
+		
 		self.runLongTask()
 	
 
@@ -137,6 +142,7 @@ class MyDisplay(Display):
 	def set_main_screen_title(self):
 
 		dict_ = du.read()
+		print(dict_['setup'])
 		self.ui.setWindowTitle('DAF GUI ({})'.format(dict_['setup']))
 
 
@@ -234,19 +240,33 @@ class MyDisplay(Display):
 			if setup not in itemsTextList:
 				self.ui.listWidget_setup.addItem(setup)
 
-
 	def on_list_widget_change(self):
-
 
 		item = self.ui.listWidget_setup.currentItem()
 		value = item.text()
 		
 		dict_ = du.read(du.HOME + '/.daf/' + value)
+		# self.ui.textEdit_setup.setText(bytes(dict_['setup_desc'], "uft-8").decode("unicode_escape"))
 		self.ui.textEdit_setup.setText(dict_['setup_desc'])
 
 
-		
-		
+	def change_setup(self):
+
+		item = self.ui.listWidget_setup.currentItem()
+		value = item.text()
+
+		os.system("daf.setup -c {}".format(value))
+
+	def update_setup_description(self):
+
+		item = self.ui.listWidget_setup.currentItem()
+		value = item.text()
+		mytext = self.textEdit_setup.toPlainText()
+		# raw_s = repr(mytext)
+
+		os.system('daf.setup -d {} "{}"'.format(value, mytext))
+
+
 
 
 
