@@ -119,6 +119,8 @@ class MyDisplay(Display):
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
+		self.set_main_screen_title()
+		self.ui.listWidget_setup.currentItemChanged.connect(self.on_list_widget_change)
 		self.runLongTask()
 	
 
@@ -131,6 +133,11 @@ class MyDisplay(Display):
 		with open(data_file, 'r') as file:
 			data = yaml.safe_load(file)
 			return data
+
+	def set_main_screen_title(self):
+
+		dict_ = du.read()
+		self.ui.setWindowTitle('DAF GUI ({})'.format(dict_['setup']))
 
 
 
@@ -217,22 +224,29 @@ class MyDisplay(Display):
 
 	def setup_scroll_area(self):
 
-		self.widget = QtWidgets.QWidget()                 # Widget that contains the collection of Vertical Box
-		self.vbox = QtWidgets.QVBoxLayout()               # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+		setups = os.listdir(du.HOME + '/.daf')
+		setups = [i for i in setups if not i.endswith('.py')]
+		setups.sort()
+		
+		itemsTextList =  [str(self.ui.listWidget_setup.item(i).text()) for i in range(self.ui.listWidget_setup.count())]
 
-		for i in range(1,5):
-			object = QtWidgets.QLabel("TextLabel")
-			self.vbox.addWidget(object)
+		for setup in setups:
+			if setup not in itemsTextList:
+				self.ui.listWidget_setup.addItem(setup)
 
-		self.widget.setLayout(self.vbox)
 
-		#Scroll Area Properties
-		self.ui.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-		self.ui.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-		self.ui.scrollArea.setWidgetResizable(True)
-		self.ui.scrollArea.setWidget(self.widget)
+	def on_list_widget_change(self):
 
-		return
+
+		item = self.ui.listWidget_setup.currentItem()
+		value = item.text()
+		
+		dict_ = du.read(du.HOME + '/.daf/' + value)
+		self.ui.textEdit_setup.setText(dict_['setup_desc'])
+
+
+		
+		
 
 
 
