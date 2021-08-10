@@ -120,11 +120,17 @@ class MyDisplay(Display):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
 		self.set_main_screen_title()
-		self.ui.listWidget_setup.currentItemChanged.connect(self.on_list_widget_change)
+		self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
+		self.setup_scroll_area()
 
+		# Setup buttons
+		self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
+		self.ui.pushButton_save_setup.clicked.connect(self.save_setup)
+		self.ui.pushButton_copy_setup.clicked.connect(self.copy_setup)
 		self.ui.pushButton_change_setup.clicked.connect(self.change_setup)
 		self.ui.pushButton_change_setup.clicked.connect(self.set_main_screen_title)
 		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
+		self.ui.pushButton_remove_setup.clicked.connect(self.remove_setup)
 		
 		self.runLongTask()
 	
@@ -142,7 +148,7 @@ class MyDisplay(Display):
 	def set_main_screen_title(self):
 
 		dict_ = du.read()
-		print(dict_['setup'])
+		# print(dict_['setup'])
 		self.ui.setWindowTitle('DAF GUI ({})'.format(dict_['setup']))
 
 
@@ -232,22 +238,27 @@ class MyDisplay(Display):
 
 		setups = os.listdir(du.HOME + '/.daf')
 		setups = [i for i in setups if not i.endswith('.py')]
-		setups.sort()
-		
-		itemsTextList =  [str(self.ui.listWidget_setup.item(i).text()) for i in range(self.ui.listWidget_setup.count())]
+		setups.sort()		
 
-		for setup in setups:
-			if setup not in itemsTextList:
-				self.ui.listWidget_setup.addItem(setup)
+		# itemsTextList =  [str(self.ui.listWidget_setup.item(i).text()) for i in range(self.ui.listWidget_setup.count())]
+		
+
+		self.ui.listWidget_setup.clear()
+
+		self.ui.listWidget_setup.addItems(setups)
 
 	def on_list_widget_change(self):
+
+		setups = os.listdir(du.HOME + '/.daf')
+		setups = [i for i in setups if not i.endswith('.py')]
 
 		item = self.ui.listWidget_setup.currentItem()
 		value = item.text()
 		
-		dict_ = du.read(du.HOME + '/.daf/' + value)
-		# self.ui.textEdit_setup.setText(bytes(dict_['setup_desc'], "uft-8").decode("unicode_escape"))
-		self.ui.textEdit_setup.setText(dict_['setup_desc'])
+		if value in setups:
+			dict_ = du.read(du.HOME + '/.daf/' + value)
+			# self.ui.textEdit_setup.setText(bytes(dict_['setup_desc'], "uft-8").decode("unicode_escape"))
+			self.ui.textEdit_setup.setText(dict_['setup_desc'])
 
 
 	def change_setup(self):
@@ -267,11 +278,63 @@ class MyDisplay(Display):
 		os.system('daf.setup -d {} "{}"'.format(value, mytext))
 
 
+	def new_setup_dialog(self):
+
+		setups = os.listdir(du.HOME + '/.daf')
+		setups = [i for i in setups if not i.endswith('.py')]
+
+		text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New setup name')
+		
+		if result:
+			if text in setups:
+				msgbox = QtWidgets.QMessageBox()
+				msgbox_text = 'Setup {} already exists, \ndo you want to overwrite it?'.format(text)
+				ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+
+				if ret == QtWidgets.QMessageBox.Ok:
+					os.system('daf.setup -n {}'.format(text))
+
+			else:
+				os.system('daf.setup -n {}'.format(text))
+
+		self.setup_scroll_area()
+	
+	def save_setup(self):
+
+		os.system('daf.setup -s')
+
+	def copy_setup(self):
+
+		setups = os.listdir(du.HOME + '/.daf')
+		setups = [i for i in setups if not i.endswith('.py')]
+
+		text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'Copy setup name')
+		
+		if result:
+			if text in setups:
+				msgbox = QtWidgets.QMessageBox()
+				msgbox_text = 'Setup {} already exists, \ndo you want to overwrite it?'.format(text)
+				ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+
+				if ret == QtWidgets.QMessageBox.Ok:
+					os.system('daf.setup -s {}'.format(text))
+
+			else:
+				os.system('daf.setup -s {}'.format(text))
+
+		self.setup_scroll_area()
+
+	def remove_setup(self):
+
+		item = self.ui.listWidget_setup.currentItem()
+		value = item.text()
+
+		os.system("daf.setup -r {}".format(value))
 
 
+		self.setup_scroll_area()
 
 	def update(self):
-
 		
 		self.refresh_pydm_motors()
 
@@ -370,7 +433,6 @@ class MyDisplay(Display):
 		self.ui.label_del_bounds_ll.setText(str(data_to_update['bounds']["del"][0]))
 		self.ui.label_del_bounds_hl.setText(str(data_to_update['bounds']["del"][1]))
 
-		self.setup_scroll_area()
 
 
 

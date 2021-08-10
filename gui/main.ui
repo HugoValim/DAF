@@ -48,7 +48,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -2898,6 +2898,9 @@
               <property name="horizontalSpacing">
                <number>40</number>
               </property>
+              <property name="verticalSpacing">
+               <number>10</number>
+              </property>
               <item row="1" column="2">
                <widget class="PyDMLabel" name="PyDMLabel_del_rbv">
                 <property name="maximumSize">
@@ -3931,7 +3934,7 @@
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>300</height>
+           <height>500</height>
           </size>
          </property>
          <property name="frameShape">
@@ -3954,7 +3957,7 @@
 }</string>
             </property>
             <property name="text">
-             <string>Setups</string>
+             <string>Setup</string>
             </property>
            </widget>
           </item>
@@ -3978,6 +3981,8 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -3993,6 +3998,8 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -4007,17 +4014,45 @@
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_3">
+            <item row="2" column="1">
+             <widget class="QPushButton" name="pushButton_update_desc">
+              <property name="text">
+               <string>Update description</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
+             <widget class="QPushButton" name="pushButton_new_setup">
+              <property name="text">
+               <string>New setup</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
              <widget class="QPushButton" name="pushButton_change_setup">
               <property name="text">
-               <string>Change setup</string>
+               <string>Checkout setup</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="pushButton_remove_setup">
+              <property name="text">
+               <string>Remove setup</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QPushButton" name="pushButton_update_desc">
+             <widget class="QPushButton" name="pushButton_save_setup">
               <property name="text">
-               <string>Update description</string>
+               <string>Save setup</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="pushButton_copy_setup">
+              <property name="text">
+               <string>Copy setup</string>
               </property>
              </widget>
             </item>
@@ -4025,6 +4060,19 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

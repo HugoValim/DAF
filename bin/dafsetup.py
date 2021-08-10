@@ -37,7 +37,7 @@ if args.new:
 
     dict_args = du.read()
     setup_now = dict_args['setup']
-    os.system('cp "{}/../resources/default" "$HOME/.daf/{}"'.format(os.path.dirname(os.path.realpath(__file__)), args.new))
+    os.system('cat {}/../resources/default > $HOME/.daf/{}'.format(os.path.dirname(os.path.realpath(__file__)), args.new))
 
 
 if args.checkout:
@@ -46,7 +46,7 @@ if args.checkout:
     setup_now = dict_args['setup']
 
 
-    os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
+    # os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
     os.system("cat /home/ABTLUS/hugo.campos/.daf/{} > .Experiment".format(args.checkout))
 
     dict_args = du.read()
