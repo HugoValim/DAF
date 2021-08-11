@@ -164,11 +164,6 @@ class MyDisplay(Display):
 		
 
 	def set_mode(self):
-
-		os.system("daf.mode {} ".format(str(self.ui.mode_input.text())))
-		# subprocess.Popen("daf.mode {} ".format(str(self.ui.mode_input.text())), shell = True)
-		
-
 		daf_cons_args = ''
 		for i in self.cons_table:
 			if not '=' in i[0]:
@@ -182,9 +177,11 @@ class MyDisplay(Display):
 
 				daf_cons_args += arg 
 				
-
 		# subprocess.Popen("daf.cons {} ".format(daf_cons_args), shell = True)
 		os.system("daf.cons {} ".format(daf_cons_args))
+		
+		os.system("daf.mode {} ".format(str(self.ui.mode_input.text())))
+		# subprocess.Popen("daf.mode {} ".format(str(self.ui.mode_input.text())), shell = True)
 
 			
 
