@@ -10,6 +10,7 @@ import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
+from qtpy.QtWidgets import QApplication
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 
@@ -73,7 +74,7 @@ class Worker(QObject):
 		    exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
 
 		else: 
-		    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+			exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
     
 		# exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
 		exp.set_U(U)
@@ -119,6 +120,7 @@ class MyDisplay(Display):
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
+		self.app = QApplication.instance()
 		self.set_main_screen_title()
 		self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
 		self.setup_scroll_area()
@@ -128,7 +130,6 @@ class MyDisplay(Display):
 		self.ui.pushButton_save_setup.clicked.connect(self.save_setup)
 		self.ui.pushButton_copy_setup.clicked.connect(self.copy_setup)
 		self.ui.pushButton_change_setup.clicked.connect(self.change_setup)
-		self.ui.pushButton_change_setup.clicked.connect(self.set_main_screen_title)
 		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
 		self.ui.pushButton_remove_setup.clicked.connect(self.remove_setup)
 		
@@ -146,12 +147,13 @@ class MyDisplay(Display):
 			return data
 
 	def set_main_screen_title(self):
-
 		dict_ = du.read()
-		# print(dict_['setup'])
+		# self.app.main_window.setWindowTitle('teste')
 		self.ui.setWindowTitle('DAF GUI ({})'.format(dict_['setup']))
 
-
+	def update_main_screen_title(self):
+		dict_ = du.read()
+		self.app.main_window.setWindowTitle('DAF GUI ({}) - PyDM'.format(dict_['setup']))
 
 	def runLongTask(self):
 		# Step 2: Create a QThread object
@@ -267,6 +269,7 @@ class MyDisplay(Display):
 		value = item.text()
 
 		os.system("daf.setup -c {}".format(value))
+		self.update_main_screen_title()
 
 	def update_setup_description(self):
 

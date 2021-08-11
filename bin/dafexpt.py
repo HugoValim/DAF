@@ -29,15 +29,7 @@ parser.add_argument('-e', '--Energy', metavar='en', type=float, help='Sets the e
 args = parser.parse_args()
 dic = vars(args)
 
-
 dict_args = du.read()
-
-for j,k in dic.items():
-    if j in dict_args and k is not None:
-        dict_args[j] = k
-du.write(dict_args)
-
-
 if args.Lattice_parameters:
     dict_args['lparam_a'] = args.Lattice_parameters[0]
     dict_args['lparam_b'] = args.Lattice_parameters[1]
@@ -45,13 +37,15 @@ if args.Lattice_parameters:
     dict_args['lparam_alpha'] = args.Lattice_parameters[3]
     dict_args['lparam_beta'] = args.Lattice_parameters[4]
     dict_args['lparam_gama'] = args.Lattice_parameters[5]
-    du.write(dict_args)
 
-
-dict_args = du.read()
+for j,k in dic.items():
+    if j in dict_args and k is not None:
+        dict_args[j] = k
+du.write(dict_args)
 
 if args.Material:
 
+    dict_args = du.read()
     U = np.array(dict_args['U_mat'])
     mode = [int(i) for i in dict_args['Mode']]
 
@@ -60,9 +54,9 @@ if args.Material:
     if args.Material in dict_args['user_samples'].keys():
         exp.set_material(args.Material, *dict_args['user_samples'][args.Material])
     
-    else: 
+    else:
         exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-    
+        
     exp.set_exp_conditions(en = dict_args['Energy'])
     exp.set_U(U)
     UB = exp.calcUB()
