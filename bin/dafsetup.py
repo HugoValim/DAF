@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create setups that helps the user to save their previou configuration configuration"""
+"""Create setups that helps user to save their previous configuration"""
 
 import argparse as ap
 import sys

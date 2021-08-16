@@ -18,7 +18,10 @@ INSTALL_DIR="/usr/local/scripts/daf"
 git clone https://gitlab.cnpem.br/BEAMLINES/EMA/CLI/daf "$INSTALL_DIR"
 
 mkdir -p /etc/profile.d
+mkdir -p $HOME/.daf
+mkdir -p $HOME/.config/scan-utils
 cat > /etc/profile.d/daf.sh << EOF
 export PATH="\$PATH:$INSTALL_DIR/command_line"
+export PYTHONPATH="$PYTHONPATH:/usr/local/scripts/daf/bin"
 EOF
 
