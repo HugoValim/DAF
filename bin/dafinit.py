@@ -23,7 +23,8 @@ dic = vars(args)
 
 os.system('cp -nr "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
 os.system('cp -n "$HOME/.daf/default" .Experiment')
-
+os.system('cp -n /etc/xdg/scan-utils/config.yml "$HOME/.config/scan-utils/config.yml"')
+os.system('cp -n /etc/xdg/scan-utils/config.default.yml "$HOME/.config/scan-utils/config.config.daf_default.yml"')
 log = sys.argv.pop(0).split('command_line/')[1]
 
 for i in sys.argv:
