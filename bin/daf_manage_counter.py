@@ -65,15 +65,16 @@ if args.new:
 
 
 if isinstance (args.list_counters, list):
-    try:
-        data = read_yaml(filepath = path + prefix + args.list_counters[0] + sufix)
-        for counter in data:
-            print(counter)
+    print(path + prefix + args.list_counters[0] + sufix)
+    # try:
+    data = read_yaml(filepath = path + prefix + args.list_counters[0] + sufix)
+    for counter in data:
+        print(counter)
         
-    except:
-        data = read_yaml()
-        for counter in data['counters'].keys():
-            print(counter)
+    # except:
+    #     data = read_yaml()
+    #     for counter in data['counters'].keys():
+    #         print(counter)
 
 if args.add_counter:
     file_name = args.add_counter[0]
@@ -82,8 +83,12 @@ if args.add_counter:
     if isinstance(data, list):
         for counter in args.add_counter[1:]:
             data.append(counter)
-
-    write_yaml(data, filepath = path + prefix + file_name + sufix)
+        write_yaml(data, filepath = path + prefix + file_name + sufix)
+    else:
+        list_ = []
+        for counter in args.add_counter[1:]:
+            list_.append(counter)
+        write_yaml(list_, filepath = path + prefix + file_name + sufix)
 
 if args.remove_counter:
     file_name = args.remove_counter[0]
@@ -98,18 +103,6 @@ if args.remove_counter:
 if args.remove:
     for file in args.remove:
         os.system('rm -f "$HOME/.config/scan-utils/{}"'.format(prefix + file + sufix))
-
-if args.description:
-
-    if args.description[0] != ".":
-        dict_args = du.read(filepath= du.HOME + '/.daf/' + args.description[0])
-        dict_args['setup_desc'] = args.description[1]
-        du.write(dict_args, filepath = du.HOME + '/.daf/' + args.description[0])
-
-    else:
-        dict_args = du.read()
-        dict_args['setup_desc'] = args.description
-        du.write(dict_args)
 
 log = sys.argv.pop(0).split('command_line/')[1]
 

@@ -123,7 +123,15 @@ class MyDisplay(Display):
 		self.app = QApplication.instance()
 		self.set_main_screen_title()
 		self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
+		self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
+		self.set_scan_prop()
 		self.setup_scroll_area()
+	
+		# Scan buttons
+		self.ui.pushButton_set_config_counter.clicked.connect(self.set_counter)
+		self.ui.pushButton_new_counter_file.clicked.connect(self.new_counter_file)
+		self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
+		self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
 
 		# Setup buttons
 		self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -133,8 +141,6 @@ class MyDisplay(Display):
 		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
 		self.ui.pushButton_remove_setup.clicked.connect(self.remove_setup)
 		
-		self.print_tree('oi')
-
 		self.runLongTask()
 	
 
@@ -237,6 +243,12 @@ class MyDisplay(Display):
 		self.ui.PyDMByteIndicator_mu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
 		self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
+	def extract(self, q_list_widget):
+	    lst = q_list_widget
+	    items = []
+	    for x in range(lst.count()):
+	        items.append(lst.item(x).text())
+	    return items 
 
 	def setup_scroll_area(self):
 
@@ -284,7 +296,6 @@ class MyDisplay(Display):
 
 
 	def new_setup_dialog(self):
-
 		setups = os.listdir(du.HOME + '/.daf')
 		setups = [i for i in setups if not i.endswith('.py')]
 
@@ -339,8 +350,15 @@ class MyDisplay(Display):
 
 		self.setup_scroll_area()
 
+	def set_scan_prop(self):
+		""" Set properties showed in scan tab in daf.gui """
+		dict_ = du.read()
+		self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+		self.counters_scroll_area()
+		self.set_counter_combobox_options()
+
 	def fill_item(self, item, value):
-		item.setExpanded(True)
+		item.setExpanded(False)
 		if type(value) is dict:
 			for key, val in sorted(value.items()):
 				child = QTreeWidgetItem()
@@ -370,16 +388,83 @@ class MyDisplay(Display):
 		self.fill_item(widget.invisibleRootItem(), value)
 
 	def print_tree(self, file):
-		d = { 'key1': 'value1', 
-		'key2': 'value2',
-		'key3': [1,2,3, { 1: 3, 7 : 9}],
-		'key4': object(),
-		'key5': { 'another key1' : 'another value1',
-		'another key2' : 'another value2'} }
+		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
+			config_data = yaml.safe_load(conf)
+		with open(file) as file:
+			data = yaml.safe_load(file)
+		if data != None:
+			full_output = {}
+			for counter in data:
+				full_output[counter] = config_data['counters'][counter]
+		else:
+			full_output = '\n \n \n \n \n' + ' '*50 + ' Add counters to this file'
+		self.fill_widget(self.ui.treeWidget_counters, full_output)
 
-		self.fill_widget(self.ui.treeWidget_counters, d)
+	def counters_scroll_area(self):
+		configs = os.listdir(du.HOME + '/.config/scan-utils')
+		configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+		configs.sort()
+		self.ui.listWidget_counters.clear()
+		self.ui.listWidget_counters.addItems(configs)
 
+	def on_counters_list_widget_change(self):		
+		prefix = 'config.'
+		sufix = '.yml'
+		configs = os.listdir(du.HOME + '/.config/scan-utils')
+		configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		if value in configs:
+				self.print_tree(du.HOME + '/.config/scan-utils/' + prefix + value + sufix)
 
+	def set_counter(self):
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		os.system("daf.mc -s {}".format(value))
+		dict_ = du.read()
+		self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+
+	def new_counter_file(self):
+		configs = os.listdir(du.HOME + '/.config/scan-utils')
+		configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+		text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New config file name')
+		
+		if result:
+			if text in configs:
+				msgbox = QtWidgets.QMessageBox()
+				msgbox_text = 'Config file {} already exists, \ndo you want to overwrite it?'.format(text)
+				ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+
+				if ret == QtWidgets.QMessageBox.Ok:
+					os.system('daf.mc -n {}'.format(text))
+
+			else:
+				os.system('daf.mc -n {}'.format(text))
+		self.counters_scroll_area()
+
+	def remove_counter_file(self):
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		os.system("daf.mc -r {}".format(value))
+		self.counters_scroll_area()
+
+	def set_counter_combobox_options(self):
+		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
+			config_data = yaml.safe_load(conf)
+		counters = config_data['counters'].keys()
+		self.ui.comboBox_counters.addItems(counters)
+
+	def add_counter(self):
+		counter = self.ui.comboBox_counters.currentText()
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		os.system("daf.mc -a {} {}".format(value, counter))
+		list_ = self.extract(self.ui.listWidget_counters)
+		if list_.index(value) == 0 and len(list_) > 1:
+			self.ui.listWidget_counters.setCurrentRow(1)
+		else:
+			self.ui.listWidget_counters.setCurrentRow(0)
+		self.ui.listWidget_counters.setCurrentRow(list_.index(value))
 
 	def update(self):
 		
