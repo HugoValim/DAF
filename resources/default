@@ -79,6 +79,7 @@ cons_naz: 0.0
 cons_omega: 0.0
 cons_psi: 0.0
 cons_qaz: 0.0
+default_counters: ''
 hkl: ''
 hkl1: ''
 hkl2: ''

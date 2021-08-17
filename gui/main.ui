@@ -996,7 +996,7 @@
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
+                  <width>200</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -1011,6 +1011,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1028,6 +1029,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1038,6 +1040,18 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label_19">
+                <property name="minimumSize">
+                 <size>
+                  <width>350</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>400</width>
+                  <height>32</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -1062,6 +1076,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1079,6 +1094,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1096,6 +1112,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1113,6 +1130,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1130,6 +1148,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1147,6 +1166,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1164,6 +1184,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1197,6 +1218,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1214,6 +1236,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1231,6 +1254,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1248,6 +1272,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1265,6 +1290,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1275,6 +1301,18 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label_59">
+                <property name="minimumSize">
+                 <size>
+                  <width>350</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>400</width>
+                  <height>32</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -1299,6 +1337,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1316,6 +1355,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1333,6 +1373,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1351,7 +1392,7 @@
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
+                  <width>200</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -1366,6 +1407,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
+	max-width: 200px;
     font-size: 10px;
 }</string>
                 </property>
@@ -3907,7 +3949,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QListWidget" name="listWidget">
+             <widget class="QListWidget" name="listWidget_counters">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3917,44 +3959,74 @@
              </widget>
             </item>
             <item>
-             <widget class="QListView" name="listView">
+             <widget class="QTreeWidget" name="treeWidget_counters">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
              </widget>
             </item>
            </layout>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_14">
-            <item row="1" column="0">
-             <widget class="QPushButton" name="pushButton_2">
+            <item row="2" column="0">
+             <widget class="QPushButton" name="pushButton_add_counter">
               <property name="text">
                <string>Add Counter</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QPushButton" name="pushButton">
+            <item row="1" column="0">
+             <widget class="QPushButton" name="pushButton_new_counter_file">
               <property name="text">
-               <string>New Counter File</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QPushButton" name="pushButton_3">
-              <property name="text">
-               <string>Remove Counter File</string>
+               <string>New File</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QPushButton" name="pushButton_4">
+             <widget class="QPushButton" name="pushButton_remove_counter_file">
+              <property name="text">
+               <string>Remove File</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPushButton" name="pushButton_remove_counter">
               <property name="text">
                <string>Remove Counter</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_54">
+                <property name="text">
+                 <string>Current config:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_current_config">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="pushButton_set_config_counter">
+              <property name="text">
+               <string>Set Config</string>
               </property>
              </widget>
             </item>

@@ -70,7 +70,8 @@ data = {'Mode': '2052',
 		'macro_file' : 'macro',
 		'setup' : 'default',
 		'user_samples' : {},
-		'setup_desc' : ''
+		'setup_desc' : '',
+		'default_counters' : ''
 
 
 

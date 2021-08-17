@@ -10,7 +10,7 @@ import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
-from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication, QTreeWidgetItem
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 
@@ -133,6 +133,8 @@ class MyDisplay(Display):
 		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
 		self.ui.pushButton_remove_setup.clicked.connect(self.remove_setup)
 		
+		self.print_tree('oi')
+
 		self.runLongTask()
 	
 
@@ -336,6 +338,48 @@ class MyDisplay(Display):
 
 
 		self.setup_scroll_area()
+
+	def fill_item(self, item, value):
+		item.setExpanded(True)
+		if type(value) is dict:
+			for key, val in sorted(value.items()):
+				child = QTreeWidgetItem()
+				child.setText(0, str(key))
+				item.addChild(child)
+				self.fill_item(child, val)
+		elif type(value) is list:
+			for val in value:
+				child = QTreeWidgetItem()
+				item.addChild(child)
+				if type(val) is dict:      
+					child.setText(0, '[dict]')
+					self.fill_item(child, val)
+				elif type(val) is list:
+					child.setText(0, '[list]')
+					self.fill_item(child, val)
+				else:
+					child.setText(0, str(val))              
+					child.setExpanded(True)
+		else:
+			child = QTreeWidgetItem()
+			child.setText(0, str(value))
+			item.addChild(child)
+
+	def fill_widget(self, widget, value):
+		widget.clear()
+		self.fill_item(widget.invisibleRootItem(), value)
+
+	def print_tree(self, file):
+		d = { 'key1': 'value1', 
+		'key2': 'value2',
+		'key3': [1,2,3, { 1: 3, 7 : 9}],
+		'key4': object(),
+		'key5': { 'another key1' : 'another value1',
+		'another key2' : 'another value2'} }
+
+		self.fill_widget(self.ui.treeWidget_counters, d)
+
+
 
 	def update(self):
 		
