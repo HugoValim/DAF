@@ -132,6 +132,7 @@ class MyDisplay(Display):
 		self.ui.pushButton_new_counter_file.clicked.connect(self.new_counter_file)
 		self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
 		self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
+		self.ui.pushButton_remove_counter.clicked.connect(self.remove_counter)
 
 		# Setup buttons
 		self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -141,8 +142,34 @@ class MyDisplay(Display):
 		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
 		self.ui.pushButton_remove_setup.clicked.connect(self.remove_setup)
 		
+		self.set_tab_order()
 		self.runLongTask()
 	
+	def set_tab_order(self):
+
+		# Scan
+		self.setTabOrder(self.ui.tab_scan, self.ui.lineEdit)
+		self.setTabOrder(self.ui.lineEdit, self.ui.lineEdit_2)
+		self.setTabOrder(self.ui.lineEdit_2, self.ui.listWidget_counters)
+		self.setTabOrder(self.ui.listWidget_counters, self.ui.treeWidget_counters)
+		self.setTabOrder(self.ui.treeWidget_counters, self.ui.pushButton_new_counter_file)
+		self.setTabOrder(self.ui.pushButton_new_counter_file, self.ui.pushButton_remove_counter_file)
+		self.setTabOrder(self.ui.pushButton_remove_counter_file, self.ui.pushButton_set_config_counter)
+		self.setTabOrder(self.ui.pushButton_set_config_counter, self.ui.comboBox_counters)
+		self.setTabOrder(self.ui.comboBox_counters, self.ui.pushButton_add_counter)
+		self.setTabOrder(self.ui.pushButton_add_counter, self.ui.pushButton_remove_counter)
+		self.setTabOrder(self.ui.pushButton_remove_counter, self.ui.lineEdit_hi)
+		self.setTabOrder(self.ui.lineEdit_hi, self.ui.lineEdit_hf)
+		self.setTabOrder(self.ui.lineEdit_hf, self.ui.lineEdit_ki)
+		self.setTabOrder(self.ui.lineEdit_ki, self.ui.lineEdit_kf)
+		self.setTabOrder(self.ui.lineEdit_kf, self.ui.lineEdit_li)
+		self.setTabOrder(self.ui.lineEdit_li, self.ui.lineEdit_lf)
+		self.setTabOrder(self.ui.lineEdit_lf, self.ui.lineEdit_step)
+		self.setTabOrder(self.ui.lineEdit_step, self.ui.lineEdit_time)
+		self.setTabOrder(self.ui.lineEdit_time, self.ui.comboBox_xlabel)
+		self.setTabOrder(self.ui.comboBox_xlabel, self.ui.lineEdit_csv_filename)
+		self.setTabOrder(self.ui.lineEdit_csv_filename, self.ui.checkBox_only_csv)
+		self.setTabOrder(self.ui.checkBox_only_csv, self.ui.tab_scan)
 
 	def load_data(self):
 		# Extract the directory of this file...
@@ -341,7 +368,6 @@ class MyDisplay(Display):
 		self.setup_scroll_area()
 
 	def remove_setup(self):
-
 		item = self.ui.listWidget_setup.currentItem()
 		value = item.text()
 
@@ -453,6 +479,8 @@ class MyDisplay(Display):
 			config_data = yaml.safe_load(conf)
 		counters = config_data['counters'].keys()
 		self.ui.comboBox_counters.addItems(counters)
+		self.ui.comboBox_counters.setEditable(True)
+		self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
 	def add_counter(self):
 		counter = self.ui.comboBox_counters.currentText()
@@ -465,6 +493,22 @@ class MyDisplay(Display):
 		else:
 			self.ui.listWidget_counters.setCurrentRow(0)
 		self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+
+	def remove_counter(self):
+		getSelected = self.ui.treeWidget_counters.selectedItems()
+		if getSelected:
+			baseNode = getSelected[0]
+			counter = baseNode.text(0)
+			item = self.ui.listWidget_counters.currentItem()
+			value = item.text()
+			os.system("daf.mc -rc {} {}".format(value, counter))
+			list_ = self.extract(self.ui.listWidget_counters)
+			if list_.index(value) == 0 and len(list_) > 1:
+				self.ui.listWidget_counters.setCurrentRow(1)
+			else:
+				self.ui.listWidget_counters.setCurrentRow(0)
+			self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+
 
 	def update(self):
 		

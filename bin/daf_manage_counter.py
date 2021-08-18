@@ -14,10 +14,11 @@ import dafutilities as du
 
 epi = '''
 Eg:
-   daf.mc -c default
-   daf.mc -s new_setup
-   daf.mc -s
+   daf.mc -s default
+   daf.mc -n new_config
+   daf.mc -lc new_config
    daf.mc -r my_setup1 my_setup2 my_setup3
+   daf.mc -rc new_config counter1 
     '''
 
 
