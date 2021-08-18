@@ -133,6 +133,7 @@ class MyDisplay(Display):
 		self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
 		self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
 		self.ui.pushButton_remove_counter.clicked.connect(self.remove_counter)
+		self.ui.pushButton_start_scan.clicked.connect(self.start_scan)
 
 		# Setup buttons
 		self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -169,7 +170,8 @@ class MyDisplay(Display):
 		self.setTabOrder(self.ui.lineEdit_time, self.ui.comboBox_xlabel)
 		self.setTabOrder(self.ui.comboBox_xlabel, self.ui.lineEdit_csv_filename)
 		self.setTabOrder(self.ui.lineEdit_csv_filename, self.ui.checkBox_only_csv)
-		self.setTabOrder(self.ui.checkBox_only_csv, self.ui.tab_scan)
+		self.setTabOrder(self.ui.checkBox_only_csv, self.ui.pushButton_start_scan)
+		self.setTabOrder(self.ui.pushButton_start_scan, self.ui.tab_scan)
 
 	def load_data(self):
 		# Extract the directory of this file...
@@ -382,6 +384,7 @@ class MyDisplay(Display):
 		self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
 		self.counters_scroll_area()
 		self.set_counter_combobox_options()
+		self.set_xlabel_combobox_options()
 
 	def fill_item(self, item, value):
 		item.setExpanded(False)
@@ -449,6 +452,7 @@ class MyDisplay(Display):
 		os.system("daf.mc -s {}".format(value))
 		dict_ = du.read()
 		self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+		self.set_xlabel_combobox_options()
 
 	def new_counter_file(self):
 		configs = os.listdir(du.HOME + '/.config/scan-utils')
@@ -473,6 +477,7 @@ class MyDisplay(Display):
 		value = item.text()
 		os.system("daf.mc -r {}".format(value))
 		self.counters_scroll_area()
+		self.set_xlabel_combobox_options()
 
 	def set_counter_combobox_options(self):
 		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
@@ -481,6 +486,16 @@ class MyDisplay(Display):
 		self.ui.comboBox_counters.addItems(counters)
 		self.ui.comboBox_counters.setEditable(True)
 		self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
+
+	def set_xlabel_combobox_options(self):
+		dict_args = du.read()
+		with open(du.HOME + '/.config/scan-utils/' + dict_args['default_counters']) as conf:
+			counters_now = yaml.safe_load(conf)
+		counters_now.insert(0, 'default')
+		self.ui.comboBox_xlabel.clear()
+		self.ui.comboBox_xlabel.addItems(counters_now)
+		self.ui.comboBox_xlabel.setEditable(True)
+		self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
 	def add_counter(self):
 		counter = self.ui.comboBox_counters.currentText()
@@ -493,6 +508,7 @@ class MyDisplay(Display):
 		else:
 			self.ui.listWidget_counters.setCurrentRow(0)
 		self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+		self.set_xlabel_combobox_options()
 
 	def remove_counter(self):
 		getSelected = self.ui.treeWidget_counters.selectedItems()
@@ -508,7 +524,26 @@ class MyDisplay(Display):
 			else:
 				self.ui.listWidget_counters.setCurrentRow(0)
 			self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+		self.set_xlabel_combobox_options()
 
+	def start_scan(self):
+		output = self.ui.lineEdit_2.text()
+		hi = self.ui.lineEdit_hi.text()
+		hf = self.ui.lineEdit_hf.text()
+		ki = self.ui.lineEdit_ki.text()
+		kf = self.ui.lineEdit_kf.text()
+		li = self.ui.lineEdit_li.text()
+		lf = self.ui.lineEdit_lf.text()
+		hi = self.ui.lineEdit_hi.text()
+		step = self.ui.lineEdit_step.text()
+		time = self.ui.lineEdit_time.text()
+		xlabel = self.ui.comboBox_xlabel.currentText()
+		csv_fn = self.ui.lineEdit_csv_filename.text()
+
+		if self.ui.checkBox_only_csv.isChecked():
+			os.system('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c'.format(hi, ki, li, hf, kf, lf, step, time, csv_fn, xlabel, output))
+		else:
+			os.system('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {}'.format(hi, ki, li, hf, kf, lf, step, time, csv_fn, xlabel, output))
 
 	def update(self):
 		

@@ -1004,6 +1004,12 @@
               </item>
               <item row="0" column="2">
                <widget class="QLabel" name="label_u01">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1011,7 +1017,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1022,6 +1028,12 @@
               </item>
               <item row="1" column="1">
                <widget class="QLabel" name="label_u10">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1029,7 +1041,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1069,6 +1081,12 @@
               </item>
               <item row="0" column="3">
                <widget class="QLabel" name="label_u02">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1076,7 +1094,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1087,6 +1105,12 @@
               </item>
               <item row="1" column="3">
                <widget class="QLabel" name="label_u12">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1094,7 +1118,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1105,6 +1129,12 @@
               </item>
               <item row="2" column="3">
                <widget class="QLabel" name="label_u22">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1112,7 +1142,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1123,6 +1153,12 @@
               </item>
               <item row="0" column="1">
                <widget class="QLabel" name="label_u00">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1130,7 +1166,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1141,6 +1177,12 @@
               </item>
               <item row="2" column="1">
                <widget class="QLabel" name="label_u20">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1148,7 +1190,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1159,6 +1201,12 @@
               </item>
               <item row="1" column="2">
                <widget class="QLabel" name="label_u11">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1166,7 +1214,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1177,6 +1225,12 @@
               </item>
               <item row="2" column="2">
                <widget class="QLabel" name="label_u21">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1184,7 +1238,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1211,6 +1265,12 @@
               </property>
               <item row="0" column="1">
                <widget class="QLabel" name="label_ub00">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1218,7 +1278,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1229,6 +1289,12 @@
               </item>
               <item row="2" column="1">
                <widget class="QLabel" name="label_ub20">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1236,7 +1302,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1247,6 +1313,12 @@
               </item>
               <item row="0" column="3">
                <widget class="QLabel" name="label_ub02">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1254,7 +1326,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1265,6 +1337,12 @@
               </item>
               <item row="1" column="2">
                <widget class="QLabel" name="label_ub11">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1272,7 +1350,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1283,6 +1361,12 @@
               </item>
               <item row="1" column="3">
                <widget class="QLabel" name="label_ub12">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1290,7 +1374,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1330,6 +1414,12 @@
               </item>
               <item row="2" column="3">
                <widget class="QLabel" name="label_ub22">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1337,7 +1427,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1348,6 +1438,12 @@
               </item>
               <item row="2" column="2">
                <widget class="QLabel" name="label_ub21">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1355,7 +1451,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1366,6 +1462,12 @@
               </item>
               <item row="1" column="1">
                <widget class="QLabel" name="label_ub10">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1373,7 +1475,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -1400,6 +1502,12 @@
               </item>
               <item row="0" column="2">
                <widget class="QLabel" name="label_ub01">
+                <property name="maximumSize">
+                 <size>
+                  <width>2002</width>
+                  <height>37</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"> QLabel {
     qproperty-alignment: AlignCenter;
@@ -1407,7 +1515,7 @@
     padding: 5px 0px;
     color: rgb(0, 0, 0);
     max-height: 25px;
-	max-width: 200px;
+	max-width: 2000px;
     font-size: 10px;
 }</string>
                 </property>
@@ -4327,6 +4435,26 @@
             </item>
             <item>
              <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_start_scan">
+              <property name="text">
+               <string>Start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_15">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>

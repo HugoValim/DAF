@@ -78,11 +78,7 @@ motors = [i for i in data.keys()]
 with open('.points.yaml', 'w') as stream:
     yaml.dump(data, stream, allow_unicode=False)
 
-print(args.configuration)
-# os.system("scan -c default -o test --motor huber_mu huber_eta huber_chi huber_phi huber_nu huber_del -s --calculated-points .points.yaml --xlabel huber_eta --time 1")
-# os.system("scan -c hugo -o {} --motor {} {} {} {} {} {} -s --calculated-points .points.yaml --xlabel {} --time 0.01 2>/dev/null".format(args.file_name, motors[0], motors[1], motors[2], motors[3], motors[4], motors[5], motors[1]))
-
-args = {'configuration': args.configuration, 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
+args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
 'output': args.output, 'sync': True, 'snake': False, 'motor': ['debug1', 'debug2', 'debug3', 'debug4', 'debug5', 'debug6'], 'xlabel': args.xlabel, 
 'prescan': 'ls', 'postscan': 'pwd', 'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': time, 'filename': '.points.yaml'}
