@@ -1354,24 +1354,48 @@ class Control(object):
             return [self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del, self.ttB1, self.tB1, self.alphain, self.qaz, self.naz, self.taupseudo, self.psipseudo, self.betaout, self.omega, "{0:.2e}".format(self.qerror)], [self.fcsv(self.Mu), self.fcsv(self.Eta), self.fcsv(self.Chi), self.fcsv(self.Phi), self.fcsv(self.Nu), self.fcsv(self.Del), self.fcsv(self.ttB1), self.fcsv(self.tB1), self.fcsv(self.alphain), self.fcsv(self.qaz), self.fcsv(self.naz), self.fcsv(self.taupseudo), self.fcsv(self.psipseudo), self.fcsv(self.betaout), self.fcsv(self.omega), self.fcsv(self.hkl_calc[0]), self.fcsv(self.hkl_calc[1]), self.fcsv(self.hkl_calc[2]), "{0:.2e}".format(self.qerror)]
 
 
-    def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ',', startvalues = [0,0,0,0,0,0]):
+    def scan(self, hkli, hklf, points, diflimit = 0.1, write = False, name = 'testscan.txt', sep = ',', startvalues = [0,0,0,0,0,0], gui=False):
 
         scl = Control.scan_generator(self, hkli, hklf, points+1)
         angslist = list()
-        for i in tqdm(scl):
-            self.hkl = i
-            a,b = self.motor_angles(self, sv=startvalues)
-            angslist.append(b)
-            teste = np.abs(np.array(a[:6]) - np.array(startvalues))
+        
+        if gui:
+            for i in scl:
+                self.hkl = i
+                a,b = self.motor_angles(self, sv=startvalues)
+                angslist.append(b)
+                teste = np.abs(np.array(a[:6]) - np.array(startvalues))
 
 
-            if np.max(teste) > diflimit and diflimit != 0:
-                raise ("Exceded max limit of angles variation")
+                if np.max(teste) > diflimit and diflimit != 0:
+                    raise ("Exceded max limit of angles variation")
 
-            if float(a[-1]) > 1e-5:
-                raise('qerror is too big, process failed')
+                if float(a[-1]) > 1e-5:
+                    raise('qerror is too big, process failed')
 
-            startvalues = a[:6]
+                startvalues = a[:6]
+
+                pd.DataFrame([b], columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2theta', 'theta', 'alpha', 'qaz', 'naz',
+                'tau', 'psi', 'beta', 'omega','H', 'K', 'L', 'Error']).to_csv('.my_scan_counter.csv', mode='a', header=False)
+        
+        else:
+            for i in tqdm(scl):
+                self.hkl = i
+                a,b = self.motor_angles(self, sv=startvalues)
+                angslist.append(b)
+                teste = np.abs(np.array(a[:6]) - np.array(startvalues))
+
+
+                if np.max(teste) > diflimit and diflimit != 0:
+                    raise ("Exceded max limit of angles variation")
+
+                if float(a[-1]) > 1e-5:
+                    raise('qerror is too big, process failed')
+
+                startvalues = a[:6]
+
+                pd.DataFrame([b], columns=['Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del', '2theta', 'theta', 'alpha', 'qaz', 'naz',
+                'tau', 'psi', 'beta', 'omega','H', 'K', 'L', 'Error']).to_csv('.my_scan_counter.csv', mode='a', header=False)
 
 
         self.isscan = True

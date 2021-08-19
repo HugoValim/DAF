@@ -47,12 +47,11 @@ debug_dict = {'debug1' : {'type' : 'real', 'pv' : 'SOL:S:m1', 'readback' : 'SOL:
 }
 
 config = read_yaml()
-
+config['misc']['output-prefix'] = ''
+config['misc']['storage-path'] = ''
 for key in debug_dict:
 	config['motors'][key] = debug_dict[key]
-
 write_yaml(config)
-
 
 log = sys.argv.pop(0).split('command_line/')[1]
 
@@ -60,6 +59,3 @@ for i in sys.argv:
     log += ' ' + i
 
 os.system("echo {} >> Log".format(log))
-
-# if dict_args['macro_flag']:
-#    os.system("echo {} >> {}".format(log, dict_args['macro_name']))

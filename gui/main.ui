@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>707</height>
+    <height>714</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -307,9 +307,7 @@
                <string>Set Mode</string>
               </property>
               <property name="filenames" stdset="0">
-               <stringlist>
-                <string>set_mode.py</string>
-               </stringlist>
+               <stringlist/>
               </property>
               <property name="openInNewWindow" stdset="0">
                <bool>true</bool>
@@ -4448,8 +4446,23 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_start_scan">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="text">
                <string>Start</string>
+              </property>
+              <property name="shortcut">
+               <string>Return</string>
+              </property>
+              <property name="autoRepeatDelay">
+               <number>300</number>
+              </property>
+              <property name="autoRepeatInterval">
+               <number>100</number>
               </property>
              </widget>
             </item>
@@ -4467,6 +4480,13 @@
              </spacer>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progressBar">
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

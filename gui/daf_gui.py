@@ -3,6 +3,7 @@ from pydm import Display
 
 import sys
 import os
+import subprocess
 import daf
 import numpy as np
 import dafutilities as du
@@ -128,6 +129,7 @@ class MyDisplay(Display):
 		self.setup_scroll_area()
 	
 		# Scan buttons
+		self.scan = False
 		self.ui.pushButton_set_config_counter.clicked.connect(self.set_counter)
 		self.ui.pushButton_new_counter_file.clicked.connect(self.new_counter_file)
 		self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
@@ -491,7 +493,7 @@ class MyDisplay(Display):
 		dict_args = du.read()
 		with open(du.HOME + '/.config/scan-utils/' + dict_args['default_counters']) as conf:
 			counters_now = yaml.safe_load(conf)
-		counters_now.insert(0, 'default')
+		counters_now.insert(0, 'points')
 		self.ui.comboBox_xlabel.clear()
 		self.ui.comboBox_xlabel.addItems(counters_now)
 		self.ui.comboBox_xlabel.setEditable(True)
@@ -527,28 +529,48 @@ class MyDisplay(Display):
 		self.set_xlabel_combobox_options()
 
 	def start_scan(self):
-		output = self.ui.lineEdit_2.text()
-		hi = self.ui.lineEdit_hi.text()
-		hf = self.ui.lineEdit_hf.text()
-		ki = self.ui.lineEdit_ki.text()
-		kf = self.ui.lineEdit_kf.text()
-		li = self.ui.lineEdit_li.text()
-		lf = self.ui.lineEdit_lf.text()
-		hi = self.ui.lineEdit_hi.text()
-		step = self.ui.lineEdit_step.text()
-		time = self.ui.lineEdit_time.text()
-		xlabel = self.ui.comboBox_xlabel.currentText()
-		csv_fn = self.ui.lineEdit_csv_filename.text()
+		if not self.scan:
+			self.scan = True
+			prefix = self.ui.lineEdit.text()
+			file = self.ui.lineEdit_2.text()
+			output = prefix + '/' + file
+			hi = self.ui.lineEdit_hi.text()
+			hf = self.ui.lineEdit_hf.text()
+			ki = self.ui.lineEdit_ki.text()
+			kf = self.ui.lineEdit_kf.text()
+			li = self.ui.lineEdit_li.text()
+			lf = self.ui.lineEdit_lf.text()
+			hi = self.ui.lineEdit_hi.text()
+			self.step = self.ui.lineEdit_step.text()
+			time = self.ui.lineEdit_time.text()
+			xlabel = self.ui.comboBox_xlabel.currentText()
+			csv_fn = self.ui.lineEdit_csv_filename.text()
+			
+			os.system('echo "" > .my_scan_counter.csv')
+			if self.ui.checkBox_only_csv.isChecked():
+				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
+					shell = True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
+			else:
+				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {}'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
+					shell=True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
 
-		if self.ui.checkBox_only_csv.isChecked():
-			os.system('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c'.format(hi, ki, li, hf, kf, lf, step, time, csv_fn, xlabel, output))
-		else:
-			os.system('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {}'.format(hi, ki, li, hf, kf, lf, step, time, csv_fn, xlabel, output))
+	def progress_bar(self, fname = '.my_scan_counter.csv'):
+		if self.scan:
+			with open(fname) as f:
+				lines = 0
+				for i in f:
+					lines += 1
+			percentage =  ((lines-1) / (int(self.step) + 1))*100
+			self.ui.progressBar.setValue(int(percentage))
+			if (percentage) >= 100:
+				self.scan = False
+				self.ui.progressBar.setValue(0)
+
 
 	def update(self):
 		
 		self.refresh_pydm_motors()
-
+		self.progress_bar()
 		lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
 
 		# Update HKL pos labels
