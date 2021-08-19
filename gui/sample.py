@@ -4,6 +4,7 @@ import os
 import subprocess
 import dafutilities as du
 import xrayutilities as xu
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 class MyDisplay(Display):
 
@@ -19,13 +20,22 @@ class MyDisplay(Display):
 		self.ui.pushButton_set.clicked.connect(self.set_sample)
 		self.ui.pushButton_set.clicked.connect(self.set_combobox_options)
 		self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
-
+		self.set_tab_order()
 
 	def ui_filename(self):
 		return 'sample.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+	def set_tab_order(self):
+		self.setTabOrder(self.ui.lineEdit_samp_name, self.ui.lineEdit_a)
+		self.setTabOrder(self.ui.lineEdit_a, self.ui.lineEdit_b)
+		self.setTabOrder(self.ui.lineEdit_b, self.ui.lineEdit_c)
+		self.setTabOrder(self.ui.lineEdit_c, self.ui.lineEdit_alpha)
+		self.setTabOrder(self.ui.lineEdit_alpha, self.ui.lineEdit_beta)
+		self.setTabOrder(self.ui.lineEdit_beta, self.ui.lineEdit_gamma)
+		self.setTabOrder(self.ui.lineEdit_gamma, self.ui.pushButton_set)
 
 	def get_experiment_file(self):
 
@@ -84,6 +94,8 @@ class MyDisplay(Display):
 
 		items.sort()
 		self.ui.comboBox_materials.addItems(items)
+		self.ui.comboBox_materials.setEditable(True)
+		self.ui.comboBox_materials.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 		
 	def checkbox_state_changed(self):
 

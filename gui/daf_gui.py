@@ -175,6 +175,16 @@ class MyDisplay(Display):
 		self.setTabOrder(self.ui.checkBox_only_csv, self.ui.pushButton_start_scan)
 		self.setTabOrder(self.ui.pushButton_start_scan, self.ui.tab_scan)
 
+		# Setup
+		self.setTabOrder(self.ui.tab_setup, self.ui.listWidget_setup)
+		self.setTabOrder(self.ui.listWidget_setup, self.ui.pushButton_new_setup)
+		self.setTabOrder(self.ui.pushButton_new_setup, self.ui.pushButton_save_setup)
+		self.setTabOrder(self.ui.pushButton_save_setup, self.ui.pushButton_copy_setup)
+		self.setTabOrder(self.ui.pushButton_copy_setup, self.ui.pushButton_remove_setup)
+		self.setTabOrder(self.ui.pushButton_remove_setup, self.ui.pushButton_change_setup)
+		self.setTabOrder(self.ui.pushButton_change_setup, self.ui.pushButton_update_desc)
+		self.setTabOrder(self.ui.pushButton_update_desc, self.ui.tab_setup)
+
 	def load_data(self):
 		# Extract the directory of this file...
 		base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -548,10 +558,10 @@ class MyDisplay(Display):
 			
 			os.system('echo "" > .my_scan_counter.csv')
 			if self.ui.checkBox_only_csv.isChecked():
-				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
+				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
 					shell = True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
 			else:
-				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {}'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
+				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
 					shell=True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
 
 	def progress_bar(self, fname = '.my_scan_counter.csv'):

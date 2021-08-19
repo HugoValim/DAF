@@ -23,8 +23,12 @@ dic = vars(args)
 
 os.system('cp -nr "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
 os.system('cp -n "$HOME/.daf/default" .Experiment')
+
+if not os.path.isdir(du.HOME + '/.config/scan-utils'):
+	os.system('mkdir $HOME/.config/scan-utils')
 os.system('cp -n /etc/xdg/scan-utils/config.yml "$HOME/.config/scan-utils/config.yml"')
 os.system('cp -n /etc/xdg/scan-utils/config.default.yml "$HOME/.config/scan-utils/config.config.daf_default.yml"')
+
 
 path = du.HOME + '/.config/scan-utils/'
 DEFAULT = path + 'config.yml'
@@ -46,16 +50,17 @@ debug_dict = {'debug1' : {'type' : 'real', 'pv' : 'SOL:S:m1', 'readback' : 'SOL:
               'debug6' : {'type' : 'real', 'pv' : 'SOL:S:m6', 'readback' : 'SOL:S:m6.RBV', 'description' : 'debug motor', 'tags' : 'debug'}
 }
 
+daf_default = ['debug-counter', 'ringcurrent']
+
 config = read_yaml()
 config['misc']['output-prefix'] = ''
 config['misc']['storage-path'] = ''
 for key in debug_dict:
 	config['motors'][key] = debug_dict[key]
 write_yaml(config)
+write_yaml(daf_default, path + 'config.daf_default.yml')
 
 log = sys.argv.pop(0).split('command_line/')[1]
-
 for i in sys.argv:
     log += ' ' + i
-
 os.system("echo {} >> Log".format(log))

@@ -4,18 +4,23 @@ import os
 import subprocess
 import dafutilities as du
 import xrayutilities as xu
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 class MyDisplay(Display):
 
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
-		
 		self.ui.pushButton_reset.clicked.connect(self.set_labels)
 		self.ui.pushButton_set.clicked.connect(self.set_new_exp_conditions)
 		self.ui.comboBox_sor.currentTextChanged.connect(self.on_combobox_sor_changed)
 		self.ui.comboBox_e_wl.currentTextChanged.connect(self.on_combobox_en_changed)
 
+		# Change comboBox format
+		self.ui.comboBox_sor.setEditable(True)
+		self.ui.comboBox_sor.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
+		self.ui.comboBox_e_wl.setEditable(True)
+		self.ui.comboBox_e_wl.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
 		self.set_labels()
 		self.set_combobox_sor_default()
@@ -47,7 +52,7 @@ class MyDisplay(Display):
 
 		if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
 			
-			self.ui.lineEdit_e_wl.setText(dict_args['Energy'])
+			self.ui.lineEdit_e_wl.setText(str(dict_args['Energy']))
 		
 		elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
 			

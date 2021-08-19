@@ -55,7 +55,7 @@
 }</string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -307,7 +307,9 @@
                <string>Set Mode</string>
               </property>
               <property name="filenames" stdset="0">
-               <stringlist/>
+               <stringlist>
+                <string>set_mode.py</string>
+               </stringlist>
               </property>
               <property name="openInNewWindow" stdset="0">
                <bool>true</bool>
@@ -4493,7 +4495,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tab_setup">
       <attribute name="title">
        <string>Setup</string>
       </attribute>
