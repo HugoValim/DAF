@@ -3,6 +3,7 @@ from pydm import Display
 
 import sys
 import os
+import subprocess
 import daf
 import numpy as np
 import dafutilities as du
@@ -10,7 +11,7 @@ import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
-from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication, QTreeWidgetItem
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 
@@ -123,7 +124,18 @@ class MyDisplay(Display):
 		self.app = QApplication.instance()
 		self.set_main_screen_title()
 		self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
+		self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
+		self.set_scan_prop()
 		self.setup_scroll_area()
+	
+		# Scan buttons
+		self.scan = False
+		self.ui.pushButton_set_config_counter.clicked.connect(self.set_counter)
+		self.ui.pushButton_new_counter_file.clicked.connect(self.new_counter_file)
+		self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
+		self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
+		self.ui.pushButton_remove_counter.clicked.connect(self.remove_counter)
+		self.ui.pushButton_start_scan.clicked.connect(self.start_scan)
 
 		# Setup buttons
 		self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -133,8 +145,45 @@ class MyDisplay(Display):
 		self.ui.pushButton_update_desc.clicked.connect(self.update_setup_description)
 		self.ui.pushButton_remove_setup.clicked.connect(self.remove_setup)
 		
+		self.set_tab_order()
 		self.runLongTask()
 	
+	def set_tab_order(self):
+
+		# Scan
+		self.setTabOrder(self.ui.tab_scan, self.ui.lineEdit)
+		self.setTabOrder(self.ui.lineEdit, self.ui.lineEdit_2)
+		self.setTabOrder(self.ui.lineEdit_2, self.ui.listWidget_counters)
+		self.setTabOrder(self.ui.listWidget_counters, self.ui.treeWidget_counters)
+		self.setTabOrder(self.ui.treeWidget_counters, self.ui.pushButton_new_counter_file)
+		self.setTabOrder(self.ui.pushButton_new_counter_file, self.ui.pushButton_remove_counter_file)
+		self.setTabOrder(self.ui.pushButton_remove_counter_file, self.ui.pushButton_set_config_counter)
+		self.setTabOrder(self.ui.pushButton_set_config_counter, self.ui.comboBox_counters)
+		self.setTabOrder(self.ui.comboBox_counters, self.ui.pushButton_add_counter)
+		self.setTabOrder(self.ui.pushButton_add_counter, self.ui.pushButton_remove_counter)
+		self.setTabOrder(self.ui.pushButton_remove_counter, self.ui.lineEdit_hi)
+		self.setTabOrder(self.ui.lineEdit_hi, self.ui.lineEdit_hf)
+		self.setTabOrder(self.ui.lineEdit_hf, self.ui.lineEdit_ki)
+		self.setTabOrder(self.ui.lineEdit_ki, self.ui.lineEdit_kf)
+		self.setTabOrder(self.ui.lineEdit_kf, self.ui.lineEdit_li)
+		self.setTabOrder(self.ui.lineEdit_li, self.ui.lineEdit_lf)
+		self.setTabOrder(self.ui.lineEdit_lf, self.ui.lineEdit_step)
+		self.setTabOrder(self.ui.lineEdit_step, self.ui.lineEdit_time)
+		self.setTabOrder(self.ui.lineEdit_time, self.ui.comboBox_xlabel)
+		self.setTabOrder(self.ui.comboBox_xlabel, self.ui.lineEdit_csv_filename)
+		self.setTabOrder(self.ui.lineEdit_csv_filename, self.ui.checkBox_only_csv)
+		self.setTabOrder(self.ui.checkBox_only_csv, self.ui.pushButton_start_scan)
+		self.setTabOrder(self.ui.pushButton_start_scan, self.ui.tab_scan)
+
+		# Setup
+		self.setTabOrder(self.ui.tab_setup, self.ui.listWidget_setup)
+		self.setTabOrder(self.ui.listWidget_setup, self.ui.pushButton_new_setup)
+		self.setTabOrder(self.ui.pushButton_new_setup, self.ui.pushButton_save_setup)
+		self.setTabOrder(self.ui.pushButton_save_setup, self.ui.pushButton_copy_setup)
+		self.setTabOrder(self.ui.pushButton_copy_setup, self.ui.pushButton_remove_setup)
+		self.setTabOrder(self.ui.pushButton_remove_setup, self.ui.pushButton_change_setup)
+		self.setTabOrder(self.ui.pushButton_change_setup, self.ui.pushButton_update_desc)
+		self.setTabOrder(self.ui.pushButton_update_desc, self.ui.tab_setup)
 
 	def load_data(self):
 		# Extract the directory of this file...
@@ -235,6 +284,12 @@ class MyDisplay(Display):
 		self.ui.PyDMByteIndicator_mu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
 		self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
+	def extract(self, q_list_widget):
+	    lst = q_list_widget
+	    items = []
+	    for x in range(lst.count()):
+	        items.append(lst.item(x).text())
+	    return items 
 
 	def setup_scroll_area(self):
 
@@ -282,7 +337,6 @@ class MyDisplay(Display):
 
 
 	def new_setup_dialog(self):
-
 		setups = os.listdir(du.HOME + '/.daf')
 		setups = [i for i in setups if not i.endswith('.py')]
 
@@ -328,7 +382,6 @@ class MyDisplay(Display):
 		self.setup_scroll_area()
 
 	def remove_setup(self):
-
 		item = self.ui.listWidget_setup.currentItem()
 		value = item.text()
 
@@ -337,10 +390,197 @@ class MyDisplay(Display):
 
 		self.setup_scroll_area()
 
+	def set_scan_prop(self):
+		""" Set properties showed in scan tab in daf.gui """
+		dict_ = du.read()
+		self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+		self.counters_scroll_area()
+		self.set_counter_combobox_options()
+		self.set_xlabel_combobox_options()
+
+	def fill_item(self, item, value):
+		item.setExpanded(False)
+		if type(value) is dict:
+			for key, val in sorted(value.items()):
+				child = QTreeWidgetItem()
+				child.setText(0, str(key))
+				item.addChild(child)
+				self.fill_item(child, val)
+		elif type(value) is list:
+			for val in value:
+				child = QTreeWidgetItem()
+				item.addChild(child)
+				if type(val) is dict:      
+					child.setText(0, '[dict]')
+					self.fill_item(child, val)
+				elif type(val) is list:
+					child.setText(0, '[list]')
+					self.fill_item(child, val)
+				else:
+					child.setText(0, str(val))              
+					child.setExpanded(True)
+		else:
+			child = QTreeWidgetItem()
+			child.setText(0, str(value))
+			item.addChild(child)
+
+	def fill_widget(self, widget, value):
+		widget.clear()
+		self.fill_item(widget.invisibleRootItem(), value)
+
+	def print_tree(self, file):
+		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
+			config_data = yaml.safe_load(conf)
+		with open(file) as file:
+			data = yaml.safe_load(file)
+		if data != None:
+			full_output = {}
+			for counter in data:
+				full_output[counter] = config_data['counters'][counter]
+		else:
+			full_output = '\n \n \n \n \n' + ' '*50 + ' Add counters to this file'
+		self.fill_widget(self.ui.treeWidget_counters, full_output)
+
+	def counters_scroll_area(self):
+		configs = os.listdir(du.HOME + '/.config/scan-utils')
+		configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+		configs.sort()
+		self.ui.listWidget_counters.clear()
+		self.ui.listWidget_counters.addItems(configs)
+
+	def on_counters_list_widget_change(self):		
+		prefix = 'config.'
+		sufix = '.yml'
+		configs = os.listdir(du.HOME + '/.config/scan-utils')
+		configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		if value in configs:
+				self.print_tree(du.HOME + '/.config/scan-utils/' + prefix + value + sufix)
+
+	def set_counter(self):
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		os.system("daf.mc -s {}".format(value))
+		dict_ = du.read()
+		self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+		self.set_xlabel_combobox_options()
+
+	def new_counter_file(self):
+		configs = os.listdir(du.HOME + '/.config/scan-utils')
+		configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+		text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New config file name')
+		
+		if result:
+			if text in configs:
+				msgbox = QtWidgets.QMessageBox()
+				msgbox_text = 'Config file {} already exists, \ndo you want to overwrite it?'.format(text)
+				ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+
+				if ret == QtWidgets.QMessageBox.Ok:
+					os.system('daf.mc -n {}'.format(text))
+
+			else:
+				os.system('daf.mc -n {}'.format(text))
+		self.counters_scroll_area()
+
+	def remove_counter_file(self):
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		os.system("daf.mc -r {}".format(value))
+		self.counters_scroll_area()
+		self.set_xlabel_combobox_options()
+
+	def set_counter_combobox_options(self):
+		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
+			config_data = yaml.safe_load(conf)
+		counters = config_data['counters'].keys()
+		self.ui.comboBox_counters.addItems(counters)
+		self.ui.comboBox_counters.setEditable(True)
+		self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
+
+	def set_xlabel_combobox_options(self):
+		dict_args = du.read()
+		with open(du.HOME + '/.config/scan-utils/' + dict_args['default_counters']) as conf:
+			counters_now = yaml.safe_load(conf)
+		counters_now.insert(0, 'points')
+		self.ui.comboBox_xlabel.clear()
+		self.ui.comboBox_xlabel.addItems(counters_now)
+		self.ui.comboBox_xlabel.setEditable(True)
+		self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
+
+	def add_counter(self):
+		counter = self.ui.comboBox_counters.currentText()
+		item = self.ui.listWidget_counters.currentItem()
+		value = item.text()
+		os.system("daf.mc -a {} {}".format(value, counter))
+		list_ = self.extract(self.ui.listWidget_counters)
+		if list_.index(value) == 0 and len(list_) > 1:
+			self.ui.listWidget_counters.setCurrentRow(1)
+		else:
+			self.ui.listWidget_counters.setCurrentRow(0)
+		self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+		self.set_xlabel_combobox_options()
+
+	def remove_counter(self):
+		getSelected = self.ui.treeWidget_counters.selectedItems()
+		if getSelected:
+			baseNode = getSelected[0]
+			counter = baseNode.text(0)
+			item = self.ui.listWidget_counters.currentItem()
+			value = item.text()
+			os.system("daf.mc -rc {} {}".format(value, counter))
+			list_ = self.extract(self.ui.listWidget_counters)
+			if list_.index(value) == 0 and len(list_) > 1:
+				self.ui.listWidget_counters.setCurrentRow(1)
+			else:
+				self.ui.listWidget_counters.setCurrentRow(0)
+			self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+		self.set_xlabel_combobox_options()
+
+	def start_scan(self):
+		if not self.scan:
+			self.scan = True
+			prefix = self.ui.lineEdit.text()
+			file = self.ui.lineEdit_2.text()
+			output = prefix + '/' + file
+			hi = self.ui.lineEdit_hi.text()
+			hf = self.ui.lineEdit_hf.text()
+			ki = self.ui.lineEdit_ki.text()
+			kf = self.ui.lineEdit_kf.text()
+			li = self.ui.lineEdit_li.text()
+			lf = self.ui.lineEdit_lf.text()
+			hi = self.ui.lineEdit_hi.text()
+			self.step = self.ui.lineEdit_step.text()
+			time = self.ui.lineEdit_time.text()
+			xlabel = self.ui.comboBox_xlabel.currentText()
+			csv_fn = self.ui.lineEdit_csv_filename.text()
+			
+			os.system('echo "" > .my_scan_counter.csv')
+			if self.ui.checkBox_only_csv.isChecked():
+				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
+					shell = True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
+			else:
+				subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
+					shell=True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
+
+	def progress_bar(self, fname = '.my_scan_counter.csv'):
+		if self.scan:
+			with open(fname) as f:
+				lines = 0
+				for i in f:
+					lines += 1
+			percentage =  ((lines-1) / (int(self.step) + 1))*100
+			self.ui.progressBar.setValue(int(percentage))
+			if (percentage) >= 100:
+				self.scan = False
+				self.ui.progressBar.setValue(0)
+
+
 	def update(self):
 		
 		self.refresh_pydm_motors()
-
+		self.progress_bar()
 		lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
 
 		# Update HKL pos labels

@@ -9,12 +9,19 @@ class MyDisplay(Display):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
 		self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
+		self.set_tab_order()
 # 
 	def ui_filename(self):
 		return 'goto_hkl.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+	def set_tab_order(self):
+		self.setTabOrder(self.ui.H_set, self.ui.K_set)
+		self.setTabOrder(self.ui.K_set, self.ui.L_set)
+		self.setTabOrder(self.ui.L_set, self.ui.calc_HKL)
+		self.setTabOrder(self.ui.calc_HKL, self.ui.H_set)
 
 	def move_in_hkl(self):
 

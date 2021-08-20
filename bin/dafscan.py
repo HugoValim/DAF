@@ -28,10 +28,11 @@ parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the s
 parser.add_argument('-sep', '--separator', metavar='', type=str, help='Chose the separator of scan file, comma is default')
 parser.add_argument('-m', '--Max_diff', metavar='', type=float, help='Max difference of angles variation (default is 0.1), if 0 is given no verification will be done')
 parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
-parser.add_argument('-p', '--perform', action='store_true', help='Perform the scan')
+parser.add_argument('-g', '--gui', action='store_true', help='Flag to tell if gui is calling this function')
+parser.add_argument('-c', '--calc', action='store_true', help='Only calc the scan without perform it')
 parser.add_argument('-t', '--time', metavar='', type=float, help='Acquisition time in each point in seconds. Default is 0.01s')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
-parser.add_argument('-c', '--configuration', type=str, help='choose a counter configuration file', default='default')
+parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -83,7 +84,9 @@ startvalues = [dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["P
 
 dict_args['Max_diff'] = 0 ###ver esse role aqui
 
-scan_points = exp.scan(args.hkli, args.hklf, int(args.points), diflimit = dict_args['Max_diff'], name = dict_args['scan_name'], write=True, sep=dict_args['separator'], startvalues = startvalues)
+scan_points = exp.scan(args.hkli, args.hklf, int(args.points), diflimit = dict_args['Max_diff'], 
+                        name = dict_args['scan_name'], write=True, sep=dict_args['separator'], 
+                        startvalues = startvalues, gui=args.gui)
 
 if args.verbose:
     pd.options.display.max_rows = None
@@ -98,14 +101,14 @@ exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs
 exp_dict['hklnow'] = [float(i) for i in exp_dict['hklnow']]
 
 
-if args.perform:
+if not args.calc:
 
     if args.time == None:
         time = 0.01
     else:
         time = args.time
 
-    os.system("daf.rfscan -f {} -t {} -x {} -c {}".format(dict_args['scan_name'], time, args.xlabel, args.configuration))
+    os.system("daf.rfscan -f {} -t {} -x {} -o {}".format(dict_args['scan_name'], time, args.xlabel, args.output))
 
 
 

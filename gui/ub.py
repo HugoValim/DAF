@@ -5,6 +5,7 @@ import subprocess
 import dafutilities as du
 import xrayutilities as xu
 import numpy as np
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 class MyDisplay(Display):
 
@@ -20,25 +21,89 @@ class MyDisplay(Display):
 		
 		self.pushButton_2_ref_calc.clicked.connect(self.calc_from_2_ref)
 		self.pushButton_3_ref_calc.clicked.connect(self.calc_from_3_ref)
-		self.ui.frame_sample.setEnabled(False)
-		self.ui.checkBox_sample.stateChanged.connect(self.sample_checkbox_state_changed)
 		self.pushButton_sample.clicked.connect(self.set_new_sample)
 
+		# Umat
 		self.update_u_labels()
 		self.ui.pushButton_reset_u.clicked.connect(self.update_u_labels)
 		self.ui.pushButton_set_u.clicked.connect(self.set_u_matrix)
 
-
+		# UBmat
 		self.update_ub_labels()
 		self.ui.pushButton_reset_ub.clicked.connect(self.update_ub_labels)
 		self.ui.pushButton_set_ub.clicked.connect(self.set_ub_matrix)
 
+		self.set_tab_order()
 
 	def ui_filename(self):
 		return 'ub.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+	def set_tab_order(self):
+
+		# Calc UB
+		self.setTabOrder(self.ui.tab_calcUB, self.ui.lineEdit_h_1)
+		self.setTabOrder(self.ui.lineEdit_h_1, self.ui.lineEdit_k_1)
+		self.setTabOrder(self.ui.lineEdit_k_1, self.ui.lineEdit_l_1)
+		self.setTabOrder(self.ui.lineEdit_l_1, self.ui.lineEdit_mu_1)
+		self.setTabOrder(self.ui.lineEdit_mu_1, self.ui.lineEdit_eta_1)
+		self.setTabOrder(self.ui.lineEdit_eta_1, self.ui.lineEdit_chi_1)
+		self.setTabOrder(self.ui.lineEdit_chi_1, self.ui.lineEdit_phi_1)
+		self.setTabOrder(self.ui.lineEdit_phi_1, self.ui.lineEdit_nu_1)
+		self.setTabOrder(self.ui.lineEdit_nu_1, self.ui.lineEdit_del_1)
+		self.setTabOrder(self.ui.lineEdit_del_1, self.ui.lineEdit_h_2)
+		self.setTabOrder(self.ui.lineEdit_h_2, self.ui.lineEdit_k_2)
+		self.setTabOrder(self.ui.lineEdit_k_2, self.ui.lineEdit_l_2)
+		self.setTabOrder(self.ui.lineEdit_l_2, self.ui.lineEdit_mu_2)
+		self.setTabOrder(self.ui.lineEdit_mu_2, self.ui.lineEdit_eta_2)
+		self.setTabOrder(self.ui.lineEdit_eta_2, self.ui.lineEdit_chi_2)
+		self.setTabOrder(self.ui.lineEdit_chi_2, self.ui.lineEdit_phi_2)
+		self.setTabOrder(self.ui.lineEdit_phi_2, self.ui.lineEdit_nu_2)
+		self.setTabOrder(self.ui.lineEdit_nu_2, self.ui.lineEdit_del_2)
+		self.setTabOrder(self.ui.lineEdit_del_2, self.ui.lineEdit_h_3)
+		self.setTabOrder(self.ui.lineEdit_h_3, self.ui.lineEdit_k_3)
+		self.setTabOrder(self.ui.lineEdit_k_3, self.ui.lineEdit_l_3)
+		self.setTabOrder(self.ui.lineEdit_l_3, self.ui.lineEdit_mu_3)
+		self.setTabOrder(self.ui.lineEdit_mu_3, self.ui.lineEdit_eta_3)
+		self.setTabOrder(self.ui.lineEdit_eta_3, self.ui.lineEdit_chi_3)
+		self.setTabOrder(self.ui.lineEdit_chi_3, self.ui.lineEdit_phi_3)
+		self.setTabOrder(self.ui.lineEdit_phi_3, self.ui.lineEdit_nu_3)
+		self.setTabOrder(self.ui.lineEdit_nu_3, self.ui.lineEdit_del_3)
+		self.setTabOrder(self.ui.lineEdit_del_3, self.ui.pushButton_refs_save)
+		self.setTabOrder(self.ui.pushButton_refs_save, self.ui.pushButton_refs_reset)
+		self.setTabOrder(self.ui.pushButton_refs_reset, self.ui.comboBox_2_ref)
+		self.setTabOrder(self.ui.comboBox_2_ref, self.ui.pushButton_2_ref_calc)
+		self.setTabOrder(self.ui.pushButton_2_ref_calc, self.ui.pushButton_3_ref_calc)
+		self.setTabOrder(self.ui.pushButton_3_ref_calc, self.ui.pushButton_sample)
+		self.setTabOrder(self.ui.pushButton_sample, self.ui.tab_calcUB)
+		
+		# Set U and UB
+		self.setTabOrder(self.ui.tab_UB, self.ui.lineEdit_u_00)
+		self.setTabOrder(self.ui.lineEdit_u_00, self.ui.lineEdit_u_01)
+		self.setTabOrder(self.ui.lineEdit_u_01, self.ui.lineEdit_u_02)
+		self.setTabOrder(self.ui.lineEdit_u_02, self.ui.lineEdit_u_10)
+		self.setTabOrder(self.ui.lineEdit_u_10, self.ui.lineEdit_u_11)
+		self.setTabOrder(self.ui.lineEdit_u_11, self.ui.lineEdit_u_12)
+		self.setTabOrder(self.ui.lineEdit_u_12, self.ui.lineEdit_u_20)
+		self.setTabOrder(self.ui.lineEdit_u_20, self.ui.lineEdit_u_21)
+		self.setTabOrder(self.ui.lineEdit_u_21, self.ui.lineEdit_u_22)
+		self.setTabOrder(self.ui.lineEdit_u_22, self.ui.pushButton_set_u)
+		self.setTabOrder(self.ui.pushButton_set_u, self.ui.pushButton_reset_u)
+		self.setTabOrder(self.ui.pushButton_reset_u, self.ui.lineEdit_ub_00)
+		self.setTabOrder(self.ui.lineEdit_ub_00, self.ui.lineEdit_ub_01)
+		self.setTabOrder(self.ui.lineEdit_ub_01, self.ui.lineEdit_ub_02)
+		self.setTabOrder(self.ui.lineEdit_ub_02, self.ui.lineEdit_ub_10)
+		self.setTabOrder(self.ui.lineEdit_ub_10, self.ui.lineEdit_ub_11)
+		self.setTabOrder(self.ui.lineEdit_ub_11, self.ui.lineEdit_ub_12)
+		self.setTabOrder(self.ui.lineEdit_ub_12, self.ui.lineEdit_ub_20)
+		self.setTabOrder(self.ui.lineEdit_ub_20, self.ui.lineEdit_ub_21)
+		self.setTabOrder(self.ui.lineEdit_ub_21, self.ui.lineEdit_ub_22)
+		self.setTabOrder(self.ui.lineEdit_ub_22, self.ui.pushButton_set_ub)
+		self.setTabOrder(self.ui.pushButton_set_ub, self.ui.pushButton_reset_ub)
+		self.setTabOrder(self.ui.pushButton_reset_ub, self.ui.tab_UB)
+
 
 	def get_experiment_file(self):
 
@@ -201,21 +266,22 @@ class MyDisplay(Display):
 		self.label_beta.setText(self.format_decimals(data['lparam_beta']))
 		self.label_gamma.setText(self.format_decimals(data['lparam_gama']))
 
-	def sample_checkbox_state_changed(self):
-
-		if self.ui.checkBox_sample.isChecked():
-		    self.ui.frame_sample.setEnabled(True)
-		else:
-		    self.ui.frame_sample.setEnabled(False)
-
 	def set_new_sample(self):
+		dict_args = du.read()
+		samples = dict_args['user_samples']
+		text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New config file name')
+		
+		if result:
+			if text in samples.keys():
+				msgbox = QtWidgets.QMessageBox()
+				msgbox_text = 'This samples name {} already exists, \ndo you want to overwrite it?'.format(text)
+				ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
 
-		samp_name = self.ui.lineEdit_sample.text()
+				if ret == QtWidgets.QMessageBox.Ok:
+					os.system("daf.expt -m {}".format(text))
 
-		os.system("daf.expt -m {}".format(samp_name))
-
-
-
+			else:
+				os.system("daf.expt -m {}".format(text))
 
 	def update_u_labels(self):
 
