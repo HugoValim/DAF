@@ -70,8 +70,8 @@ data = {'Mode': '2052',
 		'macro_file' : 'macro',
 		'setup' : 'default',
 		'user_samples' : {},
-		'setup_desc' : '',
-		'default_counters' : ''
+		'setup_desc' : 'This is DAF default setup',
+		'default_counters' : 'config.daf_default.yml'
 
 
 

@@ -24,12 +24,31 @@ class MyDisplay(Display):
 
 		self.set_labels()
 		self.set_combobox_sor_default()
+		self.set_tab_order()
 # 
 	def ui_filename(self):
 		return 'experiment.ui'
 
 	def ui_filepath(self):
 		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+	def set_tab_order(self):
+
+		self.setTabOrder(self.ui.lineEdit_sor, self.ui.comboBox_sor)
+		self.setTabOrder(self.ui.comboBox_sor, self.ui.lineEdit_e_wl)
+		self.setTabOrder(self.ui.lineEdit_e_wl, self.ui.comboBox_e_wl)
+		self.setTabOrder(self.ui.comboBox_e_wl, self.ui.lineEdit_i_1)
+		self.setTabOrder(self.ui.lineEdit_i_1, self.ui.lineEdit_i_2)
+		self.setTabOrder(self.ui.lineEdit_i_2, self.ui.lineEdit_i_3)
+		self.setTabOrder(self.ui.lineEdit_i_3, self.ui.lineEdit_n_1)
+		self.setTabOrder(self.ui.lineEdit_n_1, self.ui.lineEdit_n_2)
+		self.setTabOrder(self.ui.lineEdit_n_2, self.ui.lineEdit_n_3)
+		self.setTabOrder(self.ui.lineEdit_n_3, self.ui.lineEdit_r_1)
+		self.setTabOrder(self.ui.lineEdit_r_1, self.ui.lineEdit_r_2)
+		self.setTabOrder(self.ui.lineEdit_r_2, self.ui.lineEdit_r_3)
+		self.setTabOrder(self.ui.lineEdit_r_3, self.ui.pushButton_set)
+		self.setTabOrder(self.ui.pushButton_set, self.ui.pushButton_reset)
+		self.setTabOrder(self.ui.pushButton_reset, self.ui.lineEdit_sor)
 
 	def get_experiment_file(self):
 
@@ -48,17 +67,14 @@ class MyDisplay(Display):
 
 	def on_combobox_en_changed(self):
 
+		lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
 		dict_args = self.get_experiment_file()
-
 		if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
-			
-			self.ui.lineEdit_e_wl.setText(str(dict_args['Energy']))
-		
+			self.ui.lineEdit_e_wl.setText(str(lb(dict_args['Energy'])))
 		elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
-			
 			# lb = lambda x: "{:.5f}".format(float(x))
 			wl = xu.en2lam(dict_args['Energy'])
-			self.ui.lineEdit_e_wl.setText(str(wl))
+			self.ui.lineEdit_e_wl.setText(str(lb(wl)))
 
 	def set_labels(self):
 
