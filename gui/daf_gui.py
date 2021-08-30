@@ -429,7 +429,7 @@ class MyDisplay(Display):
 		self.fill_item(widget.invisibleRootItem(), value)
 
 	def print_tree(self, file):
-		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
+		with open('/etc/xdg/scan-utils/config.yml') as conf:
 			config_data = yaml.safe_load(conf)
 		with open(file) as file:
 			data = yaml.safe_load(file)
@@ -492,7 +492,7 @@ class MyDisplay(Display):
 		self.set_xlabel_combobox_options()
 
 	def set_counter_combobox_options(self):
-		with open(du.HOME + '/.config/scan-utils/config.yml') as conf:
+		with open('/etc/xdg/scan-utils/config.yml') as conf:
 			config_data = yaml.safe_load(conf)
 		counters = config_data['counters'].keys()
 		self.ui.comboBox_counters.addItems(counters)

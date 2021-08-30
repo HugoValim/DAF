@@ -1067,7 +1067,7 @@ class Control(object):
             return betaout - alphain
 
 
-    def motor_angles(self, *args, qvec = False, calc = True, **kwargs):
+    def motor_angles(self, *args, qvec = False, calc = True, max_err = 1e-5, **kwargs):
 
         self.isscan = False
 
@@ -1131,16 +1131,16 @@ class Control(object):
 
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
 
-                    if qerror > 1e-5:
+                    if qerror > max_err:
                             while True:
                                 self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
                                 self.start = (0,0,0,0,0,self.preangs[3])
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
+                                if qerror < max_err:
                                     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 0, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
+                                if qerror < max_err:
                                     break
                                 # self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.preangs[3]]
                                 # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
@@ -1148,15 +1148,15 @@ class Control(object):
                                 #     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
+                                if qerror < max_err:
                                     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
+                                if qerror < max_err:
                                     break
                                 self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]]
                                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                                if qerror < 1e-5:
+                                if qerror < max_err:
                                     break
                                 break
 
@@ -1164,20 +1164,20 @@ class Control(object):
             else:
 
                 ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat = self.U)
-                if qerror > 1e-5:
+                if qerror > max_err:
                     while True:
                         self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
                         self.start = (0,0,0,0,0,self.preangs[3])
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                        if qerror < 1e-5:
+                        if qerror < max_err:
                             break
                         self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 0, self.chute1[4], self.chute1[5]]
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                        if qerror < 1e-5:
+                        if qerror < max_err:
                             break
                         self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                        if qerror < 1e-5:
+                        if qerror < max_err:
                             break
                         # self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
                         # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
@@ -1185,11 +1185,11 @@ class Control(object):
                         #     break
                         self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]]
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                        if qerror < 1e-5:
+                        if qerror < max_err:
                             break
                         self.start = [self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]]
                         ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                        if qerror < 1e-5:
+                        if qerror < max_err:
                             break
                         break
 

@@ -70,16 +70,16 @@ del_points = [float(i) for i in scan_points["Del"]] # Get only the points relate
 # data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
 #         'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
 
-data = {'debug3':mu_points, 'debug5':eta_points, 'debug2':chi_points,
-        'debug1':phi_points, 'debug4':nu_points, 'debug6':del_points}
+data = {'DEBUGMOTOR3':mu_points, 'DEBUGMOTOR5':eta_points, 'DEBUGMOTOR2':chi_points,
+        'DEBUGMOTOR1':phi_points, 'DEBUGMOTOR4':nu_points, 'DEBUGMOTOR6':del_points}
 
-motors = [i for i in data.keys()]
-
+motors = [i for i in data.keys() if (np.array(data[i]).max() - np.array(data[i]).min() ) > 1e-3]
+print(motors)
 with open('.points.yaml', 'w') as stream:
     yaml.dump(data, stream, allow_unicode=False)
 
 args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
-'output': args.output, 'sync': True, 'snake': False, 'motor': ['debug1', 'debug2', 'debug3', 'debug4', 'debug5', 'debug6'], 'xlabel': args.xlabel, 
+'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': args.xlabel, 
 'prescan': 'ls', 'postscan': 'pwd', 'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': time, 'filename': '.points.yaml'}
 
