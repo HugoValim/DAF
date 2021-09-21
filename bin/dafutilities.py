@@ -11,7 +11,7 @@ import numpy as np
 HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
 PV_PREFIX = "EMA:B:PB18"
-PV_PREFIX = "SOL:S"
+# PV_PREFIX = "SOL:S"
 # PV_PREFIX = "IOC"
 
 

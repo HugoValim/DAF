@@ -127,6 +127,8 @@ class MyDisplay(Display):
 		self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
 		self.set_scan_prop()
 		self.setup_scroll_area()
+		self.ui.progressBar.hide()
+		self.ui.label_generating_points.hide()
 	
 		# Scan buttons
 		self.scan = False
@@ -500,12 +502,9 @@ class MyDisplay(Display):
 		self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
 	def set_xlabel_combobox_options(self):
-		dict_args = du.read()
-		with open(du.HOME + '/.config/scan-utils/' + dict_args['default_counters']) as conf:
-			counters_now = yaml.safe_load(conf)
-		counters_now.insert(0, 'points')
+		motors_now = ['points', 'huber_mu', 'huber_eta', 'huber_chi', 'huber_phi', 'huber_nu', 'huber_del']
 		self.ui.comboBox_xlabel.clear()
-		self.ui.comboBox_xlabel.addItems(counters_now)
+		self.ui.comboBox_xlabel.addItems(motors_now)
 		self.ui.comboBox_xlabel.setEditable(True)
 		self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
@@ -566,6 +565,8 @@ class MyDisplay(Display):
 
 	def progress_bar(self, fname = '.my_scan_counter.csv'):
 		if self.scan:
+			self.ui.progressBar.show()
+			self.ui.label_generating_points.show()
 			with open(fname) as f:
 				lines = 0
 				for i in f:
@@ -573,6 +574,8 @@ class MyDisplay(Display):
 			percentage =  ((lines-1) / (int(self.step) + 1))*100
 			self.ui.progressBar.setValue(int(percentage))
 			if (percentage) >= 100:
+				self.ui.progressBar.hide()
+				self.ui.label_generating_points.hide()
 				self.scan = False
 				self.ui.progressBar.setValue(0)
 
@@ -675,25 +678,3 @@ class MyDisplay(Display):
 
 		self.ui.label_del_bounds_ll.setText(str(data_to_update['bounds']["del"][0]))
 		self.ui.label_del_bounds_hl.setText(str(data_to_update['bounds']["del"][1]))
-
-
-
-
-
-
-		
-
-
-
-
-
-
-
-
-
-
-
-	    	
-
-
-

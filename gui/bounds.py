@@ -16,8 +16,9 @@ class MyDisplay(Display):
 
 	def __init__(self, parent=None, args=None, macros=None):
 		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
-
+		self.set_tab_order()
 		self.set_channels()
+
 	
 	def ui_filename(self):
 		return 'bounds.ui'
@@ -36,7 +37,19 @@ class MyDisplay(Display):
 			data = yaml.safe_load(file)
 			return data
 
-
+	def set_tab_order(self):
+		self.setTabOrder(self.ui.PyDMLineEdit_mu_llm, self.ui.PyDMLineEdit_mu_hlm)
+		self.setTabOrder(self.ui.PyDMLineEdit_mu_hlm, self.ui.PyDMLineEdit_eta_llm)
+		self.setTabOrder(self.ui.PyDMLineEdit_eta_llm, self.ui.PyDMLineEdit_eta_hlm)
+		self.setTabOrder(self.ui.PyDMLineEdit_eta_hlm, self.ui.PyDMLineEdit_chi_llm)
+		self.setTabOrder(self.ui.PyDMLineEdit_chi_llm, self.ui.PyDMLineEdit_chi_hlm)
+		self.setTabOrder(self.ui.PyDMLineEdit_chi_hlm, self.ui.PyDMLineEdit_phi_llm)
+		self.setTabOrder(self.ui.PyDMLineEdit_phi_llm, self.ui.PyDMLineEdit_phi_hlm)
+		self.setTabOrder(self.ui.PyDMLineEdit_phi_hlm, self.ui.PyDMLineEdit_nu_llm)
+		self.setTabOrder(self.ui.PyDMLineEdit_nu_llm, self.ui.PyDMLineEdit_nu_hlm)
+		self.setTabOrder(self.ui.PyDMLineEdit_nu_hlm, self.ui.PyDMLineEdit_del_llm)
+		self.setTabOrder(self.ui.PyDMLineEdit_del_llm, self.ui.PyDMLineEdit_del_hlm)
+		self.setTabOrder(self.ui.PyDMLineEdit_del_hlm, self.ui.PyDMLineEdit_mu_llm)
 
 	def set_channels(self):
 
