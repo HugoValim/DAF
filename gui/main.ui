@@ -55,7 +55,7 @@
 }</string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -238,12 +238,22 @@
             </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_mode1">
+              <property name="palette">
+               <palette>
+                <active/>
+                <inactive/>
+                <disabled/>
+               </palette>
+              </property>
               <property name="font">
                <font>
                 <pointsize>10</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
               </property>
               <property name="text">
                <string>TextLabel</string>
@@ -1061,7 +1071,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>400</width>
-                  <height>32</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -1394,7 +1404,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>400</width>
-                  <height>32</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -2347,7 +2357,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2376,7 +2386,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2405,7 +2415,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2434,7 +2444,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2463,7 +2473,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2492,7 +2502,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2521,7 +2531,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2550,7 +2560,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2579,7 +2589,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2608,7 +2618,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2637,7 +2647,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2672,7 +2682,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2701,7 +2711,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2730,7 +2740,7 @@
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>32</height>
+                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -2929,7 +2939,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>36</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -3052,7 +3062,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>36</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -3092,7 +3102,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>36</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -3181,7 +3191,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>36</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -3221,7 +3231,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>36</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
@@ -3548,7 +3558,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>36</height>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="font">
