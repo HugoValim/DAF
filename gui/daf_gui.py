@@ -237,7 +237,7 @@ QLabel {
                     style = qdarkstyle.load_stylesheet_pyqt5()
                     
                     style += label
-                    print(style)
+                    # print(style)
                     self.app.setStyleSheet(style)
                 else:
                     self.app.setStyleSheet('')
