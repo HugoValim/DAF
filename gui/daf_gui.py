@@ -10,8 +10,8 @@ import dafutilities as du
 import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
-from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
+from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction, QHeaderView, QTableWidgetItem
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 import qdarkstyle
@@ -123,10 +123,9 @@ class MyDisplay(Display):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         self.app = QApplication.instance()
-        # style = qdarkstyle.load_stylesheet_pyqt5()
-        # self.app.setStyleSheet(style)
         self.set_main_screen_title()
         self._createMenuBar()
+        self.default_theme()
         self.set_scan_prop()
         self.setup_scroll_area()
         self.ui.progressBar.hide()
@@ -211,36 +210,42 @@ class MyDisplay(Display):
 
         self.menu_bar.addMenu(self.option_menu)
         style_action = self.option_menu.addAction(QAction('Dark Theme', self.menu_bar, checkable=True))
-        for action in self.option_menu.actions():
-            if action.text() == 'Dark Theme':
-                # action.setChecked(True)
-                pass
-        # style_action.setShortcut("Ctrl+k")
     
+    def default_theme(self):
+        dict_args = du.read()
+        if dict_args['dark_mode']:
+            style = qdarkstyle.load_stylesheet_pyqt5()
+            self.tableWidget_U.setMaximumHeight(97)
+            self.tableWidget_UB.setMaximumHeight(97)
+            self.app.setStyleSheet(style)
+            for action in self.option_menu.actions():
+                if action.text() == 'Dark Theme':
+                    action.setChecked(True)
+        else:
+            self.tableWidget_U.setMaximumHeight(92)
+            self.tableWidget_UB.setMaximumHeight(92)
+            self.app.setStyleSheet('')
+            for action in self.option_menu.actions():
+                if action.text() == 'Dark Theme':
+                    action.setChecked(False)
 
     def style_sheet_handler(self):
-        label = """
-QLabel {
-  background-color: #19232D;
-  border: 0px solid #455364;
-  padding: 0px;
-  color: white;
-  selection-background-color: #346792;
-  selection-color: #E0E1E3;
-}"""
-
-
-
+        dict_args = du.read()
         for action in self.option_menu.actions():
             if action.text() == 'Dark Theme':
                 if action.isChecked():
                     style = qdarkstyle.load_stylesheet_pyqt5()
-                    
-                    style += label
-                    # print(style)
+                    self.tableWidget_U.setMaximumHeight(97)
+                    self.tableWidget_UB.setMaximumHeight(97)
                     self.app.setStyleSheet(style)
+                    dict_args['dark_mode'] = 1
+                    du.write(dict_args)
                 else:
+                    self.tableWidget_U.setMaximumHeight(92)
+                    self.tableWidget_UB.setMaximumHeight(92)
                     self.app.setStyleSheet('')
+                    dict_args['dark_mode'] = 0
+                    du.write(dict_args)
 
     def load_data(self):
         # Extract the directory of this file...
@@ -689,33 +694,26 @@ QLabel {
         self.ui.label_samp_gamma.setText(lb(str(data_to_update['samp_info'][6])))
         
 
-        #Update status Matrixes label
-
+        #Update status Matrixes
         #U
-        self.ui.label_u00.setText(str(data_to_update['U'][0][0]))
-        self.ui.label_u01.setText(str(data_to_update['U'][0][1]))
-        self.ui.label_u02.setText(str(data_to_update['U'][0][2]))
-        self.ui.label_u10.setText(str(data_to_update['U'][1][0]))
-        self.ui.label_u11.setText(str(data_to_update['U'][1][1]))
-        self.ui.label_u12.setText(str(data_to_update['U'][1][2]))
-        self.ui.label_u20.setText(str(data_to_update['U'][2][0]))
-        self.ui.label_u21.setText(str(data_to_update['U'][2][1]))
-        self.ui.label_u22.setText(str(data_to_update['U'][2][2]))
+        header_U = self.tableWidget_U.horizontalHeader()
+        for row in range(self.tableWidget_U.rowCount()):
+            for column in range(self.tableWidget_U.columnCount()):
+                item = QTableWidgetItem(str(data_to_update['U'][row][column]))
+                item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)  
+                self.tableWidget_U.setItem(row, column, item)
+            header_U.setResizeMode(row, QHeaderView.Stretch)
 
         #UB
-        self.ui.label_ub00.setText(str(data_to_update['UB'][0][0]))
-        self.ui.label_ub01.setText(str(data_to_update['UB'][0][1]))
-        self.ui.label_ub02.setText(str(data_to_update['UB'][0][2]))
-        self.ui.label_ub10.setText(str(data_to_update['UB'][1][0]))
-        self.ui.label_ub11.setText(str(data_to_update['UB'][1][1]))
-        self.ui.label_ub12.setText(str(data_to_update['UB'][1][2]))
-        self.ui.label_ub20.setText(str(data_to_update['UB'][2][0]))
-        self.ui.label_ub21.setText(str(data_to_update['UB'][2][1]))
-        self.ui.label_ub22.setText(str(data_to_update['UB'][2][2]))
-
+        header_UB = self.tableWidget_UB.horizontalHeader()
+        for row in range(self.tableWidget_UB.rowCount()):
+            for column in range(self.tableWidget_UB.columnCount()):
+                item = QTableWidgetItem(str(data_to_update['UB'][row][column]))
+                item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.tableWidget_UB.setItem(row, column, item)
+            header_UB.setResizeMode(row, QHeaderView.Stretch)
+        
         #Update motor bounds
-
-
         self.ui.label_mu_bounds_ll.setText(str(data_to_update['bounds']["mu"][0]))
         self.ui.label_mu_bounds_hl.setText(str(data_to_update['bounds']["mu"][1]))
 

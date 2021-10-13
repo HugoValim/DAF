@@ -79,7 +79,8 @@ cons_naz: 0.0
 cons_omega: 0.0
 cons_psi: 0.0
 cons_qaz: 0.0
-default_counters: 'config.daf_default.yml'
+dark_mode: 0
+default_counters: config.daf_default.yml
 hkl: ''
 hkl1: ''
 hkl2: ''

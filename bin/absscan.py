@@ -75,12 +75,8 @@ class DAFScan(ScanOperationCLI):
         if bool(self.reset):
             print('[scan-utils] Reseting devices positions.')
             self.reset_motors()
-        
-        print(scan.statistic_dict)
 scan = DAFScan()
 scan.run()
-
-data = scan.statistic_dict
 
 log = sys.argv.pop(0).split('command_line/')[1]
 
