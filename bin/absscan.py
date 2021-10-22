@@ -29,36 +29,39 @@ Eg:
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
-parser.add_argument('motor', metavar='motor', type=str, help='Motor to be used in the scan. Use m/mu, e/eta, c/chi, p/phi, n/nu, d/del')
+parser.add_argument('-m', '--mu', action='store_true',  help='Use Mu motor in the scan')
+parser.add_argument('-e', '--eta', action='store_true', help='Use Eta motor in the scan')
+parser.add_argument('-c', '--chi', action='store_true', help='Use Chi motor in the scan')
+parser.add_argument('-p', '--phi', action='store_true', help='Use Phi motor in the scan')
+parser.add_argument('-n', '--nu', action='store_true',  help='Use Nu motor in the scan')
+parser.add_argument('-d', '--del', action='store_true', help='Use Del motor in the scan')
 parser.add_argument('start', metavar='start', type=float, help='Start point')
 parser.add_argument('end', metavar='end', type=float, help='End point')
 parser.add_argument('step', metavar='step', type=float, help='Number of steps')
 parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
-parser.add_argument('-c', '--configuration', type=str, help='choose a counter configuration file', default='default')
+parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn')
 
 args = parser.parse_args()
 dic = vars(args)
-
 dict_args = du.read()
 
-for j,k in dic.items():
-    if j in dict_args and k is not None:
-        dict_args[j] = str(k)
-du.write(dict_args, is_scan = True)
-
-dict_args = du.read()
 
 if du.PV_PREFIX == "EMA:B:PB18":
-    data = {'m':'huber_mu', 'mu':'huber_mu', 'e':'huber_eta', 'eta':'huber_eta', 'c':'huber_chi', 'chi':'huber_chi',
-            'p':'huber_phi', 'phi':'huber_phi', 'n':'huber_nu', 'nu':'huber_nu', 'd':'huber_del', 'del':'huber_del'}
+    data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
+            'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
 
 else:
-    data = {'m':'sol_m3', 'e':'sol_m5', 'c':'sol_m2',
-            'p':'sol_m1', 'n':'sol_m4', 'd':'sol_m6'}
+    data = {'mu':'sol_m3', 'eta':'sol_m5', 'chi':'sol_m2',
+            'phi':'sol_m1', 'nu':'sol_m4', 'del':'sol_m6'}
 
-args = {'motor' : [data[args.motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step + 1]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
-        'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[args.motor], 'prescan': 'ls', 'postscan': 'pwd', 
+for key, val in dic.items():
+    if val:
+        motor = key
+        break
+
+args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
+        'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
         'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
 
 class DAFScan(ScanOperationCLI):

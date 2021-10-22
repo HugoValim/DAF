@@ -67,11 +67,11 @@ phi_points = [float(i) for i in scan_points["Phi"]] # Get only the points relate
 nu_points = [float(i) for i in scan_points["Nu"]] # Get only the points related to nu
 del_points = [float(i) for i in scan_points["Del"]] # Get only the points related to del
 
-# data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
-#         'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
+data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
+        'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
 
-data = {'sol_m3':mu_points, 'sol_m5':eta_points, 'sol_m2':chi_points,
-        'sol_m1':phi_points, 'sol_m4':nu_points, 'sol_m6':del_points}
+# data = {'sol_m3':mu_points, 'sol_m5':eta_points, 'sol_m2':chi_points,
+#         'sol_m1':phi_points, 'sol_m4':nu_points, 'sol_m6':del_points}
 
 motors = [i for i in data.keys() if (np.array(data[i]).max() - np.array(data[i]).min() ) > 1e-3]
 
