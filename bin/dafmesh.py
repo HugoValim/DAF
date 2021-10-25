@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Perform an absolute scan in one of the diffractometer motors"""
+"""Perform an relative scan in one of the diffractometer motors"""
 
 import sys
 import os
@@ -22,25 +22,24 @@ from scan_utils.scan import ScanOperationCLI
 
 epi = '''
 Eg:
-    daf.ascan m 1 10 100 .1
-    daf.ascan mu 1 10 100 .1 -o my_scan
+    daf.rscan m -2 2 100 .1
+    daf.rscan mu 2 4 100 .1 -o my_scan
 
     '''
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
-parser.add_argument('-m', '--mu', action='store_true',  help='Use Mu motor in the scan')
-parser.add_argument('-e', '--eta', action='store_true', help='Use Eta motor in the scan')
-parser.add_argument('-c', '--chi', action='store_true', help='Use Chi motor in the scan')
-parser.add_argument('-p', '--phi', action='store_true', help='Use Phi motor in the scan')
-parser.add_argument('-n', '--nu', action='store_true',  help='Use Nu motor in the scan')
-parser.add_argument('-d', '--del', action='store_true', help='Use Del motor in the scan')
-parser.add_argument('start', metavar='start', type=float, help='Start point')
-parser.add_argument('end', metavar='end', type=float, help='End point')
-parser.add_argument('step', metavar='step', type=float, help='Number of steps')
+
+parser.add_argument('-m', '--mu', metavar='ang', type=float, nargs=2, help='Start and end for Mu')
+parser.add_argument('-e', '--eta', metavar='ang', type=float, nargs=2, help='Start and end for Eta')
+parser.add_argument('-c', '--chi', metavar='ang', type=float, nargs=2, help='Start and end for Chi')
+parser.add_argument('-p', '--phi', metavar='ang', type=float, nargs=2, help='Start and end for Phi')
+parser.add_argument('-n', '--nu', metavar='ang', type=float, nargs=2, help='Start and end for Nu')
+parser.add_argument('-d', '--del', metavar='ang', type=float, nargs=2, help='Start and end for Del')
+parser.add_argument('step', metavar='step', type=int, help='Number of steps')
 parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
-parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
-parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
+parser.add_argument('-cf', '--configuration', type=str, help='choose a counter configuration file', default='default')
+parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -55,14 +54,25 @@ else:
     data = {'mu':'sol_m3', 'eta':'sol_m5', 'chi':'sol_m2',
             'phi':'sol_m1', 'nu':'sol_m4', 'del':'sol_m6'}
 
+n = 0
+motors = []
+start = []
+end = []
+step = []
 for key, val in dic.items():
-    if val:
+    if isinstance(val, list):
         motor = key
+        motors.append(data[motor])
+        start.append(val[0])
+        end.append(val[1])
+        step.append(args.step)
+        n += 1
+    if n == 2:
         break
 
-args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
+args = {'motor' : motors, 'start' : [start], 'end': [end], 'step_or_points': [step], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
         'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
-        'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
+        'plot_type': PlotType.hdf, 're1lative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
 
 class DAFScan(ScanOperationCLI):
 

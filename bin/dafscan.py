@@ -32,7 +32,7 @@ parser.add_argument('-g', '--gui', action='store_true', help='Flag to tell if gu
 parser.add_argument('-c', '--calc', action='store_true', help='Only calc the scan without perform it')
 parser.add_argument('-t', '--time', metavar='', type=float, help='Acquisition time in each point in seconds. Default is 0.01s')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
-parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn')
+parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -107,12 +107,10 @@ if not args.calc:
         time = 0.01
     else:
         time = args.time
+        os.system("daf.rfscan -f {} -t {} -x {} -o {}".format(dict_args['scan_name'], time, args.xlabel, args.output))
 
-    os.system("daf.rfscan -f {} -t {} -x {} -o {}".format(dict_args['scan_name'], time, args.xlabel, args.output))
-
-
-
-if float(angs[16]) < 1e-4:
+max_error = float(angs[16])
+if max_error < 1e-4:
     for j,k in exp_dict.items():
         if j in dict_args:
             dict_args[j] = str(k)

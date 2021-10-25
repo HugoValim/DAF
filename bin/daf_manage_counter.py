@@ -74,15 +74,9 @@ if args.new:
 
 if isinstance (args.list_counters, list):
     print(path + prefix + args.list_counters[0] + sufix)
-    # try:
     data = read_yaml(filepath = path + prefix + args.list_counters[0] + sufix)
     for counter in data:
         print(counter)
-        
-    # except:
-    #     data = read_yaml()
-    #     for counter in data['counters'].keys():
-    #         print(counter)
 
 if args.add_counter:
     file_name = args.add_counter[0]
