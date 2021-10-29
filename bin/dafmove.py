@@ -76,7 +76,7 @@ if args.quiet:
 angs = exp.export_angles()
 
 exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs[4], 'Del':angs[5], 'tt':angs[6],
-            'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':list(angs[15])}
+            'theta':angs[7], 'alpha':angs[8], 'qaz':angs[9], 'naz':angs[10], 'tau':angs[11], 'psi':angs[12], 'beta':angs[13], 'omega':angs[14], 'hklnow':angs[15]}
 
 # print(exp_dict['hklnow'])
 # print(angs[15])
@@ -84,7 +84,10 @@ exp_dict = {'Mu':angs[0], 'Eta':angs[1], 'Chi':angs[2], 'Phi':angs[3], 'Nu':angs
 if float(angs[16]) < 1e-4:
     for j,k in exp_dict.items():
         if j in dict_args:
-            dict_args[j] = str(k)
+            if isinstance(k, np.ndarray):
+                dict_args[j] = k.tolist()
+            else:
+                dict_args[j] = float(k)
     du.write(dict_args)
 
 
