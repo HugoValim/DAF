@@ -6,6 +6,8 @@ import dafutilities as du
 import xrayutilities as xu
 import numpy as np
 from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QCheckBox, QHBoxLayout, QHeaderView
+from PyQt5.QtCore import Qt, QTimer
 from qtpy.QtWidgets import QApplication
 import qdarkstyle
 
@@ -16,10 +18,10 @@ class MyDisplay(Display):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         self.app = QApplication.instance()
+        self.loop()
         self.default_theme()
         self.update_reflections()
-        self.ui.pushButton_refs_reset.clicked.connect(self.update_reflections)
-        self.ui.pushButton_refs_save.clicked.connect(self.save_reflections)
+        self.ui.pushButton_refs_save.clicked.connect(self.get_reflection)
         
         self.pushButton_2_ref_calc.clicked.connect(self.calc_from_2_ref)
         self.pushButton_3_ref_calc.clicked.connect(self.calc_from_3_ref)
@@ -43,6 +45,12 @@ class MyDisplay(Display):
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
+    def loop(self):
+        """Loop to check if a curve is selected or not"""
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update)
+        self.timer.start(2000) #trigger every .25 seconds.
+
     def default_theme(self):
         dict_args = du.read()
         if dict_args['dark_mode']:
@@ -54,37 +62,8 @@ class MyDisplay(Display):
     def set_tab_order(self):
 
         # Calc UB
-        self.setTabOrder(self.ui.tab_calcUB, self.ui.lineEdit_h_1)
-        self.setTabOrder(self.ui.lineEdit_h_1, self.ui.lineEdit_k_1)
-        self.setTabOrder(self.ui.lineEdit_k_1, self.ui.lineEdit_l_1)
-        self.setTabOrder(self.ui.lineEdit_l_1, self.ui.lineEdit_mu_1)
-        self.setTabOrder(self.ui.lineEdit_mu_1, self.ui.lineEdit_eta_1)
-        self.setTabOrder(self.ui.lineEdit_eta_1, self.ui.lineEdit_chi_1)
-        self.setTabOrder(self.ui.lineEdit_chi_1, self.ui.lineEdit_phi_1)
-        self.setTabOrder(self.ui.lineEdit_phi_1, self.ui.lineEdit_nu_1)
-        self.setTabOrder(self.ui.lineEdit_nu_1, self.ui.lineEdit_del_1)
-        self.setTabOrder(self.ui.lineEdit_del_1, self.ui.lineEdit_h_2)
-        self.setTabOrder(self.ui.lineEdit_h_2, self.ui.lineEdit_k_2)
-        self.setTabOrder(self.ui.lineEdit_k_2, self.ui.lineEdit_l_2)
-        self.setTabOrder(self.ui.lineEdit_l_2, self.ui.lineEdit_mu_2)
-        self.setTabOrder(self.ui.lineEdit_mu_2, self.ui.lineEdit_eta_2)
-        self.setTabOrder(self.ui.lineEdit_eta_2, self.ui.lineEdit_chi_2)
-        self.setTabOrder(self.ui.lineEdit_chi_2, self.ui.lineEdit_phi_2)
-        self.setTabOrder(self.ui.lineEdit_phi_2, self.ui.lineEdit_nu_2)
-        self.setTabOrder(self.ui.lineEdit_nu_2, self.ui.lineEdit_del_2)
-        self.setTabOrder(self.ui.lineEdit_del_2, self.ui.lineEdit_h_3)
-        self.setTabOrder(self.ui.lineEdit_h_3, self.ui.lineEdit_k_3)
-        self.setTabOrder(self.ui.lineEdit_k_3, self.ui.lineEdit_l_3)
-        self.setTabOrder(self.ui.lineEdit_l_3, self.ui.lineEdit_mu_3)
-        self.setTabOrder(self.ui.lineEdit_mu_3, self.ui.lineEdit_eta_3)
-        self.setTabOrder(self.ui.lineEdit_eta_3, self.ui.lineEdit_chi_3)
-        self.setTabOrder(self.ui.lineEdit_chi_3, self.ui.lineEdit_phi_3)
-        self.setTabOrder(self.ui.lineEdit_phi_3, self.ui.lineEdit_nu_3)
-        self.setTabOrder(self.ui.lineEdit_nu_3, self.ui.lineEdit_del_3)
-        self.setTabOrder(self.ui.lineEdit_del_3, self.ui.pushButton_refs_save)
-        self.setTabOrder(self.ui.pushButton_refs_save, self.ui.pushButton_refs_reset)
-        self.setTabOrder(self.ui.pushButton_refs_reset, self.ui.comboBox_2_ref)
-        self.setTabOrder(self.ui.comboBox_2_ref, self.ui.pushButton_2_ref_calc)
+        self.setTabOrder(self.ui.tab_calcUB, self.ui.pushButton_refs_save)
+        self.setTabOrder(self.ui.pushButton_refs_save, self.ui.pushButton_2_ref_calc)
         self.setTabOrder(self.ui.pushButton_2_ref_calc, self.ui.pushButton_3_ref_calc)
         self.setTabOrder(self.ui.pushButton_3_ref_calc, self.ui.pushButton_sample)
         self.setTabOrder(self.ui.pushButton_sample, self.ui.tab_calcUB)
@@ -123,152 +102,111 @@ class MyDisplay(Display):
     def format_decimals(self, x):
         return "{:.5f}".format(float(x)) # format float with 5 decimals
 
+    def update(self):
+        data = self.get_experiment_file()
+        refs = data['reflections']
+        if self.refs != refs:
+            self.update_reflections()
+
     def update_reflections(self):
 
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
+        lb = lambda x: "{:.5f}".format(float(x))
         data = self.get_experiment_file()
+        refs = data['reflections']
+        self.refs = refs
+        row = 0
+        self.table_checkboxes = {} 
+        for i in range(len(refs)):
 
-        if data['hkl1'] != '':
-            
-            self.hkl1 = True
-            r1 = data['hkl1']
-            hkl1 = r1[:3]
-            angs1 = r1[3:9]
+            idx = str(i+1)
+            idx_for_table = QTableWidgetItem(idx)
+            idx_for_table.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
+            h = QTableWidgetItem(str(refs[i][0]))
+            h.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
+            k = QTableWidgetItem(str(refs[i][1]))
+            k.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
+            l = QTableWidgetItem(str(refs[i][2]))
+            l.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            mu = QTableWidgetItem(str(refs[i][3]))
+            mu.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            eta = QTableWidgetItem(str(refs[i][4]))
+            eta.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            chi = QTableWidgetItem(str(refs[i][5]))
+            chi.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            phi = QTableWidgetItem(str(refs[i][6]))
+            phi.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            nu = QTableWidgetItem(str(refs[i][7]))
+            nu.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            delta = QTableWidgetItem(str(refs[i][8]))
+            delta.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            en = QTableWidgetItem(lb(refs[i][9]))
+            en.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
-            self.ui.lineEdit_h_1.setText(str(hkl1[0]))
-            self.ui.lineEdit_k_1.setText(str(hkl1[1]))
-            self.ui.lineEdit_l_1.setText(str(hkl1[2]))
+            self.tableWidget.insertRow(row)
+            self.tableWidget.setItem(row, 0, idx_for_table)
+            self.tableWidget.setItem(row, 1, h)
+            self.tableWidget.setItem(row, 2, k)
+            self.tableWidget.setItem(row, 3, l)
+            self.tableWidget.setItem(row, 4, mu)
+            self.tableWidget.setItem(row, 5, eta)
+            self.tableWidget.setItem(row, 6, chi)
+            self.tableWidget.setItem(row, 7, phi)
+            self.tableWidget.setItem(row, 8, nu)
+            self.tableWidget.setItem(row, 9, delta)
+            self.tableWidget.setItem(row, 10, en)
+            widget = QWidget(parent=self.tableWidget)
+            self.table_checkboxes[idx] = QCheckBox()
+            self.table_checkboxes[idx].setCheckState(QtCore.Qt.Unchecked)
+            layoutH = QHBoxLayout(widget)
+            layoutH.addWidget(self.table_checkboxes[idx])
+            layoutH.setAlignment(QtCore.Qt.AlignCenter)
+            layoutH.setContentsMargins(10, 0, 0, 0)           
+            self.tableWidget.setCellWidget(row, 11, widget)
+            self.tableWidget.setCellWidget(row, 11, self.table_checkboxes[idx])
+            row += 1
 
-            self.ui.lineEdit_mu_1.setText(str(angs1[0]))
-            self.ui.lineEdit_eta_1.setText(str(angs1[1]))
-            self.ui.lineEdit_chi_1.setText(str(angs1[2]))
-            self.ui.lineEdit_phi_1.setText(str(angs1[3]))
-            self.ui.lineEdit_nu_1.setText(str(angs1[4]))
-            self.ui.lineEdit_del_1.setText(str(angs1[5]))
-        
-
-        else:
-            self.hkl1 = False
-
-
-        if data['hkl2'] != '':
-            
-            self.hkl2 = True
-            r2 = data['hkl2']
-            hkl2 = r2[:3] 
-            angs2 = r2[3:9]
-
-            self.ui.lineEdit_h_2.setText(str(hkl2[0]))
-            self.ui.lineEdit_k_2.setText(str(hkl2[1]))
-            self.ui.lineEdit_l_2.setText(str(hkl2[2]))
-
-            self.ui.lineEdit_mu_2.setText(str(angs2[0]))
-            self.ui.lineEdit_eta_2.setText(str(angs2[1]))
-            self.ui.lineEdit_chi_2.setText(str(angs2[2]))
-            self.ui.lineEdit_phi_2.setText(str(angs2[3]))
-            self.ui.lineEdit_nu_2.setText(str(angs2[4]))
-            self.ui.lineEdit_del_2.setText(str(angs2[5]))
-            
-        
-
-        else:
-            self.hkl2 = False
-
-        if data['hkl3'] != '':
-            
-            self.hkl3 = True
-            r3 = data['hkl3']
-            hkl3 = r3[:3]
-            angs3 = r3[3:9]
-
-            self.ui.lineEdit_h_3.setText(str(hkl3[0]))
-            self.ui.lineEdit_k_3.setText(str(hkl3[1]))
-            self.ui.lineEdit_l_3.setText(str(hkl3[2]))
-
-            self.ui.lineEdit_mu_3.setText(str(angs3[0]))
-            self.ui.lineEdit_eta_3.setText(str(angs3[1]))
-            self.ui.lineEdit_chi_3.setText(str(angs3[2]))
-            self.ui.lineEdit_phi_3.setText(str(angs3[3]))
-            self.ui.lineEdit_nu_3.setText(str(angs3[4]))
-            self.ui.lineEdit_del_3.setText(str(angs3[5]))
-        
-
-        else:
-            self.hkl3 = False
-
-    def save_reflections(self):
-
-        # Reflection 1
-        h1 = self.ui.lineEdit_h_1.text()
-        k1 = self.ui.lineEdit_k_1.text()
-        l1 = self.ui.lineEdit_l_1.text()
-
-        mu1 = self.ui.lineEdit_mu_1.text()
-        eta1 = self.ui.lineEdit_eta_1.text()
-        chi1 = self.ui.lineEdit_chi_1.text()
-        phi1 = self.ui.lineEdit_phi_1.text()
-        nu1 = self.ui.lineEdit_nu_1.text()
-        del1 = self.ui.lineEdit_del_1.text()
+        for i in range(self.tableWidget.columnCount()):
+            header = self.tableWidget.horizontalHeader()
+            header.setResizeMode(i, QHeaderView.Stretch)
 
 
-        # Reflection2
-        h2 = self.ui.lineEdit_h_2.text()
-        k2 = self.ui.lineEdit_k_2.text()
-        l2 = self.ui.lineEdit_l_2.text()
-
-        mu2 = self.ui.lineEdit_mu_2.text()
-        eta2 = self.ui.lineEdit_eta_2.text()
-        chi2 = self.ui.lineEdit_chi_2.text()
-        phi2 = self.ui.lineEdit_phi_2.text()
-        nu2 = self.ui.lineEdit_nu_2.text()
-        del2 = self.ui.lineEdit_del_2.text()
-
-
-        #Reflection3
-        h3 = self.ui.lineEdit_h_3.text()
-        k3 = self.ui.lineEdit_k_3.text()
-        l3 = self.ui.lineEdit_l_3.text()
-
-        mu3 = self.ui.lineEdit_mu_3.text()
-        eta3 = self.ui.lineEdit_eta_3.text()
-        chi3 = self.ui.lineEdit_chi_3.text()
-        phi3 = self.ui.lineEdit_phi_3.text()
-        nu3 = self.ui.lineEdit_nu_3.text()
-        del3 = self.ui.lineEdit_del_3.text()
-
-
-        # if self.hkl1:
-        #   print("daf.ub -r1 {} {} {} {} {} {} {} {} {}".format(h1, k1, l1, mu1, eta1, chi1, phi1, nu1, del1))
-        #   os.system("daf.ub -r1 {} {} {} {} {} {} {} {} {}".format(h1, k1, l1, mu1, eta1, chi1, phi1, nu1, del1))
-
-        # if self.hkl2:
-        #   os.system("daf.ub -r2 {} {} {} {} {} {} {} {} {}".format(h2, k2, l2, mu2, eta2, chi2, phi2, nu2, del2))
-
-        # if self.hkl3:
-        #   os.system("daf.ub -r3 {} {} {} {} {} {} {} {} {}".format(h3, k3, l3, mu3, eta3, chi3, phi3, nu3, del3))
-
-        os.system("daf.ub -r1 {} {} {} {} {} {} {} {} {} -r2 {} {} {} {} {} {} {} {} {} -r3 {} {} {} {} {} {} {} {} {}".format(h1, k1, l1, mu1, eta1, chi1, phi1, nu1, del1, h2, k2, l2, mu2, eta2, chi2, phi2, nu2, del2, h3, k3, l3, mu3, eta3, chi3, phi3, nu3, del3))
-
-
-
+    def get_reflection(self):
+        os.system("daf.ub -rn")
+        self.update_reflections()
 
     def calc_from_2_ref(self):
 
-        self.save_reflections()
+        inp = []
+        for key, value in self.table_checkboxes.items():
+            if value.isChecked():
+                inp.append(key)
 
-        refs_to_use = self.ui.comboBox_2_ref.currentText().split(',')
-
-        os.system("daf.ub -c2 {} {}".format(refs_to_use[0], refs_to_use[1]))
-
-
+        if len(inp) != 2:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
+            ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+        else:
+            os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
 
     def calc_from_3_ref(self):
 
+        inp = []
+        for key, value in self.table_checkboxes.items():
+            if value.isChecked():
+                inp.append(key)
+
+        if len(inp) != 3:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
+            ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+        else:
+            os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
+        self.update_samp_parameters()
+
+    def update_samp_parameters(self):
         data = self.get_experiment_file()
-        
-        self.save_reflections()
-
-        os.system("daf.ub -c3")
-
         self.label_a.setText(self.format_decimals(data['lparam_a']))
         self.label_b.setText(self.format_decimals(data['lparam_b']))
         self.label_c.setText(self.format_decimals(data['lparam_c']))
@@ -279,8 +217,13 @@ class MyDisplay(Display):
     def set_new_sample(self):
         dict_args = du.read()
         samples = dict_args['user_samples']
-        text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New config file name')
-        
+        text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New sample name')
+        a = dict_args['lparam_a']
+        b = dict_args['lparam_b']
+        c = dict_args['lparam_c']
+        alpha = dict_args['lparam_alpha']
+        beta = dict_args['lparam_beta']
+        gamma = dict_args['lparam_gama']
         if result:
             if text in samples.keys():
                 msgbox = QtWidgets.QMessageBox()
@@ -288,10 +231,10 @@ class MyDisplay(Display):
                 ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
 
                 if ret == QtWidgets.QMessageBox.Ok:
-                    os.system("daf.expt -m {}".format(text))
+                    os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
 
             else:
-                os.system("daf.expt -m {}".format(text))
+                os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
 
     def update_u_labels(self):
 

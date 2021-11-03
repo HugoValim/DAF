@@ -6,19 +6,21 @@ import sys
 import os
 import daf
 import numpy as np
+import xrayutilities as xu
+
 import dafutilities as du
 
 
 
 epi = '''
 Eg:
-    daf.ub -r1 1 0 0 0 5.28232 0 2 0 10.5647
-    daf.ub -r2 0 1 0 0 5.28232 2 92 0 10.5647
+    daf.ub -r 1 0 0 0 5.28232 0 2 0 10.5647
+    daf.ub -r 0 1 0 0 5.28232 2 92 0 10.5647
     daf.ub -c2 1 2
-    daf.ub -c2 2 3
+    daf.ub -c3 1 2 3
     daf.ub -U 1 0 0 0 1 0 0 0 1
-    daf.up -s
-    daf.up -s -p
+    daf.ub -s
+    daf.ub -s -p
     '''
 
 
@@ -30,6 +32,7 @@ parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22
 parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
 parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=int, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
 parser.add_argument('-c3', '--Calc3', metavar=('R1', 'R2', 'R3'), type=int, nargs=3, help='Calculate UB for 3 reflections, user must give the reflections that will be used')
+parser.add_argument('-f', '--fit', action='store_true', help='fit reflections')
 parser.add_argument('-cr', '--clear-reflections', action='store_true', help='Clear all stored reflections')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
@@ -114,12 +117,15 @@ if args.Params:
 if args.reflection is not None:
     dict_args = du.read()
     ref = dict_args['reflections']
-    args.reflection.append(dict_args['Energy'])
+    en = dict_args['Energy']
+    if en < 50 :
+        en = float(xu.lam2en(en))
+    args.reflection.append(en)
     ref.append(args.reflection)
     dict_args['reflections'] = ref
     du.write(dict_args)
 
-if args.reflection_now is not None:
+if args.reflection_now:
     dict_args = du.read()
     ref = dict_args['reflections']
     h = dict_args['hklnow'][0]
@@ -132,8 +138,9 @@ if args.reflection_now is not None:
     nu = dict_args['Nu']
     delta = dict_args['Del']
     en = dict_args['Energy']
+    if en < 50 :
+        en = float(xu.lam2en(en))
     ref_now = [h, k, l, mu, eta, chi, phi, nu , delta, en]
-    print(ref_now)
     ref.append(ref_now)
     dict_args['reflections'] = ref
     du.write(dict_args)
@@ -247,6 +254,29 @@ if  args.Calc3 is not None:
     dict_args['lparam_alpha'] = rpf[3]
     dict_args['lparam_beta'] = rpf[4]
     dict_args['lparam_gama'] = rpf[5]
+    du.write(dict_args)
+
+if args.fit:
+    dict_args = du.read()
+    refs = dict_args['reflections']
+    mode = [int(i) for i in dict_args['Mode']]
+
+    exp = daf.Control(*mode)
+    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    exp.set_exp_conditions(en = dict_args['Energy'])
+    U = np.array(dict_args['U_mat'])
+    if dict_args['Material'] in dict_args['user_samples'].keys():
+        exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+
+    else: 
+        exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    
+    fitted = exp.fit_u_matrix(U, refs)
+    lbd = [[float(lb(i)) for i in j] for j in fitted]
+    print(np.array(lbd))
+
+    dict_args['U_mat'] = U.tolist()
+    # dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
 
