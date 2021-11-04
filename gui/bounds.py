@@ -9,94 +9,105 @@ import dafutilities as du
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
 from pydm.widgets import PyDMEmbeddedDisplay
+from qtpy.QtWidgets import QApplication
 import json
-
+import qdarkstyle   
 
 class MyDisplay(Display):
 
-	def __init__(self, parent=None, args=None, macros=None):
-		super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
-		self.set_tab_order()
-		self.set_channels()
+    def __init__(self, parent=None, args=None, macros=None):
+        super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
+        self.app = QApplication.instance()
+        self.default_theme()
+        self.set_tab_order()
+        self.set_channels()
 
-	
-	def ui_filename(self):
-		return 'bounds.ui'
+    
+    def ui_filename(self):
+        return 'bounds.ui'
 
-	def ui_filepath(self):
-		return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+    def ui_filepath(self):
+        return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
 
-	def load_data(self):
-		# Extract the directory of this file...
-		base_dir = os.path.dirname(os.path.realpath(__file__))
-		# Concatenate the directory with the file name...
-		data_file = os.path.join(base_dir, "motor_fields_default.yml")
-		# Open the file so we can read the data...
-		with open(data_file, 'r') as file:
-			data = yaml.safe_load(file)
-			return data
+    def load_data(self):
+        # Extract the directory of this file...
+        base_dir = os.path.dirname(os.path.realpath(__file__))
+        # Concatenate the directory with the file name...
+        data_file = os.path.join(base_dir, "motor_fields_default.yml")
+        # Open the file so we can read the data...
+        with open(data_file, 'r') as file:
+            data = yaml.safe_load(file)
+            return data
 
-	def set_tab_order(self):
-		self.setTabOrder(self.ui.PyDMLineEdit_mu_llm, self.ui.PyDMLineEdit_mu_hlm)
-		self.setTabOrder(self.ui.PyDMLineEdit_mu_hlm, self.ui.PyDMLineEdit_eta_llm)
-		self.setTabOrder(self.ui.PyDMLineEdit_eta_llm, self.ui.PyDMLineEdit_eta_hlm)
-		self.setTabOrder(self.ui.PyDMLineEdit_eta_hlm, self.ui.PyDMLineEdit_chi_llm)
-		self.setTabOrder(self.ui.PyDMLineEdit_chi_llm, self.ui.PyDMLineEdit_chi_hlm)
-		self.setTabOrder(self.ui.PyDMLineEdit_chi_hlm, self.ui.PyDMLineEdit_phi_llm)
-		self.setTabOrder(self.ui.PyDMLineEdit_phi_llm, self.ui.PyDMLineEdit_phi_hlm)
-		self.setTabOrder(self.ui.PyDMLineEdit_phi_hlm, self.ui.PyDMLineEdit_nu_llm)
-		self.setTabOrder(self.ui.PyDMLineEdit_nu_llm, self.ui.PyDMLineEdit_nu_hlm)
-		self.setTabOrder(self.ui.PyDMLineEdit_nu_hlm, self.ui.PyDMLineEdit_del_llm)
-		self.setTabOrder(self.ui.PyDMLineEdit_del_llm, self.ui.PyDMLineEdit_del_hlm)
-		self.setTabOrder(self.ui.PyDMLineEdit_del_hlm, self.ui.PyDMLineEdit_mu_llm)
+    def default_theme(self):
+        dict_args = du.read()
+        if dict_args['dark_mode']:
+            style = qdarkstyle.load_stylesheet_pyqt5()
+            self.app.setStyleSheet(style)
+        else:
+            self.app.setStyleSheet('')
 
-	def set_channels(self):
+    def set_tab_order(self):
+        self.setTabOrder(self.ui.PyDMLineEdit_mu_llm, self.ui.PyDMLineEdit_mu_hlm)
+        self.setTabOrder(self.ui.PyDMLineEdit_mu_hlm, self.ui.PyDMLineEdit_eta_llm)
+        self.setTabOrder(self.ui.PyDMLineEdit_eta_llm, self.ui.PyDMLineEdit_eta_hlm)
+        self.setTabOrder(self.ui.PyDMLineEdit_eta_hlm, self.ui.PyDMLineEdit_chi_llm)
+        self.setTabOrder(self.ui.PyDMLineEdit_chi_llm, self.ui.PyDMLineEdit_chi_hlm)
+        self.setTabOrder(self.ui.PyDMLineEdit_chi_hlm, self.ui.PyDMLineEdit_phi_llm)
+        self.setTabOrder(self.ui.PyDMLineEdit_phi_llm, self.ui.PyDMLineEdit_phi_hlm)
+        self.setTabOrder(self.ui.PyDMLineEdit_phi_hlm, self.ui.PyDMLineEdit_nu_llm)
+        self.setTabOrder(self.ui.PyDMLineEdit_nu_llm, self.ui.PyDMLineEdit_nu_hlm)
+        self.setTabOrder(self.ui.PyDMLineEdit_nu_hlm, self.ui.PyDMLineEdit_del_llm)
+        self.setTabOrder(self.ui.PyDMLineEdit_del_llm, self.ui.PyDMLineEdit_del_hlm)
+        self.setTabOrder(self.ui.PyDMLineEdit_del_hlm, self.ui.PyDMLineEdit_mu_llm)
 
-		data = du.PVS
+    def set_channels(self):
 
-		
+        data = du.PVS
 
-		translate = QCoreApplication.translate
-		
-		# set mu motor labels
+        
 
-		mu_channel = 'ca://' + data['Mu']
-		self.ui.PyDMLabel_mu_desc.setProperty("channel", translate("Form", mu_channel + '.DESC'))
-		self.ui.PyDMLineEdit_mu_llm.setProperty("channel", translate("Form", mu_channel + '.LLM'))
-		self.ui.PyDMLineEdit_mu_hlm.setProperty("channel", translate("Form", mu_channel + '.HLM'))
+        translate = QCoreApplication.translate
+        
+        # set mu motor labels
 
-		# set eta motor labels
+        mu_channel = 'ca://' + data['Mu']
+        self.ui.PyDMLabel_mu_desc.setProperty("channel", translate("Form", mu_channel + '.DESC'))
+        self.ui.PyDMLineEdit_mu_llm.setProperty("channel", translate("Form", mu_channel + '.LLM'))
+        self.ui.PyDMLineEdit_mu_hlm.setProperty("channel", translate("Form", mu_channel + '.HLM'))
 
-		eta_channel = 'ca://' + data['Eta']
-		self.ui.PyDMLabel_eta_desc.setProperty("channel", translate("Form", eta_channel + '.DESC'))
-		self.ui.PyDMLineEdit_eta_llm.setProperty("channel", translate("Form", eta_channel + '.LLM'))
-		self.ui.PyDMLineEdit_eta_hlm.setProperty("channel", translate("Form", eta_channel + '.HLM'))
+        # set eta motor labels
 
-		# set chi motor labels
+        eta_channel = 'ca://' + data['Eta']
+        self.ui.PyDMLabel_eta_desc.setProperty("channel", translate("Form", eta_channel + '.DESC'))
+        self.ui.PyDMLineEdit_eta_llm.setProperty("channel", translate("Form", eta_channel + '.LLM'))
+        self.ui.PyDMLineEdit_eta_hlm.setProperty("channel", translate("Form", eta_channel + '.HLM'))
 
-		chi_channel = 'ca://' + data['Chi']
-		self.ui.PyDMLabel_chi_desc.setProperty("channel", translate("Form", chi_channel + '.DESC'))
-		self.ui.PyDMLineEdit_chi_llm.setProperty("channel", translate("Form", chi_channel + '.LLM'))
-		self.ui.PyDMLineEdit_chi_hlm.setProperty("channel", translate("Form", chi_channel + '.HLM'))
+        # set chi motor labels
 
-		# set phi motor labels
+        chi_channel = 'ca://' + data['Chi']
+        self.ui.PyDMLabel_chi_desc.setProperty("channel", translate("Form", chi_channel + '.DESC'))
+        self.ui.PyDMLineEdit_chi_llm.setProperty("channel", translate("Form", chi_channel + '.LLM'))
+        self.ui.PyDMLineEdit_chi_hlm.setProperty("channel", translate("Form", chi_channel + '.HLM'))
 
-		phi_channel = 'ca://' + data['Phi']
-		self.ui.PyDMLabel_phi_desc.setProperty("channel", translate("Form", phi_channel + '.DESC'))
-		self.ui.PyDMLineEdit_phi_llm.setProperty("channel", translate("Form", phi_channel + '.LLM'))
-		self.ui.PyDMLineEdit_phi_hlm.setProperty("channel", translate("Form", phi_channel + '.HLM'))
+        # set phi motor labels
 
-		# set nu motor labels
+        phi_channel = 'ca://' + data['Phi']
+        self.ui.PyDMLabel_phi_desc.setProperty("channel", translate("Form", phi_channel + '.DESC'))
+        self.ui.PyDMLineEdit_phi_llm.setProperty("channel", translate("Form", phi_channel + '.LLM'))
+        self.ui.PyDMLineEdit_phi_hlm.setProperty("channel", translate("Form", phi_channel + '.HLM'))
 
-		nu_channel = 'ca://' + data['Nu']
-		self.ui.PyDMLabel_nu_desc.setProperty("channel", translate("Form", nu_channel + '.DESC'))
-		self.ui.PyDMLineEdit_nu_llm.setProperty("channel", translate("Form", nu_channel + '.LLM'))
-		self.ui.PyDMLineEdit_nu_hlm.setProperty("channel", translate("Form", nu_channel + '.HLM'))	
+        # set nu motor labels
 
-		# set del motor labels
+        nu_channel = 'ca://' + data['Nu']
+        self.ui.PyDMLabel_nu_desc.setProperty("channel", translate("Form", nu_channel + '.DESC'))
+        self.ui.PyDMLineEdit_nu_llm.setProperty("channel", translate("Form", nu_channel + '.LLM'))
+        self.ui.PyDMLineEdit_nu_hlm.setProperty("channel", translate("Form", nu_channel + '.HLM'))  
 
-		del_channel = 'ca://' + data['Del']
-		self.ui.PyDMLabel_del_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
-		self.ui.PyDMLineEdit_del_llm.setProperty("channel", translate("Form", del_channel + '.LLM'))
-		self.ui.PyDMLineEdit_del_hlm.setProperty("channel", translate("Form", del_channel + '.HLM'))
+        # set del motor labels
+
+        del_channel = 'ca://' + data['Del']
+        self.ui.PyDMLabel_del_desc.setProperty("channel", translate("Form", del_channel + '.DESC'))
+        self.ui.PyDMLineEdit_del_llm.setProperty("channel", translate("Form", del_channel + '.LLM'))
+        self.ui.PyDMLineEdit_del_hlm.setProperty("channel", translate("Form", del_channel + '.HLM'))

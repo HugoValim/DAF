@@ -23,7 +23,6 @@ Eg:
 
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
-
 parser.add_argument('-s', '--set_default', metavar = 'config name', type=str, help='Set default counter file to be used in scans')
 parser.add_argument('-n', '--new', metavar = 'config name', type=str, help='Create a new setup')
 parser.add_argument('-r', '--remove', metavar = 'file', nargs = '*', help='Remove a setup')
@@ -31,6 +30,7 @@ parser.add_argument('-a', '--add_counter', metavar = 'counter', nargs = '*', hel
 parser.add_argument('-rc', '--remove_counter', metavar = 'file', nargs = '*', help='Remove counters from a config file')
 parser.add_argument('-l', '--list', action='store_true', help='List all setups, showing in which one you are')
 parser.add_argument('-lc', '--list_counters', metavar = 'file', nargs = '*', help='List all setups, showing in which one you are')
+parser.add_argument('-lac', '--list_all_counters', action='store_true', help='List all counters available')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -54,7 +54,14 @@ if args.list:
     configs = [i for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
     configs.sort()
     for i in configs:
-        print(i.split('.')[1])   
+        print(i.split('.')[1])
+
+if args.list_all_counters:
+    with open('/etc/xdg/scan-utils/config.yml') as conf:
+        config_data = yaml.safe_load(conf)
+    counters = config_data['counters'].keys()
+    for i in counters:
+        print(i)   
 
 if args.set_default:
     dict_args['default_counters'] = prefix + args.set_default + sufix
@@ -67,15 +74,9 @@ if args.new:
 
 if isinstance (args.list_counters, list):
     print(path + prefix + args.list_counters[0] + sufix)
-    # try:
     data = read_yaml(filepath = path + prefix + args.list_counters[0] + sufix)
     for counter in data:
         print(counter)
-        
-    # except:
-    #     data = read_yaml()
-    #     for counter in data['counters'].keys():
-    #         print(counter)
 
 if args.add_counter:
     file_name = args.add_counter[0]

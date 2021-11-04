@@ -18,12 +18,7 @@ data = {'Mode': '2052',
 		'bound_Nu': [-20.0, 160.0],
 		'bound_Del': [-20.0, 160.0],
 		'hklnow' : [0, 0, 0],
-		'hkl1' : '',
-		'hkl2' : '',
-		'hkl3' : '',
-		'angs1' : '',
-		'angs2' : '',
-		'angs3' : '',
+		'reflections' : [],
 		'Print_marker' : '',
 		'Print_cmarker' : '',
 		'Print_space' : '',
@@ -71,7 +66,8 @@ data = {'Mode': '2052',
 		'setup' : 'default',
 		'user_samples' : {},
 		'setup_desc' : 'This is DAF default setup',
-		'default_counters' : 'config.daf_default.yml'
+		'default_counters' : 'config.daf_default.yml',
+		'dark_mode' : 0
 
 
 

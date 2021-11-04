@@ -24,13 +24,13 @@ Eg:
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
-parser.add_argument('-r1', '--hkl1', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for first reflection')
-parser.add_argument('-r2', '--hkl2', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for second reflection')
-parser.add_argument('-r3', '--hkl3', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'),type=float, nargs=9, help='HKL and angles for third reflection')
+parser.add_argument('-r', '--reflection', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for this reflection')
+parser.add_argument('-rn', '--reflection-now', action='store_true', help='HKL for the current position')
 parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
 parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
 parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=int, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
-parser.add_argument('-c3', '--Calc3', action='store_true', help='Calculate UB for 3 reflections, the right energy must be setted in this case')
+parser.add_argument('-c3', '--Calc3', metavar=('R1', 'R2', 'R3'), type=int, nargs=3, help='Calculate UB for 3 reflections, user must give the reflections that will be used')
+parser.add_argument('-cr', '--clear-reflections', action='store_true', help='Clear all stored reflections')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
 parser.add_argument('-p', '--Params', action='store_true', help='Lattice parameters if 3 reflection calculation had been done')
@@ -111,43 +111,75 @@ if args.Params:
     print('')
 
 
+if args.reflection is not None:
+    dict_args = du.read()
+    ref = dict_args['reflections']
+    args.reflection.append(dict_args['Energy'])
+    ref.append(args.reflection)
+    dict_args['reflections'] = ref
+    du.write(dict_args)
 
-dict_args = du.read()
-
-if dict_args['hkl1'] != '':
-    r1 = dict_args['hkl1']
-    hkl1 = r1[:3]
-    angs1 = r1[3:9]
-else:
-    hkl1 = None
-
-
-if dict_args['hkl2'] != '':
-    r2 = dict_args['hkl2']
-    hkl2 = r2[:3]
-    angs2 = r2[3:9]
-else:
-    hkl2 = None
-
-if dict_args['hkl3'] != '':
-    r3 = dict_args['hkl3']
-    hkl3 = r3[:3]
-    angs3 = r3[3:9]
-else:
-    hkl3 = None
+if args.reflection_now is not None:
+    dict_args = du.read()
+    ref = dict_args['reflections']
+    h = dict_args['hklnow'][0]
+    k = dict_args['hklnow'][1]
+    l = dict_args['hklnow'][2]
+    mu = dict_args['Mu']
+    eta = dict_args['Eta']
+    chi = dict_args['Chi']
+    phi = dict_args['Phi']
+    nu = dict_args['Nu']
+    delta = dict_args['Del']
+    en = dict_args['Energy']
+    ref_now = [h, k, l, mu, eta, chi, phi, nu , delta, en]
+    print(ref_now)
+    ref.append(ref_now)
+    dict_args['reflections'] = ref
+    du.write(dict_args)
 
 if args.list:
-    print('')
-    if hkl1:
-        print('HKL1: {}  {}'.format(hkl1, angs1))
-    if hkl2:
-        print('HKL2: {}  {}'.format(hkl2, angs2))
-    if hkl3:
-        print('HKL3: {}  {}'.format(hkl3, angs3))
+    dict_args = du.read()
+    refs = dict_args['reflections']
+    center = "{:^11}"
+    space = 10
+    fmt = [
+                    ('', 'col1', space),
+                    ('', 'col2', space),
+                    ('', 'col3', space),
+                    ('', 'col4', space),
+                    ('', 'col5', space),
+                    ('', 'col6', space),
+                    ('', 'col7', space),
+                    ('', 'col8', space),
+                    ('', 'col9', space),
+                    ('', 'col10', space),
+                    ('', 'col11', space)
+                   ]
+    data = [{'col1': center.format('Index'), 'col2': center.format('H'), 'col3': center.format('K'),
+            'col4': center.format('L'), 'col5': center.format('Mu'), 'col6': center.format('Eta'),
+            'col7': center.format('Chi'), 'col8': center.format('Phi'), 'col9': center.format('Nu'),
+            'col10': center.format('Del'), 'col11': center.format('Energy')}]
+    
+    for i in range(len(refs)):
+        dict_ = {'col1': center.format(str(i+1)), 'col2': center.format(str(refs[i][0])), 'col3': center.format(str(refs[i][1])),
+                'col4': center.format(str(refs[i][2])), 'col5': center.format(str(refs[i][3])), 'col6': center.format(str(refs[i][4])),
+                'col7': center.format(str(refs[i][5])), 'col8': center.format(str(refs[i][6])), 'col9': center.format(str(refs[i][7])),
+                'col10': center.format(str(refs[i][8])), 'col11': center.format(str(refs[i][9]))}
+        data.append(dict_)
 
+    pd = daf.TablePrinter(fmt, ul='')(data)
+    print(pd)
     print('')
+
+
+if args.clear_reflections:
+    dict_args = du.read()
+    dict_args['reflections'] = []
+    du.write(dict_args)
 
 if args.Umatrix:
+    dict_args = du.read()
     U = np.array(args.Umatrix).reshape(3,3)
     mode = [int(i) for i in dict_args['Mode']]
 
@@ -169,38 +201,44 @@ if args.Umatrix:
 
 
 if  args.Calc2 is not None:
+    dict_args = du.read()
+    refs = dict_args['reflections']
     mode = [int(i) for i in dict_args['Mode']]
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
     exp.set_exp_conditions(en = dict_args['Energy'])
-
-    if args.Calc2[0] == 1 and args.Calc2[1] == 2:
-        U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
-
-    elif args.Calc2[0] == 1 and args.Calc2[1] == 3:
-        U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl3, angs3)
-
-    elif args.Calc2[0] == 2 and args.Calc2[1] == 3:
-        U, UB = exp.calc_U_2HKL(hkl2, angs2, hkl3, angs3)
-
-
+    hkl1 = refs[args.Calc2[0] - 1][:3]
+    angs1 = refs[args.Calc2[0] - 1][3:-1]
+    hkl2 = refs[args.Calc2[1] - 1][:3]
+    angs2 = refs[args.Calc2[1] - 1][3:-1]
+    U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
 
     dict_args['U_mat'] = U.tolist()
     dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
-if  args.Calc3:
+if  args.Calc3 is not None:
+    dict_args = du.read()
+    refs = dict_args['reflections']
     mode = [int(i) for i in dict_args['Mode']]
-
     exp = daf.Control(*mode)
     # exp.set_material(dict_args['Material'])
-    exp.set_exp_conditions(en = dict_args['Energy'])
-
+    
+    hkl1 = refs[args.Calc3[0] - 1][:3]
+    angs1 = refs[args.Calc3[0] - 1][3:-1]
+    e1 = refs[args.Calc3[0] - 1][9]
+    hkl2 = refs[args.Calc3[1] - 1][:3]
+    angs2 = refs[args.Calc3[1] - 1][3:-1]
+    e2 = refs[args.Calc3[1] - 1][9]
+    hkl3 = refs[args.Calc3[2] - 1][:3]
+    angs3 = refs[args.Calc3[2] - 1][3:-1]
+    e3 = refs[args.Calc3[2] - 1][9]
+    e = (e1 + e2 + e3)/3
+    exp.set_exp_conditions(en = e)
     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
 
     rpf = [float(i) for i in rp]# Problems when saving numpy64floats, better to use python's float
-
     dict_args['U_mat'] = U.tolist()
     dict_args['UB_mat'] = UB.tolist()
     dict_args['lparam_a'] = rpf[0]
