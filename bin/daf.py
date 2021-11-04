@@ -612,8 +612,8 @@ class Control(object):
                        options={'disp' : False,
                                 'maxiter': 10000,
                                 'eps': 1e-6,
-                                'ftol': 1e-10})
-                       # bounds=bounds)
+                                'ftol': 1e-10}),
+                       bounds=bounds)
         vals = res.x
         q0, q1, q2, q3 = self._get_quat_from_u123(*vals)
         res_u = self._get_rot_matrix(q0, q1, q2, q3)
