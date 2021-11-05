@@ -97,6 +97,7 @@ psi: 0.0
 qaz: 90.0
 reflections: []
 scan_name: scan_test
+scan_stats: {}
 separator: ','
 setup: default
 setup_desc: This is DAF default setup

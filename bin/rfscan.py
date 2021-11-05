@@ -10,10 +10,13 @@ import dafutilities as du
 import pandas as pd
 import yaml
 import argparse as ap
+import h5py
 
 # Py4Syn imports
+import py4syn
 from py4syn.utils import scan as scanModule
 from py4syn.utils.scan import setFileWriter, getFileWriter, getOutput, createUniqueFileName
+
 
 # scan-utils imports
 from scan_utils.hdf5_writer import HDF5Writer
@@ -38,6 +41,7 @@ parser.add_argument('-cf', '--configuration', type=str, help='choose a counter c
 parser.add_argument('-t', '--time', metavar='', type=float, help='Acquisition time in each point in seconds. Default is 0.01s.')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
 parser.add_argument('-s', '--sync', help='write to the output file after each point', action='store_true')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
 
 args = parser.parse_args()
@@ -56,6 +60,11 @@ if args.time == None:
 	time = [[0.01]]
 else:
 	time = [[args.time]]
+
+if args.no_plot:
+    ptype = PlotType.none
+else:
+    ptype = PlotType.hdf
 
 scan_points = pd.read_csv(args.file_name)
 mu_points = [float(i) for i in scan_points["Mu"]] # Get only the points related to mu
@@ -79,7 +88,7 @@ with open('.points.yaml', 'w') as stream:
 
 args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
 'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': args.xlabel, 
-'prescan': 'ls', 'postscan': 'pwd', 'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 
+'prescan': 'ls', 'postscan': 'pwd', 'plot_type': ptype, 'relative': False, 'reset': False, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': time, 'filename': '.points.yaml'}
 
 class DAFScan(ScanOperationCLI):
@@ -96,6 +105,41 @@ class DAFScan(ScanOperationCLI):
         if bool(self.reset):
             print('[scan-utils] Reseting devices positions.')
             self.reset_motors()
+        self.write_stat()
+
+    def write_stat(self):
+        dict_ = {}
+        for counter_name, counter in py4syn.counterDB.items():
+            # Add statistic data as attributes
+            with h5py.File(self.unique_filename, 'a') as h5w:
+                scan_idx = list(h5w['Scan'].keys())
+                scan_idx = (scan_idx[-1])
+
+                _dataset_name = 'Scan/' + scan_idx + '/instrument/' + \
+                    counter_name
+                _xlabel_points = 'Scan/' + scan_idx + '/instrument/' + \
+                    self.xlabel + '/data'
+
+                y = h5w[_dataset_name][counter_name][:]
+
+                if self.xlabel == 'points':
+                    x = [i for i in range(len(y))]
+                else:
+                    x = h5w[_dataset_name][counter_name][:]
+
+                scanModule.fitData(x, y)
+                dict_[counter_name] = {}
+                dict_[counter_name]['peak'] = float(scanModule.PEAK)
+                dict_[counter_name]['peak_at'] = float(scanModule.PEAK_AT)
+                dict_[counter_name]['FWHM'] = float(scanModule.FWHM)
+                dict_[counter_name]['FWHM_at'] = float(scanModule.FWHM_AT)
+                dict_[counter_name]['COM'] = float(scanModule.COM)
+
+                dict_args = du.read()
+                dict_args['scan_stats'] = dict_
+                du.write(dict_args)
+
+
 scan = DAFScan()
 scan.run()
 

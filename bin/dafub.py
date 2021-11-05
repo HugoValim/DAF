@@ -27,13 +27,14 @@ Eg:
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('-r', '--reflection', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for this reflection')
-parser.add_argument('-rn', '--reflection-now', action='store_true', help='HKL for the current position')
+parser.add_argument('-rn', '--reflection-now', metavar=('H', 'K', 'L'), type=float, nargs=3, help='Store the current motor position with the given HKL')
 parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
 parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
 parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=int, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
 parser.add_argument('-c3', '--Calc3', metavar=('R1', 'R2', 'R3'), type=int, nargs=3, help='Calculate UB for 3 reflections, user must give the reflections that will be used')
 parser.add_argument('-f', '--fit', action='store_true', help='fit reflections')
-parser.add_argument('-cr', '--clear-reflections', action='store_true', help='Clear all stored reflections')
+parser.add_argument('-cr', '--clear-reflections', metavar = 'index', nargs = '*', type=int,help='Clear reflections by index')
+parser.add_argument('-ca', '--clear-all', action='store_true', help='Clear all stored reflections')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
 parser.add_argument('-p', '--Params', action='store_true', help='Lattice parameters if 3 reflection calculation had been done')
@@ -125,12 +126,12 @@ if args.reflection is not None:
     dict_args['reflections'] = ref
     du.write(dict_args)
 
-if args.reflection_now:
+if args.reflection_now is not None:
     dict_args = du.read()
     ref = dict_args['reflections']
-    h = dict_args['hklnow'][0]
-    k = dict_args['hklnow'][1]
-    l = dict_args['hklnow'][2]
+    h = args.reflection_now[0]
+    k = args.reflection_now[1]
+    l = args.reflection_now[2]
     mu = dict_args['Mu']
     eta = dict_args['Eta']
     chi = dict_args['Chi']
@@ -180,7 +181,15 @@ if args.list:
     print('')
 
 
-if args.clear_reflections:
+if args.clear_reflections is not None:
+    dict_args = du.read()
+    list_ = dict_args['reflections']
+    for idx in args.clear_reflections:
+        list_.pop(idx - 1)
+    dict_args['reflections'] = list_
+    du.write(dict_args) 
+
+if args.clear_all:
     dict_args = du.read()
     dict_args['reflections'] = []
     du.write(dict_args)

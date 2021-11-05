@@ -67,7 +67,9 @@ data = {'Mode': '2052',
 		'user_samples' : {},
 		'setup_desc' : 'This is DAF default setup',
 		'default_counters' : 'config.daf_default.yml',
-		'dark_mode' : 0
+		'dark_mode' : 0,
+		'scan_stats' : {},
+		'energy_PV' : 0.
 
 
 
