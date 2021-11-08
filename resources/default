@@ -6,6 +6,10 @@ IDir:
 - 0
 - 1
 - 0
+IDir_print:
+- 0
+- 1
+- 0
 Material: Si
 Max_diff: 0.1
 Mode: '2052'
@@ -14,7 +18,12 @@ NDir:
 - 0
 - 0
 - 1
+NDir_print:
+- 0
+- 0
+- 1
 Nu: 0.0
+PV_energy: 0.0
 Phi: 0.0
 Print_cmarker: ''
 Print_marker: ''

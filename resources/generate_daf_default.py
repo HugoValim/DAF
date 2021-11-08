@@ -7,7 +7,9 @@ import yaml
 data = {'Mode': '2052',
 		'Material' : 'Si',
 		'IDir' : [0,1,0],
+		'IDir_print' : [0,1,0],
 		'NDir' : [0,0,1],
+		'NDir_print' : [0,0,1],
 		'RDir' : [0,0,1],
 		'Sampleor' : 'z+',
 		'Energy' : 8000,
@@ -69,7 +71,7 @@ data = {'Mode': '2052',
 		'default_counters' : 'config.daf_default.yml',
 		'dark_mode' : 0,
 		'scan_stats' : {},
-		'energy_PV' : 0.
+		'PV_energy' : 0.
 
 
 

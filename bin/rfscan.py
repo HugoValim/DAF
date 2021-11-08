@@ -7,6 +7,7 @@ import subprocess
 import daf
 import numpy as np
 import dafutilities as du
+import scan_daf as sd
 import pandas as pd
 import yaml
 import argparse as ap
@@ -46,14 +47,6 @@ parser.add_argument('-x', '--xlabel', help='motor which position is shown in x a
 
 args = parser.parse_args()
 dic = vars(args)
-
-# dict_args = du.read()
-
-# for j,k in dic.items():
-#     if j in dict_args and k is not None:
-#         dict_args[j] = str(k)
-# du.write(dict_args, is_scan = True)
-
 dict_args = du.read()
 
 if args.time == None:
@@ -91,56 +84,7 @@ args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum':
 'prescan': 'ls', 'postscan': 'pwd', 'plot_type': ptype, 'relative': False, 'reset': False, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': time, 'filename': '.points.yaml'}
 
-class DAFScan(ScanOperationCLI):
-
-    def __init__(self):
-        super().__init__(**args)
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-        self.write_stat()
-
-    def write_stat(self):
-        dict_ = {}
-        for counter_name, counter in py4syn.counterDB.items():
-            # Add statistic data as attributes
-            with h5py.File(self.unique_filename, 'a') as h5w:
-                scan_idx = list(h5w['Scan'].keys())
-                scan_idx = (scan_idx[-1])
-
-                _dataset_name = 'Scan/' + scan_idx + '/instrument/' + \
-                    counter_name
-                _xlabel_points = 'Scan/' + scan_idx + '/instrument/' + \
-                    self.xlabel + '/data'
-
-                y = h5w[_dataset_name][counter_name][:]
-
-                if self.xlabel == 'points':
-                    x = [i for i in range(len(y))]
-                else:
-                    x = h5w[_dataset_name][counter_name][:]
-
-                scanModule.fitData(x, y)
-                dict_[counter_name] = {}
-                dict_[counter_name]['peak'] = float(scanModule.PEAK)
-                dict_[counter_name]['peak_at'] = float(scanModule.PEAK_AT)
-                dict_[counter_name]['FWHM'] = float(scanModule.FWHM)
-                dict_[counter_name]['FWHM_at'] = float(scanModule.FWHM_AT)
-                dict_[counter_name]['COM'] = float(scanModule.COM)
-
-                dict_args = du.read()
-                dict_args['scan_stats'] = dict_
-                du.write(dict_args)
-
-
-scan = DAFScan()
+scan = sd.DAFScan(args)
 scan.run()
 
 log = sys.argv.pop(0).split('command_line/')[1]

@@ -19,25 +19,41 @@ Eg:
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
-parser.add_argument('-m', '--Mu', metavar='ang', type=float, help='Sets Mu angle to a desired position')
-parser.add_argument('-e', '--Eta', metavar='ang', type=float, help='Sets Eta angle to a desired position')
-parser.add_argument('-c', '--Chi', metavar='ang', type=float, help='Sets Chi angle to a desired position')
-parser.add_argument('-p', '--Phi', metavar='ang', type=float, help='Sets Phi angle to a desired position')
-parser.add_argument('-n', '--Nu', metavar='ang', type=float, help='Sets Nu angle to a desired position')
-parser.add_argument('-d', '--Del', metavar='ang', type=float, help='Sets Del angle to a desired position')
-# parser.add_argument('-v', '--verbosity', action='store_true', help='Show full output')
-
+parser.add_argument('-m', '--Mu', metavar='ang', type=str, help='Sets Mu angle to a desired position')
+parser.add_argument('-e', '--Eta', metavar='ang', type=str, help='Sets Eta angle to a desired position')
+parser.add_argument('-c', '--Chi', metavar='ang', type=str, help='Sets Chi angle to a desired position')
+parser.add_argument('-p', '--Phi', metavar='ang', type=str, help='Sets Phi angle to a desired position')
+parser.add_argument('-n', '--Nu', metavar='ang', type=str, help='Sets Nu angle to a desired position')
+parser.add_argument('-d', '--Del', metavar='ang', type=str, help='Sets Del angle to a desired position')
+parser.add_argument('-co', '--counter', metavar='counter', type=str, help='Choose the counter to be used')
 args = parser.parse_args()
 dic = vars(args)
 
+def write_angs():
+    dict_args = du.read()
+    dict_ = dict_args['scan_stats']
+    if dict_:
+        if args.counter is not None:
+            CEN = dict_[args.counter]['FWHM_at']
+            MAX = dict_[args.counter]['peak_at']
+            stat_dict = {'CEN' : CEN, 'MAX' : MAX}
+        else:
+            values_view = dict_.keys()
+            value_iterator = iter(values_view)
+            first_key = next(value_iterator)
+            CEN = dict_[first_key]['FWHM_at']
+            MAX = dict_[first_key]['peak_at']
+            stat_dict = {'CEN' : CEN, 'MAX' : MAX}
 
-dict_args = du.read()
 
-for j,k in dic.items():
-    if j in dict_args and k is not None:
-        dict_args[j] = str(k)
-du.write(dict_args)
-
+    for j,k in dic.items():
+        if j in dict_args and k is not None:
+            if k == 'CEN' or k == 'MAX':
+                dict_args[j] = stat_dict[k]
+            else:
+                dict_args[j] = float(k)
+    du.write(dict_args)
+write_angs()
 
 dict_args = du.read()
 

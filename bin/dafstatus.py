@@ -36,8 +36,8 @@ dict_args = du.read()
 lb = lambda x: "{:.5f}".format(float(x))
 
 mode = [int(i) for i in dict_args['Mode']]
-idir = dict_args['IDir']
-ndir = dict_args['NDir']
+idir = dict_args['IDir_print']
+ndir = dict_args['NDir_print']
 rdir = dict_args['RDir']
 
 Mu_bound = dict_args['bound_Mu']

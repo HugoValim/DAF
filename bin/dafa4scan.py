@@ -6,6 +6,7 @@ import os
 import subprocess
 import numpy as np
 import dafutilities as du
+import scan_daf as sd
 import yaml
 import argparse as ap
 
@@ -41,6 +42,7 @@ parser.add_argument('time', metavar='time', type=float, help='Acquisition time i
 parser.add_argument('-cf', '--configuration', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -72,26 +74,18 @@ print(data_for_scan)
 with open('.points.yaml', 'w') as stream:
     yaml.dump(data_for_scan, stream, allow_unicode=False)
 
+if args.no_plot:
+    ptype = PlotType.none
+else:
+    ptype = PlotType.hdf
+
 args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
 'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': args.xlabel, 
-'prescan': 'ls', 'postscan': 'pwd', 'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 
+'prescan': 'ls', 'postscan': 'pwd', 'plot_type': ptype, 'relative': False, 'reset': False, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': [[args.time]], 'filename': '.points.yaml'}
 
-class DAFScan(ScanOperationCLI):
 
-    def __init__(self):
-        super().__init__(**args)
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-scan = DAFScan()
+scan = sd.DAFScan(args)
 scan.run()
 
 log = sys.argv.pop(0).split('command_line/')[1]
