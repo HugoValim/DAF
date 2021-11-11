@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Perform an relative scan in one of the diffractometer motors"""
+"""Perform a mesh scan using two of the diffractometer motors"""
 
 import sys
 import os
@@ -23,8 +23,8 @@ from scan_utils.scan import ScanOperationCLI
 
 epi = '''
 Eg:
-    daf.rscan m -2 2 100 .1
-    daf.rscan mu 2 4 100 .1 -o my_scan
+    daf.mesh -e -2 2 -d -2 6 100 .1
+    daf.mesh -e -2 2 -d -2 6 100 .1 -np
 
     '''
 

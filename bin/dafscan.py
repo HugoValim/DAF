@@ -109,11 +109,11 @@ if not args.calc:
         time = args.time
         os.system("daf.rfscan -f {} -t {} -x {} -o {}".format(dict_args['scan_name'], time, args.xlabel, args.output))
 
-max_error = float(angs[16])
-if max_error < 1e-4:
-    for j,k in exp_dict.items():
-        if j in dict_args:
-            dict_args[j] = str(k)
+# max_error = float(angs[16])
+# if max_error < 1e-4:
+#     for j,k in exp_dict.items():
+#         if j in dict_args:
+#             dict_args[j] = str(k)
     # du.write(dict_args, is_scan = True)
 
 

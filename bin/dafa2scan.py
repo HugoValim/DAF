@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Perform an relative scan in one of the diffractometer motors"""
+"""Perform an absolute scan using two of the diffractometer motors"""
 
 import sys
 import os

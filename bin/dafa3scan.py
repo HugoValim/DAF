@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Perform an relative scan in one of the diffractometer motors"""
+"""Perform an absolute scan using three of the diffractometer motors"""
 
 import sys
 import os
@@ -23,8 +23,8 @@ from scan_utils.scan import ScanOperationCLI
 
 epi = '''
 Eg:
-    daf.a3scan -m 1 10 -e 1 20 -c 5 20 100 .1
-
+    daf.a3scan -d 1 10 -e 1 20 -c 5 20 100 .1
+    daf.a3scan -d 1 10 -e 1 20 -c 5 20 100 .1 -o my_scan -np
     '''
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)

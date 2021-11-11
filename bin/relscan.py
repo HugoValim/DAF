@@ -22,9 +22,10 @@ from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
 epi = '''
-Eg:
-    daf.rscan m -2 2 100 .1
-    daf.rscan mu 2 4 100 .1 -o my_scan
+Eg: 
+    daf.lup -m -2 2 100 .1
+    daf.dscan -m -2 2 100 .1
+    daf.dscan -m -2 2 100 .1 -np -o my_file
 
     '''
 
