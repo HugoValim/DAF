@@ -1,6 +1,5 @@
 Chi: 0.0
 Del: 0.0
-Energy: 8000
 Eta: 0.0
 IDir:
 - 0
@@ -87,6 +86,7 @@ cons_psi: 0.0
 cons_qaz: 0.0
 dark_mode: 0
 default_counters: config.daf_default.yml
+energy_offset: 0.0
 hkl: ''
 hklnow:
 - 0

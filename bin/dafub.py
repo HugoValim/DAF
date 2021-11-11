@@ -118,7 +118,7 @@ if args.Params:
 if args.reflection is not None:
     dict_args = du.read()
     ref = dict_args['reflections']
-    en = dict_args['Energy']
+    en = dict_args['PV_energy'] - dict_args['energy_offset']
     if en < 50 :
         en = float(xu.lam2en(en))
     args.reflection.append(en)
@@ -138,7 +138,7 @@ if args.reflection_now is not None:
     phi = dict_args['Phi']
     nu = dict_args['Nu']
     delta = dict_args['Del']
-    en = dict_args['Energy']
+    en = dict_args['PV_energy'] - dict_args['energy_offset']
     if en < 50 :
         en = float(xu.lam2en(en))
     ref_now = [h, k, l, mu, eta, chi, phi, nu , delta, en]
@@ -208,7 +208,7 @@ if args.Umatrix:
         exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
     
     # exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_exp_conditions(en = dict_args['PV_energy'] - dict_args['energy_offset'])
     exp.set_U(U)
     UB = exp.calcUB()
     dict_args['U_mat'] = U.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
@@ -223,7 +223,7 @@ if  args.Calc2 is not None:
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-    exp.set_exp_conditions(en = dict_args['Energy'])
+    exp.set_exp_conditions(en = dict_args['PV_energy'] - dict_args['energy_offset'])
     hkl1 = refs[args.Calc2[0] - 1][:3]
     angs1 = refs[args.Calc2[0] - 1][3:-1]
     hkl2 = refs[args.Calc2[1] - 1][:3]
@@ -272,7 +272,7 @@ if args.fit:
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-    exp.set_exp_conditions(en = dict_args['Energy'])
+    exp.set_exp_conditions(en = dict_args['PV_energy'] - dict_args['energy_offset'])
     U = np.array(dict_args['U_mat'])
     if dict_args['Material'] in dict_args['user_samples'].keys():
         exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])

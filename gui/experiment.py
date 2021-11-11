@@ -81,10 +81,10 @@ class MyDisplay(Display):
         lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
         dict_args = self.get_experiment_file()
         if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
-            self.ui.lineEdit_e_wl.setText(str(lb(dict_args['Energy'])))
+            self.ui.lineEdit_e_wl.setText(str(lb(dict_args['PV_energy'] - dict_args['energy_offset'])))
         elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
             # lb = lambda x: "{:.5f}".format(float(x))
-            wl = xu.en2lam(dict_args['Energy'])
+            wl = xu.en2lam(dict_args['PV_energy'] - dict_args['energy_offset'])
             self.ui.lineEdit_e_wl.setText(str(lb(wl)))
 
     def set_labels(self):
@@ -96,12 +96,12 @@ class MyDisplay(Display):
 
         if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
             
-            self.ui.lineEdit_e_wl.setText(str(dict_args['Energy']))
+            self.ui.lineEdit_e_wl.setText(str(dict_args['PV_energy'] - dict_args['energy_offset']))
         
         elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
             
             # lb = lambda x: "{:.5f}".format(float(x))
-            wl = xu.en2lam(dict_args['Energy'])
+            wl = xu.en2lam(dict_args['PV_energy'] - dict_args['energy_offset'])
             self.ui.lineEdit_e_wl.setText(str(wl))
 
         idir = dict_args['IDir']

@@ -66,7 +66,7 @@ ndir = dict_args['NDir']
 rdir = dict_args['RDir']
 
 exp = daf.Control(*mode)
-exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = float(dict_args['Energy']), sampleor = dict_args['Sampleor'])
+exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
 
 if dict_args['Material'] in dict_args['user_samples'].keys():
     exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
