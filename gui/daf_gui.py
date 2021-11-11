@@ -65,8 +65,8 @@ class Worker(QObject):
 
 
         mode = [int(i) for i in dict_args['Mode']]
-        idir = dict_args['IDir']
-        ndir = dict_args['NDir']
+        idir = dict_args['IDir_print']
+        ndir = dict_args['NDir_print']
         rdir = dict_args['RDir']
 
         exp = daf.Control(*mode)

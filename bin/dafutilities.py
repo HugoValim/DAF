@@ -46,7 +46,7 @@ def read(filepath=DEFAULT):
     with open(filepath) as file:
         data = yaml.safe_load(file)
         epics_get(data)
-        write(data)
+        # write(data)
         return data
 
 
