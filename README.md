@@ -6,7 +6,7 @@
 
 
 
-### Tutorial
+## Tutorial
 
 To start using DAF first you'll need to export the command's path, to do so enter in the clonned directory and execute the init.sh script:
 ```
@@ -16,10 +16,11 @@ Now check if it went well by typing daf. and pressing tab two times, the result 
 
 ```
 daf.
-daf.amv     daf.bounds  daf.cons    daf.expt    daf.init    daf.macro   daf.mode    daf.mv      daf.reset   daf.rmap    daf.scan    daf.setup   daf.status  daf.ub      daf.wh 
+daf.a2scan  daf.a4scan  daf.a6scan  daf.ascan   daf.ca      daf.d2scan  daf.d4scan  daf.d6scan  daf.expt    daf.init    daf.macro   daf.mesh    daf.mv      daf.rfscan  daf.scan    daf.status  daf.wh      
+daf.a3scan  daf.a5scan  daf.amv     daf.bounds  daf.cons    daf.d3scan  daf.d5scan  daf.dscan   daf.gui     daf.lup     daf.mc      daf.mode    daf.reset   daf.rmap    daf.setup   daf.ub 
 ```
 
-Them you just need to move to a desired directory where you want the data to be generated and use DAF.
+Then you just need to move to a desired directory where you want the data to be generated and use DAF.
 
 First initialize DAF:
 ```
@@ -59,8 +60,19 @@ Eg:
     daf.expt -i 1 0 0 -n 0 1 0  
 ```
 
-Them use the functions daf.expt, daf.mode, daf.bounds, daf.cons, daf.ub in order to define your experiment conditions.
+DAF also have a intuitive GUI that can be launched by the following command:
 
+```
+daf.gui
+```
+![This is a alt text.](images/gui_tab_1.png "Status tab")
+![This is a alt text.](images/gui_tab_2.png "Position tab")
+![This is a alt text.](images/gui_tab_3.png "Scan tab")
+![This is a alt text.](images/gui_tab_4.png "Setup tab")
+
+Use the functions daf.expt, daf.mode, daf.bounds, daf.cons and daf.ub in command line or the GUI functions "Set Mode", "Set Experiment", "Set Sample", "Set U and UB" and "Set Bounds" to define your experiment conditions.
+
+### Command Line
 ```
 daf.expt -m Si -e 12000
 daf.expt -m my_sample -p 5.431 5.431 5.431 90 90 90
@@ -126,10 +138,10 @@ daf.cons -n 30 -m 0
 The orientation matrix can also be calculated by two or three reflections:
 
 ```
-daf.ub -r1 1 0 0 0 5.28232 0 2 0 10.5647
-daf.ub -r2 0 1 0 0 5.28232 2 92 0 10.5647
-daf.ub -r3 0 0 1 0 5.28232 92 92 0 10.5647
-daf.ub -c3
+daf.ub -r 1 0 0 0 5.28232 0 2 0 10.5647
+daf.ub -r 0 1 0 0 5.28232 2 92 0 10.5647
+daf.ub -r 0 0 1 0 5.28232 92 92 0 10.5647
+daf.ub -c3 1 2 3
 daf.ub -s
 
                                                 
@@ -208,7 +220,7 @@ Del     =    30.00000
 Move directly by an hkl with daf.mv:
 
 ```
-daf.mv 1 1 1 -v
+daf.mv 1 1 1
 
    MODE        nu_fix       α = β       η = δ/2         --           --         Error     
   21500       0.00000         --           --           --           --        6.47e-09   
@@ -237,7 +249,7 @@ daf.rmap
 ![This is a alt text.](images/rmape.png "daf.rmap interface")
 
 
-To perform a scan from hkl (1 1 1) to hkl (1.1 1.1 1.1), and save it on a csv file called my_scan:
+To perform a scan in HKL, from hkl (1 1 1) to hkl (1.1 1.1 1.1), use daf.scan function:
 
 ```
 daf.scan 1 1 1 1.1 1.1 1.1 10 -n my_scan -v
@@ -257,6 +269,51 @@ daf.scan 1 1 1 1.1 1.1 1.1 10 -n my_scan -v
 
 ```
 
+There are several others "simple" scan options, to use them use the --help option:
+
+```
+daf.a2scan
+daf.a3scan
+daf.a4scan
+daf.a5scan
+daf.a6scan
+daf.ascan
+daf.d2scan
+daf.d3scan
+daf.d4scan
+daf.d5scan
+daf.d6scan
+daf.dscan
+daf.rfscan
+daf.scan
+```
+
+Manage the counters thats going to be used in the scan by the function "daf.mc".
+
+List all available counters:
+
+```
+daf.mc -lac
+```
+Create a new counter file:
+
+```
+daf.mc -n file_name
+```
+
+Add a counter to a config file:
+
+```
+daf.mc -a file_name pilatus_roi1 pilatus_roi2
+
+```
+
+Set the counter file to be used in the scans as default:
+
+```
+daf.mc -s file_name
+```
+
 You can always return everything to default by using:
 
 ```
@@ -269,7 +326,7 @@ And also consult your daf's commands in the log file generated in your currently
 vi Log
 ```
 
-If you find any configuration that you liked you can save it as an enviroment:
+If you find any configuration that you find useful you can save it as an enviroment:
 
 ```
 daf.setup -s env_1.0
@@ -292,4 +349,41 @@ daf.setup -c env_1.0
 
 As daf is runned in terminal, you can use any shell command to interact with it, and also generate macros by shell scripting.
 
-A more consistent documentation is being developed.
+### GUI
+
+Set experiment conditions in by clicking in "Set Experiment" in the Status tab:
+
+![This is a alt text.](images/set_experiment.png "Set Experiment interface")
+
+Set a sample in database or create a new one by clicking in "Set Sample" in the Status tab:
+
+![This is a alt text.](images/set_sample.png "Set Sample interface")
+
+To set a mode and choose a value for the fixed angles in the mode, click in the "Set Mode" button in the "Status" tab, and the Set mode window will be launched:
+
+![This is a alt text.](images/set_mode.png "Set Mode interface")
+
+In order to set the bounds limits, click in the "Set Bounds" button in the "Status" tab, and the Set bounds window will be launched:
+
+![This is a alt text.](images/set_bounds.png "Set bounds interface")
+
+
+The orientation matrix can also be calculated directly by GUI by two or three reflections. Click in the "Set " button in the "Status" tab, and the Set bounds window will be launched:
+The reflections to be used in calculation must be chosen by checking the checkboxes in the right side of the table, and then click in the button calculate from 2 or 3 reflections. You can also pass U and UB matrix manually in the "Set U and UB" tab.
+
+![This is a alt text.](images/set_u_and_ub_1.png "Set U and UB interface")
+![This is a alt text.](images/set_u_and_ub_2.png "Set U and UB interface")
+
+
+Use the "Status" tab to keep up to what you'd defined and the position tab to see the HKL, real-angles and pseudo-angles position. Click in the "Move in HKL" to move to a position by its HKL coordinates.
+
+![This is a alt text.](images/gui_tab_1.png "Status tab")
+![This is a alt text.](images/gui_tab_2.png "Position tab")
+
+HKL Scans can be performed via "Scan" tab, it is possible to handle the counter that are going to be used in this tab as well
+
+![This is a alt text.](images/gui_tab_3.png "Scan tab")
+
+If you find any configuration that you find useful you can save it as an enviroment and manage it from the GUI. To do it, use the "Setup" tab.
+
+![This is a alt text.](images/gui_tab_4.png "Setup tab")
