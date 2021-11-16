@@ -7,13 +7,17 @@ import subprocess
 import daf
 import numpy as np
 import dafutilities as du
+import scan_daf as sd
 import pandas as pd
 import yaml
 import argparse as ap
+import h5py
 
 # Py4Syn imports
+import py4syn
 from py4syn.utils import scan as scanModule
 from py4syn.utils.scan import setFileWriter, getFileWriter, getOutput, createUniqueFileName
+
 
 # scan-utils imports
 from scan_utils.hdf5_writer import HDF5Writer
@@ -38,24 +42,22 @@ parser.add_argument('-cf', '--configuration', type=str, help='choose a counter c
 parser.add_argument('-t', '--time', metavar='', type=float, help='Acquisition time in each point in seconds. Default is 0.01s.')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
 parser.add_argument('-s', '--sync', help='write to the output file after each point', action='store_true')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
 
 args = parser.parse_args()
 dic = vars(args)
-
-# dict_args = du.read()
-
-# for j,k in dic.items():
-#     if j in dict_args and k is not None:
-#         dict_args[j] = str(k)
-# du.write(dict_args, is_scan = True)
-
 dict_args = du.read()
 
 if args.time == None:
 	time = [[0.01]]
 else:
 	time = [[args.time]]
+
+if args.no_plot:
+    ptype = PlotType.none
+else:
+    ptype = PlotType.hdf
 
 scan_points = pd.read_csv(args.file_name)
 mu_points = [float(i) for i in scan_points["Mu"]] # Get only the points related to mu
@@ -79,24 +81,10 @@ with open('.points.yaml', 'w') as stream:
 
 args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
 'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': args.xlabel, 
-'prescan': 'ls', 'postscan': 'pwd', 'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 
+'prescan': 'ls', 'postscan': 'pwd', 'plot_type': ptype, 'relative': False, 'reset': False, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': time, 'filename': '.points.yaml'}
 
-class DAFScan(ScanOperationCLI):
-
-    def __init__(self):
-        super().__init__(**args)
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-scan = DAFScan()
+scan = sd.DAFScan(args)
 scan.run()
 
 log = sys.argv.pop(0).split('command_line/')[1]

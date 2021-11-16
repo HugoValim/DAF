@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Perform an absolute scan using six of the diffractometer motors"""
+"""Perform an relative scan in six of the diffractometer motors"""
 
 import sys
 import os
@@ -9,6 +9,7 @@ import dafutilities as du
 import scan_daf as sd
 import yaml
 import argparse as ap
+import epics
 
 # scan-utils imports
 from scan_utils.hdf5_writer import HDF5Writer
@@ -22,15 +23,13 @@ from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
 epi = '''
-Eg:
-    daf.a6scan -d 1 10 -e 1 20 -c 5 20 -p 30 40 -n -10 10 -m 35 46 100 .1
-    daf.a6scan -d 1 10 -e 1 20 -c 5 20 -p 30 40 -n -10 10 -m 35 46 100 .1 -o my_scan -np
+Eg: 
+    daf.d6scan -m -2 2 -e -4 4 -c -2 2 -p -5 5 -n -3 3 -d -4 4 100 .1
+    daf.d6scan -m -2 2 -e -4 4 -c -2 2 -p -5 5 -n -3 3 -d -4 4 100 .1 -np -o my_file
 
     '''
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
-
-
 parser.add_argument('-m', '--mu', metavar='ang', type=float, nargs=2, help='Start and end for Mu')
 parser.add_argument('-e', '--eta', metavar='ang', type=float, nargs=2, help='Start and end for Eta')
 parser.add_argument('-c', '--chi', metavar='ang', type=float, nargs=2, help='Start and end for Chi')
@@ -38,24 +37,32 @@ parser.add_argument('-p', '--phi', metavar='ang', type=float, nargs=2, help='Sta
 parser.add_argument('-n', '--nu', metavar='ang', type=float, nargs=2, help='Start and end for Nu')
 parser.add_argument('-d', '--del', metavar='ang', type=float, nargs=2, help='Start and end for Del')
 parser.add_argument('step', metavar='step', type=int, help='Number of steps')
-parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds', default=0.1)
-parser.add_argument('-cf', '--configuration', type=str, help='choose a counter configuration file', default='default')
-parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
+parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
+parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
+parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
 parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
 
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
 
-
 if du.PV_PREFIX == "EMA:B:PB18":
     data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
             'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
-
 else:
     data = {'mu':'sol_m3', 'eta':'sol_m5', 'chi':'sol_m2',
             'phi':'sol_m1', 'nu':'sol_m4', 'del':'sol_m6'}
+
+mu_now = dict_args['Mu']
+eta_now = dict_args['Eta']
+chi_now = dict_args['Chi']
+phi_now = dict_args['Phi']
+nu_now = dict_args['Nu']
+del_now = dict_args['Del']
+
+motor_dict = {'mu':mu_now, 'eta':eta_now, 'chi':chi_now,
+              'phi':phi_now, 'nu':nu_now, 'del':del_now}
 
 n = 0
 motors = []
@@ -64,7 +71,7 @@ for key, val in dic.items():
     if isinstance(val, list):
         motor = key
         motors.append(data[motor])
-        points = np.linspace(val[0], val[1], args.step + 1)
+        points = np.linspace(motor_dict[motor] + val[0], motor_dict[motor] + val[1], args.step + 1)
         points = [float(i) for i in points]
         data_for_scan[data[motor]] = points
         n += 1
@@ -78,10 +85,9 @@ if args.no_plot:
     ptype = PlotType.none
 else:
     ptype = PlotType.hdf
-
 args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
 'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': args.xlabel, 
-'prescan': 'ls', 'postscan': 'pwd', 'plot_type': ptype, 'relative': False, 'reset': False, 'step_mode': False, 
+'prescan': 'ls', 'postscan': 'pwd', 'plot_type': ptype, 'relative': False, 'reset': True, 'step_mode': False, 
 'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': [[args.time]], 'filename': '.points.yaml'}
 
 scan = sd.DAFScan(args)

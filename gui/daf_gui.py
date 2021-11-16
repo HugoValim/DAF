@@ -65,12 +65,12 @@ class Worker(QObject):
 
 
         mode = [int(i) for i in dict_args['Mode']]
-        idir = dict_args['IDir']
-        ndir = dict_args['NDir']
+        idir = dict_args['IDir_print']
+        ndir = dict_args['NDir_print']
         rdir = dict_args['RDir']
 
         exp = daf.Control(*mode)
-        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['Energy'], sampleor = dict_args['Sampleor'])
+        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
 
         if dict_args['Material'] in dict_args['user_samples'].keys():
             exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])

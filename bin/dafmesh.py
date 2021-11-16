@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Perform an relative scan in one of the diffractometer motors"""
+"""Perform a mesh scan using two of the diffractometer motors"""
 
 import sys
 import os
 import subprocess
 import numpy as np
 import dafutilities as du
+import scan_daf as sd
 import yaml
 import argparse as ap
 
@@ -22,8 +23,8 @@ from scan_utils.scan import ScanOperationCLI
 
 epi = '''
 Eg:
-    daf.rscan m -2 2 100 .1
-    daf.rscan mu 2 4 100 .1 -o my_scan
+    daf.mesh -e -2 2 -d -2 6 100 .1
+    daf.mesh -e -2 2 -d -2 6 100 .1 -np
 
     '''
 
@@ -40,6 +41,7 @@ parser.add_argument('step', metavar='step', type=int, help='Number of steps')
 parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -70,25 +72,16 @@ for key, val in dic.items():
     if n == 2:
         break
 
+if args.no_plot:
+    ptype = PlotType.none
+else:
+    ptype = PlotType.hdf
+
 args = {'motor' : motors, 'start' : [start], 'end': [end], 'step_or_points': [step], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
         'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
-        'plot_type': PlotType.hdf, 're1lative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
+        'plot_type': ptype, 're1lative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
 
-class DAFScan(ScanOperationCLI):
-
-    def __init__(self):
-        super().__init__(**args)
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-scan = DAFScan()
+scan = sd.DAFScan()
 scan.run()
 
 log = sys.argv.pop(0).split('command_line/')[1]

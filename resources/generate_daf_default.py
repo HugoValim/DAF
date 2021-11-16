@@ -7,10 +7,12 @@ import yaml
 data = {'Mode': '2052',
 		'Material' : 'Si',
 		'IDir' : [0,1,0],
+		'IDir_print' : [0,1,0],
 		'NDir' : [0,0,1],
+		'NDir_print' : [0,0,1],
 		'RDir' : [0,0,1],
 		'Sampleor' : 'z+',
-		'Energy' : 8000,
+		'energy_offset' : 0.,
 		'bound_Mu' : [-20.0, 160.0],
 		'bound_Eta' : [-20.0, 160.0],
 		'bound_Chi' : [-5.0, 95.0],
@@ -67,7 +69,9 @@ data = {'Mode': '2052',
 		'user_samples' : {},
 		'setup_desc' : 'This is DAF default setup',
 		'default_counters' : 'config.daf_default.yml',
-		'dark_mode' : 0
+		'dark_mode' : 0,
+		'scan_stats' : {},
+		'PV_energy' : 0.
 
 
 

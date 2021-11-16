@@ -11,19 +11,23 @@ import numpy as np
 HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
 PV_PREFIX = "EMA:B:PB18"
-PV_PREFIX = "SOL:S"
-PV_PREFIX = "IOC"
+# PV_PREFIX = "SOL:S"
+# PV_PREFIX = "IOC"
 
 
 PVS = {
-"Phi" : PV_PREFIX + ":m1",
-"Chi" : PV_PREFIX + ":m2",
-"Mu"  : PV_PREFIX + ":m3",
-"Nu"  : PV_PREFIX + ":m4",
-"Eta" : PV_PREFIX + ":m5",
-"Del" : PV_PREFIX + ":m6",
+        "Phi" : PV_PREFIX + ":m1",
+        "Chi" : PV_PREFIX + ":m2",
+        "Mu"  : PV_PREFIX + ":m3",
+        "Nu"  : PV_PREFIX + ":m4",
+        "Eta" : PV_PREFIX + ":m5",
+        "Del" : PV_PREFIX + ":m6",
 }
 
+BL_PVS = {
+
+    'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
+}
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
 
@@ -33,12 +37,17 @@ def epics_get(dict_):
         dict_[key] = MOTORS[key].readback
         dict_["bound_" + key] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
 
+    for key, value in BL_PVS.items():
+        dict_[key] = float(epics.caget(BL_PVS[key]))*1000
+
 
 def read(filepath=DEFAULT):
     with open(filepath) as file:
         data = yaml.safe_load(file)
         epics_get(data)
+        # write(data)
         return data
+
 
 
 

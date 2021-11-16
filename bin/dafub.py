@@ -6,31 +6,35 @@ import sys
 import os
 import daf
 import numpy as np
+import xrayutilities as xu
+
 import dafutilities as du
 
 
 
 epi = '''
 Eg:
-    daf.ub -r1 1 0 0 0 5.28232 0 2 0 10.5647
-    daf.ub -r2 0 1 0 0 5.28232 2 92 0 10.5647
+    daf.ub -r 1 0 0 0 5.28232 0 2 0 10.5647
+    daf.ub -r 0 1 0 0 5.28232 2 92 0 10.5647
     daf.ub -c2 1 2
-    daf.ub -c2 2 3
+    daf.ub -c3 1 2 3
     daf.ub -U 1 0 0 0 1 0 0 0 1
-    daf.up -s
-    daf.up -s -p
+    daf.ub -s
+    daf.ub -s -p
     '''
 
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
 
 parser.add_argument('-r', '--reflection', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for this reflection')
-parser.add_argument('-rn', '--reflection-now', action='store_true', help='HKL for the current position')
+parser.add_argument('-rn', '--reflection-now', metavar=('H', 'K', 'L'), type=float, nargs=3, help='Store the current motor position with the given HKL')
 parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
 parser.add_argument('-UB', '--UBmatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets UB matrix')
 parser.add_argument('-c2', '--Calc2', metavar=('R1', 'R2'),type=int, nargs=2, help='Calculate UB for 2 reflections, user must give the reflections that will be used')
 parser.add_argument('-c3', '--Calc3', metavar=('R1', 'R2', 'R3'), type=int, nargs=3, help='Calculate UB for 3 reflections, user must give the reflections that will be used')
-parser.add_argument('-cr', '--clear-reflections', action='store_true', help='Clear all stored reflections')
+parser.add_argument('-f', '--fit', action='store_true', help='fit reflections')
+parser.add_argument('-cr', '--clear-reflections', metavar = 'index', nargs = '*', type=int,help='Clear reflections by index')
+parser.add_argument('-ca', '--clear-all', action='store_true', help='Clear all stored reflections')
 parser.add_argument('-l', '--list', action='store_true', help='List stored reflections')
 parser.add_argument('-s', '--Show', action='store_true', help='Show U and UB')
 parser.add_argument('-p', '--Params', action='store_true', help='Lattice parameters if 3 reflection calculation had been done')
@@ -114,7 +118,10 @@ if args.Params:
 if args.reflection is not None:
     dict_args = du.read()
     ref = dict_args['reflections']
-    args.reflection.append(dict_args['Energy'])
+    en = dict_args['PV_energy'] - dict_args['energy_offset']
+    if en < 50 :
+        en = float(xu.lam2en(en))
+    args.reflection.append(en)
     ref.append(args.reflection)
     dict_args['reflections'] = ref
     du.write(dict_args)
@@ -122,18 +129,19 @@ if args.reflection is not None:
 if args.reflection_now is not None:
     dict_args = du.read()
     ref = dict_args['reflections']
-    h = dict_args['hklnow'][0]
-    k = dict_args['hklnow'][1]
-    l = dict_args['hklnow'][2]
+    h = args.reflection_now[0]
+    k = args.reflection_now[1]
+    l = args.reflection_now[2]
     mu = dict_args['Mu']
     eta = dict_args['Eta']
     chi = dict_args['Chi']
     phi = dict_args['Phi']
     nu = dict_args['Nu']
     delta = dict_args['Del']
-    en = dict_args['Energy']
+    en = dict_args['PV_energy'] - dict_args['energy_offset']
+    if en < 50 :
+        en = float(xu.lam2en(en))
     ref_now = [h, k, l, mu, eta, chi, phi, nu , delta, en]
-    print(ref_now)
     ref.append(ref_now)
     dict_args['reflections'] = ref
     du.write(dict_args)
@@ -173,7 +181,15 @@ if args.list:
     print('')
 
 
-if args.clear_reflections:
+if args.clear_reflections is not None:
+    dict_args = du.read()
+    list_ = dict_args['reflections']
+    for idx in args.clear_reflections:
+        list_.pop(idx - 1)
+    dict_args['reflections'] = list_
+    du.write(dict_args) 
+
+if args.clear_all:
     dict_args = du.read()
     dict_args['reflections'] = []
     du.write(dict_args)
@@ -192,7 +208,7 @@ if args.Umatrix:
         exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
     
     # exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-    exp.set_exp_conditions(en = float(dict_args['Energy']))
+    exp.set_exp_conditions(en = dict_args['PV_energy'] - dict_args['energy_offset'])
     exp.set_U(U)
     UB = exp.calcUB()
     dict_args['U_mat'] = U.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
@@ -207,7 +223,7 @@ if  args.Calc2 is not None:
 
     exp = daf.Control(*mode)
     exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-    exp.set_exp_conditions(en = dict_args['Energy'])
+    exp.set_exp_conditions(en = dict_args['PV_energy'] - dict_args['energy_offset'])
     hkl1 = refs[args.Calc2[0] - 1][:3]
     angs1 = refs[args.Calc2[0] - 1][3:-1]
     hkl2 = refs[args.Calc2[1] - 1][:3]
@@ -247,6 +263,29 @@ if  args.Calc3 is not None:
     dict_args['lparam_alpha'] = rpf[3]
     dict_args['lparam_beta'] = rpf[4]
     dict_args['lparam_gama'] = rpf[5]
+    du.write(dict_args)
+
+if args.fit:
+    dict_args = du.read()
+    refs = dict_args['reflections']
+    mode = [int(i) for i in dict_args['Mode']]
+
+    exp = daf.Control(*mode)
+    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    exp.set_exp_conditions(en = dict_args['PV_energy'] - dict_args['energy_offset'])
+    U = np.array(dict_args['U_mat'])
+    if dict_args['Material'] in dict_args['user_samples'].keys():
+        exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+
+    else: 
+        exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+    
+    fitted = exp.fit_u_matrix(U, refs)
+    lbd = [[float(lb(i)) for i in j] for j in fitted]
+    print(np.array(lbd))
+
+    dict_args['U_mat'] = U.tolist()
+    # dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
 

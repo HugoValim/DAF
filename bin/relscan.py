@@ -6,6 +6,7 @@ import os
 import subprocess
 import numpy as np
 import dafutilities as du
+import scan_daf as sd
 import yaml
 import argparse as ap
 import epics
@@ -22,9 +23,10 @@ from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
 epi = '''
-Eg:
-    daf.rscan m -2 2 100 .1
-    daf.rscan mu 2 4 100 .1 -o my_scan
+Eg: 
+    daf.lup -m -2 2 100 .1
+    daf.dscan -m -2 2 100 .1
+    daf.dscan -m -2 2 100 .1 -np -o my_file
 
     '''
 
@@ -41,6 +43,7 @@ parser.add_argument('step', metavar='step', type=float, help='Number of steps')
 parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -72,29 +75,16 @@ for key, val in dic.items():
 start = motor_dict[motor] + args.start
 end = motor_dict[motor] + args.end
 
+if args.no_plot:
+    ptype = PlotType.none
+else:
+    ptype = PlotType.hdf
+
 args = {'motor' : [data[motor]], 'start' : [[start]], 'end': [[end]], 'step_or_points': [[args.step]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
         'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
-        'plot_type': PlotType.hdf, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
+        'plot_type': ptype, 'relative': False, 'reset': True, 'step_mode': False, 'points_mode': True}
 
-class DAFScan(ScanOperationCLI):
-
-    def __init__(self):
-        super().__init__(**args)
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-
-        m = epics.Motor(du.PVS[motor.capitalize()])
-        m.move(motor_dict[motor])
-
-scan = DAFScan()
+scan = sd.DAFScan(args)
 scan.run()
 
 

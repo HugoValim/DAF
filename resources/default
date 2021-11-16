@@ -1,8 +1,11 @@
 Chi: 0.0
 Del: 0.0
-Energy: 8000
 Eta: 0.0
 IDir:
+- 0
+- 1
+- 0
+IDir_print:
 - 0
 - 1
 - 0
@@ -14,7 +17,12 @@ NDir:
 - 0
 - 0
 - 1
+NDir_print:
+- 0
+- 0
+- 1
 Nu: 0.0
+PV_energy: 0.0
 Phi: 0.0
 Print_cmarker: ''
 Print_marker: ''
@@ -78,6 +86,7 @@ cons_psi: 0.0
 cons_qaz: 0.0
 dark_mode: 0
 default_counters: config.daf_default.yml
+energy_offset: 0.0
 hkl: ''
 hklnow:
 - 0
@@ -97,6 +106,7 @@ psi: 0.0
 qaz: 90.0
 reflections: []
 scan_name: scan_test
+scan_stats: {}
 separator: ','
 setup: default
 setup_desc: This is DAF default setup
