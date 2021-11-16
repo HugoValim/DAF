@@ -14,6 +14,8 @@ epi = '''
 Eg:
     daf.amv --Del 30 --Eta 15
     daf.amv -d 30 -e 15
+    daf.amv -d CEN
+    daf.amv -d MAX -co roi1
     '''
 
 
