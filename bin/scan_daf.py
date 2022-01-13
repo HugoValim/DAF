@@ -79,3 +79,12 @@ class DAFScan(ScanOperationCLI):
                 dict_args = du.read()
                 dict_args['scan_stats'] = dict_
                 du.write(dict_args)
+    # def run(self):
+    #     """Run the scan."""
+    #     if self.plot_type == PlotType.pyqtgraph:
+    #         self.pyqtgraph_plot.run_scan()
+    #         self.app.exec_()
+
+    #     # Otherwise run scan with matplotlib plot
+    #     self._run()
+

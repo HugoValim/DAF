@@ -65,7 +65,7 @@ for key, val in dic.items():
 if args.no_plot:
     ptype = PlotType.none
 else:
-    ptype = PlotType.hdf
+    ptype = PlotType.pyqtgraph
 
 args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
         'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 

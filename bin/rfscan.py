@@ -57,7 +57,7 @@ else:
 if args.no_plot:
     ptype = PlotType.none
 else:
-    ptype = PlotType.hdf
+    ptype = PlotType.pyqtgraph
 
 scan_points = pd.read_csv(args.file_name)
 mu_points = [float(i) for i in scan_points["Mu"]] # Get only the points related to mu
