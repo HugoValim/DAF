@@ -102,12 +102,11 @@ exp_dict['hklnow'] = [float(i) for i in exp_dict['hklnow']]
 
 
 if not args.calc:
-
     if args.time == None:
         time = 0.01
     else:
         time = args.time
-        os.system("daf.rfscan -f {} -t {} -x {} -o {}".format(dict_args['scan_name'], time, args.xlabel, args.output))
+    os.system("daf.rfscan -f {} -t {} -x {} -o {}".format(dict_args['scan_name'], time, args.xlabel, args.output))
 
 # max_error = float(angs[16])
 # if max_error < 1e-4:
