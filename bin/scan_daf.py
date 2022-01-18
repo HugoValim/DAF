@@ -67,8 +67,7 @@ class DAFScan(ScanOperationCLI):
                     x = [i for i in range(len(y))]
                 else:
                     x = h5w[_xlabel_points][:]
-
-                scanModule.fitData(x, y)
+                scanModule.fitData(x[:len(y)], y)
                 dict_[counter_name] = {}
                 dict_[counter_name]['peak'] = float(scanModule.PEAK)
                 dict_[counter_name]['peak_at'] = float(scanModule.PEAK_AT)
