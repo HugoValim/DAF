@@ -618,10 +618,10 @@ class MyDisplay(Display):
             os.system('echo "" > .my_scan_counter.csv')
             if self.ui.checkBox_only_csv.isChecked():
                 subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
-                    shell = True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
+                    shell = True)
             else:
                 subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
-                    shell=True, cwd = '/home/ABTLUS/hugo.campos/teste_daf')
+                    shell=True)
 
     def progress_bar(self, fname = '.my_scan_counter.csv'):
         if self.scan:

@@ -36,7 +36,7 @@ def write_yaml(dict_, filepath=DEFAULT):
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)
 
-daf_default = ['debug-counter', 'ringcurrent']
+daf_default = []
 
 write_yaml(daf_default, path + 'config.daf_default.yml')
 
