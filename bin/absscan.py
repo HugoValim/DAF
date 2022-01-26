@@ -39,15 +39,15 @@ parser.add_argument('-d', '--del', action='store_true', help='Use Del motor in t
 parser.add_argument('start', metavar='start', type=float, help='Start point')
 parser.add_argument('end', metavar='end', type=float, help='End point')
 parser.add_argument('step', metavar='step', type=float, help='Number of steps')
-parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
+parser.add_argument('-t', '--time', metavar='time', type=float, default=0.1, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
-parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_const', const=PlotType.none, default=PlotType.pyqtgraph)
+parser.add_argument('-cw', '--close-window', help='Close the scan window after it is done', default=False, action='store_true')
 
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
-
 
 if du.PV_PREFIX == "EMA:B:PB18":
     data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
@@ -62,16 +62,12 @@ for key, val in dic.items():
         motor = key
         break
 
-if args.no_plot:
-    ptype = PlotType.none
-else:
-    ptype = PlotType.pyqtgraph
+args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 
+        'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 
+        'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 
+        'prescan': 'ls', 'postscan': 'pwd', 'plot_type': args.no_plot, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
 
-args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
-        'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
-        'plot_type': ptype, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
-
-scan = sd.DAFScan(args)
+scan = sd.DAFScan(args, close_window=dic['close_window'])
 scan.run()
 
 log = sys.argv.pop(0).split('command_line/')[1]

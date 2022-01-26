@@ -43,7 +43,8 @@ parser.add_argument('step', metavar='step', type=float, help='Number of steps')
 parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
-parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_true')
+parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_const', const=PlotType.none, default=PlotType.pyqtgraph)
+parser.add_argument('-cw', '--close-window', help='Close the scan window after it is done', default=False, action='store_true')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -71,23 +72,17 @@ for key, val in dic.items():
         motor = key
         break
 
-
 start = motor_dict[motor] + args.start
 end = motor_dict[motor] + args.end
 
-if args.no_plot:
-    ptype = PlotType.none
-else:
-    ptype = PlotType.hdf
+args = {'motor' : [data[motor]], 'start' : [[start]], 'end': [[end]], 'step_or_points': [[args.step]], 
+        'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
+        'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 
+        'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
+        'plot_type': args.no_plot, 'relative': False, 'reset': True, 'step_mode': False, 'points_mode': True}
 
-args = {'motor' : [data[motor]], 'start' : [[start]], 'end': [[end]], 'step_or_points': [[args.step]], 'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 
-        'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 'prescan': 'ls', 'postscan': 'pwd', 
-        'plot_type': ptype, 'relative': False, 'reset': True, 'step_mode': False, 'points_mode': True}
-
-scan = sd.DAFScan(args)
+scan = sd.DAFScan(args, close_window=dic['close_window'])
 scan.run()
-
-
 
 log = sys.argv.pop(0).split('command_line/')[1]
 

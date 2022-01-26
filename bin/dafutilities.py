@@ -2,6 +2,7 @@
 """Library for reading and writing experiment files"""
 
 import atexit
+import sys
 import os
 import epics
 import yaml
@@ -30,6 +31,14 @@ BL_PVS = {
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
 
+def log_macro(dargs):
+    """Function to generate the log and macro files"""
+    log = sys.argv.pop(0).split('command_line/')[1]
+    for i in sys.argv:
+        log += ' ' + i
+    os.system("echo {} >> Log".format(log))
+    if dargs['macro_flag'] == 'True':
+        os.system("echo {} >> {}".format(log, dict_args['macro_file']))
 
 def epics_get(dict_):
     for key in MOTORS:

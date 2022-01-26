@@ -32,20 +32,9 @@ from scan_utils.scan import ScanOperationCLI
 
 class DAFScan(ScanOperationCLI):
 
-    def __init__(self, args):
+    def __init__(self, args, close_window=False):
         super().__init__(**args)
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-        self.write_stat()
-        # self.scan_status = False
+        self.close_window = close_window
 
     def write_stat(self):
         dict_ = {}
@@ -78,6 +67,22 @@ class DAFScan(ScanOperationCLI):
                 dict_args = du.read()
                 dict_args['scan_stats'] = dict_
                 du.write(dict_args)
+
+    def on_operation_end(self):
+        """Routine to be done after this scan operation."""
+        if self.plot_type == PlotType.pyqtgraph:
+            self.pyqtgraph_plot.operation_ends()
+        if self.plot_type == PlotType.hdf:
+            self.hdf_plot.operation_ends()
+        if bool(self.reset):
+            print('[scan-utils] Reseting devices positions.')
+            self.reset_motors()
+        self.write_stat()
+        if self.close_window:
+            self.app.quit()
+        # self.scan_status = False
+
+
     # def run(self):
     #     """Run the scan."""
     #     if self.plot_type == PlotType.pyqtgraph:
