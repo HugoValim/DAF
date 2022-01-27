@@ -35,6 +35,7 @@ parser.add_argument('-lac', '--list_all_counters', action='store_true', help='Li
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
+du.log_macro(dict_args)
 path = du.HOME + '/.config/scan-utils/'
 DEFAULT = path + 'config.yml'
 prefix = 'config.'
@@ -105,13 +106,3 @@ if args.remove_counter:
 if args.remove:
     for file in args.remove:
         os.system('rm -f "$HOME/.config/scan-utils/{}"'.format(prefix + file + sufix))
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

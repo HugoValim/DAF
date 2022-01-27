@@ -29,7 +29,6 @@ Eg:
     '''
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
-
 parser.add_argument('-m', '--mu', action='store_true',  help='Use Mu motor in the scan')
 parser.add_argument('-e', '--eta', action='store_true', help='Use Eta motor in the scan')
 parser.add_argument('-c', '--chi', action='store_true', help='Use Chi motor in the scan')
@@ -48,11 +47,11 @@ parser.add_argument('-cw', '--close-window', help='Close the scan window after i
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
+du.log_macro(dict_args)
 
 if du.PV_PREFIX == "EMA:B:PB18":
     data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
             'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
-
 else:
     data = {'mu':'sol_m3', 'eta':'sol_m5', 'chi':'sol_m2',
             'phi':'sol_m1', 'nu':'sol_m4', 'del':'sol_m6'}
@@ -65,17 +64,7 @@ for key, val in dic.items():
 args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 
         'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 
         'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 
-        'prescan': 'ls', 'postscan': 'pwd', 'plot_type': args.no_plot, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
+        'prescan': None, 'postscan': None, 'plot_type': args.no_plot, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
 
 scan = sd.DAFScan(args, close_window=dic['close_window'])
 scan.run()
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

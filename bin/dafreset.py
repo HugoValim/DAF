@@ -6,15 +6,12 @@ import sys
 import os
 import dafutilities as du
 
-
 epi = '''
 Eg:
     daf.reset -a
     '''
 
-
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
-
 parser.add_argument('-a', '--All', action='store_true', help='Sets all inputs of the experiment to default')
 parser.add_argument('--hard', action='store_true', help='If used deletes all setups before reseting them')
 
@@ -27,17 +24,5 @@ if args.All:
     os.system('cp -r "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
     os.system('cp "$HOME/.daf/default" .Experiment')
 
-
 dict_args = du.read()
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))
-
-
+du.log_macro(dict_args)

@@ -47,6 +47,7 @@ parser.add_argument('-cw', '--close-window', help='Close the scan window after i
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
+du.log_macro(dict_args)
 
 if du.PV_PREFIX == "EMA:B:PB18":
     data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
@@ -61,7 +62,6 @@ chi_now = dict_args['Chi']
 phi_now = dict_args['Phi']
 nu_now = dict_args['Nu']
 del_now = dict_args['Del']
-
 motor_dict = {'mu':mu_now, 'eta':eta_now, 'chi':chi_now,
               'phi':phi_now, 'nu':nu_now, 'del':del_now}
 
@@ -89,13 +89,3 @@ args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum':
 
 scan = sd.DAFScan(args, close_window=dic['close_window'])
 scan.run()
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

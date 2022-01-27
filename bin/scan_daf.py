@@ -81,14 +81,32 @@ class DAFScan(ScanOperationCLI):
         if self.close_window:
             self.app.quit()
         # self.scan_status = False
+    
+    def _run(self):
+        self.on_operation_begin()
 
+        for i in range(self.repeat):
+            self.repetition = i
+            self.on_scan_begin()
 
-    # def run(self):
-    #     """Run the scan."""
-    #     if self.plot_type == PlotType.pyqtgraph:
-    #         self.pyqtgraph_plot.run_scan()
-    #         self.app.exec_()
+            if self.plotter is not None:
+                next(self.axes)
 
-    #     # Otherwise run scan with matplotlib plot
-    #     self._run()
+            scanModule.scan(*self.scan_args)
 
+            self.on_scan_end()
+
+            # self.fit_values()
+
+        # if self.optimum:
+        #     self.goto_optimum()
+
+        cleanup()
+        self.on_operation_end()
+        if self.plotter is not None and self.wait_plotter:
+            self.plotter.plot_process.join()
+        # if self.postscan_cmd is not None:
+        #     try:
+        #         subprocess.run(self.postscan_cmd, shell=True)
+        #     except (OSError, RuntimeError) as exception:
+        #         die(exception)

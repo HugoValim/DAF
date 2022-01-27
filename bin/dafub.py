@@ -7,10 +7,7 @@ import os
 import daf
 import numpy as np
 import xrayutilities as xu
-
 import dafutilities as du
-
-
 
 epi = '''
 Eg:
@@ -23,9 +20,7 @@ Eg:
     daf.ub -s -p
     '''
 
-
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
-
 parser.add_argument('-r', '--reflection', metavar=('H', 'K', 'L', 'Mu', 'Eta', 'Chi', 'Phi', 'Nu', 'Del'), type=float, nargs=9, help='HKL and angles for this reflection')
 parser.add_argument('-rn', '--reflection-now', metavar=('H', 'K', 'L'), type=float, nargs=3, help='Store the current motor position with the given HKL')
 parser.add_argument('-U', '--Umatrix', metavar=('a11', 'a12', 'a13', 'a21', 'a22', 'a23', 'a31', 'a32', 'a33'), type=float, nargs=9, help='Sets U matrix')
@@ -42,15 +37,14 @@ parser.add_argument('-p', '--Params', action='store_true', help='Lattice paramet
 
 args = parser.parse_args()
 dic = vars(args)
-
-
 dict_args = du.read()
+du.log_macro(dict_args)
+lb = lambda x: "{:.5f}".format(float(x))
 
 for j,k in dic.items():
     if j in dict_args and k is not None:
         dict_args[j] = k
 du.write(dict_args)
-
 
 if args.UBmatrix:
     UB = np.array(args.UBmatrix).reshape(3,3)
@@ -58,18 +52,10 @@ if args.UBmatrix:
     dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
-
-lb = lambda x: "{:.5f}".format(float(x))
-
-
 if args.Show:
-
     dict_args = du.read()
-
     U = np.array(dict_args['U_mat'])
-
     UB = np.array(dict_args['UB_mat'])
-
     center1 = "|{:^11}"
     center2 = "{:^11}"
     center3 = "{:^11}|"
@@ -102,9 +88,7 @@ if args.Show:
 
 
 if args.Params:
-
     dict_args = du.read()
-
     print('')
     print('a    =    {}'.format(dict_args["lparam_a"]))
     print('b    =    {}'.format(dict_args["lparam_b"]))
@@ -179,7 +163,6 @@ if args.list:
     pd = daf.TablePrinter(fmt, ul='')(data)
     print(pd)
     print('')
-
 
 if args.clear_reflections is not None:
     dict_args = du.read()
@@ -287,14 +270,3 @@ if args.fit:
     dict_args['U_mat'] = U.tolist()
     # dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

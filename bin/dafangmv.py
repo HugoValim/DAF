@@ -28,11 +28,13 @@ parser.add_argument('-p', '--Phi', metavar='ang', type=str, help='Sets Phi angle
 parser.add_argument('-n', '--Nu', metavar='ang', type=str, help='Sets Nu angle to a desired position')
 parser.add_argument('-d', '--Del', metavar='ang', type=str, help='Sets Del angle to a desired position')
 parser.add_argument('-co', '--counter', metavar='counter', type=str, help='Choose the counter to be used')
+
 args = parser.parse_args()
 dic = vars(args)
 
 def write_angs():
     dict_args = du.read()
+    du.log_macro(dict_args)
     dict_ = dict_args['scan_stats']
     if dict_:
         if args.counter is not None:
@@ -89,14 +91,3 @@ for j,k in pseudo_dict.items():
     if j in dict_args:
         dict_args[j] = str(k)
 du.write(dict_args)
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

@@ -8,8 +8,6 @@ import daf
 import numpy as np
 import dafutilities as du
 
-
-
 epi = '''
 Eg:
     daf.amv --Del 30 --Eta 15
@@ -18,20 +16,20 @@ Eg:
     daf.amv -d MAX -co roi1
     '''
 
-
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
-
 parser.add_argument('-m', '--mu', metavar='ang', type=float, help='Start and end for Mu')
 parser.add_argument('-e', '--eta', metavar='ang', type=float, help='Start and end for Eta')
 parser.add_argument('-c', '--chi', metavar='ang', type=float, help='Start and end for Chi')
 parser.add_argument('-p', '--phi', metavar='ang', type=float, help='Start and end for Phi')
 parser.add_argument('-n', '--nu', metavar='ang', type=float, help='Start and end for Nu')
 parser.add_argument('-d', '--del', metavar='ang', type=float, help='Start and end for Del')
+
 args = parser.parse_args()
 dic = vars(args)
 
 def write_angs():
     dict_args = du.read()
+    du.log_macro(dict_args)
     mu_now = dict_args['Mu']
     eta_now = dict_args['Eta']
     chi_now = dict_args['Chi']
@@ -49,10 +47,7 @@ def write_angs():
 write_angs()
 
 dict_args = du.read()
-
 U = np.array(dict_args['U_mat'])
-
-
 mode = [int(i) for i in dict_args['Mode']]
 idir = dict_args['IDir']
 ndir = dict_args['NDir']
@@ -60,36 +55,20 @@ rdir = dict_args['RDir']
 
 exp = daf.Control(*mode)
 exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
-
 if dict_args['Material'] in dict_args['user_samples'].keys():
     exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
-
 else: 
     exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], 
                     dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], 
-
                     dict_args["lparam_gama"])
     
 exp.set_U(U)
 hklnow = exp.calc_from_angs(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
 hklnow = list(hklnow)
 pseudo = exp.calc_pseudo(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
-
 pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
-
 
 for j,k in pseudo_dict.items():
     if j in dict_args:
-        dict_args[j] = str(k)
+        dict_args[j] = k
 du.write(dict_args)
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

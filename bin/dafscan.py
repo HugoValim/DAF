@@ -53,6 +53,7 @@ parser.add_argument('-cw', '--close-window', help='Close the scan window after i
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
+du.log_macro(dict_args)
 
 U = np.array(dict_args['U_mat'])
 mode = [int(i) for i in dict_args['Mode']]
@@ -127,14 +128,3 @@ if not args.calc:
 
     scan = sd.DAFScan(args, close_window=dic['close_window'])
     scan.run()
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

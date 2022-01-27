@@ -48,6 +48,7 @@ parser.add_argument('-cw', '--close-window', help='Close the scan window after i
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
+du.log_macro(dict_args)
 
 scan_points = pd.read_csv(args.file_name)
 mu_points = [float(i) for i in scan_points["Mu"]] # Get only the points related to mu
@@ -76,13 +77,3 @@ args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum':
 
 scan = sd.DAFScan(args, close_window=dic['close_window'])
 scan.run()
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

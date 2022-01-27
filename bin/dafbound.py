@@ -25,7 +25,7 @@ parser.add_argument('-r', '--Reset', action='store_true', help='Reset all bounds
 
 args = parser.parse_args()
 dic = vars(args)
-
+du.log_macro(dict_args)
 
 bounds = {'bound_Mu' : [-20.0, 160.0], 'bound_Eta' : [-20.0, 160.0], 'bound_Chi' : [-5.0, 95.0], 'bound_Phi' : [-400.0, 400.0], 'bound_Nu' : [-20.0, 160.0], 'bound_Del' : [-20.0, 160.0]}
 
@@ -56,14 +56,3 @@ if args.list:
     print('Nu    =    {}'.format(dict_args["bound_Nu"]))
     print('Del   =    {}'.format(dict_args["bound_Del"]))
     print('')
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

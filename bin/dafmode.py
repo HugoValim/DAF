@@ -24,30 +24,15 @@ Eg:
     daf.mode 215, will set Nu fix, Alpha=Beta, Eta=Del/2
     '''
 
-
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
-
 parser.add_argument('Mode', type=str,help='Set the operation mode of the diffractometer, following the same modes as used in Spec, the mode should be passed without spaces')
-
 
 args = parser.parse_args()
 dic = vars(args)
-
-
 dict_args = du.read()
+du.log_macro(dict_args)
 
 for j,k in dic.items():
     if j in dict_args:
         dict_args[j] = str(k)
 du.write(dict_args)
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] =='True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))
