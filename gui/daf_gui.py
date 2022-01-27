@@ -15,6 +15,9 @@ from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction, QHeade
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 import qdarkstyle
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 DEFAULT = ".Experiment"
 
@@ -105,7 +108,7 @@ class Worker(QObject):
         global data_to_update # This variable holds the data processed in another Qthread and then the labels are updated in MyDisplay class
         
         data_to_update = {'hklnow' : hklnow, 'mode' : mode, 'mode_num' : mode_num, 'cons' : cons, 'exp_list' : exp_list, 'samp_info' : samp_info,
-                            'U' : U_print, 'UB' : UB_print, 'bounds' : bounds , 'pseudo_dict' : pseudo_dict}
+                            'U' : U_print, 'UB' : UB_print, 'bounds' : bounds , 'pseudo_dict' : pseudo_dict, 'dargs' : dict_args}
 
         
 
@@ -115,6 +118,76 @@ class Worker(QObject):
             self.update()
             self.update_labels.emit()
             time.sleep(1)
+
+class RMap(FigureCanvasQTAgg):
+
+    def __init__(self, parent=None, dict_args=None, move=False):
+        U = np.array(dict_args['U_mat'])
+        mode = [int(i) for i in dict_args['Mode']]
+        idir = dict_args['IDir']
+        ndir = dict_args['NDir']
+        rdir = dict_args['RDir']
+
+        # if args.IDir == None:
+        paradir = idir
+        # else:
+        #     paradir = args.IDir
+
+        # if args.NDir == None:
+        normdir = ndir
+        # else:
+        #     normdir = args.NDir
+
+        # if args.scale == None:
+        # args.scale = 100
+
+
+        Mu_bound = dict_args['bound_Mu']
+        Eta_bound = dict_args['bound_Eta']
+        Chi_bound = dict_args['bound_Chi']
+        Phi_bound = dict_args['bound_Phi']
+        Nu_bound = dict_args['bound_Nu']
+        Del_bound = dict_args['bound_Del']
+
+        exp = daf.Control(*mode)
+        if dict_args['Material'] in dict_args['user_samples'].keys():
+            exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+
+        else: 
+            exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], 
+                             dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+            
+
+        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
+        exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
+        exp.set_U(U)
+        exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+                            Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+                            psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
+
+        exp(calc=False)
+
+        ttmax, ttmin = exp.two_theta_max()
+        self.ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, move=move)
+        # if args.materials:
+        #     for i in args.materials:
+
+        #         exp = daf.Control(*mode)
+        #         exp.set_material(str(i))
+        #         exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
+        #         exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
+        #         exp.set_U(U)
+        #         exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+        #                             Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+        #                             psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
+        #         exp(calc=False)
+        #         ttmax, ttmin = exp.two_theta_max()
+        #         ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale, ax = ax)
+
+        # plt.show(block=True)
+        # ax.figure.show()
+        # ax.figure.show()
+        super(RMap, self).__init__(self.ax.figure)
 
 
 class MyDisplay(Display):
@@ -134,6 +207,8 @@ class MyDisplay(Display):
         self.make_connections()
         self.set_tab_order()
         self.runLongTask()
+        self.delay = 5 # Some thing in GUI dont need to be updated every update call
+        self.delay_counter = self.delay # Cooldown to delay, it start with the same value so it runs in the first loop
     
     def set_tab_order(self):
 
@@ -195,6 +270,9 @@ class MyDisplay(Display):
         
         # Menu connections
         self.menu_bar.triggered.connect(self.style_sheet_handler)
+
+        # RMap tab connections
+        self.checkBox_rmap.stateChanged.connect(lambda: self.rmap_widget(data_to_update['dargs']))
 
     def _createMenuBar(self):
         """Create the menu bar and shortcuts"""
@@ -345,6 +423,13 @@ class MyDisplay(Display):
         self.ui.PyDMLabel_mu_rbv.setProperty("channel", translate("Form", del_channel + '.RBV'))
         self.ui.PyDMByteIndicator_mu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
         self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
+
+    def rmap_widget(self, data):
+        rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked())
+        plt.close(rmap_plot.ax.figure) #Must have that, otherwise it will consume all the RAM opening figures
+        for i in reversed(range(self.verticalLayout_rmap.count())): 
+            self.verticalLayout_rmap.itemAt(i).widget().setParent(None)
+        self.verticalLayout_rmap.addWidget(rmap_plot)
 
     def extract(self, q_list_widget):
         lst = q_list_widget
@@ -640,10 +725,15 @@ class MyDisplay(Display):
                 self.ui.progressBar.setValue(0)
 
 
-    def update(self):
-        
+    def update(self):        
+        if self.delay_counter == self.delay:
+            self.rmap_widget(data_to_update['dargs'])
+            self.delay_counter = 0
+
         self.refresh_pydm_motors()
         self.progress_bar()
+
+
         lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
 
         # Update HKL pos labels
@@ -731,3 +821,5 @@ class MyDisplay(Display):
 
         self.ui.label_del_bounds_ll.setText(str(data_to_update['bounds']["del"][0]))
         self.ui.label_del_bounds_hl.setText(str(data_to_update['bounds']["del"][1]))
+
+        self.delay_counter += 1

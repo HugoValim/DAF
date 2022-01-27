@@ -6,3 +6,7 @@ PyYAML
 scipy==1.4.1
 tqdm
 xrayutilities
+pyepics
+pydm
+pyqt5
+qdarkstyle

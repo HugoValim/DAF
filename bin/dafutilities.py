@@ -27,6 +27,7 @@ PVS = {
 BL_PVS = {
 
     'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
+    # 'PV_energy' : 'IOC:m7'
 }
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}

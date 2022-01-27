@@ -2711,6 +2711,15 @@
                    </color>
                   </brush>
                  </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
                 </active>
                 <inactive>
                  <colorrole role="WindowText">
@@ -2749,6 +2758,15 @@
                    </color>
                   </brush>
                  </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
                 </inactive>
                 <disabled>
                  <colorrole role="WindowText">
@@ -2781,6 +2799,15 @@
                  <colorrole role="ButtonText">
                   <brush brushstyle="SolidPattern">
                    <color alpha="255">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="128">
                     <red>0</red>
                     <green>0</green>
                     <blue>0</blue>
@@ -2869,7 +2896,7 @@
                </widget>
               </item>
               <item row="1" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_del">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_del" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3066,7 +3093,7 @@
                </widget>
               </item>
               <item row="3" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_chi">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_chi" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3178,7 +3205,7 @@
                </widget>
               </item>
               <item row="2" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_eta">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_eta" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3522,7 +3549,7 @@
                </widget>
               </item>
               <item row="5" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_nu">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_nu" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3588,7 +3615,7 @@
                </widget>
               </item>
               <item row="6" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_mu">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_mu" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3620,7 +3647,7 @@
                </widget>
               </item>
               <item row="4" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_phi">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_phi" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3886,6 +3913,38 @@
              </layout>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_rmap">
+      <attribute name="title">
+       <string>RMap</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QFrame" name="frame_3">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QCheckBox" name="checkBox_rmap">
+            <property name="toolTip">
+             <string>If checked the diffractometer motors will be moved, otherwise only the calculation is done</string>
+            </property>
+            <property name="text">
+             <string>Move when clicked</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_rmap"/>
           </item>
          </layout>
         </widget>
@@ -4485,6 +4544,7 @@
                <widget class="QLabel" name="label_current_config">
                 <property name="font">
                  <font>
+                  <pointsize>9</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
