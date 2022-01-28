@@ -11,7 +11,7 @@ import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
-from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction, QHeaderView, QTableWidgetItem
+from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction, QHeaderView, QTableWidgetItem, QMenu, QComboBox, QListWidget
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 import qdarkstyle
@@ -121,7 +121,7 @@ class Worker(QObject):
 
 class RMap(FigureCanvasQTAgg):
 
-    def __init__(self, parent=None, dict_args=None, move=False):
+    def __init__(self, parent=None, dict_args=None, move=False, samples=None):
         U = np.array(dict_args['U_mat'])
         mode = [int(i) for i in dict_args['Mode']]
         idir = dict_args['IDir']
@@ -169,24 +169,20 @@ class RMap(FigureCanvasQTAgg):
 
         ttmax, ttmin = exp.two_theta_max()
         self.ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, move=move)
-        # if args.materials:
-        #     for i in args.materials:
+        for i in samples:
 
-        #         exp = daf.Control(*mode)
-        #         exp.set_material(str(i))
-        #         exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
-        #         exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
-        #         exp.set_U(U)
-        #         exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
-        #                             Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
-        #                             psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
-        #         exp(calc=False)
-        #         ttmax, ttmin = exp.two_theta_max()
-        #         ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=args.scale, ax = ax)
-
-        # plt.show(block=True)
-        # ax.figure.show()
-        # ax.figure.show()
+            exp = daf.Control(*mode)
+            exp.set_material(str(i))
+            exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
+            exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
+            exp.set_U(U)
+            exp.set_constraints(Mu = dict_args['cons_Mu'], Eta = dict_args['cons_Eta'], Chi = dict_args['cons_Chi'], Phi = dict_args['cons_Phi'],
+                                Nu = dict_args['cons_Nu'], Del = dict_args['cons_Del'], alpha = dict_args['cons_alpha'], beta = dict_args['cons_beta'],
+                                psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
+            exp(calc=False)
+            ttmax, ttmin = exp.two_theta_max()
+            ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, ax = self.ax)
+        
         super(RMap, self).__init__(self.ax.figure)
 
 
@@ -207,9 +203,12 @@ class MyDisplay(Display):
         self.make_connections()
         self.set_tab_order()
         self.runLongTask()
+        self.current_rmap_samples = []
+        self.rmap_widget(du.read(), samples = self.current_rmap_samples)
         self.delay = 5 # Some thing in GUI dont need to be updated every update call
         self.delay_counter = self.delay # Cooldown to delay, it start with the same value so it runs in the first loop
-    
+        
+
     def set_tab_order(self):
 
         # Scan
@@ -272,7 +271,8 @@ class MyDisplay(Display):
         self.menu_bar.triggered.connect(self.style_sheet_handler)
 
         # RMap tab connections
-        self.checkBox_rmap.stateChanged.connect(lambda: self.rmap_widget(data_to_update['dargs']))
+        self.checkBox_rmap.stateChanged.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples))
+        self.pushButton_refresh.clicked.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples))
 
     def _createMenuBar(self):
         """Create the menu bar and shortcuts"""
@@ -424,12 +424,78 @@ class MyDisplay(Display):
         self.ui.PyDMByteIndicator_mu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
         self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
-    def rmap_widget(self, data):
-        rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked())
-        plt.close(rmap_plot.ax.figure) #Must have that, otherwise it will consume all the RAM opening figures
+    def rmap_widget(self, data, samples):
+        self.rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked(), samples = samples)
+        plt.close(self.rmap_plot.ax.figure) #Must have that, otherwise it will consume all the RAM opening figures
         for i in reversed(range(self.verticalLayout_rmap.count())): 
             self.verticalLayout_rmap.itemAt(i).widget().setParent(None)
-        self.verticalLayout_rmap.addWidget(rmap_plot)
+        toolbar = NavigationToolbar(self.rmap_plot, self)
+        self.verticalLayout_rmap.addWidget(toolbar)
+        self.verticalLayout_rmap.addWidget(self.rmap_plot)
+        # self.rmap_menu()
+        self.rmap_plot.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.rmap_plot.customContextMenuRequested[QtCore.QPoint].connect(self.rmap_menu_builder)
+
+    def rmap_menu_builder(self):
+        self.rmap_menu = QMenu(self.rmap_plot)
+        # Close the file
+        open_action = self.rmap_menu.addAction('Add Samples')
+        open_action.triggered.connect(self.rmap_add_samples)
+        # Open the file
+        close_action = self.rmap_menu.addAction('Close File')
+        # close_action.triggered.connect(self.uncheck_selected_checkboxes)        
+        # Highlight a table row        
+        highlight_action = self.rmap_menu.addAction('Highlight')
+        # highlight_action.triggered.connect(self.highlight_table)
+
+        self.rmap_menu.exec_(QtGui.QCursor.pos())
+
+    def rmap_add_samples(self):
+        self.combo_box = QComboBox()
+        items = ['Si', 'Al', 'Co',
+                     'Cu', 'Cr', 'Fe',
+                     'Ge', 'Sn',
+                     'LaB6', 'Al2O3', 'C',
+                     'C_HOPG', 'InAs', 'InP',
+                     'InSb', 'GaP', 'GaAs',
+                     'AlAs', 'GaSb', 'GaAsWZ',
+                     'GaAs4H', 'GaPWZ', 'InPWZ',
+                     'InAs4H', 'InSbWZ', 'InSb4H',
+                     'PbTe', 'PbSe', 'CdTe',
+                     'CdSe', 'CdSe_ZB', 'HgSe',
+                     'NaCl', 'MgO', 'GaN',
+                     'BaF2', 'SrF2', 'CaF2',
+                     'MnO', 'MnTe', 'GeTe',
+                     'SnTe', 'Au', 'Ti',
+                     'Mo', 'Ru', 'Rh',
+                     'V', 'Ta', 'Nb',
+                     'Pt', 'Ag2Se', 'TiO2',
+                     'MnO2', 'VO2_Rutile', 'VO2_Baddeleyite',
+                     'SiO2', 'In', 'Sb', 
+                     'Ag', 'SnAlpha', 'CaTiO3',
+                     'SrTiO3', 'BaTiO3', 'FeO',
+                     'CoO', 'Fe3O4', 'Co3O4',
+                     'FeRh', 'Ir20Mn80', 'CoFe',
+                     'CoGa', 'CuMnAs', 'Mn3Ge_cub',
+                     'Mn3Ge', 'Pt3Cr', 'TiN']
+
+        user_samples = du.read()['user_samples']
+        for sample in user_samples.keys():
+            items.append(sample)
+        items.sort()
+        # adding list of items to combo box
+        self.combo_box.addItems(items)
+        self.combo_box.move(QtGui.QCursor.pos())
+        self.combo_box.currentTextChanged.connect(self.current_rmap_samples_manager)
+        self.combo_box.showPopup()
+
+    def current_rmap_samples_manager(self, choice):
+        if choice in self.current_rmap_samples:
+            self.current_rmap_samples.remove(choice)
+        else:
+            self.current_rmap_samples.append(choice)
+        self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples)
+
 
     def extract(self, q_list_widget):
         lst = q_list_widget
@@ -726,9 +792,9 @@ class MyDisplay(Display):
 
 
     def update(self):        
-        if self.delay_counter == self.delay:
-            self.rmap_widget(data_to_update['dargs'])
-            self.delay_counter = 0
+        # if self.delay_counter == self.delay:
+        #     self.rmap_widget(data_to_update['dargs'])
+        #     self.delay_counter = 0
 
         self.refresh_pydm_motors()
         self.progress_bar()
