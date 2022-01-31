@@ -1826,36 +1826,33 @@ class Control(object):
 
                     hkl = (d['hkl'][m][ind['ind'][0]])
                     self.hkl = hkl
+                    ang = Control.motor_angles(self, sv = startvalue, flagmap = True)
+                    angles = [ang[0][0], ang[0][1], ang[0][2], ang[0][3], ang[0][4], ang[0][5], float(ang[0][-1])]
+
+                    text = "{}\nhkl: {}\nangles: {}".format(
+                        mat.name, str(d['hkl'][m][ind['ind'][0]]), str(angles))
+                    numpy.set_printoptions(**popts)
+
+                    pseudo = self.calc_pseudo(*angles[:6])
+                    exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
+                                'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
+                    self.set_print_options(marker = '', column_marker = '',   space = 14)
+                    lb = lambda x: "{:.5f}".format(float(x))
                     if move:
-                        subprocess.Popen("daf.mv {} {} {}".format(hkl[0], hkl[1], hkl[2]), shell = True)
+                        if angles[6] < 1e-4:
+                            print_str = self.__str__()
+                            print(print_str)
+                            # print("daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(lb(exp_dict['Mu']), lb(exp_dict['Eta']), lb(exp_dict['Chi']), lb(exp_dict['Phi']), lb(exp_dict['Nu']), lb(exp_dict['Del'])))
+                            subprocess.Popen("daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(lb(exp_dict['Mu']), lb(exp_dict['Eta']), lb(exp_dict['Chi']), lb(exp_dict['Phi']), lb(exp_dict['Nu']), lb(exp_dict['Del'])), shell = True)
+                        else:
+                            print('Can\'t find the reflection {}'.format(hkl))
                     else:
-                        subprocess.Popen("daf.ca {} {} {}".format(hkl[0], hkl[1], hkl[2]), shell = True)
-
-                    # # ang = Control.motor_angles(self, qvec = d['qvec'][m][ind['ind'][0]], sv = startvalue)
-                    # ang = Control.motor_angles(self, sv = startvalue, flagmap = True)
-                    # angles = [ang[0][0], ang[0][1], ang[0][2], ang[0][3], ang[0][4], ang[0][5], float(ang[0][-1])]
-
-                    # text = "{}\nhkl: {}\nangles: {}".format(
-                    #     mat.name, str(d['hkl'][m][ind['ind'][0]]), str(angles))
-                    # numpy.set_printoptions(**popts)
-
-
-                    # pseudo = self.calc_pseudo(*angles[:6])
-                    # exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
-                    #             'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
-                    # if angles[6] < 1e-4:
-                    #     for j,k in exp_dict.items():
-                    #         if j in dict_args:
-                    #             dict_args[j] = str(k)
-                    #     du.write(dict_args)
-                    #     print('')
-                    #     print('Sample  = {}'.format(self.samp.name))
-                    #     os.system("daf.wh")
-                    # else:
-                    #     print('Can\'t find the reflection {}'.format(hkl))
+                        if angles[6] < 1e-4:
+                            print_str = self.__str__()
+                            print(print_str)
+                        else:
+                            print('Can\'t find the reflection {}'.format(hkl))
 
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)
         return ax, h
-
-

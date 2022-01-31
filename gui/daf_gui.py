@@ -121,27 +121,14 @@ class Worker(QObject):
 
 class RMap(FigureCanvasQTAgg):
 
-    def __init__(self, parent=None, dict_args=None, move=False, samples=None):
+    def __init__(self, parent=None, dict_args=None, move=False, samples=None, idirp=None, ndirp=None):
         U = np.array(dict_args['U_mat'])
         mode = [int(i) for i in dict_args['Mode']]
         idir = dict_args['IDir']
         ndir = dict_args['NDir']
         rdir = dict_args['RDir']
-
-        # if args.IDir == None:
-        paradir = idir
-        # else:
-        #     paradir = args.IDir
-
-        # if args.NDir == None:
-        normdir = ndir
-        # else:
-        #     normdir = args.NDir
-
-        # if args.scale == None:
-        # args.scale = 100
-
-
+        paradir = idirp
+        normdir = ndirp
         Mu_bound = dict_args['bound_Mu']
         Eta_bound = dict_args['bound_Eta']
         Chi_bound = dict_args['bound_Chi']
@@ -156,7 +143,6 @@ class RMap(FigureCanvasQTAgg):
         else: 
             exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], 
                              dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
-            
 
         exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
         exp.set_circle_constrain(Mu=Mu_bound, Eta=Eta_bound, Chi=Chi_bound, Phi=Phi_bound, Nu=Nu_bound, Del=Del_bound)
@@ -166,11 +152,9 @@ class RMap(FigureCanvasQTAgg):
                             psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
 
         exp(calc=False)
-
         ttmax, ttmin = exp.two_theta_max()
         self.ax, h = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, move=move)
         for i in samples:
-
             exp = daf.Control(*mode)
             exp.set_material(str(i))
             exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
@@ -181,7 +165,7 @@ class RMap(FigureCanvasQTAgg):
                                 psi = dict_args['cons_psi'], omega = dict_args['cons_omega'], qaz = dict_args['cons_qaz'], naz = dict_args['cons_naz'])
             exp(calc=False)
             ttmax, ttmin = exp.two_theta_max()
-            ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, ax = self.ax)
+            ax, h2 = exp.show_reciprocal_space_plane(ttmax = ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, ax = self.ax, move=move)
         
         super(RMap, self).__init__(self.ax.figure)
 
@@ -204,7 +188,9 @@ class MyDisplay(Display):
         self.set_tab_order()
         self.runLongTask()
         self.current_rmap_samples = []
-        self.rmap_widget(du.read(), samples = self.current_rmap_samples)
+        self.idir = [0,1,0]
+        self.ndir = [0,0,1]
+        self.rmap_widget(du.read(), samples = self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
         self.delay = 5 # Some thing in GUI dont need to be updated every update call
         self.delay_counter = self.delay # Cooldown to delay, it start with the same value so it runs in the first loop
         
@@ -271,8 +257,8 @@ class MyDisplay(Display):
         self.menu_bar.triggered.connect(self.style_sheet_handler)
 
         # RMap tab connections
-        self.checkBox_rmap.stateChanged.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples))
-        self.pushButton_refresh.clicked.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples))
+        self.checkBox_rmap.stateChanged.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir))
+        self.pushButton_refresh.clicked.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir))
 
     def _createMenuBar(self):
         """Create the menu bar and shortcuts"""
@@ -424,8 +410,8 @@ class MyDisplay(Display):
         self.ui.PyDMByteIndicator_mu.setProperty("channel", translate("Form", del_channel + '.MOVN'))
         self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
-    def rmap_widget(self, data, samples):
-        self.rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked(), samples = samples)
+    def rmap_widget(self, data, samples, idir, ndir):
+        self.rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked(), samples = samples, idirp=idir, ndirp=ndir)
         plt.close(self.rmap_plot.ax.figure) #Must have that, otherwise it will consume all the RAM opening figures
         for i in reversed(range(self.verticalLayout_rmap.count())): 
             self.verticalLayout_rmap.itemAt(i).widget().setParent(None)
@@ -438,17 +424,36 @@ class MyDisplay(Display):
 
     def rmap_menu_builder(self):
         self.rmap_menu = QMenu(self.rmap_plot)
-        # Close the file
-        open_action = self.rmap_menu.addAction('Add Samples')
-        open_action.triggered.connect(self.rmap_add_samples)
-        # Open the file
-        close_action = self.rmap_menu.addAction('Close File')
-        # close_action.triggered.connect(self.uncheck_selected_checkboxes)        
-        # Highlight a table row        
-        highlight_action = self.rmap_menu.addAction('Highlight')
-        # highlight_action.triggered.connect(self.highlight_table)
+        # Refresh plot
+        refresh_plot = self.rmap_menu.addAction('Refresh')
+        refresh_plot.triggered.connect(lambda: self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir))
+        # Clear other samples in graph
+        idir = self.rmap_menu.addAction('IDir ({})'.format(self.idir))
+        idir.triggered.connect(self.idir_manager)
+        # Clear other samples in graph
+        ndir = self.rmap_menu.addAction('Ndir ({})'.format(self.ndir))
+        ndir.triggered.connect(self.ndir_manager)
+        # Add more samples to the graph
+        add_samples = self.rmap_menu.addAction('Add Samples')
+        add_samples.triggered.connect(self.rmap_add_samples)
+        # Clear other samples in graph
+        clear_plot = self.rmap_menu.addAction('Clear')
+        clear_plot.triggered.connect(self.clear_plot_samples)
+
 
         self.rmap_menu.exec_(QtGui.QCursor.pos())
+
+    def idir_manager(self):
+        text, result = QtWidgets.QInputDialog.getText(self, 'Set IDir', 'Enter with the new IDir with the format a,b,c')
+        if result:
+            self.idir = [float(i) for i in text.split(",")]
+        self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
+
+    def ndir_manager(self):
+        text, result = QtWidgets.QInputDialog.getText(self, 'Set NDir', 'Enter with the new NDir with the format a,b,c')
+        if result:
+            self.ndir = [float(i) for i in text.split(",")]
+        self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
 
     def rmap_add_samples(self):
         self.combo_box = QComboBox()
@@ -489,12 +494,16 @@ class MyDisplay(Display):
         self.combo_box.currentTextChanged.connect(self.current_rmap_samples_manager)
         self.combo_box.showPopup()
 
+    def clear_plot_samples(self):
+        self.current_rmap_samples = []
+        self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
+
     def current_rmap_samples_manager(self, choice):
         if choice in self.current_rmap_samples:
             self.current_rmap_samples.remove(choice)
         else:
             self.current_rmap_samples.append(choice)
-        self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples)
+        self.rmap_widget(data_to_update['dargs'], samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
 
 
     def extract(self, q_list_widget):
