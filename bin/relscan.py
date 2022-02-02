@@ -40,7 +40,7 @@ parser.add_argument('-d', '--del', action='store_true', help='Use Del motor in t
 parser.add_argument('start', metavar='start', type=float, help='Start point')
 parser.add_argument('end', metavar='end', type=float, help='End point')
 parser.add_argument('step', metavar='step', type=float, help='Number of steps')
-parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
+parser.add_argument('-t', '--time', metavar='time', type=float, default=0.1, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
 parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_const', const=PlotType.none, default=PlotType.pyqtgraph)

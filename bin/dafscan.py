@@ -117,7 +117,7 @@ if not args.calc:
         data = {'sol_m3':mu_points, 'sol_m5':eta_points, 'sol_m2':chi_points,
                 'sol_m1':phi_points, 'sol_m4':nu_points, 'sol_m6':del_points}
 
-    motors = [i for i in data.keys() if (np.array(data[i]).max() - np.array(data[i]).min() ) > 1e-3]
+    motors = [i for i in data.keys()]
     with open('.points.yaml', 'w') as stream:
         yaml.dump(data, stream, allow_unicode=False)
 

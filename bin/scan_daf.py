@@ -36,6 +36,68 @@ class DAFScan(ScanOperationCLI):
         super().__init__(**args)
         self.close_window = close_window
 
+    def write_hkl(self):
+        """Method to write HKL coordinates for each point as motor in the final hdf5 file"""
+        dict_args = du.read()
+        U = np.array(dict_args['U_mat'])
+        mode = [int(i) for i in dict_args['Mode']]
+        idir = dict_args['IDir']
+        ndir = dict_args['NDir']
+        rdir = dict_args['RDir']
+        exp = daf.Control(*mode)
+        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
+        if dict_args['Material'] in dict_args['user_samples'].keys():
+            exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+        else: 
+            exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], 
+                             dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+        exp.set_U(U)
+        mu = dict_args['Mu']
+        eta = dict_args['Eta']
+        chi = dict_args['Chi']
+        phi = dict_args['Phi']
+        nu = dict_args['Nu']
+        delta = dict_args['Del']
+        exp_points = {'mu':mu, 'eta':eta, 'chi':chi,
+                      'phi':phi, 'nu':nu, 'del':delta}
+        if du.PV_PREFIX == "EMA:B:PB18":
+            data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
+                    'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
+        else:
+            data = {'sol_m3':'mu', 'sol_m5':'eta', 'sol_m2':'chi',
+                    'sol_m1':'phi', 'sol_m4':'nu', 'sol_m6':'del'}
+        dict_ = {}
+        for motor in self.motor:
+            # Add statistic data as attributes
+            with h5py.File(self.unique_filename, 'a') as h5w:
+                scan_idx = list(h5w['Scan'].keys())
+                scan_idx = (scan_idx[-1])
+                _motors_name = 'Scan/' + scan_idx + '/instrument/' \
+                + motor + '/data'
+                if motor in data.keys():
+                    dict_[data[motor]] = h5w[_motors_name][:]
+                    npoints = len(h5w[_motors_name][:])
+                    del data[motor]
+        for motor in data.keys():
+            dict_[data[motor]] = [exp_points[data[motor]] for i in range(npoints)]
+        hkl_dict = {'H':[], 'K':[], 'L':[]}
+        for i in range(npoints):
+            hklnow = exp.calc_from_angs(dict_["mu"][i], dict_["eta"][i], dict_["chi"][i], dict_["phi"][i], dict_["nu"][i], dict_["del"][i])
+            hkl_dict['H'].append(hklnow[0])
+            hkl_dict['K'].append(hklnow[1])
+            hkl_dict['L'].append(hklnow[2])
+        with h5py.File(self.unique_filename, 'a') as h5w:
+            _motors_path = 'Scan/' + scan_idx + '/instrument/'
+            h5w[_motors_path].create_group('H')
+            h5w[_motors_path].create_group('K')
+            h5w[_motors_path].create_group('L')
+            h5w[_motors_path + '/H'].create_dataset('data',
+                                              data = np.array(hkl_dict['H']))
+            h5w[_motors_path + '/K'].create_dataset('data',
+                                              data = np.array(hkl_dict['K']))            
+            h5w[_motors_path + '/L'].create_dataset('data',
+                                              data = np.array(hkl_dict['L']))
+            
     def write_stat(self):
         dict_ = {}
         for counter_name, counter in py4syn.counterDB.items():
@@ -78,6 +140,7 @@ class DAFScan(ScanOperationCLI):
             print('[scan-utils] Reseting devices positions.')
             self.reset_motors()
         self.write_stat()
+        self.write_hkl()
         if self.close_window:
             self.app.quit()
         # self.scan_status = False
