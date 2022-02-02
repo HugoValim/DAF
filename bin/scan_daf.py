@@ -12,6 +12,8 @@ import pandas as pd
 import yaml
 import argparse as ap
 import h5py
+from PyQt5.QtWidgets import QApplication, QDesktopWidget
+
 
 # Py4Syn imports
 import py4syn
@@ -61,8 +63,8 @@ class DAFScan(ScanOperationCLI):
         exp_points = {'mu':mu, 'eta':eta, 'chi':chi,
                       'phi':phi, 'nu':nu, 'del':delta}
         if du.PV_PREFIX == "EMA:B:PB18":
-            data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
-                    'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
+            data = {'huber_mu':'mu', 'huber_eta':'eta', 'huber_chi':'chi',
+                    'huber_phi':'phi', 'huber_nu':'nu', 'huber_del':'del'}
         else:
             data = {'sol_m3':'mu', 'sol_m5':'eta', 'sol_m2':'chi',
                     'sol_m1':'phi', 'sol_m4':'nu', 'sol_m6':'del'}
@@ -97,8 +99,9 @@ class DAFScan(ScanOperationCLI):
                                               data = np.array(hkl_dict['K']))            
             h5w[_motors_path + '/L'].create_dataset('data',
                                               data = np.array(hkl_dict['L']))
-            
+
     def write_stat(self):
+        """Method to write scan stats to the .Experiment file, so it can be used in scripts"""
         dict_ = {}
         for counter_name, counter in py4syn.counterDB.items():
             # Add statistic data as attributes
@@ -141,10 +144,16 @@ class DAFScan(ScanOperationCLI):
             self.reset_motors()
         self.write_stat()
         self.write_hkl()
+        #Close scan window
         if self.close_window:
             self.app.quit()
         # self.scan_status = False
-    
+        # display_monitor = 0
+        # monitor = QDesktopWidget().screenGeometry(display_monitor)
+        # print(monitor)
+        # self.pyqtgraph_plot.move(monitor.left(), monitor.top())
+        # self.pyqtgraph_plot.showFullScreen()
+
     def _run(self):
         self.on_operation_begin()
 

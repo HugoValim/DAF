@@ -37,7 +37,7 @@ parser.add_argument('-p', '--phi', metavar='ang', type=float, nargs=2, help='Sta
 parser.add_argument('-n', '--nu', metavar='ang', type=float, nargs=2, help='Start and end for Nu')
 parser.add_argument('-d', '--del', metavar='ang', type=float, nargs=2, help='Start and end for Del')
 parser.add_argument('step', metavar='step', type=int, help='Number of steps')
-parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
+parser.add_argument('-t', '--time', metavar='time', type=float, help='Acquisition time in each point in seconds', default=0.1)
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
 parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
