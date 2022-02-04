@@ -31,6 +31,7 @@ parser.add_argument('-rc', '--remove_counter', metavar = 'file', nargs = '*', he
 parser.add_argument('-l', '--list', action='store_true', help='List all setups, showing in which one you are')
 parser.add_argument('-lc', '--list_counters', metavar = 'file', nargs = '*', help='List all setups, showing in which one you are')
 parser.add_argument('-lac', '--list_all_counters', action='store_true', help='List all counters available')
+parser.add_argument('-m', '--main-counter', metavar = 'counter', type=str, help='Set the main counter during a scan')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -102,6 +103,11 @@ if args.remove_counter:
             data.remove(counter)
 
     write_yaml(data, filepath = path + prefix + file_name + sufix)
+
+if args.main_counter:
+    dict_args['main_scan_counter'] = args.main_counter
+    du.write(dict_args)
+
 
 if args.remove:
     for file in args.remove:

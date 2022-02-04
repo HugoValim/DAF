@@ -38,6 +38,17 @@ class DAFScan(ScanOperationCLI):
         super().__init__(**args)
         self.close_window = close_window
 
+    def on_operation_begin(self):
+        """Routine to be done before this scan operation."""
+        counter_dict = dict(py4syn.counterDB.items())
+        counter_list = [i for i in counter_dict.keys()]
+        dict_args = du.read()
+        dict_args['scan_running'] = True
+        dict_args['scan_counters'] = counter_list
+        dict_args['current_scan_file'] = self.unique_filename
+        dict_args['main_scan_motor'] = self.xlabel
+        du.write(dict_args)
+
     def write_hkl(self):
         """Method to write HKL coordinates for each point as motor in the final hdf5 file"""
         dict_args = du.read()
@@ -131,6 +142,7 @@ class DAFScan(ScanOperationCLI):
 
                 dict_args = du.read()
                 dict_args['scan_stats'] = dict_
+                dict_args['scan_running'] = False
                 du.write(dict_args)
 
     def on_operation_end(self):
