@@ -14,7 +14,7 @@ from silx.gui.plot import Plot1D
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, QTimer
 from pydm import Display
-from PyQt5.QtWidgets import (QTableWidget, QTableWidgetItem, 
+from PyQt5.QtWidgets import (QTableWidget, QTableWidgetItem, QPushButton,
                              QHeaderView, QMenu, QApplication, QAction)
 import qdarkstyle
 
@@ -64,10 +64,6 @@ class UpdateThread(threading.Thread):
         
         return motors_data,counters_data
 
-    def update_data(self):
-        x, y = self.get_hdf5_data(self.file)
-        return x, y
-
     def run(self):
         """Method implementing thread loop that updates the plot"""
         while self.running:
@@ -91,15 +87,17 @@ class UpdateThread(threading.Thread):
         self.join(2)
 
 class MyDisplay(Display):
-    # def __init__(self):
-    #     super(Ui, self).__init__()
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.started = False
+        self.xlabel = None
+        self.fwhm_pos = None
+        self.peak_pos = None
         self.app = QApplication.instance()
         style = qdarkstyle.load_stylesheet_pyqt5()
         self.app.setStyleSheet(style)
         self._createMenuBar()
+        self.build_basic_layout()
         self.loop()
 
     def ui_filename(self):
@@ -107,6 +105,17 @@ class MyDisplay(Display):
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+    def translate_dict(self):
+        """Depending on the motors translate to daf .Experiment format"""
+        if du.PV_PREFIX == "EMA:B:PB18":
+            data = {'huber_mu':'Mu', 'eta':'huber_eta', 'chi':'huber_chi',
+                    'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
+            return data
+        else:
+            data = {'sol_m3':'Mu', 'sol_m5':'Eta', 'sol_m2':'Chi',
+                    'sol_m1':'Phi', 'sol_m4':'Nu', 'sol_m6':'Del'}
+            return data
 
     def _createMenuBar(self):
         """Create the menu bar and shortcuts"""
@@ -122,9 +131,9 @@ class MyDisplay(Display):
             if action.text() == 'Dark Theme':
                 action.setChecked(True)
         self.option_menu.triggered.connect(self.style_sheet_handler)
-        # style_action.setShortcut("Ctrl+k")
 
     def style_sheet_handler(self):
+        """Handles the switch between dark mode and light mode"""
         for action in self.option_menu.actions():
             if action.text() == 'Dark Theme':
                 if action.isChecked():
@@ -134,12 +143,21 @@ class MyDisplay(Display):
                     self.app.setStyleSheet('')
 
     def loop(self):
-        """Loop to check if a curve is selected or not"""
+        """Loop every 1 second to see if a new scan has began"""
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(1000) #trigger every 1 seconds.
 
+    def build_basic_layout(self):
+        """Build the first layout just for the GUI not be empty when started"""
+        plot = Plot1D()
+        plot.show()
+        self.tabWidget.setTabText(0, 'Waiting')
+        self.verticalLayout_single.addWidget(plot)
+        self.build_stat_table()
+
     def clean_plots(self):
+        """Clean the layout before building another, avoiding stacks"""
         for i in reversed(range(self.verticalLayout_single.count())): 
             self.verticalLayout_single.itemAt(i).widget().setParent(None)
         for i in reversed(range(self.gridLayout_all.count())): 
@@ -147,20 +165,29 @@ class MyDisplay(Display):
 
     def build_stat_table(self):
         """Build the statistic table"""
+        self.table_push_buttons = {}
         self.tableWidget_stats = QTableWidget()
         self.tableWidget_stats.setMaximumHeight(130)
         self.tableWidget_stats.verticalHeader().setVisible(False)
         self.tableWidget_stats.horizontalHeader().hide()
+        self.push_button_fwhm = QPushButton("Go to FWHM pos")
+        self.push_button_fwhm.clicked.connect(self.goto_fwhm)
+        self.push_button_peak = QPushButton("Go to peak pos")
+        self.push_button_peak.clicked.connect(self.goto_peak)
         header = self.tableWidget_stats.horizontalHeader()
         for i in range(4):
             self.tableWidget_stats.insertRow(i)
+        for i in range(5):
             self.tableWidget_stats.insertColumn(i)
             header.setResizeMode(i, QHeaderView.Stretch)
 
         self.tableWidget_stats.setItem(0, 0, QTableWidgetItem('FWHM:'))
         self.tableWidget_stats.setItem(0, 2, QTableWidgetItem('FWHM pos:'))
+        self.tableWidget_stats.setCellWidget(0, 4, self.push_button_fwhm)
         self.tableWidget_stats.setItem(1, 0, QTableWidgetItem('Peak:'))
         self.tableWidget_stats.setItem(1, 2, QTableWidgetItem('Peak pos:'))
+        self.tableWidget_stats.setCellWidget(1, 4, self.push_button_peak)
+        self.tableWidget_stats.setItem(1, 4, QTableWidgetItem('FWHM pos:'))
         self.tableWidget_stats.setItem(2, 0, QTableWidgetItem('Min:'))
         self.tableWidget_stats.setItem(2, 2, QTableWidgetItem('Min pos:'))
         self.tableWidget_stats.setItem(3, 0, QTableWidgetItem('COM'))
@@ -189,11 +216,34 @@ class MyDisplay(Display):
         self.tableWidget_stats.setItem(2, 3, QTableWidgetItem(fmt(self.min_pos)))
         self.tableWidget_stats.setItem(3, 1, QTableWidgetItem(fmt(self.com)))
 
+    def goto_fwhm(self):
+        """Move the xlabel motor to the FWHM pos"""
+        if self.xlabel is not None and self.fwhm_pos is not None:
+            dict_ = self.translate_dict()
+            dict_args = du.read()
+            dict_args[dict_[self.xlabel]] = float(self.fwhm_pos)
+            du.write(dict_args)
+
+    def goto_peak(self):
+        """Move the xlabel motor to the peak pos"""
+        if self.xlabel is not None and self.peak_pos is not None:
+            dict_ = self.translate_dict()
+            dict_args = du.read()
+            dict_args[dict_[self.xlabel]] = float(self.peak_pos)
+            du.write(dict_args)
+
+
     def update_plot(self):
+        """
+        Function to generate the plots.
+        The plots are fed from another thread, it only need to be instantiated once
+        per scan.
+        The GUI checks every 1 second to see if a new scan has started
+        """
         dict_args = du.read()
         if dict_args['scan_running'] and not self.started:
             self.plot_dict = {}
-            xlabel = dict_args['main_scan_motor']
+            self.xlabel = dict_args['main_scan_motor']
             self.clean_plots()
             self.started = True
             n_counters = len(dict_args['scan_counters'])
@@ -205,11 +255,13 @@ class MyDisplay(Display):
                 self.plot_dict[counter] = Plot1D()
                 self.plot_dict[counter].show()
                 self.plot_dict[counter].setGraphTitle(counter)
-                self.plot_dict[counter].getXAxis().setLabel(xlabel)
+                self.plot_dict[counter].getXAxis().setLabel(self.xlabel)
+                self.plot_dict[counter].setDefaultPlotPoints(True)
                 # plot.getYAxis().setLabel('Y')
                 if dict_args['main_scan_counter'] == counter:
                     self.tabWidget.setTabText(0, counter)
                     self.verticalLayout_single.addWidget(self.plot_dict[counter])
+                    self.plot_dict[counter].setGraphCursor(flag=True)
                     self.build_stat_table()
                 else:
                     self.gridLayout_all.addWidget(self.plot_dict[counter], j,k)
@@ -218,7 +270,7 @@ class MyDisplay(Display):
                         k = 0
                         j += 1
 
-            self.updateThread = UpdateThread(self.plot_dict, dict_args['current_scan_file'], xlabel)
+            self.updateThread = UpdateThread(self.plot_dict, dict_args['current_scan_file'], self.xlabel)
             self.updateThread.start()  # Start updating the plot
         elif dict_args['scan_running'] and self.started:
             pass
