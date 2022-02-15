@@ -4,24 +4,25 @@
 import argparse as ap
 import sys
 import os
-import daf
+
 import numpy as np
-import dafutilities as du
-import scan_daf as sd
 import pandas as pd
 import yaml
 
 # scan-utils imports
-from scan_utils.hdf5_writer import HDF5Writer
-from scan_utils import cleanup, die
-from scan_utils import Configuration, processUserField, get_counters_in_config
-from scan_utils.scan_pyqtgraph_plot import PlotScan
-from scan_utils.scan_hdf_plot import PlotHDFScan
+# from scan_utils.hdf5_writer import HDF5Writer
+# from scan_utils import cleanup, die
+# from scan_utils import Configuration, processUserField, get_counters_in_config
+# from scan_utils.scan_pyqtgraph_plot import PlotScan
+# from scan_utils.scan_hdf_plot import PlotHDFScan
 from scan_utils import PlotType
-from scan_utils import WriteType
-from scan_utils import DefaultParser
-from scan_utils.scan import ScanOperationCLI
+# from scan_utils import WriteType
+# from scan_utils import DefaultParser
+# from scan_utils.scan import ScanOperationCLI
 
+import daf
+import dafutilities as du
+import scan_daf as sd
 
 epi = '''
 Eg: 
@@ -36,6 +37,7 @@ parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, descr
 parser.add_argument('hkli', metavar=('Hi, Ki, Li'), type=float, nargs=3, help='Initial HKL for scan')
 parser.add_argument('hklf', metavar=('Hf, Kf, Lf'), type=float, nargs=3, help='Final HKL for scan')
 parser.add_argument('points', metavar='points', type=float, help='Number of points for the scan')
+parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds.')
 parser.add_argument('-n', '--scan_name', metavar='', type=str, default='daf_hkl_scan.csv', help='Name of the scan')
 parser.add_argument('-s', '--step', metavar='', type=float, help='Step for the scan')
 parser.add_argument('-sep', '--separator', metavar='', type=str, default = ',', help='Chose the separator of scan file, comma is default')
@@ -44,10 +46,9 @@ parser.add_argument('-m', '--max_diff', metavar='', type=float, default = 0,
 parser.add_argument('-v', '--verbose', action='store_true', help='Show full output')
 parser.add_argument('-g', '--gui', action='store_true', help='Flag to tell if gui is calling this function')
 parser.add_argument('-c', '--calc', action='store_true', help='Only calc the scan without perform it')
-parser.add_argument('-t', '--time', metavar='', type=float, default = 0.01, help='Acquisition time in each point in seconds. Default is 0.01s')
 parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
-parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
-parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_const', const=PlotType.none, default=PlotType.pyqtgraph)
+parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default=os.getcwd() + '/scan_daf')
+parser.add_argument('-sp', '--show-plot', help='Do not plot de scan', action='store_const', const=PlotType.hdf, default=PlotType.none)
 parser.add_argument('-cw', '--close-window', help='Close the scan window after it is done', default=False, action='store_true')
 
 args = parser.parse_args()
@@ -101,6 +102,7 @@ if args.verbose:
     pd.options.display.max_columns = 0
     print(exp)
 
+# Do the real scan
 if not args.calc:
     scan_points = pd.read_csv(dic['scan_name'])
     mu_points = [float(i) for i in scan_points["Mu"]] # Get only the points related to mu
@@ -113,17 +115,28 @@ if not args.calc:
     if du.PV_PREFIX == "EMA:B:PB18":
         data = {'huber_mu':mu_points, 'huber_eta':eta_points, 'huber_chi':chi_points,
                 'huber_phi':phi_points, 'huber_nu':nu_points, 'huber_del':del_points}
+
+        xlabel_data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',
+            'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
     else:
         data = {'sol_m3':mu_points, 'sol_m5':eta_points, 'sol_m2':chi_points,
                 'sol_m1':phi_points, 'sol_m4':nu_points, 'sol_m6':del_points}
+
+        xlabel_data = {'mu':'sol_m3', 'eta':'sol_m5', 'chi':'sol_m2',
+                'phi':'sol_m1', 'nu':'sol_m4', 'del':'sol_m6'}
 
     motors = [i for i in data.keys()]
     with open('.points.yaml', 'w') as stream:
         yaml.dump(data, stream, allow_unicode=False)
 
+    if args.xlabel != 'points':
+        xlabel = xlabel_data[args.xlabel]
+    else:
+        xlabel = 'points'    
+
     args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
-    'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': args.xlabel, 
-    'prescan': 'ls', 'postscan': 'pwd', 'plot_type': args.no_plot, 'relative': False, 'reset': False, 'step_mode': False, 
+    'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': xlabel, 
+    'prescan': 'ls', 'postscan': 'pwd', 'plot_type': args.show_plot, 'relative': False, 'reset': False, 'step_mode': False, 
     'points_mode': False, 'start': None, 'end': None, 'step_or_points': None, 'time': [[args.time]], 'filename': '.points.yaml'}
 
     scan = sd.DAFScan(args, close_window=dic['close_window'])

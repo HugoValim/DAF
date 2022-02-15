@@ -37,10 +37,11 @@ class DAFScan(ScanOperationCLI):
     def __init__(self, args, close_window=False):
         super().__init__(**args)
         self.close_window = close_window
-
+        
     def on_operation_begin(self):
         """Routine to be done before this scan operation."""
         counter_dict = dict(py4syn.counterDB.items())
+        # print(counter_dict)
         counter_list = [i for i in counter_dict.keys()]
         dict_args = du.read()
         dict_args['scan_running'] = True

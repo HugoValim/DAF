@@ -4,22 +4,24 @@
 import sys
 import os
 import subprocess
+
 import numpy as np
-import dafutilities as du
-import scan_daf as sd
 import yaml
 import argparse as ap
 
 # scan-utils imports
-from scan_utils.hdf5_writer import HDF5Writer
-from scan_utils import cleanup, die
-from scan_utils import Configuration, processUserField, get_counters_in_config
-from scan_utils.scan_pyqtgraph_plot import PlotScan
-from scan_utils.scan_hdf_plot import PlotHDFScan
+# from scan_utils.hdf5_writer import HDF5Writer
+# from scan_utils import cleanup, die
+# from scan_utils import Configuration, processUserField, get_counters_in_config
+# from scan_utils.scan_pyqtgraph_plot import PlotScan
+# from scan_utils.scan_hdf_plot import PlotHDFScan
 from scan_utils import PlotType
-from scan_utils import WriteType
-from scan_utils import DefaultParser
-from scan_utils.scan import ScanOperationCLI
+# from scan_utils import WriteType
+# from scan_utils import DefaultParser
+# from scan_utils.scan import ScanOperationCLI
+
+import dafutilities as du
+import scan_daf as sd
 
 epi = '''
 Eg:
@@ -38,10 +40,10 @@ parser.add_argument('-d', '--del', action='store_true', help='Use Del motor in t
 parser.add_argument('start', metavar='start', type=float, help='Start point')
 parser.add_argument('end', metavar='end', type=float, help='End point')
 parser.add_argument('step', metavar='step', type=float, help='Number of steps')
-parser.add_argument('-t', '--time', metavar='time', type=float, default=0.1, help='Acquisition time in each point in seconds')
+parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration-file', type=str, help='choose a counter configuration file', default='default')
-parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default='scan_daf')
-parser.add_argument('-np', '--no-plot', help='Do not plot de scan', action='store_const', const=PlotType.none, default=PlotType.pyqtgraph)
+parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default=os.getcwd() + '/scan_daf')
+parser.add_argument('-sp', '--show-plot', help='Do not plot de scan', action='store_const', const=PlotType.hdf, default=PlotType.none)
 parser.add_argument('-cw', '--close-window', help='Close the scan window after it is done', default=False, action='store_true')
 
 args = parser.parse_args()
@@ -64,7 +66,7 @@ for key, val in dic.items():
 args = {'motor' : [data[motor]], 'start' : [[args.start]], 'end': [[args.end]], 'step_or_points': [[args.step]], 
         'time': [[args.time]], 'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 
         'repeat': 1, 'sleep': 0, 'message': None, 'output': args.output, 'sync': True, 'snake': False, 'xlabel': data[motor], 
-        'prescan': None, 'postscan': None, 'plot_type': args.no_plot, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
+        'prescan': None, 'postscan': None, 'plot_type': args.show_plot, 'relative': False, 'reset': False, 'step_mode': False, 'points_mode': True}
 
 scan = sd.DAFScan(args, close_window=dic['close_window'])
 scan.run()

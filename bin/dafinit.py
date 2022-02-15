@@ -17,12 +17,14 @@ parser.add_argument('-6c', '--6cirlce', action='store_true', help='Set the 6-cir
 
 args = parser.parse_args()
 dic = vars(args)
-dict_args = du.read()
-du.log_macro(dict_args)
+
 
 os.system('cp -nr "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
 os.system('cp -n "$HOME/.daf/default" .Experiment')
 # os.system('export PS1="DAF> "')
+
+dict_args = du.read()
+du.log_macro(dict_args)
 
 if not os.path.isdir(du.HOME + '/.config/scan-utils'):
 	os.system('mkdir $HOME/.config/scan-utils')

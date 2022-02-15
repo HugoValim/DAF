@@ -232,7 +232,6 @@ class MyDisplay(Display):
             dict_args[dict_[self.xlabel]] = float(self.peak_pos)
             du.write(dict_args)
 
-
     def update_plot(self):
         """
         Function to generate the plots.
@@ -252,6 +251,8 @@ class MyDisplay(Display):
             j = 0 #Row to add the plot widget in the grid layout
             k = 0 #Colum to add the plot widget in the grid layout
             for counter in dict_args['scan_counters']:
+                if counter == 'pilatus_300k':
+                    continue #Detector handlers should be avoided
                 self.plot_dict[counter] = Plot1D()
                 self.plot_dict[counter].show()
                 self.plot_dict[counter].setGraphTitle(counter)
@@ -276,6 +277,7 @@ class MyDisplay(Display):
             pass
         else:
             if self.started:
-                self.build_stat(self.plot_dict[dict_args['main_scan_counter']])
+                if dict_args['main_scan_counter'] != '':
+                    self.build_stat(self.plot_dict[dict_args['main_scan_counter']])
                 self.started = False
                 self.updateThread.stop()
