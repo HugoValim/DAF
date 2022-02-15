@@ -23,31 +23,20 @@ parser.add_argument('-e', '--Execute', metavar='file',type=str, help='Execute a 
 
 args = parser.parse_args()
 dic = vars(args)
-
 dict_args = du.read()
+du.log_macro(dict_args)
 
 if args.Initialize:
-
     os.system("echo '#!/usr/bin/env bash' > {}".format(args.name))
     os.system("chmod 755 {}".format(args.name))
-
     dict_args['macro_flag'] = 'True'
     dict_args['macro_file'] = args.name
     du.write(dict_args)
 
 if args.Stop:
-
     dict_args['macro_flag'] = 'False'
     #dict_args['macro_file'] = args.name
     du.write(dict_args)
 
 if args.Execute:
     os.system("./{}".format(args.Execute))
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))

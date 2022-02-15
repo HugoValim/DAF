@@ -12,6 +12,8 @@ import pandas as pd
 import yaml
 import argparse as ap
 import h5py
+from PyQt5.QtWidgets import QApplication, QDesktopWidget
+
 
 # Py4Syn imports
 import py4syn
@@ -32,22 +34,86 @@ from scan_utils.scan import ScanOperationCLI
 
 class DAFScan(ScanOperationCLI):
 
-    def __init__(self, args):
+    def __init__(self, args, close_window=False):
         super().__init__(**args)
+        self.close_window = close_window
+        
+    def on_operation_begin(self):
+        """Routine to be done before this scan operation."""
+        counter_dict = dict(py4syn.counterDB.items())
+        # print(counter_dict)
+        counter_list = [i for i in counter_dict.keys()]
+        dict_args = du.read()
+        dict_args['scan_running'] = True
+        dict_args['scan_counters'] = counter_list
+        dict_args['current_scan_file'] = self.unique_filename
+        dict_args['main_scan_motor'] = self.xlabel
+        du.write(dict_args)
 
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print('[scan-utils] Reseting devices positions.')
-            self.reset_motors()
-        self.write_stat()
-        # self.scan_status = False
+    def write_hkl(self):
+        """Method to write HKL coordinates for each point as motor in the final hdf5 file"""
+        dict_args = du.read()
+        U = np.array(dict_args['U_mat'])
+        mode = [int(i) for i in dict_args['Mode']]
+        idir = dict_args['IDir']
+        ndir = dict_args['NDir']
+        rdir = dict_args['RDir']
+        exp = daf.Control(*mode)
+        exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
+        if dict_args['Material'] in dict_args['user_samples'].keys():
+            exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+        else: 
+            exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], 
+                             dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+        exp.set_U(U)
+        mu = dict_args['Mu']
+        eta = dict_args['Eta']
+        chi = dict_args['Chi']
+        phi = dict_args['Phi']
+        nu = dict_args['Nu']
+        delta = dict_args['Del']
+        exp_points = {'mu':mu, 'eta':eta, 'chi':chi,
+                      'phi':phi, 'nu':nu, 'del':delta}
+        if du.PV_PREFIX == "EMA:B:PB18":
+            data = {'huber_mu':'mu', 'huber_eta':'eta', 'huber_chi':'chi',
+                    'huber_phi':'phi', 'huber_nu':'nu', 'huber_del':'del'}
+        else:
+            data = {'sol_m3':'mu', 'sol_m5':'eta', 'sol_m2':'chi',
+                    'sol_m1':'phi', 'sol_m4':'nu', 'sol_m6':'del'}
+        dict_ = {}
+        for motor in self.motor:
+            # Add statistic data as attributes
+            with h5py.File(self.unique_filename, 'a') as h5w:
+                scan_idx = list(h5w['Scan'].keys())
+                scan_idx = (scan_idx[-1])
+                _motors_name = 'Scan/' + scan_idx + '/instrument/' \
+                + motor + '/data'
+                if motor in data.keys():
+                    dict_[data[motor]] = h5w[_motors_name][:]
+                    npoints = len(h5w[_motors_name][:])
+                    del data[motor]
+        for motor in data.keys():
+            dict_[data[motor]] = [exp_points[data[motor]] for i in range(npoints)]
+        hkl_dict = {'H':[], 'K':[], 'L':[]}
+        for i in range(npoints):
+            hklnow = exp.calc_from_angs(dict_["mu"][i], dict_["eta"][i], dict_["chi"][i], dict_["phi"][i], dict_["nu"][i], dict_["del"][i])
+            hkl_dict['H'].append(hklnow[0])
+            hkl_dict['K'].append(hklnow[1])
+            hkl_dict['L'].append(hklnow[2])
+        with h5py.File(self.unique_filename, 'a') as h5w:
+            _motors_path = 'Scan/' + scan_idx + '/instrument/'
+            h5w[_motors_path].create_group('H')
+            h5w[_motors_path].create_group('K')
+            h5w[_motors_path].create_group('L')
+            h5w[_motors_path + '/H'].create_dataset('data',
+                                              data = np.array(hkl_dict['H']))
+            h5w[_motors_path + '/K'].create_dataset('data',
+                                              data = np.array(hkl_dict['K']))            
+            h5w[_motors_path + '/L'].create_dataset('data',
+                                              data = np.array(hkl_dict['L']))
 
     def write_stat(self):
+        """Method to write scan stats to the .Experiment file, so it can be used in scripts"""
         dict_ = {}
         for counter_name, counter in py4syn.counterDB.items():
             # Add statistic data as attributes
@@ -67,8 +133,7 @@ class DAFScan(ScanOperationCLI):
                     x = [i for i in range(len(y))]
                 else:
                     x = h5w[_xlabel_points][:]
-
-                scanModule.fitData(x, y)
+                scanModule.fitData(x[:len(y)], y)
                 dict_[counter_name] = {}
                 dict_[counter_name]['peak'] = float(scanModule.PEAK)
                 dict_[counter_name]['peak_at'] = float(scanModule.PEAK_AT)
@@ -78,4 +143,55 @@ class DAFScan(ScanOperationCLI):
 
                 dict_args = du.read()
                 dict_args['scan_stats'] = dict_
+                dict_args['scan_running'] = False
                 du.write(dict_args)
+
+    def on_operation_end(self):
+        """Routine to be done after this scan operation."""
+        if self.plot_type == PlotType.pyqtgraph:
+            self.pyqtgraph_plot.operation_ends()
+        if self.plot_type == PlotType.hdf:
+            self.hdf_plot.operation_ends()
+        if bool(self.reset):
+            print('[scan-utils] Reseting devices positions.')
+            self.reset_motors()
+        self.write_stat()
+        self.write_hkl()
+        #Close scan window
+        if self.close_window:
+            self.app.quit()
+        # self.scan_status = False
+        # display_monitor = 0
+        # monitor = QDesktopWidget().screenGeometry(display_monitor)
+        # print(monitor)
+        # self.pyqtgraph_plot.move(monitor.left(), monitor.top())
+        # self.pyqtgraph_plot.showFullScreen()
+
+    def _run(self):
+        self.on_operation_begin()
+
+        for i in range(self.repeat):
+            self.repetition = i
+            self.on_scan_begin()
+
+            if self.plotter is not None:
+                next(self.axes)
+
+            scanModule.scan(*self.scan_args)
+
+            self.on_scan_end()
+
+            # self.fit_values()
+
+        # if self.optimum:
+        #     self.goto_optimum()
+
+        cleanup()
+        self.on_operation_end()
+        if self.plotter is not None and self.wait_plotter:
+            self.plotter.plot_process.join()
+        # if self.postscan_cmd is not None:
+        #     try:
+        #         subprocess.run(self.postscan_cmd, shell=True)
+        #     except (OSError, RuntimeError) as exception:
+        #         die(exception)

@@ -31,10 +31,12 @@ parser.add_argument('-rc', '--remove_counter', metavar = 'file', nargs = '*', he
 parser.add_argument('-l', '--list', action='store_true', help='List all setups, showing in which one you are')
 parser.add_argument('-lc', '--list_counters', metavar = 'file', nargs = '*', help='List all setups, showing in which one you are')
 parser.add_argument('-lac', '--list_all_counters', action='store_true', help='List all counters available')
+parser.add_argument('-m', '--main-counter', metavar = 'counter', type=str, help='Set the main counter during a scan')
 
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
+du.log_macro(dict_args)
 path = du.HOME + '/.config/scan-utils/'
 DEFAULT = path + 'config.yml'
 prefix = 'config.'
@@ -102,16 +104,11 @@ if args.remove_counter:
 
     write_yaml(data, filepath = path + prefix + file_name + sufix)
 
+if args.main_counter:
+    dict_args['main_scan_counter'] = args.main_counter
+    du.write(dict_args)
+
+
 if args.remove:
     for file in args.remove:
         os.system('rm -f "$HOME/.config/scan-utils/{}"'.format(prefix + file + sufix))
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

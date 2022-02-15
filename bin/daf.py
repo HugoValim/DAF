@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+import subprocess
 import xrayutilities as xu
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import sys
 from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
@@ -1566,9 +1567,9 @@ class Control(object):
         return scan_points
 
 
-    def show_reciprocal_space_plane(self, ttmax=None, ttmin = None, maxqout=0.01, scalef=100, ax=None, color=None,
-            show_Laue=True, show_legend=True, projection='perpendicular',
-            label=None, idir=None,ndir=None):
+    def show_reciprocal_space_plane(self, ttmax=None, ttmin = None, maxqout=0.01, scalef=100, 
+                                    ax=None, color=None, show_Laue=True, show_legend=True, 
+                                    projection='perpendicular', label=None, idir=None,ndir=None, move=True):
         """
         show a plot of the coplanar diffraction plane with peak positions for the
         respective material. the size of the spots is scaled with the strength of
@@ -1612,7 +1613,7 @@ class Control(object):
         """
         import math
         import numpy
-
+        ttmin = None
 
         exp = xu.HXRD(idir, ndir, en = self.en, qconv= self.qconv, sampleor = self.sampleor)
         exp_real = self.hrxrd
@@ -1825,8 +1826,6 @@ class Control(object):
 
                     hkl = (d['hkl'][m][ind['ind'][0]])
                     self.hkl = hkl
-
-                    # ang = Control.motor_angles(self, qvec = d['qvec'][m][ind['ind'][0]], sv = startvalue)
                     ang = Control.motor_angles(self, sv = startvalue, flagmap = True)
                     angles = [ang[0][0], ang[0][1], ang[0][2], ang[0][3], ang[0][4], ang[0][5], float(ang[0][-1])]
 
@@ -1834,23 +1833,26 @@ class Control(object):
                         mat.name, str(d['hkl'][m][ind['ind'][0]]), str(angles))
                     numpy.set_printoptions(**popts)
 
-
                     pseudo = self.calc_pseudo(*angles[:6])
                     exp_dict = {'Mu':angles[0], 'Eta':angles[1], 'Chi':angles[2], 'Phi':angles[3], 'Nu':angles[4], 'Del':angles[5],'alpha':pseudo[0],
                                 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':list(self.hkl_calc)}
-                    if angles[6] < 1e-4:
-                        for j,k in exp_dict.items():
-                            if j in dict_args:
-                                dict_args[j] = str(k)
-                        du.write(dict_args)
-                        print('')
-                        print('Sample  = {}'.format(self.samp.name))
-                        os.system("daf.wh")
+                    self.set_print_options(marker = '', column_marker = '',   space = 14)
+                    lb = lambda x: "{:.5f}".format(float(x))
+                    if move:
+                        if angles[6] < 1e-4:
+                            print_str = self.__str__()
+                            print(print_str)
+                            # print("daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(lb(exp_dict['Mu']), lb(exp_dict['Eta']), lb(exp_dict['Chi']), lb(exp_dict['Phi']), lb(exp_dict['Nu']), lb(exp_dict['Del'])))
+                            subprocess.Popen("daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(lb(exp_dict['Mu']), lb(exp_dict['Eta']), lb(exp_dict['Chi']), lb(exp_dict['Phi']), lb(exp_dict['Nu']), lb(exp_dict['Del'])), shell = True)
+                        else:
+                            print('Can\'t find the reflection {}'.format(hkl))
                     else:
-                        print('Can\'t find the reflection {}'.format(hkl))
+                        if angles[6] < 1e-4:
+                            print_str = self.__str__()
+                            print(print_str)
+                        else:
+                            print('Can\'t find the reflection {}'.format(hkl))
 
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)
         return ax, h
-
-

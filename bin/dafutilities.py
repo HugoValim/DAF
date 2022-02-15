@@ -2,6 +2,7 @@
 """Library for reading and writing experiment files"""
 
 import atexit
+import sys
 import os
 import epics
 import yaml
@@ -11,9 +12,8 @@ import numpy as np
 HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
 PV_PREFIX = "EMA:B:PB18"
-# PV_PREFIX = "SOL:S"
+PV_PREFIX = "SOL:S"
 # PV_PREFIX = "IOC"
-
 
 PVS = {
         "Phi" : PV_PREFIX + ":m1",
@@ -26,11 +26,20 @@ PVS = {
 
 BL_PVS = {
 
-    'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
+    # 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
+    'PV_energy' : 'SOL:S:m7'
 }
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
 
+def log_macro(dargs):
+    """Function to generate the log and macro files"""
+    log = sys.argv.pop(0).split('command_line/')[1]
+    for i in sys.argv:
+        log += ' ' + i
+    os.system("echo {} >> Log".format(log))
+    if dargs['macro_flag'] == 'True':
+        os.system("echo {} >> {}".format(log, dict_args['macro_file']))
 
 def epics_get(dict_):
     for key in MOTORS:
@@ -40,7 +49,6 @@ def epics_get(dict_):
     for key, value in BL_PVS.items():
         dict_[key] = float(epics.caget(BL_PVS[key]))*1000
 
-
 def read(filepath=DEFAULT):
     with open(filepath) as file:
         data = yaml.safe_load(file)
@@ -48,21 +56,14 @@ def read(filepath=DEFAULT):
         # write(data)
         return data
 
-
-
-
-
 def stop():
     for key in MOTORS:
         MOTORS[key].stop()
-
 
 def wait(is_scan):
     # if not is_scan:
         # print("   PHI       CHI       MU       NU      ETA       DEL")
     lb = lambda x: "{:.5f}".format(float(x))
-
-
     for key in MOTORS:
         while not MOTORS[key].done_moving:
             pass
@@ -73,7 +74,6 @@ def wait(is_scan):
             # time.sleep(0.5)
     # print('')
 
-
 def epics_put(dict_, is_scan):
     # Make sure we stop all motors.
     atexit.register(stop)
@@ -83,7 +83,6 @@ def epics_put(dict_, is_scan):
         MOTORS[key].high_limit = aux[1]
         MOTORS[key].move(dict_[key], ignore_limits=True, confirm_move=True)
     wait(is_scan)
-
 
 def write(dict_, filepath=DEFAULT, is_scan = False):
     epics_put(dict_, is_scan)

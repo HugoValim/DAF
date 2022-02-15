@@ -3892,6 +3892,62 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_rmap">
+      <attribute name="title">
+       <string>RMap</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QFrame" name="frame_3">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_16">
+            <item>
+             <widget class="QCheckBox" name="checkBox_rmap">
+              <property name="toolTip">
+               <string>If checked the diffractometer motors will be moved, otherwise only the calculation is done</string>
+              </property>
+              <property name="text">
+               <string>Move when clicked</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_41">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_refresh">
+              <property name="text">
+               <string>Refresh</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_rmap"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_scan">
       <attribute name="title">
        <string>Scan</string>
@@ -4485,6 +4541,7 @@
                <widget class="QLabel" name="label_current_config">
                 <property name="font">
                  <font>
+                  <pointsize>9</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>

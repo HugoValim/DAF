@@ -27,8 +27,9 @@ parser.add_argument('-e', '--energy', metavar='en', type=float, help='Sets the e
 
 args = parser.parse_args()
 dic = vars(args)
-
 dict_args = du.read()
+du.log_macro(dict_args)
+
 if args.Lattice_parameters:
     dict_args['lparam_a'] = args.Lattice_parameters[0]
     dict_args['lparam_b'] = args.Lattice_parameters[1]
@@ -64,15 +65,11 @@ if args.IDir_print is not None and args.NDir_print is not None:
     dict_args['UB_mat'] = UB.tolist()
     du.write(dict_args)
 
-
-
 if args.Material:
     dict_args = du.read()
     U = np.array(dict_args['U_mat'])
     mode = [int(i) for i in dict_args['Mode']]
-
     exp = daf.Control(*mode)
-    
     if args.Material in dict_args['user_samples'].keys():
         exp.set_material(args.Material, *dict_args['user_samples'][args.Material])
     
@@ -85,25 +82,10 @@ if args.Material:
     dict_args['U_mat'] = U.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
     dict_args['UB_mat'] = UB.tolist() # yaml doesn't handle numpy arrays well, so using python's list is a better choice
     predef = exp.predefined_samples
-    
-
     if args.Material not in predef:
         if args.Material not in dict_args['user_samples'].keys():       
             nsamp_dict = dict_args['user_samples']       
             nsamp_dict[args.Material] = [dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"]]
             dict_args['user_samples'] = nsamp_dict
-
     
     du.write(dict_args)
-
-
-
-log = sys.argv.pop(0).split('command_line/')[1]
-
-for i in sys.argv:
-    log += ' ' + i
-
-os.system("echo {} >> Log".format(log))
-
-if dict_args['macro_flag'] == 'True':
-    os.system("echo {} >> {}".format(log, dict_args['macro_file']))

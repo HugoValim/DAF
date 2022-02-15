@@ -71,8 +71,12 @@ data = {'Mode': '2052',
 		'default_counters' : 'config.daf_default.yml',
 		'dark_mode' : 0,
 		'scan_stats' : {},
-		'PV_energy' : 0.
-
+		'PV_energy' : 0.,
+		'scan_running' : False,
+		'scan_counters' : [],
+		'current_scan_file' : '',
+		'main_scan_counter' : '',
+		'main_scan_motor' : ''
 
 
 
