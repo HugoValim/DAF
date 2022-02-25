@@ -9,9 +9,14 @@ import yaml
 import time
 import numpy as np
 
+class DevNull:
+    """Supress errors for the user"""
+    def write(self, msg):
+        pass
+# sys.stderr = DevNull()
+
 HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
-
 
 def only_read(filepath=DEFAULT):
     """Just get the data from .Experiment file without any epics command"""

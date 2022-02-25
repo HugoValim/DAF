@@ -101,9 +101,8 @@ class MyDisplay(Display):
         self.fwhm_pos = None
         self.peak_pos = None
         self.app = QApplication.instance()
-        style = qdarkstyle.load_stylesheet_pyqt5()
-        self.app.setStyleSheet(style)
         self._createMenuBar()
+        self.default_theme()
         self.build_basic_layout()
         self.loop()
 
@@ -139,15 +138,33 @@ class MyDisplay(Display):
                 action.setChecked(True)
         self.option_menu.triggered.connect(self.style_sheet_handler)
 
+    def default_theme(self):
+        dict_args = du.read()
+        if dict_args['dark_mode']:
+            style = qdarkstyle.load_stylesheet_pyqt5()
+            self.app.setStyleSheet(style)
+            for action in self.option_menu.actions():
+                if action.text() == 'Dark Theme':
+                    action.setChecked(True)
+        else:
+            self.app.setStyleSheet('')
+            for action in self.option_menu.actions():
+                if action.text() == 'Dark Theme':
+                    action.setChecked(False)
+
     def style_sheet_handler(self):
-        """Handles the switch between dark mode and light mode"""
+        dict_args = du.read()
         for action in self.option_menu.actions():
             if action.text() == 'Dark Theme':
                 if action.isChecked():
                     style = qdarkstyle.load_stylesheet_pyqt5()
                     self.app.setStyleSheet(style)
+                    dict_args['dark_mode'] = 1
+                    du.write(dict_args)
                 else:
                     self.app.setStyleSheet('')
+                    dict_args['dark_mode'] = 0
+                    du.write(dict_args)
 
     def loop(self):
         """Loop every 1 second to see if a new scan has began"""

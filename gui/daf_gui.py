@@ -120,6 +120,7 @@ class Worker(QObject):
             time.sleep(1)
 
 class RMap(FigureCanvasQTAgg):
+    """Class to handle the RMap plot in the GUI"""
 
     def __init__(self, parent=None, dict_args=None, move=False, samples=None, idirp=None, ndirp=None):
         U = np.array(dict_args['U_mat'])
@@ -411,6 +412,7 @@ class MyDisplay(Display):
         self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
     def rmap_widget(self, data, samples, idir, ndir):
+        # Build the RMap graph
         self.rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked(), samples = samples, idirp=idir, ndirp=ndir)
         plt.close(self.rmap_plot.ax.figure) #Must have that, otherwise it will consume all the RAM opening figures
         for i in reversed(range(self.verticalLayout_rmap.count())): 
@@ -423,6 +425,7 @@ class MyDisplay(Display):
         self.rmap_plot.customContextMenuRequested[QtCore.QPoint].connect(self.rmap_menu_builder)
 
     def rmap_menu_builder(self):
+        """Build the menu that will pop when with right clicks in the graph"""
         self.rmap_menu = QMenu(self.rmap_plot)
         # Refresh plot
         refresh_plot = self.rmap_menu.addAction('Refresh')
@@ -606,10 +609,7 @@ class MyDisplay(Display):
     def remove_setup(self):
         item = self.ui.listWidget_setup.currentItem()
         value = item.text()
-
         os.system("daf.setup -r {}".format(value))
-
-
         self.setup_scroll_area()
 
     def set_scan_prop(self):
@@ -651,6 +651,7 @@ class MyDisplay(Display):
         self.fill_item(widget.invisibleRootItem(), value)
 
     def print_tree(self, file):
+        """Print counters of a setup as a tree"""
         with open('/etc/xdg/scan-utils/config.yml') as conf:
             config_data = yaml.safe_load(conf)
         with open(file) as file:
@@ -658,26 +659,37 @@ class MyDisplay(Display):
         if data != None:
             full_output = {}
             for counter in data:
+                if isinstance(counter, dict):
+                    counter = list(counter.keys())[0]
                 full_output[counter] = config_data['counters'][counter]
         else:
-            full_output = '\n \n \n \n \n' + ' '*50 + ' Add counters to this file'
+            full_output = 'Add counters to this file'
         self.fill_widget(self.ui.treeWidget_counters, full_output)
 
     def counters_scroll_area(self):
-        configs = os.listdir(du.HOME + '/.config/scan-utils')
-        configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+        """List all possible counter configs"""
+        user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+        sys_configs = os.listdir('/etc/xdg/scan-utils')
+        all_configs = user_configs + sys_configs
+        configs = [i.split('.')[1] for i in all_configs if len(i.split('.')) == 3 and i.endswith('.yml')]
         configs.sort()
         self.ui.listWidget_counters.clear()
         self.ui.listWidget_counters.addItems(configs)
 
-    def on_counters_list_widget_change(self):       
+    def on_counters_list_widget_change(self):
+        """Print the counters on a setup when selected"""       
         prefix = 'config.'
         sufix = '.yml'
-        configs = os.listdir(du.HOME + '/.config/scan-utils')
-        configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+        user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+        sys_configs = os.listdir('/etc/xdg/scan-utils')
+        all_configs = user_configs + sys_configs
+        configs = [i.split('.')[1] for i in all_configs if len(i.split('.')) == 3 and i.endswith('.yml')]
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
         if value in configs:
+            try:
+                self.print_tree('/etc/xdg/scan-utils/' + prefix + value + sufix)
+            except:
                 self.print_tree(du.HOME + '/.config/scan-utils/' + prefix + value + sufix)
 
     def set_counter(self):
@@ -706,6 +718,20 @@ class MyDisplay(Display):
                 os.system('daf.mc -n {}'.format(text))
         self.counters_scroll_area()
 
+    def add_counter(self):
+        """Add a counter to a setup"""
+        counter = self.ui.comboBox_counters.currentText()
+        item = self.ui.listWidget_counters.currentItem()
+        value = item.text()
+        os.system("daf.mc -a {} {}".format(value, counter))
+        list_ = self.extract(self.ui.listWidget_counters)
+        if list_.index(value) == 0 and len(list_) > 1:
+            self.ui.listWidget_counters.setCurrentRow(1)
+        else:
+            self.ui.listWidget_counters.setCurrentRow(0)
+        self.ui.listWidget_counters.setCurrentRow(list_.index(value))
+        self.set_xlabel_combobox_options()
+
     def remove_counter_file(self):
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
@@ -727,19 +753,6 @@ class MyDisplay(Display):
         self.ui.comboBox_xlabel.addItems(motors_now)
         self.ui.comboBox_xlabel.setEditable(True)
         self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
-
-    def add_counter(self):
-        counter = self.ui.comboBox_counters.currentText()
-        item = self.ui.listWidget_counters.currentItem()
-        value = item.text()
-        os.system("daf.mc -a {} {}".format(value, counter))
-        list_ = self.extract(self.ui.listWidget_counters)
-        if list_.index(value) == 0 and len(list_) > 1:
-            self.ui.listWidget_counters.setCurrentRow(1)
-        else:
-            self.ui.listWidget_counters.setCurrentRow(0)
-        self.ui.listWidget_counters.setCurrentRow(list_.index(value))
-        self.set_xlabel_combobox_options()
 
     def remove_counter(self):
         getSelected = self.ui.treeWidget_counters.selectedItems()
