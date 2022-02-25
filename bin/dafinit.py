@@ -13,7 +13,7 @@ Eg:
     '''
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
-parser.add_argument('-6c', '--6cirlce', action='store_true', help='Set the 6-cirlce diffractometer geometry')
+parser.add_argument('-s', '--simulated', action='store_true', help='Initiate DAF in simulated mode')
 
 args = parser.parse_args()
 dic = vars(args)
@@ -25,6 +25,10 @@ os.system('cp -n "$HOME/.daf/default" .Experiment')
 
 dict_args = du.read()
 du.log_macro(dict_args)
+
+if args.simulated:
+    dict_args['simulated'] = True
+    du.write(dict_args)
 
 if not os.path.isdir(du.HOME + '/.config/scan-utils'):
 	os.system('mkdir $HOME/.config/scan-utils')

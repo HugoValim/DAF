@@ -66,20 +66,27 @@ class UpdateThread(threading.Thread):
 
     def run(self):
         """Method implementing thread loop that updates the plot"""
+        ntrys = 0
         while self.running:
-            x, y = self.get_hdf5_data(self.file)
-            for plot in self.plots.keys():
-                counter = y[plot]
-                if self.xlabel == 'points':
-                    motor = [i for i in range(len(counter))]
-                else:
-                    motor = x[self.xlabel]
-                # Run plot update asynchronously
-                concurrent.submitToQtMainThread(
-                    self.plots[plot].addCurve,
-                    motor[:len(counter)],
-                    counter)
-            time.sleep(.25)
+            try:
+                x, y = self.get_hdf5_data(self.file)
+                for plot in self.plots.keys():
+                    counter = y[plot]
+                    if self.xlabel == 'points':
+                        motor = [i for i in range(len(counter))]
+                    else:
+                        motor = x[self.xlabel]
+                    # Run plot update asynchronously
+                    concurrent.submitToQtMainThread(
+                        self.plots[plot].addCurve,
+                        motor[:len(counter)],
+                        counter)
+                time.sleep(.25)
+            except:
+                ntrys += 1
+                if ntrys > 10:
+                    break
+                time.sleep(.25)
 
     def stop(self):
         """Stop the update thread"""
@@ -195,26 +202,29 @@ class MyDisplay(Display):
 
     def build_stat(self, plot):
         """Update statistic table after the scan is done"""
-        fmt = lambda x: str("{:.5f}".format(float(x)))
-        curve = plot.getCurve()
-        x0 = curve.getXData()
-        y0 = curve.getYData()
-        self.stats = fits.fitGauss(x0,y0)
-        self.peak = self.stats[0]
-        self.peak_pos = self.stats[1]
-        self.min = self.stats[2]
-        self.min_pos = self.stats[3]
-        self.fwhm = self.stats[4]
-        self.fwhm_pos = self.stats[5]
-        self.com = self.stats[6]
-        # # Update table
-        self.tableWidget_stats.setItem(0, 1, QTableWidgetItem(fmt(self.fwhm)))
-        self.tableWidget_stats.setItem(0, 3, QTableWidgetItem(fmt(self.fwhm_pos)))
-        self.tableWidget_stats.setItem(1, 1, QTableWidgetItem(fmt(self.peak)))
-        self.tableWidget_stats.setItem(1, 3, QTableWidgetItem(fmt(self.peak_pos)))
-        self.tableWidget_stats.setItem(2, 1, QTableWidgetItem(fmt(self.min)))
-        self.tableWidget_stats.setItem(2, 3, QTableWidgetItem(fmt(self.min_pos)))
-        self.tableWidget_stats.setItem(3, 1, QTableWidgetItem(fmt(self.com)))
+        try:
+            fmt = lambda x: str("{:.5f}".format(float(x)))
+            curve = plot.getCurve()
+            x0 = curve.getXData()
+            y0 = curve.getYData()
+            self.stats = fits.fitGauss(x0,y0)
+            self.peak = self.stats[0]
+            self.peak_pos = self.stats[1]
+            self.min = self.stats[2]
+            self.min_pos = self.stats[3]
+            self.fwhm = self.stats[4]
+            self.fwhm_pos = self.stats[5]
+            self.com = self.stats[6]
+            # # Update table
+            self.tableWidget_stats.setItem(0, 1, QTableWidgetItem(fmt(self.fwhm)))
+            self.tableWidget_stats.setItem(0, 3, QTableWidgetItem(fmt(self.fwhm_pos)))
+            self.tableWidget_stats.setItem(1, 1, QTableWidgetItem(fmt(self.peak)))
+            self.tableWidget_stats.setItem(1, 3, QTableWidgetItem(fmt(self.peak_pos)))
+            self.tableWidget_stats.setItem(2, 1, QTableWidgetItem(fmt(self.min)))
+            self.tableWidget_stats.setItem(2, 3, QTableWidgetItem(fmt(self.min_pos)))
+            self.tableWidget_stats.setItem(3, 1, QTableWidgetItem(fmt(self.com)))
+        except:
+            pass
 
     def goto_fwhm(self):
         """Move the xlabel motor to the FWHM pos"""

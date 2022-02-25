@@ -11,9 +11,20 @@ import numpy as np
 
 HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
-PV_PREFIX = "EMA:B:PB18"
-PV_PREFIX = "SOL:S"
-# PV_PREFIX = "IOC"
+
+
+def only_read(filepath=DEFAULT):
+    """Just get the data from .Experiment file without any epics command"""
+    with open(filepath) as file:
+        data = yaml.safe_load(file)
+        return data
+dict_ = only_read()
+
+if not dict_['simulated']:
+    PV_PREFIX = "EMA:B:PB18"
+else:
+    PV_PREFIX = "SOL:S"
+    # PV_PREFIX = "IOC"
 
 PVS = {
         "Phi" : PV_PREFIX + ":m1",
@@ -26,8 +37,8 @@ PVS = {
 
 BL_PVS = {
 
-    # 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
-    'PV_energy' : 'SOL:S:m7'
+    'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
+    # 'PV_energy' : 'SOL:S:m7'
 }
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}

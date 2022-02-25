@@ -115,6 +115,7 @@ scan_stats: {}
 separator: ','
 setup: default
 setup_desc: This is DAF default setup
+simulated: false
 tau: 0.0
 theta: 0.0
 tt: 0.0
