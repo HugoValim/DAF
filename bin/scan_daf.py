@@ -34,22 +34,23 @@ from scan_utils import WriteType
 from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
-def handler(signum, frame):
-    """Function to handle ctrl + c and dont let daf.live lost"""
-    dict_args = du.read()
-    dict_args['scan_running'] = False
-    du.write(dict_args)
-    print('\n')
-    exit(1)
-
-signal.signal(signal.SIGINT, handler)
 
 class DAFScan(ScanOperationCLI):
 
     def __init__(self, args, close_window=False):
         super().__init__(**args)
         self.close_window = close_window
-        
+        signal.signal(signal.SIGINT, self.sigint_handler)
+
+    def sigint_handler(self, signum, frame):
+        """Function to handle ctrl + c and dont let daf.live lost"""
+        dict_args = du.read()
+        dict_args['scan_running'] = False
+        du.write(dict_args)
+        self.reset_motors()
+        print('\n')
+        exit(1)
+
     def on_operation_begin(self):
         """Routine to be done before this scan operation."""
         counter_dict = dict(py4syn.counterDB.items())

@@ -4,7 +4,6 @@
 import argparse as ap
 import sys
 import os
-import dafutilities as du
 import yaml
 
 epi = '''
@@ -23,6 +22,7 @@ os.system('cp -nr "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.p
 os.system('cp -n "$HOME/.daf/default" .Experiment')
 # os.system('export PS1="DAF> "')
 
+import dafutilities as du
 dict_args = du.read()
 du.log_macro(dict_args)
 

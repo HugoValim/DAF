@@ -41,6 +41,10 @@ def write_angs():
             CEN = dict_[args.counter]['FWHM_at']
             MAX = dict_[args.counter]['peak_at']
             stat_dict = {'CEN' : CEN, 'MAX' : MAX}
+        elif dict_args['main_scan_counter']:
+            CEN = dict_[dict_args['main_scan_counter']]['FWHM_at']
+            MAX = dict_[dict_args['main_scan_counter']]['peak_at']
+            stat_dict = {'CEN' : CEN, 'MAX' : MAX}
         else:
             values_view = dict_.keys()
             value_iterator = iter(values_view)

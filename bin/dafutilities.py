@@ -8,6 +8,17 @@ import epics
 import yaml
 import time
 import numpy as np
+import signal
+
+def sigint_handler_utilities(signum, frame):
+    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
+    dict_args = read()
+    write(dict_args)
+    print('\n')
+    exit(1)
+
+
+signal.signal(signal.SIGINT, sigint_handler_utilities)
 
 class DevNull:
     """Supress errors for the user"""
@@ -42,8 +53,8 @@ PVS = {
 
 BL_PVS = {
 
-    'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
-    # 'PV_energy' : 'SOL:S:m7'
+    # 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
+    'PV_energy' : 'SOL:S:m7'
 }
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}

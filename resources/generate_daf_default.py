@@ -75,7 +75,7 @@ data = {'Mode': '2052',
 		'scan_running' : False, #Flag to tell daf.live if a scan is running
 		'scan_counters' : [], #Inform the counter for daf.live
 		'current_scan_file' : '', #Tells daf.live which file to look after to plot the current scan
-		'main_scan_counter' : '',#Defines the counter main counter to use in daf.live
+		'main_scan_counter' : None,#Defines the counter main counter to use in daf.live
 		'main_scan_motor' : '', #Defines the xlabel motor for daf.live
 		'simulated' : False # Defines in DAF will use simulated motors or not
 

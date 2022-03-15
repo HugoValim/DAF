@@ -27,54 +27,38 @@ class Worker(QObject):
     finished = pyqtSignal()
     update_labels = pyqtSignal()
 
-    
     def get_experiment_data(self, filepath=DEFAULT):
         with open(filepath) as file:
             data = yaml.safe_load(file)
-        
         return data
 
     def format_decimals(self, x):
-            
             if type(x) == float:
                 return "{:.5f}".format(float(x)) # format float with 5 decimals
-
             else:
                 result = []
                 for i in x:
                     result.append("{:.5f}".format(float(i)))
-
                 return result
 
-
     def call_update(self):
-
         data = self.get_experiment_data()
         if data != self.data:
             self.update()
             self.data = data
 
-
     def update(self):
-
-
         dict_args = du.read()
-
         U = np.array(dict_args['U_mat'])
         U_print = np.array([self.format_decimals(U[0]), self.format_decimals(U[1]), self.format_decimals(U[2])])
-
         UB = np.array(dict_args['UB_mat'])
         UB_print = np.array([self.format_decimals(UB[0]), self.format_decimals(UB[1]), self.format_decimals(UB[2])])
-
-
         mode = [int(i) for i in dict_args['Mode']]
         idir = dict_args['IDir_print']
         ndir = dict_args['NDir_print']
         rdir = dict_args['RDir']
-
         exp = daf.Control(*mode)
         exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
-
         if dict_args['Material'] in dict_args['user_samples'].keys():
             exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
 
@@ -199,9 +183,9 @@ class MyDisplay(Display):
     def set_tab_order(self):
 
         # Scan
-        self.setTabOrder(self.ui.tab_scan, self.ui.lineEdit)
-        self.setTabOrder(self.ui.lineEdit, self.ui.lineEdit_2)
-        self.setTabOrder(self.ui.lineEdit_2, self.ui.listWidget_counters)
+        self.setTabOrder(self.ui.tab_scan, self.lineEdit_scan_path)
+        self.setTabOrder(self.lineEdit_scan_path, self.lineEdit_scan_file)
+        self.setTabOrder(self.lineEdit_scan_file, self.ui.listWidget_counters)
         self.setTabOrder(self.ui.listWidget_counters, self.ui.treeWidget_counters)
         self.setTabOrder(self.ui.treeWidget_counters, self.ui.pushButton_new_counter_file)
         self.setTabOrder(self.ui.pushButton_new_counter_file, self.ui.pushButton_remove_counter_file)
@@ -616,9 +600,54 @@ class MyDisplay(Display):
         """ Set properties showed in scan tab in daf.gui """
         dict_ = du.read()
         self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+        self.set_scan_path()
         self.counters_scroll_area()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
         self.set_counter_combobox_options()
         self.set_xlabel_combobox_options()
+        self.comboBox_main_counter.currentTextChanged.connect(self.change_main_counter)
+
+    def set_scan_path(self):
+        self.lineEdit_scan_path.setText(os.getcwd())
+        self.lineEdit_scan_file.setText('scan_daf')
+
+    def main_counter_cbox(self, defaut_file, main_counter):
+        self.comboBox_main_counter.clear()
+        user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+        sys_configs = os.listdir('/etc/xdg/scan-utils')
+        if defaut_file in user_configs:
+            path_to_use = du.HOME + '/.config/scan-utils/'
+        elif defaut_file in sys_configs:
+            path_to_use = '/etc/xdg/scan-utils/'
+        with open(path_to_use + defaut_file) as file:
+            data = yaml.safe_load(file)
+                    #         if isinstance(counter, dict):
+                    # counter = list(counter.keys())[0]
+        data = [list(i.keys())[0] if type(i)==dict else i for i in data]
+        if main_counter not in data and main_counter != None:
+            data.append(main_counter)
+        elif main_counter == None:
+            data.append('None')
+        self.comboBox_main_counter.addItems(data)
+        self.main_counter_cbox_default(main_counter)
+
+    def main_counter_cbox_default(self, main_counter):
+        AllItems = [self.comboBox_main_counter.itemText(i) for i in range(self.comboBox_main_counter.count())]
+        if main_counter in AllItems:
+            self.comboBox_main_counter.setCurrentIndex(AllItems.index(main_counter))
+        elif main_counter == None:
+            self.comboBox_main_counter.setCurrentIndex(AllItems.index('None'))
+
+    def change_main_counter(self):
+        dict_ = du.read()
+        AllItems = [self.comboBox_main_counter.itemText(i) for i in range(self.comboBox_main_counter.count())]
+        counter = self.comboBox_main_counter.currentText()
+        if counter != '' and counter != 'None':
+            os.system("daf.mc -m {}".format(counter))
+            if 'None' in AllItems and dict_['main_scan_counter'] != None:
+                AllItems.remove('None')
+                self.comboBox_main_counter.clear()
+                self.comboBox_main_counter.addItems(AllItems)
 
     def fill_item(self, item, value):
         item.setExpanded(False)
@@ -699,6 +728,8 @@ class MyDisplay(Display):
         dict_ = du.read()
         self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
         self.set_xlabel_combobox_options()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
+        self.main_counter_cbox_default(dict_['main_scan_counter'])
 
     def new_counter_file(self):
         configs = os.listdir(du.HOME + '/.config/scan-utils')
@@ -720,6 +751,7 @@ class MyDisplay(Display):
 
     def add_counter(self):
         """Add a counter to a setup"""
+        dict_ = du.read()
         counter = self.ui.comboBox_counters.currentText()
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
@@ -731,6 +763,7 @@ class MyDisplay(Display):
             self.ui.listWidget_counters.setCurrentRow(0)
         self.ui.listWidget_counters.setCurrentRow(list_.index(value))
         self.set_xlabel_combobox_options()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
 
     def remove_counter_file(self):
         item = self.ui.listWidget_counters.currentItem()
@@ -755,6 +788,7 @@ class MyDisplay(Display):
         self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
     def remove_counter(self):
+        dict_ = du.read()
         getSelected = self.ui.treeWidget_counters.selectedItems()
         if getSelected:
             baseNode = getSelected[0]
@@ -769,6 +803,7 @@ class MyDisplay(Display):
                 self.ui.listWidget_counters.setCurrentRow(0)
             self.ui.listWidget_counters.setCurrentRow(list_.index(value))
         self.set_xlabel_combobox_options()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
 
     def start_scan(self):
         if not self.scan:

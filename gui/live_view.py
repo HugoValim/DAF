@@ -115,8 +115,8 @@ class MyDisplay(Display):
     def translate_dict(self):
         """Depending on the motors translate to daf .Experiment format"""
         if du.PV_PREFIX == "EMA:B:PB18":
-            data = {'huber_mu':'Mu', 'eta':'huber_eta', 'chi':'huber_chi',
-                    'phi':'huber_phi', 'nu':'huber_nu', 'del':'huber_del'}
+            data = {'huber_mu':'Mu', 'huber_eta':'Eta', 'huber_chi':'Chi',
+                    'huber_phi':'Phi', 'huber_nu':'Nu', 'huber_del':'Del'}
             return data
         else:
             data = {'sol_m3':'Mu', 'sol_m5':'Eta', 'sol_m2':'Chi',
@@ -305,6 +305,7 @@ class MyDisplay(Display):
         else:
             if self.started:
                 if dict_args['main_scan_counter'] != '':
-                    self.build_stat(self.plot_dict[dict_args['main_scan_counter']])
+                    if dict_args['main_scan_counter'] in self.plot_dict.keys():
+                        self.build_stat(self.plot_dict[dict_args['main_scan_counter']])
                 self.started = False
                 self.updateThread.stop()

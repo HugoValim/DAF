@@ -4017,7 +4017,7 @@
             <item>
              <layout class="QGridLayout" name="gridLayout_13">
               <item row="2" column="0">
-               <widget class="QLineEdit" name="lineEdit">
+               <widget class="QLineEdit" name="lineEdit_scan_path">
                 <property name="text">
                  <string>/tmp/</string>
                 </property>
@@ -4044,7 +4044,7 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_2">
+               <widget class="QLineEdit" name="lineEdit_scan_file">
                 <property name="text">
                  <string>daf_scan</string>
                 </property>
@@ -4126,6 +4126,9 @@
                 <width>16777215</width>
                 <height>150</height>
                </size>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -4463,80 +4466,6 @@
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_18">
-              <item row="3" column="1">
-               <widget class="QComboBox" name="comboBox_xlabel"/>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_step">
-                <property name="text">
-                 <string>100</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_67">
-                <property name="text">
-                 <string>Time</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_66">
-                <property name="text">
-                 <string>Steps</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_69">
-                <property name="text">
-                 <string>csv filename</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QLineEdit" name="lineEdit_csv_filename">
-                <property name="text">
-                 <string>scan_test</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_68">
-                <property name="text">
-                 <string>Xlabel</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_time">
-                <property name="text">
-                 <string>0.01</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_54">
-                <property name="text">
-                 <string>Current config:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="1">
                <widget class="QLabel" name="label_current_config">
                 <property name="font">
@@ -4554,12 +4483,96 @@
                 </property>
                </widget>
               </item>
+              <item row="4" column="1">
+               <widget class="QComboBox" name="comboBox_xlabel"/>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lineEdit_step">
+                <property name="text">
+                 <string>100</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_67">
+                <property name="text">
+                 <string>Time</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_66">
+                <property name="text">
+                 <string>Steps</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
               <item row="5" column="0">
+               <widget class="QLabel" name="label_69">
+                <property name="text">
+                 <string>csv filename</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QLineEdit" name="lineEdit_csv_filename">
+                <property name="text">
+                 <string>scan_test</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_68">
+                <property name="text">
+                 <string>Xlabel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="lineEdit_time">
+                <property name="text">
+                 <string>0.01</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_54">
+                <property name="text">
+                 <string>Current config:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
                <widget class="QCheckBox" name="checkBox_only_csv">
                 <property name="text">
                  <string>Only calculate the csv file</string>
                 </property>
                </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_71">
+                <property name="text">
+                 <string>Main counter</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="comboBox_main_counter"/>
               </item>
              </layout>
             </item>
