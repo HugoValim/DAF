@@ -43,7 +43,7 @@ parser.add_argument('step', metavar='step', type=int, help='Number of steps')
 parser.add_argument('time', metavar='time', type=float, help='Acquisition time in each point in seconds')
 parser.add_argument('-cf', '--configuration', type=str, help='choose a counter configuration file', default='default')
 parser.add_argument('-o', '--output', help='output data to file output-prefix/<fileprefix>_nnnn', default=os.getcwd() + '/scan_daf')
-parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)', default='points')
+parser.add_argument('-x', '--xlabel', help='motor which position is shown in x axis (if not set, point index is shown instead)')
 parser.add_argument('-sp', '--show-plot', help='Do not plot de scan', action='store_const', const=PlotType.hdf, default=PlotType.none)
 parser.add_argument('-cw', '--close-window', help='Close the scan window after it is done', default=False, action='store_true')
 
@@ -77,11 +77,12 @@ for key, val in dic.items():
 with open('.points.yaml', 'w') as stream:
     yaml.dump(data_for_scan, stream, allow_unicode=False)
 
-if args.xlabel != 'points':
-    xlabel = data[args.xlabel]
+motors = du.get_passed_motor_order(sys.argv) # Pass motors in the chosen order
+if args.xlabel == None:
+    xlabel = motors[0]
 else:
-    xlabel = 'points'
-
+    xlabel = data[args.xlabel]
+    
 args = {'configuration': dict_args['default_counters'].split('.')[1], 'optimum': None, 'repeat': 1, 'sleep': 0, 'message': None, 
 'output': args.output, 'sync': True, 'snake': False, 'motor': motors, 'xlabel': xlabel, 
 'prescan': 'ls', 'postscan': 'pwd', 'plot_type': args.show_plot, 'relative': False, 'reset': False, 'step_mode': False, 
