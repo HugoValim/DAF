@@ -9,6 +9,17 @@ import yaml
 import time
 import numpy as np
 import signal
+import time
+
+def sigint_handler_utilities(signum, frame):
+    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    dict_args = read()
+    write(dict_args)
+    print('\n')
+    exit(1)
+
+signal.signal(signal.SIGINT, sigint_handler_utilities)
 
 def get_passed_motor_order(sysargv):
     """Function to pass the order that use choose to the scan_utils routine"""
@@ -30,18 +41,6 @@ def get_passed_motor_order(sysargv):
     motor_order = [data[simp_to_comp[i.split('-')[-1]]] for i in sysargv if i in all_possibilities]
 
     return motor_order
-
-
-
-def sigint_handler_utilities(signum, frame):
-    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
-    dict_args = read()
-    write(dict_args)
-    print('\n')
-    exit(1)
-
-
-signal.signal(signal.SIGINT, sigint_handler_utilities)
 
 class DevNull:
     """Supress errors for the user"""
@@ -138,3 +137,4 @@ def write(dict_, filepath=DEFAULT, is_scan = False):
     epics_put(dict_, is_scan)
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)
+        file.flush()

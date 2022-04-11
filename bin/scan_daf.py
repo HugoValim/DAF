@@ -44,6 +44,7 @@ class DAFScan(ScanOperationCLI):
 
     def sigint_handler(self, signum, frame):
         """Function to handle ctrl + c and dont let daf.live lost"""
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
         dict_args = du.read()
         dict_args['scan_running'] = False
         du.write(dict_args)
