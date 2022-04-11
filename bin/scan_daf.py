@@ -160,6 +160,23 @@ class DAFScan(ScanOperationCLI):
                 dict_args['scan_running'] = False
                 du.write(dict_args)
 
+    def add_scan_attrs(self):
+        with h5py.File(self.unique_filename, 'a') as h5w:
+                scan_idx = list(h5w['Scan'].keys())
+                scan_idx = (scan_idx[-1])
+
+                _instrument_path = 'Scan/' + scan_idx + '/instrument/'
+
+                dict_args = du.read()
+                default_counter = dict_args["main_scan_counter"]
+
+                h5w['Scan/' + scan_idx + '/instrument/'].attrs["main_motor"] = self.motor[0]
+                if default_counter in self.counters_name:
+                    h5w['Scan/' + scan_idx + '/instrument/'].attrs["main_counter"] = default_counter
+                else:
+                    h5w['Scan/' + scan_idx + '/instrument/'].attrs["main_counter"] = self.counters_name[0]
+
+
     def pos_scan_callback(self, **kwargs):
 
         print("pos_scan_callback")
@@ -250,6 +267,7 @@ class DAFScan(ScanOperationCLI):
             self.reset_motors()
         self.write_stat()
         self.write_hkl()
+        self.add_scan_attrs()
         #Close scan window
         if self.close_window:
             self.app.quit()
