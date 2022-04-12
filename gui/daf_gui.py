@@ -222,13 +222,14 @@ class MyDisplay(Display):
         self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
         self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
 
-        # Scan buttons
+        # Scan tab
         self.ui.pushButton_set_config_counter.clicked.connect(self.set_counter)
         self.ui.pushButton_new_counter_file.clicked.connect(self.new_counter_file)
         self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
         self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
         self.ui.pushButton_remove_counter.clicked.connect(self.remove_counter)
         self.ui.pushButton_start_scan.clicked.connect(self.start_scan)
+        self.comboBox_main_counter.currentTextChanged.connect(self.change_main_counter)
 
         # Setup buttons
         self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -599,13 +600,13 @@ class MyDisplay(Display):
     def set_scan_prop(self):
         """ Set properties showed in scan tab in daf.gui """
         dict_ = du.read()
+        self.main_counter = dict_["main_scan_counter"]
         self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
         self.set_scan_path()
         self.counters_scroll_area()
         self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
         self.set_counter_combobox_options()
         self.set_xlabel_combobox_options()
-        self.comboBox_main_counter.currentTextChanged.connect(self.change_main_counter)
 
     def set_scan_path(self):
         self.lineEdit_scan_path.setText(os.getcwd())
@@ -627,7 +628,7 @@ class MyDisplay(Display):
         if main_counter not in data and main_counter != None:
             data.append(main_counter)
         elif main_counter == None:
-            data.append('None')
+            data.insert(0, 'None')
         self.comboBox_main_counter.addItems(data)
         self.main_counter_cbox_default(main_counter)
 
@@ -643,11 +644,13 @@ class MyDisplay(Display):
         AllItems = [self.comboBox_main_counter.itemText(i) for i in range(self.comboBox_main_counter.count())]
         counter = self.comboBox_main_counter.currentText()
         if counter != '' and counter != 'None':
-            os.system("daf.mc -m {}".format(counter))
-            if 'None' in AllItems and dict_['main_scan_counter'] != None:
-                AllItems.remove('None')
-                self.comboBox_main_counter.clear()
-                self.comboBox_main_counter.addItems(AllItems)
+            if counter != self.main_counter:
+                self.main_counter = counter
+                os.system("daf.mc -m {}".format(counter))
+                if 'None' in AllItems and dict_['main_scan_counter'] != None:
+                    AllItems.remove('None')
+                    self.comboBox_main_counter.clear()
+                    self.comboBox_main_counter.addItems(AllItems)
 
     def fill_item(self, item, value):
         item.setExpanded(False)
