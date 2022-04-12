@@ -625,8 +625,10 @@ class MyDisplay(Display):
                     #         if isinstance(counter, dict):
                     # counter = list(counter.keys())[0]
         data = [list(i.keys())[0] if type(i)==dict else i for i in data]
+        if main_counter in data:
+            data.remove(main_counter)
         if main_counter not in data and main_counter != None:
-            data.append(main_counter)
+            data.insert(0, main_counter)
         elif main_counter == None:
             data.insert(0, 'None')
         self.comboBox_main_counter.addItems(data)
