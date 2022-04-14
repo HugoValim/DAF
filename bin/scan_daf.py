@@ -7,7 +7,7 @@ import subprocess
 import daf
 import numpy as np
 import dafutilities as du
-import scan_daf as sd
+# import scan_daf as sd
 import pandas as pd
 import yaml
 import argparse as ap
@@ -34,6 +34,17 @@ from scan_utils import WriteType
 from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
+
+def sigint_handler_utilities(signum, frame):
+    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    dict_args = du.read()
+    dict_args['scan_running'] = False
+    du.write(dict_args)
+    print('\n')
+    exit(1)
+
+signal.signal(signal.SIGINT, sigint_handler_utilities)
 
 class DAFScan(ScanOperationCLI):
 

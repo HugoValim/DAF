@@ -282,10 +282,10 @@ class MyDisplay(Display):
                     continue #Detector handlers should be avoided
                 self.plot_dict[counter] = Plot1D()
                 self.plot_dict[counter].show()
-                self.plot_dict[counter].setGraphTitle(counter)
+                self.plot_dict[counter].setGraphTitle(dict_args['current_scan_file'].split("/")[-1])
                 self.plot_dict[counter].getXAxis().setLabel(self.xlabel)
                 self.plot_dict[counter].setDefaultPlotPoints(True)
-                # plot.getYAxis().setLabel('Y')
+                self.plot_dict[counter].getYAxis().setLabel(counter)
                 if dict_args['main_scan_counter'] == counter:
                     self.tabWidget.setTabText(0, counter)
                     self.verticalLayout_single.addWidget(self.plot_dict[counter])
