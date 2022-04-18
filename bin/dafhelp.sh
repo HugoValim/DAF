@@ -27,6 +27,7 @@ usage()
     echo "${WHITE} daf.reset ${NO_COLOR} - Reset configurations to default"
     echo "${WHITE} daf.prompt ${NO_COLOR} - Set DAF prompt, must be used with source"
     echo "${WHITE} daf.setup ${NO_COLOR} - Manage DAF setups"
+    echo "${WHITE} daf.newsample ${NO_COLOR} - Create new folder and initialize DAF in it"
     echo
     echo "${PURPLE} GUIs"
     echo "${PURPLE} daf.gui ${NO_COLOR} - Launch DAF's main GUI"
