@@ -32,6 +32,7 @@ usage()
     echo "${PURPLE} daf.gui ${NO_COLOR} - Launch DAF's main GUI"
     echo "${PURPLE} daf.live ${NO_COLOR} - Launch DAF's live plot"
     echo "${PURPLE} daf.rmap ${NO_COLOR} - Lanch a graphical resciprocal space map"
+    echo "${PURPLE} daf.guiall ${NO_COLOR} - Opens all DAF's GUIs"
     echo
     echo "${GREEN} CONFIGURE THE EXPERIMENT"
     echo "${GREEN} daf.expt ${NO_COLOR} - Set sample, energy and reference vectors"
