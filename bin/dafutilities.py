@@ -60,8 +60,10 @@ dict_ = only_read()
 
 if not dict_['simulated']:
     PV_PREFIX = "EMA:B:PB18"
+    BL_PVS = { 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'}
 else:
     PV_PREFIX = "SOL:S"
+    BL_PVS = { 'PV_energy' : 'SOL:S:m7'}
     # PV_PREFIX = "IOC"
 
 PVS = {
@@ -71,12 +73,6 @@ PVS = {
         "Nu"  : PV_PREFIX + ":m4",
         "Eta" : PV_PREFIX + ":m5",
         "Del" : PV_PREFIX + ":m6",
-}
-
-BL_PVS = {
-
-    'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'
-    # 'PV_energy' : 'SOL:S:m7'
 }
 
 MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
