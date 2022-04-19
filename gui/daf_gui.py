@@ -18,8 +18,9 @@ import qdarkstyle
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+import threading
 
-import test_daf
+import scan_gui_daf
 
 DEFAULT = ".Experiment"
 
@@ -164,12 +165,11 @@ class MyDisplay(Display):
 
         self.app = QApplication.instance()
         self.set_main_screen_title()
+        self.current_theme = None
         self._createMenuBar()
         self.default_theme()
         self.set_scan_prop()
         self.setup_scroll_area()
-        self.ui.progressBar.hide()
-        self.ui.label_generating_points.hide()
         self.scan = False
         self.make_connections()
         self.set_tab_order()
@@ -180,7 +180,7 @@ class MyDisplay(Display):
         self.rmap_widget(du.read(), samples = self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
         self.delay = 5 # Some thing in GUI dont need to be updated every update call
         self.delay_counter = self.delay # Cooldown to delay, it start with the same value so it runs in the first loop
-        
+        self.scan_windows = {}
 
     def set_tab_order(self):
 
@@ -195,19 +195,7 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.pushButton_set_config_counter, self.ui.comboBox_counters)
         self.setTabOrder(self.ui.comboBox_counters, self.ui.pushButton_add_counter)
         self.setTabOrder(self.ui.pushButton_add_counter, self.ui.pushButton_remove_counter)
-        self.setTabOrder(self.ui.pushButton_remove_counter, self.ui.lineEdit_hi)
-        self.setTabOrder(self.ui.lineEdit_hi, self.ui.lineEdit_hf)
-        self.setTabOrder(self.ui.lineEdit_hf, self.ui.lineEdit_ki)
-        self.setTabOrder(self.ui.lineEdit_ki, self.ui.lineEdit_kf)
-        self.setTabOrder(self.ui.lineEdit_kf, self.ui.lineEdit_li)
-        self.setTabOrder(self.ui.lineEdit_li, self.ui.lineEdit_lf)
-        self.setTabOrder(self.ui.lineEdit_lf, self.ui.lineEdit_step)
-        self.setTabOrder(self.ui.lineEdit_step, self.ui.lineEdit_time)
-        self.setTabOrder(self.ui.lineEdit_time, self.ui.comboBox_xlabel)
-        self.setTabOrder(self.ui.comboBox_xlabel, self.ui.lineEdit_csv_filename)
-        self.setTabOrder(self.ui.lineEdit_csv_filename, self.ui.checkBox_only_csv)
-        self.setTabOrder(self.ui.checkBox_only_csv, self.ui.pushButton_start_scan)
-        self.setTabOrder(self.ui.pushButton_start_scan, self.ui.tab_scan)
+        self.setTabOrder(self.ui.pushButton_remove_counter, self.ui.tab_scan)
 
         # Setup
         self.setTabOrder(self.ui.tab_setup, self.ui.listWidget_setup)
@@ -221,7 +209,6 @@ class MyDisplay(Display):
 
     def make_connections(self):
 
-        self.pushButton.clicked.connect(self.open_window)
         self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
         self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
 
@@ -231,8 +218,24 @@ class MyDisplay(Display):
         self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
         self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
         self.ui.pushButton_remove_counter.clicked.connect(self.remove_counter)
-        self.ui.pushButton_start_scan.clicked.connect(self.start_scan)
         self.comboBox_main_counter.currentTextChanged.connect(self.change_main_counter)
+
+        #Scans
+        self.pushButton_ascan.clicked.connect(lambda: self.open_scan_window(1, 'abs'))
+        self.pushButton_a2scan.clicked.connect(lambda: self.open_scan_window(2, 'abs'))
+        self.pushButton_a3scan.clicked.connect(lambda: self.open_scan_window(3, 'abs'))
+        self.pushButton_a4scan.clicked.connect(lambda: self.open_scan_window(4, 'abs'))
+        self.pushButton_a5scan.clicked.connect(lambda: self.open_scan_window(5, 'abs'))
+        self.pushButton_a6scan.clicked.connect(lambda: self.open_scan_window(6, 'abs'))
+
+        self.pushButton_dscan.clicked.connect(lambda: self.open_scan_window(1, 'rel'))
+        self.pushButton_d2scan.clicked.connect(lambda: self.open_scan_window(2, 'rel'))
+        self.pushButton_d3scan.clicked.connect(lambda: self.open_scan_window(3, 'rel'))
+        self.pushButton_d4scan.clicked.connect(lambda: self.open_scan_window(4, 'rel'))
+        self.pushButton_d5scan.clicked.connect(lambda: self.open_scan_window(5, 'rel'))
+        self.pushButton_d6scan.clicked.connect(lambda: self.open_scan_window(6, 'rel'))
+
+        self.pushButton_m2scan.clicked.connect(lambda: self.open_scan_window(2, 'mesh'))
 
         # Setup buttons
         self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -267,6 +270,7 @@ class MyDisplay(Display):
     def default_theme(self):
         dict_args = du.read()
         if dict_args['dark_mode']:
+            self.current_theme = 'dark'
             style = qdarkstyle.load_stylesheet_pyqt5()
             self.tableWidget_U.setMaximumHeight(97)
             self.tableWidget_UB.setMaximumHeight(97)
@@ -275,6 +279,7 @@ class MyDisplay(Display):
                 if action.text() == 'Dark Theme':
                     action.setChecked(True)
         else:
+            self.current_theme = 'light'
             self.tableWidget_U.setMaximumHeight(92)
             self.tableWidget_UB.setMaximumHeight(92)
             self.app.setStyleSheet('')
@@ -287,6 +292,7 @@ class MyDisplay(Display):
         for action in self.option_menu.actions():
             if action.text() == 'Dark Theme':
                 if action.isChecked():
+                    self.current_theme = 'dark'
                     style = qdarkstyle.load_stylesheet_pyqt5()
                     self.tableWidget_U.setMaximumHeight(97)
                     self.tableWidget_UB.setMaximumHeight(97)
@@ -294,6 +300,7 @@ class MyDisplay(Display):
                     dict_args['dark_mode'] = 1
                     du.write(dict_args)
                 else:
+                    self.current_theme = 'light'
                     self.tableWidget_U.setMaximumHeight(92)
                     self.tableWidget_UB.setMaximumHeight(92)
                     self.app.setStyleSheet('')
@@ -337,9 +344,9 @@ class MyDisplay(Display):
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
-    def open_window(self):
-        self.window_2 = test_daf.MyWindow(2, 'abs')
-        self.window_2.show()
+    def open_scan_window(self, n_motors, scan_type):
+        self.scan_windows[scan_type + str(n_motors)] = scan_gui_daf.MyWindow(n_motors, scan_type)
+        self.scan_windows[scan_type + str(n_motors)].show()
 
     def refresh_pydm_motors(self):
 
@@ -613,7 +620,6 @@ class MyDisplay(Display):
         self.counters_scroll_area()
         self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
         self.set_counter_combobox_options()
-        self.set_xlabel_combobox_options()
 
     def set_scan_path(self):
         self.lineEdit_scan_path.setText(os.getcwd())
@@ -739,7 +745,6 @@ class MyDisplay(Display):
         os.system("daf.mc -s {}".format(value))
         dict_ = du.read()
         self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
-        self.set_xlabel_combobox_options()
         self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
         self.main_counter_cbox_default(dict_['main_scan_counter'])
 
@@ -774,7 +779,6 @@ class MyDisplay(Display):
         else:
             self.ui.listWidget_counters.setCurrentRow(0)
         self.ui.listWidget_counters.setCurrentRow(list_.index(value))
-        self.set_xlabel_combobox_options()
         self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
 
     def remove_counter_file(self):
@@ -782,7 +786,6 @@ class MyDisplay(Display):
         value = item.text()
         os.system("daf.mc -r {}".format(value))
         self.counters_scroll_area()
-        self.set_xlabel_combobox_options()
 
     def set_counter_combobox_options(self):
         with open('/etc/xdg/scan-utils/config.yml') as conf:
@@ -791,13 +794,6 @@ class MyDisplay(Display):
         self.ui.comboBox_counters.addItems(counters)
         self.ui.comboBox_counters.setEditable(True)
         self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
-
-    def set_xlabel_combobox_options(self):
-        motors_now = ['points', 'huber_mu', 'huber_eta', 'huber_chi', 'huber_phi', 'huber_nu', 'huber_del']
-        self.ui.comboBox_xlabel.clear()
-        self.ui.comboBox_xlabel.addItems(motors_now)
-        self.ui.comboBox_xlabel.setEditable(True)
-        self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
     def remove_counter(self):
         dict_ = du.read()
@@ -814,51 +810,7 @@ class MyDisplay(Display):
             else:
                 self.ui.listWidget_counters.setCurrentRow(0)
             self.ui.listWidget_counters.setCurrentRow(list_.index(value))
-        self.set_xlabel_combobox_options()
         self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
-
-    def start_scan(self):
-        if not self.scan:
-            self.scan = True
-            prefix = self.ui.lineEdit.text()
-            file = self.ui.lineEdit_2.text()
-            output = prefix + '/' + file
-            hi = self.ui.lineEdit_hi.text()
-            hf = self.ui.lineEdit_hf.text()
-            ki = self.ui.lineEdit_ki.text()
-            kf = self.ui.lineEdit_kf.text()
-            li = self.ui.lineEdit_li.text()
-            lf = self.ui.lineEdit_lf.text()
-            hi = self.ui.lineEdit_hi.text()
-            self.step = self.ui.lineEdit_step.text()
-            time = self.ui.lineEdit_time.text()
-            xlabel = self.ui.comboBox_xlabel.currentText()
-            csv_fn = self.ui.lineEdit_csv_filename.text()
-            
-            os.system('echo "" > .my_scan_counter.csv')
-            if self.ui.checkBox_only_csv.isChecked():
-                subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
-                    shell = True)
-            else:
-                subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
-                    shell=True)
-
-    def progress_bar(self, fname = '.my_scan_counter.csv'):
-        if self.scan:
-            self.ui.progressBar.show()
-            self.ui.label_generating_points.show()
-            with open(fname) as f:
-                lines = 0
-                for i in f:
-                    lines += 1
-            percentage =  ((lines-1) / (int(self.step) + 1))*100
-            self.ui.progressBar.setValue(int(percentage))
-            if (percentage) >= 100:
-                self.ui.progressBar.hide()
-                self.ui.label_generating_points.hide()
-                self.scan = False
-                self.ui.progressBar.setValue(0)
-
 
     def update(self):        
         # if self.delay_counter == self.delay:
@@ -866,7 +818,6 @@ class MyDisplay(Display):
         #     self.delay_counter = 0
 
         self.refresh_pydm_motors()
-        self.progress_bar()
 
 
         lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals

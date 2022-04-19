@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
 import os
-
+import subprocess
 
 class MyWindow(QWidget):
     def __init__(self, n_motors, scan_type):
@@ -9,7 +9,6 @@ class MyWindow(QWidget):
         self.n_motors = n_motors
         self.scan_type = scan_type
         self.initUI()
-
 
     def center(self):
         frameGm = self.frameGeometry()
@@ -19,13 +18,19 @@ class MyWindow(QWidget):
         self.move(frameGm.topLeft())
 
     def initUI(self):
-        self.center()
         # self.setGeometry(200, 200, 300, 300)
         if self.scan_type == 'abs':
             self.title = 'a'
         elif self.scan_type == 'rel':
             self.title = 'd'
-        self.title += str(self.n_motors) + 'scan'
+        elif self.scan_type == 'mesh':
+            self.title = 'm'
+            
+        if self.n_motors > 1:
+            self.title += str(self.n_motors) + 'scan'
+        else:
+            self.title += 'scan'
+
         self.setWindowTitle(self.title)
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -40,6 +45,7 @@ class MyWindow(QWidget):
         self.build_motor_layout()
         self.build_time_step()
         self.build_scan_button()
+        self.center()
 
         
 
@@ -160,4 +166,5 @@ class MyWindow(QWidget):
     def do_scan(self):
         scan_cmd = self.build_scan_cmd()
         print(scan_cmd)
-        os.system(scan_cmd)
+        subprocess.Popen(scan_cmd, shell = True)
+        # os.system(scan_cmd)
