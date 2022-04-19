@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1208</width>
-    <height>665</height>
+    <height>723</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2869,7 +2869,7 @@
                </widget>
               </item>
               <item row="1" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_del">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_del" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3066,7 +3066,7 @@
                </widget>
               </item>
               <item row="3" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_chi">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_chi" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3178,7 +3178,7 @@
                </widget>
               </item>
               <item row="2" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_eta">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_eta" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3522,7 +3522,7 @@
                </widget>
               </item>
               <item row="5" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_nu">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_nu" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3588,7 +3588,7 @@
                </widget>
               </item>
               <item row="6" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_mu">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_mu" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3620,7 +3620,7 @@
                </widget>
               </item>
               <item row="4" column="3">
-               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_phi">
+               <widget class="PyDMByteIndicator" name="PyDMByteIndicator_phi" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -4625,6 +4625,13 @@
              </spacer>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">

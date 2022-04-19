@@ -23,8 +23,8 @@ signal.signal(signal.SIGINT, sigint_handler_utilities)
 
 def get_passed_motor_order(sysargv):
     """Function to pass the order that use choose to the scan_utils routine"""
-    all_possibilities = ['-m', '-e', '-c', '-p', '-n', '-d', 'mu', 
-                        'eta', 'chi', 'phi', 'nu', 'del']
+    all_possibilities = ['-m', '-e', '-c', '-p', '-n', '-d', '--mu', 
+                        '--eta', '--chi', '--phi', '--nu', '--del']
     
     if PV_PREFIX == "EMA:B:PB18":
         data = {'mu':'huber_mu', 'eta':'huber_eta', 'chi':'huber_chi',

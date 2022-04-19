@@ -19,6 +19,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationTool
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
+import test_daf
+
 DEFAULT = ".Experiment"
 
 # global data_to_update # This variable holds the data processed in another Qthread and then the labels are updated in MyDisplay class
@@ -219,6 +221,7 @@ class MyDisplay(Display):
 
     def make_connections(self):
 
+        self.pushButton.clicked.connect(self.open_window)
         self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
         self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
 
@@ -333,6 +336,10 @@ class MyDisplay(Display):
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
+    def open_window(self):
+        self.window_2 = test_daf.MyWindow(2, 'abs')
+        self.window_2.show()
 
     def refresh_pydm_motors(self):
 
