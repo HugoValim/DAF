@@ -1,13 +1,17 @@
+import os
+from os import path
+import subprocess
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
-import os
-import subprocess
+from PyQt5.QtGui import QPixmap, QIcon
 
 class MyWindow(QWidget):
     def __init__(self, n_motors, scan_type):
         super(MyWindow,self).__init__()
         self.n_motors = n_motors
         self.scan_type = scan_type
+        self.build_icons()
         self.initUI()
 
     def center(self):
@@ -17,6 +21,10 @@ class MyWindow(QWidget):
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
 
+    def build_icons(self):
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        self.check_icon = path.join(pixmap_path, 'check.svg')
+
     def initUI(self):
         # self.setGeometry(200, 200, 300, 300)
         if self.scan_type == 'abs':
@@ -25,7 +33,7 @@ class MyWindow(QWidget):
             self.title = 'd'
         elif self.scan_type == 'mesh':
             self.title = 'm'
-            
+
         if self.n_motors > 1:
             self.title += str(self.n_motors) + 'scan'
         else:
@@ -69,6 +77,11 @@ class MyWindow(QWidget):
         checkbox_dict = {}
         line_edit_dict = {}
         final_dict = {}
+        label_motor = QtWidgets.QLabel(self.frame)
+        label_motor.setText('Motor ' + str(idx+1))
+        label_motor.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        label_motor.setFont(QtGui.QFont("Sans Serif",weight=QtGui.QFont.Bold))
+        self.verticalLayout_2.addWidget(label_motor)
         horizontalLayout = QtWidgets.QHBoxLayout()
         checkbox_dict['mu_'+str(idx)] = QtWidgets.QCheckBox(self.frame)
         checkbox_dict['mu_'+str(idx)].setText('Mu')
@@ -116,13 +129,12 @@ class MyWindow(QWidget):
         final_dict['line_edits'] = line_edit_dict
         return final_dict
 
-    def build_scan_button(self):
-        self.scan_button = QtWidgets.QPushButton(self.frame)
-        self.scan_button.setText('Start Scan')
-        self.verticalLayout_2.addWidget(self.scan_button)
-        self.scan_button.clicked.connect(self.do_scan)
-
     def build_time_step(self):
+        label_stepntime = QtWidgets.QLabel(self.frame)
+        label_stepntime.setText('Step and Time')
+        label_stepntime.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        label_stepntime.setFont(QtGui.QFont("Sans Serif",weight=QtGui.QFont.Bold))
+        self.verticalLayout_2.addWidget(label_stepntime)
         horizontalLayout = QtWidgets.QHBoxLayout()
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         horizontalLayout.addItem(spacerItem)
@@ -147,6 +159,20 @@ class MyWindow(QWidget):
         line.setFrameShape(QtWidgets.QFrame.HLine)
         line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.verticalLayout_2.addWidget(line)
+
+    def build_scan_button(self):
+        self.horizontalLayout_start = QtWidgets.QHBoxLayout()
+        spacerItem_2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_start.addItem(spacerItem_2)
+        self.pushButton_start = QtWidgets.QPushButton(self.frame)
+        self.pushButton_start.setText('Start')
+        self.pushButton_start.setIconSize(QtCore.QSize(20, 20))
+        self.pushButton_start.setIcon(QIcon(self.check_icon))
+        self.horizontalLayout_start.addWidget(self.pushButton_start)
+        spacerItem_3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_start.addItem(spacerItem_3)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_start)
+        self.pushButton_start.clicked.connect(self.do_scan)
 
     def build_scan_cmd(self):
         cmd = 'daf.' + self.title + ' '

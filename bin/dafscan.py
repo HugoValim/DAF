@@ -130,7 +130,7 @@ if not args.calc:
         yaml.dump(data, stream, allow_unicode=False)
 
     if args.xlabel != 'points':
-        xlabel = xlabel_data[args.xlabel]
+        xlabel = xlabel_data[args.xlabel.lower()]
     else:
         xlabel = 'points'    
 

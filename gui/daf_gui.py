@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import threading
 
 import scan_gui_daf
+import scan_hkl_daf
 
 DEFAULT = ".Experiment"
 
@@ -237,6 +238,8 @@ class MyDisplay(Display):
 
         self.pushButton_m2scan.clicked.connect(lambda: self.open_scan_window(2, 'mesh'))
 
+        self.pushButton_hklscan.clicked.connect(lambda: self.open_hkl_scan_window())
+
         # Setup buttons
         self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
         self.ui.pushButton_save_setup.clicked.connect(self.save_setup)
@@ -347,6 +350,10 @@ class MyDisplay(Display):
     def open_scan_window(self, n_motors, scan_type):
         self.scan_windows[scan_type + str(n_motors)] = scan_gui_daf.MyWindow(n_motors, scan_type)
         self.scan_windows[scan_type + str(n_motors)].show()
+
+    def open_hkl_scan_window(self):
+        self.scan_hkl_window = scan_hkl_daf.MyWindow()
+        self.scan_hkl_window.show()
 
     def refresh_pydm_motors(self):
 
