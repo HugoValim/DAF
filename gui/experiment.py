@@ -13,7 +13,6 @@ class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
-        self.default_theme()
         self.ui.pushButton_reset.clicked.connect(self.set_labels)
         self.ui.pushButton_set.clicked.connect(self.set_new_exp_conditions)
         self.ui.comboBox_sor.currentTextChanged.connect(self.on_combobox_sor_changed)
@@ -28,6 +27,7 @@ class MyDisplay(Display):
         self.set_labels()
         self.set_combobox_sor_default()
         self.set_tab_order()
+        self.center()
 # 
     def ui_filename(self):
         return 'experiment.ui'
@@ -35,13 +35,12 @@ class MyDisplay(Display):
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
-    def default_theme(self):
-        dict_args = du.read()
-        if dict_args['dark_mode']:
-            style = qdarkstyle.load_stylesheet_pyqt5()
-            self.app.setStyleSheet(style)
-        else:
-            self.app.setStyleSheet('')
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def set_tab_order(self):
 
@@ -138,8 +137,8 @@ class MyDisplay(Display):
         rdir = self.ui.lineEdit_r_1.text() + ' ' + self.ui.lineEdit_r_2.text() + ' ' + self.ui.lineEdit_r_3.text() 
 
         # print("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir))
-        # subprocess.Popen("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir), shell = True)
-        os.system("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir))
+        subprocess.Popen("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir), shell = True)
+        # os.system("daf.expt -e {energy} -s {sampleor} -i {idir} -n {ndir} -r {rdir}".format(energy=energy, sampleor=sampleor, idir=idir, ndir=ndir, rdir=rdir))
             
 
 

@@ -4,6 +4,7 @@ import os
 import subprocess
 import dafutilities as du
 from qtpy.QtWidgets import QApplication
+from PyQt5 import QtWidgets, QtGui, QtCore
 import qdarkstyle
 
 DEFAULT = ".Experiment"
@@ -16,7 +17,6 @@ class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
-        self.default_theme()
         self.ui.mode_input.textChanged.connect(self.highlight_table)
         self.ui.mode_input.textChanged.connect(self.get_cons)
         self.ui.mode_input.textChanged.connect(self.update_labels)
@@ -33,20 +33,20 @@ class MyDisplay(Display):
         self.ui.label_set_cons3.setEnabled(False)
         self.highlight_table()
         self.default_labels()
+        self.center()
 # 
     def ui_filename(self):
         return 'set_mode.ui'
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
-
-    def default_theme(self):
-        dict_args = du.read()
-        if dict_args['dark_mode']:
-            style = qdarkstyle.load_stylesheet_pyqt5()
-            self.app.setStyleSheet(style)
-        else:
-            self.app.setStyleSheet('')
+    
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def setup_dicts(self):
         
@@ -188,11 +188,12 @@ class MyDisplay(Display):
 
                 daf_cons_args += arg 
                 
-        # subprocess.Popen("daf.cons {} ".format(daf_cons_args), shell = True)
-        os.system("daf.cons {} ".format(daf_cons_args))
+        # os.system("daf.cons {} ".format(daf_cons_args))
         
-        os.system("daf.mode {} ".format(str(self.ui.mode_input.text())))
-        # subprocess.Popen("daf.mode {} ".format(str(self.ui.mode_input.text())), shell = True)
+        # os.system("daf.mode {} ".format(str(self.ui.mode_input.text())))
+        p = subprocess.Popen("daf.mode {} ".format(str(self.ui.mode_input.text())), shell = True)
+        p.wait()
+        subprocess.Popen("daf.cons {} ".format(daf_cons_args), shell = True)
 
             
 

@@ -19,7 +19,6 @@ class MyDisplay(Display):
 
         self.app = QApplication.instance()
         self.loop()
-        self.default_theme()
         self.update_reflections()
         self.ui.pushButton_refs_save.clicked.connect(self.get_reflection)
         
@@ -38,6 +37,7 @@ class MyDisplay(Display):
         self.ui.pushButton_set_ub.clicked.connect(self.set_ub_matrix)
 
         self.set_tab_order()
+        self.center()
 
     def ui_filename(self):
         return 'ub.ui'
@@ -51,13 +51,12 @@ class MyDisplay(Display):
         self.timer.timeout.connect(self.update)
         self.timer.start(2000) #trigger every .25 seconds.
 
-    def default_theme(self):
-        dict_args = du.read()
-        if dict_args['dark_mode']:
-            style = qdarkstyle.load_stylesheet_pyqt5()
-            self.app.setStyleSheet(style)
-        else:
-            self.app.setStyleSheet('')
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def set_tab_order(self):
 
@@ -173,7 +172,8 @@ class MyDisplay(Display):
 
 
     def get_reflection(self):
-        os.system("daf.ub -rn")
+        # os.system("daf.ub -rn")
+        subprocess.Popen("daf.ub -rn", shell = True)
         self.update_reflections()
 
     def calc_from_2_ref(self):
@@ -188,7 +188,8 @@ class MyDisplay(Display):
             msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
             ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
         else:
-            os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
+            # os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
+            subprocess.Popen("daf.ub -c2 {} {}".format(inp[0], inp[1]), shell = True)
 
     def calc_from_3_ref(self):
 
@@ -202,7 +203,9 @@ class MyDisplay(Display):
             msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
             ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
         else:
-            os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
+            # os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
+            subprocess.Popen("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]), shell = True)
+
         self.update_samp_parameters()
 
     def update_samp_parameters(self):
@@ -231,10 +234,13 @@ class MyDisplay(Display):
                 ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
 
                 if ret == QtWidgets.QMessageBox.Ok:
-                    os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+                    # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+                    subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
+
 
             else:
-                os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+                # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+                subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
 
     def update_u_labels(self):
 
@@ -266,8 +272,8 @@ class MyDisplay(Display):
         u_22 = self.ui.lineEdit_u_22.text()
         
         # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-        # subprocess.Popen("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22), shell = True)
-        os.system("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22))
+        subprocess.Popen("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22), shell = True)
+        # os.system("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22))
         # Whenever U changes UB changes as well, since UB depend from U
         self.update_ub_labels()
 
@@ -303,8 +309,8 @@ class MyDisplay(Display):
         
         # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
         print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
-        os.system("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
-
+        # os.system("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
+        subprocess.Popen("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22), shell = True)
 
 
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1208</width>
+    <width>934</width>
     <height>746</height>
    </rect>
   </property>
@@ -314,35 +314,15 @@
              </widget>
             </item>
             <item row="1" column="6">
-             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_2">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
+             <widget class="QPushButton" name="pushButton_mode">
               <property name="maximumSize">
                <size>
-                <width>150</width>
+                <width>30</width>
                 <height>16777215</height>
                </size>
               </property>
-              <property name="toolTip">
-               <string/>
-              </property>
               <property name="text">
-               <string>Set Mode</string>
-              </property>
-              <property name="filenames" stdset="0">
-               <stringlist>
-                <string>set_mode.py</string>
-               </stringlist>
-              </property>
-              <property name="showIcon" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="openInNewWindow" stdset="0">
-               <bool>true</bool>
+               <string/>
               </property>
              </widget>
             </item>
@@ -628,35 +608,15 @@
              </widget>
             </item>
             <item row="1" column="7">
-             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_3">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
+             <widget class="QPushButton" name="pushButton_expt">
               <property name="maximumSize">
                <size>
-                <width>150</width>
+                <width>30</width>
                 <height>16777215</height>
                </size>
               </property>
-              <property name="toolTip">
-               <string/>
-              </property>
               <property name="text">
-               <string>Set Experiment</string>
-              </property>
-              <property name="filenames" stdset="0">
-               <stringlist>
-                <string>experiment.py</string>
-               </stringlist>
-              </property>
-              <property name="showIcon" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="openInNewWindow" stdset="0">
-               <bool>true</bool>
+               <string/>
               </property>
              </widget>
             </item>
@@ -973,35 +933,15 @@
              </widget>
             </item>
             <item row="1" column="8">
-             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_4">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
+             <widget class="QPushButton" name="pushButton_sample">
               <property name="maximumSize">
                <size>
-                <width>150</width>
+                <width>30</width>
                 <height>16777215</height>
                </size>
               </property>
-              <property name="toolTip">
-               <string/>
-              </property>
               <property name="text">
-               <string>Set Sample</string>
-              </property>
-              <property name="filenames" stdset="0">
-               <stringlist>
-                <string>sample.py</string>
-               </stringlist>
-              </property>
-              <property name="showIcon" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="openInNewWindow" stdset="0">
-               <bool>true</bool>
+               <string/>
               </property>
              </widget>
             </item>
@@ -1063,161 +1003,6 @@
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_12">
-            <item row="1" column="1">
-             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_5">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string>Set U and UB</string>
-              </property>
-              <property name="filenames" stdset="0">
-               <stringlist>
-                <string>ub.py</string>
-               </stringlist>
-              </property>
-              <property name="showIcon" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="openInNewWindow" stdset="0">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_5">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <item row="1" column="2">
-               <spacer name="horizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Preferred</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>200</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_19">
-                <property name="minimumSize">
-                 <size>
-                  <width>350</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>400</width>
-                  <height>32</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>U</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QTableWidget" name="tableWidget_U">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>92</height>
-                 </size>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
-                </property>
-                <property name="autoScroll">
-                 <bool>false</bool>
-                </property>
-                <property name="tabKeyNavigation">
-                 <bool>false</bool>
-                </property>
-                <property name="showDropIndicator" stdset="0">
-                 <bool>false</bool>
-                </property>
-                <property name="dragDropOverwriteMode">
-                 <bool>false</bool>
-                </property>
-                <property name="alternatingRowColors">
-                 <bool>true</bool>
-                </property>
-                <attribute name="horizontalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <row>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </row>
-                <column>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </column>
-               </widget>
-              </item>
-             </layout>
-            </item>
             <item row="1" column="0">
              <layout class="QGridLayout" name="gridLayout_6">
               <property name="sizeConstraint">
@@ -1349,6 +1134,141 @@
               </item>
              </layout>
             </item>
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_5">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <item row="1" column="2">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Preferred</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>200</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_19">
+                <property name="minimumSize">
+                 <size>
+                  <width>350</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>400</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>U</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QTableWidget" name="tableWidget_U">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>92</height>
+                 </size>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+                <property name="autoScroll">
+                 <bool>false</bool>
+                </property>
+                <property name="tabKeyNavigation">
+                 <bool>false</bool>
+                </property>
+                <property name="showDropIndicator" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="dragDropOverwriteMode">
+                 <bool>false</bool>
+                </property>
+                <property name="alternatingRowColors">
+                 <bool>true</bool>
+                </property>
+                <attribute name="horizontalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <row>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </row>
+                <column>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="pushButton_ub">
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -1420,7 +1340,7 @@
                </font>
               </property>
               <property name="text">
-               <string>High limit:</string>
+               <string>HLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1437,7 +1357,7 @@
                </font>
               </property>
               <property name="text">
-               <string>High limit:</string>
+               <string>HLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1505,7 +1425,7 @@
                </font>
               </property>
               <property name="text">
-               <string>High limit:</string>
+               <string>HLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1522,7 +1442,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Low limit:</string>
+               <string>LLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1732,39 +1652,6 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="11">
-             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton_6">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string>Set bounds</string>
-              </property>
-              <property name="filenames" stdset="0">
-               <stringlist>
-                <string>bounds.py</string>
-               </stringlist>
-              </property>
-              <property name="showIcon" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="openInNewWindow" stdset="0">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QLabel" name="label_24">
               <property name="font">
@@ -1775,7 +1662,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Low limit:</string>
+               <string>LLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1792,7 +1679,7 @@
                </font>
               </property>
               <property name="text">
-               <string>High limit:</string>
+               <string>HLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1809,7 +1696,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Low limit:</string>
+               <string>LLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1826,7 +1713,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Low limit:</string>
+               <string>LLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1843,7 +1730,7 @@
                </font>
               </property>
               <property name="text">
-               <string>High limit:</string>
+               <string>HLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1860,7 +1747,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Low limit:</string>
+               <string>LLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1877,7 +1764,7 @@
                </font>
               </property>
               <property name="text">
-               <string>High limit:</string>
+               <string>HLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1894,7 +1781,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Low limit:</string>
+               <string>LLM: </string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1966,6 +1853,19 @@
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="11">
+             <widget class="QPushButton" name="pushButton_bounds">
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
               </property>
              </widget>
             </item>
@@ -2104,72 +2004,15 @@
           <item>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
-             <widget class="PyDMRelatedDisplayButton" name="PyDMRelatedDisplayButton">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>25</height>
-               </size>
-              </property>
+             <widget class="QPushButton" name="pushButton_move">
               <property name="maximumSize">
                <size>
-                <width>150</width>
-                <height>25</height>
+                <width>30</width>
+                <height>16777215</height>
                </size>
               </property>
-              <property name="palette">
-               <palette>
-                <active>
-                 <colorrole role="Button">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>255</red>
-                    <green>255</green>
-                    <blue>255</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                </active>
-                <inactive>
-                 <colorrole role="Button">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>255</red>
-                    <green>255</green>
-                    <blue>255</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                </inactive>
-                <disabled>
-                 <colorrole role="Button">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>255</red>
-                    <green>255</green>
-                    <blue>255</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                </disabled>
-               </palette>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
               <property name="text">
-               <string>Move In HKL</string>
-              </property>
-              <property name="filenames" stdset="0">
-               <stringlist>
-                <string>goto_hkl.py</string>
-               </stringlist>
-              </property>
-              <property name="showIcon" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="openInNewWindow" stdset="0">
-               <bool>true</bool>
+               <string/>
               </property>
              </widget>
             </item>
@@ -3934,7 +3777,7 @@
             <item>
              <widget class="QPushButton" name="pushButton_refresh">
               <property name="text">
-               <string>Refresh</string>
+               <string/>
               </property>
              </widget>
             </item>
@@ -4266,7 +4109,14 @@
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="comboBox_main_counter"/>
+                  <widget class="QComboBox" name="comboBox_main_counter">
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <spacer name="horizontalSpacer_16">
@@ -4760,11 +4610,6 @@
    <class>PyDMPushButton</class>
    <extends>QPushButton</extends>
    <header>pydm.widgets.pushbutton</header>
-  </customwidget>
-  <customwidget>
-   <class>PyDMRelatedDisplayButton</class>
-   <extends>QPushButton</extends>
-   <header>pydm.widgets.related_display_button</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -11,6 +11,7 @@ import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
+from PyQt5.QtGui import QPixmap, QIcon
 from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction, QHeaderView, QTableWidgetItem, QMenu, QComboBox, QListWidget
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
@@ -20,8 +21,15 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import threading
 
+#DAF GUIs imports
 import scan_gui_daf
 import scan_hkl_daf
+import set_mode
+import experiment
+import sample
+import ub
+import bounds
+import goto_hkl
 
 DEFAULT = ".Experiment"
 
@@ -173,6 +181,8 @@ class MyDisplay(Display):
         self.setup_scroll_area()
         self.scan = False
         self.make_connections()
+        self.build_icons()
+        self.set_icons()
         self.set_tab_order()
         self.runLongTask()
         self.current_rmap_samples = []
@@ -182,6 +192,30 @@ class MyDisplay(Display):
         self.delay = 5 # Some thing in GUI dont need to be updated every update call
         self.delay_counter = self.delay # Cooldown to delay, it start with the same value so it runs in the first loop
         self.scan_windows = {}
+
+    def build_icons(self):
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        self.settings_icon = path.join(pixmap_path, 'settings.svg')
+        self.cached_icon = path.join(pixmap_path, 'cached1.svg')
+
+    def set_icons(self):
+        self.b_icon_size_h = 20
+        self.b_icon_size_v = 20
+
+        self.pushButton_mode.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_mode.setIcon(QIcon(self.settings_icon))
+        self.pushButton_expt.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_expt.setIcon(QIcon(self.settings_icon))
+        self.pushButton_sample.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_sample.setIcon(QIcon(self.settings_icon))
+        self.pushButton_ub.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_ub.setIcon(QIcon(self.settings_icon))
+        self.pushButton_bounds.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_bounds.setIcon(QIcon(self.settings_icon))
+        self.pushButton_move.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_move.setIcon(QIcon(self.settings_icon))
+        self.pushButton_refresh.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_refresh.setIcon(QIcon(self.cached_icon))
 
     def set_tab_order(self):
 
@@ -209,6 +243,14 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.pushButton_update_desc, self.ui.tab_setup)
 
     def make_connections(self):
+
+        # Secundary GUIs
+        self.pushButton_mode.clicked.connect(lambda: self.open_mode_window())
+        self.pushButton_expt.clicked.connect(lambda: self.open_experiment_window())
+        self.pushButton_sample.clicked.connect(lambda: self.open_sample_window())
+        self.pushButton_ub.clicked.connect(lambda: self.open_ub_window())
+        self.pushButton_bounds.clicked.connect(lambda: self.open_bounds_window())
+        self.pushButton_move.clicked.connect(lambda: self.open_goto_hkl_window())
 
         self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
         self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
@@ -355,12 +397,32 @@ class MyDisplay(Display):
         self.scan_hkl_window = scan_hkl_daf.MyWindow()
         self.scan_hkl_window.show()
 
+    def open_mode_window(self):
+        self.mode_window = set_mode.MyDisplay()
+        self.mode_window.show()
+
+    def open_experiment_window(self):
+        self.experiment_window = experiment.MyDisplay()
+        self.experiment_window.show() 
+
+    def open_sample_window(self):
+        self.sample_window = sample.MyDisplay()
+        self.sample_window.show()
+
+    def open_ub_window(self):
+        self.ub_window = ub.MyDisplay()
+        self.ub_window.show()
+
+    def open_bounds_window(self):
+        self.bounds_window = bounds.MyDisplay()
+        self.bounds_window.show()
+    
+    def open_goto_hkl_window(self):
+        self.goto_hkl_window = goto_hkl.MyDisplay()
+        self.goto_hkl_window.show()    
+
     def refresh_pydm_motors(self):
-
         data = du.PVS
-
-        
-
         translate = QCoreApplication.translate
         
         # set del motor labels
@@ -448,7 +510,6 @@ class MyDisplay(Display):
         # Clear other samples in graph
         clear_plot = self.rmap_menu.addAction('Clear')
         clear_plot.triggered.connect(self.clear_plot_samples)
-
 
         self.rmap_menu.exec_(QtGui.QCursor.pos())
 
@@ -721,6 +782,7 @@ class MyDisplay(Display):
         self.fill_widget(self.ui.treeWidget_counters, full_output)
 
     def counters_scroll_area(self):
+        dict_ = du.read()
         """List all possible counter configs"""
         user_configs = os.listdir(du.HOME + '/.config/scan-utils')
         sys_configs = os.listdir('/etc/xdg/scan-utils')
@@ -729,6 +791,12 @@ class MyDisplay(Display):
         configs.sort()
         self.ui.listWidget_counters.clear()
         self.ui.listWidget_counters.addItems(configs)
+        # simp_counter_file = dict_['default_counters'].split('.')[1]
+        # for i in range (self.ui.listWidget_counters.count()):
+        #     item = self.ui.listWidget_counters.item(i)
+        #     text = item.text()
+        #     if simp_counter_file == text:
+        #         self.ui.listWidget_counters.setCurrentItem(item)
 
     def on_counters_list_widget_change(self):
         """Print the counters on a setup when selected"""       

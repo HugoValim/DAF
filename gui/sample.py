@@ -14,7 +14,6 @@ class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
-        self.default_theme()
         self.set_combobox_options()
         self.set_comboBox_materials_default()
         self.ui.frame_new_mat.setEnabled(False)
@@ -23,6 +22,7 @@ class MyDisplay(Display):
         self.ui.pushButton_set.clicked.connect(self.set_combobox_options)
         self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
         self.set_tab_order()
+        self.center()
 
     def ui_filename(self):
         return 'sample.ui'
@@ -30,13 +30,12 @@ class MyDisplay(Display):
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
-    def default_theme(self):
-        dict_args = du.read()
-        if dict_args['dark_mode']:
-            style = qdarkstyle.load_stylesheet_pyqt5()
-            self.app.setStyleSheet(style)
-        else:
-            self.app.setStyleSheet('')
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def set_tab_order(self):
         self.setTabOrder(self.ui.lineEdit_samp_name, self.ui.lineEdit_a)
@@ -130,15 +129,15 @@ class MyDisplay(Display):
             gamma = self.ui.lineEdit_gamma.text()
         
             # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-            # subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma), shell = True)
-            os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
+            subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma), shell = True)
+            # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
 
         else:
 
             samp = self.ui.comboBox_materials.currentText()
 
-            # subprocess.Popen("daf.expt -m {}".format(samp), shell = True)
-            os.system("daf.expt -m {}".format(samp))
+            subprocess.Popen("daf.expt -m {}".format(samp), shell = True)
+            # os.system("daf.expt -m {}".format(samp))
 
 
         
