@@ -1,11 +1,15 @@
-from os import path
-from pydm import Display
 import os
+from os import path
 import subprocess
-import dafutilities as du
+
+import xrayutilities as xu
+from pydm import Display
 from qtpy.QtWidgets import QApplication
-import qdarkstyle
 from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtGui import QPixmap, QIcon
+import qdarkstyle
+
+# import dafutilities as du
 
 class MyDisplay(Display):
 
@@ -13,6 +17,8 @@ class MyDisplay(Display):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
         self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
+        self.build_icons()
+        self.set_icons()
         self.set_tab_order()
         self.center()
 # 
@@ -28,6 +34,15 @@ class MyDisplay(Display):
         centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
+
+    def build_icons(self):
+        """Build used icons"""
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        self.check_icon = path.join(pixmap_path, 'check.svg')
+
+    def set_icons(self):
+        """Set used icons"""
+        self.ui.calc_HKL.setIcon(QIcon(self.check_icon))
 
     def set_tab_order(self):
         self.setTabOrder(self.ui.H_set, self.ui.K_set)
