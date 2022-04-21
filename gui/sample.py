@@ -1,12 +1,15 @@
-from os import path
-from pydm import Display
 import os
+from os import path
 import subprocess
-import dafutilities as du
+
 import xrayutilities as xu
-from PyQt5 import QtWidgets, QtGui, QtCore
+from pydm import Display
 from qtpy.QtWidgets import QApplication
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtGui import QPixmap, QIcon
 import qdarkstyle
+
+import dafutilities as du
 
 class MyDisplay(Display):
 
@@ -16,11 +19,10 @@ class MyDisplay(Display):
         self.app = QApplication.instance()
         self.set_combobox_options()
         self.set_comboBox_materials_default()
-        self.ui.frame_new_mat.setEnabled(False)
-        self.ui.checkBox_new_mat.stateChanged.connect(self.checkbox_state_changed)
-        self.ui.pushButton_set.clicked.connect(self.set_sample)
-        self.ui.pushButton_set.clicked.connect(self.set_combobox_options)
-        self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
+        self.build_icons()
+        self.set_icons()
+        self.init_frame_new_samp()
+        self.make_connections()
         self.set_tab_order()
         self.center()
 
@@ -36,6 +38,15 @@ class MyDisplay(Display):
         centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
+    
+    def build_icons(self):
+        """Build used icons"""
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        self.check_icon = path.join(pixmap_path, 'check.svg')
+
+    def set_icons(self):
+        """Set used icons"""
+        self.pushButton_set.setIcon(QIcon(self.check_icon))
 
     def set_tab_order(self):
         self.setTabOrder(self.ui.lineEdit_samp_name, self.ui.lineEdit_a)
@@ -46,13 +57,26 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.lineEdit_beta, self.ui.lineEdit_gamma)
         self.setTabOrder(self.ui.lineEdit_gamma, self.ui.pushButton_set)
 
-    def get_experiment_file(self):
+    def init_frame_new_samp(self):
+        """Hide the frame at UI start"""
+        self.ui.frame_new_samp.setEnabled(False)
+        self.ui.frame_new_samp.hide()
+        self.resize(450, 125)
 
+    def make_connections(self):
+        """Make the needed connections"""
+        self.ui.checkBox_new_mat.stateChanged.connect(self.checkbox_state_changed)
+        self.ui.pushButton_set.clicked.connect(self.set_sample)
+        self.ui.pushButton_set.clicked.connect(self.set_combobox_options)
+        self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
+
+    def get_experiment_file(self):
+        """Get the data in the experiment file"""
         dict_args = du.read()
         return dict_args
 
     def materials(self):
-
+        """List all predefined materials in xrayutilities"""
         materials = {'Si':xu.materials.Si, 'Al' : xu.materials.Al, 'Co' : xu.materials.Co,
                      'Cu' : xu.materials.Cu, 'Cr' : xu.materials.Cr, 'Fe' : xu.materials.Fe,
                      'Ge' : xu.materials.Ge, 'Sn' : xu.materials.Sn,
@@ -83,43 +107,41 @@ class MyDisplay(Display):
         return materials
 
     def set_comboBox_materials_default(self):
-
+        """Set comboBox to the current used sample"""
         AllItems = [self.ui.comboBox_materials.itemText(i) for i in range(self.ui.comboBox_materials.count())]
-        
         sample_now = self.get_experiment_file()['Material']
-
         if sample_now in AllItems:
-
             self.ui.comboBox_materials.setCurrentIndex(AllItems.index(sample_now))
 
     def set_combobox_options(self):
-
+        """Add all possible options to the combobox"""
         user_samples = self.get_experiment_file()['user_samples']
         items = self.materials()
         items = list(items.keys())
-        
         for sample in user_samples.keys():
             items.append(sample)
-
         items.sort()
         self.ui.comboBox_materials.addItems(items)
         self.ui.comboBox_materials.setEditable(True)
         self.ui.comboBox_materials.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
         
     def checkbox_state_changed(self):
-
+        """Manage the new sample section"""
         if self.ui.checkBox_new_mat.isChecked():
-            self.ui.frame_new_mat.setEnabled(True)
+            self.ui.frame_new_samp.setEnabled(True)
+            self.ui.frame_new_samp.show()
             self.ui.comboBox_materials.setEnabled(False)
+            self.center()
         else:
-            self.ui.frame_new_mat.setEnabled(False)
+            self.ui.frame_new_samp.setEnabled(False)
+            self.ui.frame_new_samp.hide()
             self.ui.comboBox_materials.setEnabled(True)
-
+            self.resize(450, 125)
+            self.center()
 
     def set_sample(self):
-
+        """Set the new sample"""
         if self.ui.checkBox_new_mat.isChecked():
-            
             samp = self.ui.lineEdit_samp_name.text()
             a = self.ui.lineEdit_a.text()
             b = self.ui.lineEdit_b.text()
@@ -131,11 +153,8 @@ class MyDisplay(Display):
             # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
             subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma), shell = True)
             # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-
         else:
-
             samp = self.ui.comboBox_materials.currentText()
-
             subprocess.Popen("daf.expt -m {}".format(samp), shell = True)
             # os.system("daf.expt -m {}".format(samp))
 
