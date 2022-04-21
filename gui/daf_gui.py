@@ -928,7 +928,7 @@ class MyDisplay(Display):
         self.ui.label_cons5.setText(str(data_to_update['cons'][4][1]))
 
         # Update status experiment label
-        self.ui.label_exp1.setText(str(data_to_update['exp_list'][0]))
+        # self.ui.label_exp1.setText(str(data_to_update['exp_list'][0]))
         self.ui.label_exp2.setText(str(data_to_update['exp_list'][1]))
         self.ui.label_exp3.setText(str(data_to_update['exp_list'][2]))
         self.ui.label_exp4.setText(str(data_to_update['exp_list'][3]))
