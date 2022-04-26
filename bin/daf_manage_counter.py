@@ -38,6 +38,7 @@ dic = vars(args)
 dict_args = du.read()
 du.log_macro(dict_args)
 path = du.HOME + '/.config/scan-utils/'
+sys_path = '/etc/xdg/scan-utils/'
 DEFAULT = path + 'config.yml'
 prefix = 'config.'
 sufix = '.yml'
@@ -52,8 +53,10 @@ def write_yaml(dict_, filepath=DEFAULT):
         yaml.dump(dict_, file)
 
 if args.list:
-    configs = os.listdir(path)
-    configs = [i for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+    user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+    sys_configs = os.listdir('/etc/xdg/scan-utils')
+    all_configs = user_configs + sys_configs
+    configs = [i for i in all_configs if len(i.split('.')) == 3 and i.endswith('.yml')]
     configs.sort()
     for i in configs:
         print(i.split('.')[1])
@@ -73,36 +76,62 @@ if args.new:
     file_name = args.new
     os.system('touch $HOME/.config/scan-utils/{}'.format(prefix + file_name + sufix))
 
-
 if isinstance (args.list_counters, list):
-    print(path + prefix + args.list_counters[0] + sufix)
-    data = read_yaml(filepath = path + prefix + args.list_counters[0] + sufix)
+    file_name = args.list_counters[0]
+    complete_file = prefix + file_name + sufix
+    user_configs = os.listdir(path)
+    sys_configs = os.listdir(sys_path)
+    if complete_file in user_configs:
+        path_to_use = path
+    elif complete_file in sys_configs:
+        path_to_use = sys_path
+
+    data = read_yaml(filepath = path_to_use + complete_file)
     for counter in data:
         print(counter)
 
 if args.add_counter:
     file_name = args.add_counter[0]
-    data = read_yaml(filepath = path + prefix + file_name + sufix)
-    
+    complete_file = prefix + file_name + sufix
+    user_configs = os.listdir(path)
+    sys_configs = os.listdir(sys_path)
+    if complete_file in user_configs:
+        path_to_use = path
+    elif complete_file in sys_configs:
+        path_to_use = sys_path
+
+    data = read_yaml(filepath = path_to_use + complete_file)
+
     if isinstance(data, list):
         for counter in args.add_counter[1:]:
-            data.append(counter)
-        write_yaml(data, filepath = path + prefix + file_name + sufix)
+            if counter not in data:
+                data.append(counter)
+        write_yaml(data, filepath = path_to_use + complete_file)
     else:
         list_ = []
         for counter in args.add_counter[1:]:
-            list_.append(counter)
-        write_yaml(list_, filepath = path + prefix + file_name + sufix)
+            if counter not in list_:
+                list_.append(counter)
+        write_yaml(list_, filepath = path_to_use + complete_file)
 
 if args.remove_counter:
     file_name = args.remove_counter[0]
-    data = read_yaml(filepath = path + prefix + file_name + sufix)
+    complete_file = prefix + file_name + sufix
+    user_configs = os.listdir(path)
+    sys_configs = os.listdir(sys_path)
+    if complete_file in user_configs:
+        path_to_use = path
+    elif complete_file in sys_configs:
+        path_to_use = sys_path
+
+    data = read_yaml(filepath = path_to_use + complete_file)
     
     if isinstance(data, list):
         for counter in args.remove_counter[1:]:
-            data.remove(counter)
+            if counter in data:
+                data.remove(counter)
 
-    write_yaml(data, filepath = path + prefix + file_name + sufix)
+    write_yaml(data, filepath = path_to_use + complete_file)
 
 if args.main_counter:
     dict_args['main_scan_counter'] = args.main_counter
@@ -111,4 +140,11 @@ if args.main_counter:
 
 if args.remove:
     for file in args.remove:
-        os.system('rm -f "$HOME/.config/scan-utils/{}"'.format(prefix + file + sufix))
+        complete_file = prefix + file + sufix
+        user_configs = os.listdir(path)
+        sys_configs = os.listdir(sys_path)
+        if complete_file in user_configs:
+            path_to_use = path
+        elif complete_file in sys_configs:
+            path_to_use = sys_path
+        os.system('rm -f "{}"'.format(path_to_use + complete_file))

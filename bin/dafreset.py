@@ -4,7 +4,7 @@
 import argparse as ap
 import sys
 import os
-import dafutilities as du
+# import dafutilities as du
 
 epi = '''
 Eg:
@@ -24,5 +24,5 @@ if args.All:
     os.system('cp -r "{}/../resources/." "$HOME/.daf/"'.format(os.path.dirname(os.path.realpath(__file__))))
     os.system('cp "$HOME/.daf/default" .Experiment')
 
-dict_args = du.read()
-du.log_macro(dict_args)
+# dict_args = du.read()
+# du.log_macro(dict_args)

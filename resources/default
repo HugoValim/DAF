@@ -101,7 +101,7 @@ lparam_c: 0.0
 lparam_gama: 0.0
 macro_file: macro
 macro_flag: false
-main_scan_counter: ''
+main_scan_counter: null
 main_scan_motor: ''
 naz: 0.0
 omega: 0.0
@@ -115,6 +115,7 @@ scan_stats: {}
 separator: ','
 setup: default
 setup_desc: This is DAF default setup
+simulated: false
 tau: 0.0
 theta: 0.0
 tt: 0.0

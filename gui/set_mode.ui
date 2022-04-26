@@ -100,6 +100,9 @@
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set a mode by passing the number correspondig to the table columns. Eg: 215 will set Nu Fixed, Alpha=Beta, Eta=Del/2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
+            <property name="maxLength">
+             <number>5</number>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -122,7 +125,7 @@
            <widget class="QPushButton" name="mode_input_button">
             <property name="minimumSize">
              <size>
-              <width>150</width>
+              <width>0</width>
               <height>0</height>
              </size>
             </property>

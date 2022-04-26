@@ -18,17 +18,22 @@ class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
-        self.default_theme()
         self.set_tab_order()
         self.set_channels()
+        self.center()
 
-    
     def ui_filename(self):
         return 'bounds.ui'
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def load_data(self):
         # Extract the directory of this file...
@@ -39,14 +44,6 @@ class MyDisplay(Display):
         with open(data_file, 'r') as file:
             data = yaml.safe_load(file)
             return data
-
-    def default_theme(self):
-        dict_args = du.read()
-        if dict_args['dark_mode']:
-            style = qdarkstyle.load_stylesheet_pyqt5()
-            self.app.setStyleSheet(style)
-        else:
-            self.app.setStyleSheet('')
 
     def set_tab_order(self):
         self.setTabOrder(self.ui.PyDMLineEdit_mu_llm, self.ui.PyDMLineEdit_mu_hlm)

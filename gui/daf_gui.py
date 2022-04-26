@@ -11,6 +11,7 @@ import yaml
 import time
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
+from PyQt5.QtGui import QPixmap, QIcon
 from qtpy.QtWidgets import QApplication, QTreeWidgetItem, QMenu, QAction, QHeaderView, QTableWidgetItem, QMenu, QComboBox, QListWidget
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
@@ -18,6 +19,17 @@ import qdarkstyle
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+import threading
+
+#DAF GUIs imports
+import scan_gui_daf
+import scan_hkl_daf
+import set_mode
+import experiment
+import sample
+import ub
+import bounds
+import goto_hkl
 
 DEFAULT = ".Experiment"
 
@@ -27,54 +39,38 @@ class Worker(QObject):
     finished = pyqtSignal()
     update_labels = pyqtSignal()
 
-    
     def get_experiment_data(self, filepath=DEFAULT):
         with open(filepath) as file:
             data = yaml.safe_load(file)
-        
         return data
 
     def format_decimals(self, x):
-            
             if type(x) == float:
                 return "{:.5f}".format(float(x)) # format float with 5 decimals
-
             else:
                 result = []
                 for i in x:
                     result.append("{:.5f}".format(float(i)))
-
                 return result
 
-
     def call_update(self):
-
         data = self.get_experiment_data()
         if data != self.data:
             self.update()
             self.data = data
 
-
     def update(self):
-
-
         dict_args = du.read()
-
         U = np.array(dict_args['U_mat'])
         U_print = np.array([self.format_decimals(U[0]), self.format_decimals(U[1]), self.format_decimals(U[2])])
-
         UB = np.array(dict_args['UB_mat'])
         UB_print = np.array([self.format_decimals(UB[0]), self.format_decimals(UB[1]), self.format_decimals(UB[2])])
-
-
         mode = [int(i) for i in dict_args['Mode']]
         idir = dict_args['IDir_print']
         ndir = dict_args['NDir_print']
         rdir = dict_args['RDir']
-
         exp = daf.Control(*mode)
         exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
-
         if dict_args['Material'] in dict_args['user_samples'].keys():
             exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
 
@@ -120,6 +116,7 @@ class Worker(QObject):
             time.sleep(1)
 
 class RMap(FigureCanvasQTAgg):
+    """Class to handle the RMap plot in the GUI"""
 
     def __init__(self, parent=None, dict_args=None, move=False, samples=None, idirp=None, ndirp=None):
         U = np.array(dict_args['U_mat'])
@@ -177,14 +174,15 @@ class MyDisplay(Display):
 
         self.app = QApplication.instance()
         self.set_main_screen_title()
+        self.current_theme = None
         self._createMenuBar()
         self.default_theme()
         self.set_scan_prop()
         self.setup_scroll_area()
-        self.ui.progressBar.hide()
-        self.ui.label_generating_points.hide()
         self.scan = False
         self.make_connections()
+        self.build_icons()
+        self.set_icons()
         self.set_tab_order()
         self.runLongTask()
         self.current_rmap_samples = []
@@ -193,14 +191,38 @@ class MyDisplay(Display):
         self.rmap_widget(du.read(), samples = self.current_rmap_samples, idir=self.idir, ndir=self.ndir)
         self.delay = 5 # Some thing in GUI dont need to be updated every update call
         self.delay_counter = self.delay # Cooldown to delay, it start with the same value so it runs in the first loop
-        
+        self.scan_windows = {}
+
+    def build_icons(self):
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        self.settings_icon = path.join(pixmap_path, 'settings.svg')
+        self.cached_icon = path.join(pixmap_path, 'cached1.svg')
+
+    def set_icons(self):
+        self.b_icon_size_h = 20
+        self.b_icon_size_v = 20
+
+        self.pushButton_mode.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_mode.setIcon(QIcon(self.settings_icon))
+        self.pushButton_expt.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_expt.setIcon(QIcon(self.settings_icon))
+        self.pushButton_sample.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_sample.setIcon(QIcon(self.settings_icon))
+        self.pushButton_ub.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_ub.setIcon(QIcon(self.settings_icon))
+        self.pushButton_bounds.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_bounds.setIcon(QIcon(self.settings_icon))
+        self.pushButton_move.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_move.setIcon(QIcon(self.settings_icon))
+        self.pushButton_refresh.setIconSize(QtCore.QSize(self.b_icon_size_h, self.b_icon_size_v))
+        self.pushButton_refresh.setIcon(QIcon(self.cached_icon))
 
     def set_tab_order(self):
 
         # Scan
-        self.setTabOrder(self.ui.tab_scan, self.ui.lineEdit)
-        self.setTabOrder(self.ui.lineEdit, self.ui.lineEdit_2)
-        self.setTabOrder(self.ui.lineEdit_2, self.ui.listWidget_counters)
+        self.setTabOrder(self.ui.tab_scan, self.lineEdit_scan_path)
+        self.setTabOrder(self.lineEdit_scan_path, self.lineEdit_scan_file)
+        self.setTabOrder(self.lineEdit_scan_file, self.ui.listWidget_counters)
         self.setTabOrder(self.ui.listWidget_counters, self.ui.treeWidget_counters)
         self.setTabOrder(self.ui.treeWidget_counters, self.ui.pushButton_new_counter_file)
         self.setTabOrder(self.ui.pushButton_new_counter_file, self.ui.pushButton_remove_counter_file)
@@ -208,19 +230,7 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.pushButton_set_config_counter, self.ui.comboBox_counters)
         self.setTabOrder(self.ui.comboBox_counters, self.ui.pushButton_add_counter)
         self.setTabOrder(self.ui.pushButton_add_counter, self.ui.pushButton_remove_counter)
-        self.setTabOrder(self.ui.pushButton_remove_counter, self.ui.lineEdit_hi)
-        self.setTabOrder(self.ui.lineEdit_hi, self.ui.lineEdit_hf)
-        self.setTabOrder(self.ui.lineEdit_hf, self.ui.lineEdit_ki)
-        self.setTabOrder(self.ui.lineEdit_ki, self.ui.lineEdit_kf)
-        self.setTabOrder(self.ui.lineEdit_kf, self.ui.lineEdit_li)
-        self.setTabOrder(self.ui.lineEdit_li, self.ui.lineEdit_lf)
-        self.setTabOrder(self.ui.lineEdit_lf, self.ui.lineEdit_step)
-        self.setTabOrder(self.ui.lineEdit_step, self.ui.lineEdit_time)
-        self.setTabOrder(self.ui.lineEdit_time, self.ui.comboBox_xlabel)
-        self.setTabOrder(self.ui.comboBox_xlabel, self.ui.lineEdit_csv_filename)
-        self.setTabOrder(self.ui.lineEdit_csv_filename, self.ui.checkBox_only_csv)
-        self.setTabOrder(self.ui.checkBox_only_csv, self.ui.pushButton_start_scan)
-        self.setTabOrder(self.ui.pushButton_start_scan, self.ui.tab_scan)
+        self.setTabOrder(self.ui.pushButton_remove_counter, self.ui.tab_scan)
 
         # Setup
         self.setTabOrder(self.ui.tab_setup, self.ui.listWidget_setup)
@@ -234,16 +244,43 @@ class MyDisplay(Display):
 
     def make_connections(self):
 
+        # Secundary GUIs
+        self.pushButton_mode.clicked.connect(lambda: self.open_mode_window())
+        self.pushButton_expt.clicked.connect(lambda: self.open_experiment_window())
+        self.pushButton_sample.clicked.connect(lambda: self.open_sample_window())
+        self.pushButton_ub.clicked.connect(lambda: self.open_ub_window())
+        self.pushButton_bounds.clicked.connect(lambda: self.open_bounds_window())
+        self.pushButton_move.clicked.connect(lambda: self.open_goto_hkl_window())
+
         self.ui.listWidget_setup.itemSelectionChanged.connect(self.on_list_widget_change)
         self.ui.listWidget_counters.itemSelectionChanged.connect(self.on_counters_list_widget_change)
 
-        # Scan buttons
+        # Scan tab
         self.ui.pushButton_set_config_counter.clicked.connect(self.set_counter)
         self.ui.pushButton_new_counter_file.clicked.connect(self.new_counter_file)
         self.ui.pushButton_remove_counter_file.clicked.connect(self.remove_counter_file)
         self.ui.pushButton_add_counter.clicked.connect(self.add_counter)
         self.ui.pushButton_remove_counter.clicked.connect(self.remove_counter)
-        self.ui.pushButton_start_scan.clicked.connect(self.start_scan)
+        self.comboBox_main_counter.currentTextChanged.connect(self.change_main_counter)
+
+        #Scans
+        self.pushButton_ascan.clicked.connect(lambda: self.open_scan_window(1, 'abs'))
+        self.pushButton_a2scan.clicked.connect(lambda: self.open_scan_window(2, 'abs'))
+        self.pushButton_a3scan.clicked.connect(lambda: self.open_scan_window(3, 'abs'))
+        self.pushButton_a4scan.clicked.connect(lambda: self.open_scan_window(4, 'abs'))
+        self.pushButton_a5scan.clicked.connect(lambda: self.open_scan_window(5, 'abs'))
+        self.pushButton_a6scan.clicked.connect(lambda: self.open_scan_window(6, 'abs'))
+
+        self.pushButton_dscan.clicked.connect(lambda: self.open_scan_window(1, 'rel'))
+        self.pushButton_d2scan.clicked.connect(lambda: self.open_scan_window(2, 'rel'))
+        self.pushButton_d3scan.clicked.connect(lambda: self.open_scan_window(3, 'rel'))
+        self.pushButton_d4scan.clicked.connect(lambda: self.open_scan_window(4, 'rel'))
+        self.pushButton_d5scan.clicked.connect(lambda: self.open_scan_window(5, 'rel'))
+        self.pushButton_d6scan.clicked.connect(lambda: self.open_scan_window(6, 'rel'))
+
+        self.pushButton_m2scan.clicked.connect(lambda: self.open_scan_window(2, 'mesh'))
+
+        self.pushButton_hklscan.clicked.connect(lambda: self.open_hkl_scan_window())
 
         # Setup buttons
         self.ui.pushButton_new_setup.clicked.connect(self.new_setup_dialog)
@@ -278,6 +315,7 @@ class MyDisplay(Display):
     def default_theme(self):
         dict_args = du.read()
         if dict_args['dark_mode']:
+            self.current_theme = 'dark'
             style = qdarkstyle.load_stylesheet_pyqt5()
             self.tableWidget_U.setMaximumHeight(97)
             self.tableWidget_UB.setMaximumHeight(97)
@@ -286,6 +324,7 @@ class MyDisplay(Display):
                 if action.text() == 'Dark Theme':
                     action.setChecked(True)
         else:
+            self.current_theme = 'light'
             self.tableWidget_U.setMaximumHeight(92)
             self.tableWidget_UB.setMaximumHeight(92)
             self.app.setStyleSheet('')
@@ -298,6 +337,7 @@ class MyDisplay(Display):
         for action in self.option_menu.actions():
             if action.text() == 'Dark Theme':
                 if action.isChecked():
+                    self.current_theme = 'dark'
                     style = qdarkstyle.load_stylesheet_pyqt5()
                     self.tableWidget_U.setMaximumHeight(97)
                     self.tableWidget_UB.setMaximumHeight(97)
@@ -305,6 +345,7 @@ class MyDisplay(Display):
                     dict_args['dark_mode'] = 1
                     du.write(dict_args)
                 else:
+                    self.current_theme = 'light'
                     self.tableWidget_U.setMaximumHeight(92)
                     self.tableWidget_UB.setMaximumHeight(92)
                     self.app.setStyleSheet('')
@@ -348,12 +389,40 @@ class MyDisplay(Display):
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
+    def open_scan_window(self, n_motors, scan_type):
+        self.scan_windows[scan_type + str(n_motors)] = scan_gui_daf.MyWindow(n_motors, scan_type)
+        self.scan_windows[scan_type + str(n_motors)].show()
+
+    def open_hkl_scan_window(self):
+        self.scan_hkl_window = scan_hkl_daf.MyWindow()
+        self.scan_hkl_window.show()
+
+    def open_mode_window(self):
+        self.mode_window = set_mode.MyDisplay()
+        self.mode_window.show()
+
+    def open_experiment_window(self):
+        self.experiment_window = experiment.MyDisplay()
+        self.experiment_window.show() 
+
+    def open_sample_window(self):
+        self.sample_window = sample.MyDisplay()
+        self.sample_window.show()
+
+    def open_ub_window(self):
+        self.ub_window = ub.MyDisplay()
+        self.ub_window.show()
+
+    def open_bounds_window(self):
+        self.bounds_window = bounds.MyDisplay()
+        self.bounds_window.show()
+    
+    def open_goto_hkl_window(self):
+        self.goto_hkl_window = goto_hkl.MyDisplay()
+        self.goto_hkl_window.show()    
+
     def refresh_pydm_motors(self):
-
         data = du.PVS
-
-        
-
         translate = QCoreApplication.translate
         
         # set del motor labels
@@ -411,6 +480,7 @@ class MyDisplay(Display):
         self.ui.PyDMPushButton_mu.setProperty("channel", translate("Form", del_channel + '.STOP'))
 
     def rmap_widget(self, data, samples, idir, ndir):
+        # Build the RMap graph
         self.rmap_plot = RMap(dict_args=data, move=self.checkBox_rmap.isChecked(), samples = samples, idirp=idir, ndirp=ndir)
         plt.close(self.rmap_plot.ax.figure) #Must have that, otherwise it will consume all the RAM opening figures
         for i in reversed(range(self.verticalLayout_rmap.count())): 
@@ -423,6 +493,7 @@ class MyDisplay(Display):
         self.rmap_plot.customContextMenuRequested[QtCore.QPoint].connect(self.rmap_menu_builder)
 
     def rmap_menu_builder(self):
+        """Build the menu that will pop when with right clicks in the graph"""
         self.rmap_menu = QMenu(self.rmap_plot)
         # Refresh plot
         refresh_plot = self.rmap_menu.addAction('Refresh')
@@ -439,7 +510,6 @@ class MyDisplay(Display):
         # Clear other samples in graph
         clear_plot = self.rmap_menu.addAction('Clear')
         clear_plot.triggered.connect(self.clear_plot_samples)
-
 
         self.rmap_menu.exec_(QtGui.QCursor.pos())
 
@@ -606,19 +676,64 @@ class MyDisplay(Display):
     def remove_setup(self):
         item = self.ui.listWidget_setup.currentItem()
         value = item.text()
-
         os.system("daf.setup -r {}".format(value))
-
-
         self.setup_scroll_area()
 
     def set_scan_prop(self):
         """ Set properties showed in scan tab in daf.gui """
         dict_ = du.read()
+        self.main_counter = dict_["main_scan_counter"]
         self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
+        self.set_scan_path()
         self.counters_scroll_area()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
         self.set_counter_combobox_options()
-        self.set_xlabel_combobox_options()
+
+    def set_scan_path(self):
+        self.lineEdit_scan_path.setText(os.getcwd())
+        self.lineEdit_scan_file.setText('scan_daf')
+
+    def main_counter_cbox(self, defaut_file, main_counter):
+        self.comboBox_main_counter.clear()
+        user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+        sys_configs = os.listdir('/etc/xdg/scan-utils')
+        if defaut_file in user_configs:
+            path_to_use = du.HOME + '/.config/scan-utils/'
+        elif defaut_file in sys_configs:
+            path_to_use = '/etc/xdg/scan-utils/'
+        with open(path_to_use + defaut_file) as file:
+            data = yaml.safe_load(file)
+                    #         if isinstance(counter, dict):
+                    # counter = list(counter.keys())[0]
+        data = [list(i.keys())[0] if type(i)==dict else i for i in data]
+        if main_counter in data:
+            data.remove(main_counter)
+        if main_counter not in data and main_counter != None:
+            data.insert(0, main_counter)
+        elif main_counter == None:
+            data.insert(0, 'None')
+        self.comboBox_main_counter.addItems(data)
+        self.main_counter_cbox_default(main_counter)
+
+    def main_counter_cbox_default(self, main_counter):
+        AllItems = [self.comboBox_main_counter.itemText(i) for i in range(self.comboBox_main_counter.count())]
+        if main_counter in AllItems:
+            self.comboBox_main_counter.setCurrentIndex(AllItems.index(main_counter))
+        elif main_counter == None:
+            self.comboBox_main_counter.setCurrentIndex(AllItems.index('None'))
+
+    def change_main_counter(self):
+        dict_ = du.read()
+        AllItems = [self.comboBox_main_counter.itemText(i) for i in range(self.comboBox_main_counter.count())]
+        counter = self.comboBox_main_counter.currentText()
+        if counter != '' and counter != 'None':
+            if counter != self.main_counter:
+                self.main_counter = counter
+                os.system("daf.mc -m {}".format(counter))
+                if 'None' in AllItems and dict_['main_scan_counter'] != None:
+                    AllItems.remove('None')
+                    self.comboBox_main_counter.clear()
+                    self.comboBox_main_counter.addItems(AllItems)
 
     def fill_item(self, item, value):
         item.setExpanded(False)
@@ -651,6 +766,7 @@ class MyDisplay(Display):
         self.fill_item(widget.invisibleRootItem(), value)
 
     def print_tree(self, file):
+        """Print counters of a setup as a tree"""
         with open('/etc/xdg/scan-utils/config.yml') as conf:
             config_data = yaml.safe_load(conf)
         with open(file) as file:
@@ -658,26 +774,44 @@ class MyDisplay(Display):
         if data != None:
             full_output = {}
             for counter in data:
+                if isinstance(counter, dict):
+                    counter = list(counter.keys())[0]
                 full_output[counter] = config_data['counters'][counter]
         else:
-            full_output = '\n \n \n \n \n' + ' '*50 + ' Add counters to this file'
+            full_output = 'Add counters to this file'
         self.fill_widget(self.ui.treeWidget_counters, full_output)
 
     def counters_scroll_area(self):
-        configs = os.listdir(du.HOME + '/.config/scan-utils')
-        configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+        dict_ = du.read()
+        """List all possible counter configs"""
+        user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+        sys_configs = os.listdir('/etc/xdg/scan-utils')
+        all_configs = user_configs + sys_configs
+        configs = [i.split('.')[1] for i in all_configs if len(i.split('.')) == 3 and i.endswith('.yml')]
         configs.sort()
         self.ui.listWidget_counters.clear()
         self.ui.listWidget_counters.addItems(configs)
+        # simp_counter_file = dict_['default_counters'].split('.')[1]
+        # for i in range (self.ui.listWidget_counters.count()):
+        #     item = self.ui.listWidget_counters.item(i)
+        #     text = item.text()
+        #     if simp_counter_file == text:
+        #         self.ui.listWidget_counters.setCurrentItem(item)
 
-    def on_counters_list_widget_change(self):       
+    def on_counters_list_widget_change(self):
+        """Print the counters on a setup when selected"""       
         prefix = 'config.'
         sufix = '.yml'
-        configs = os.listdir(du.HOME + '/.config/scan-utils')
-        configs = [i.split('.')[1] for i in configs if len(i.split('.')) == 3 and i.endswith('.yml')]
+        user_configs = os.listdir(du.HOME + '/.config/scan-utils')
+        sys_configs = os.listdir('/etc/xdg/scan-utils')
+        all_configs = user_configs + sys_configs
+        configs = [i.split('.')[1] for i in all_configs if len(i.split('.')) == 3 and i.endswith('.yml')]
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
         if value in configs:
+            try:
+                self.print_tree('/etc/xdg/scan-utils/' + prefix + value + sufix)
+            except:
                 self.print_tree(du.HOME + '/.config/scan-utils/' + prefix + value + sufix)
 
     def set_counter(self):
@@ -686,7 +820,8 @@ class MyDisplay(Display):
         os.system("daf.mc -s {}".format(value))
         dict_ = du.read()
         self.ui.label_current_config.setText(dict_['default_counters'].split('.')[1])
-        self.set_xlabel_combobox_options()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
+        self.main_counter_cbox_default(dict_['main_scan_counter'])
 
     def new_counter_file(self):
         configs = os.listdir(du.HOME + '/.config/scan-utils')
@@ -706,29 +841,9 @@ class MyDisplay(Display):
                 os.system('daf.mc -n {}'.format(text))
         self.counters_scroll_area()
 
-    def remove_counter_file(self):
-        item = self.ui.listWidget_counters.currentItem()
-        value = item.text()
-        os.system("daf.mc -r {}".format(value))
-        self.counters_scroll_area()
-        self.set_xlabel_combobox_options()
-
-    def set_counter_combobox_options(self):
-        with open('/etc/xdg/scan-utils/config.yml') as conf:
-            config_data = yaml.safe_load(conf)
-        counters = config_data['counters'].keys()
-        self.ui.comboBox_counters.addItems(counters)
-        self.ui.comboBox_counters.setEditable(True)
-        self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
-
-    def set_xlabel_combobox_options(self):
-        motors_now = ['points', 'huber_mu', 'huber_eta', 'huber_chi', 'huber_phi', 'huber_nu', 'huber_del']
-        self.ui.comboBox_xlabel.clear()
-        self.ui.comboBox_xlabel.addItems(motors_now)
-        self.ui.comboBox_xlabel.setEditable(True)
-        self.ui.comboBox_xlabel.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
-
     def add_counter(self):
+        """Add a counter to a setup"""
+        dict_ = du.read()
         counter = self.ui.comboBox_counters.currentText()
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
@@ -739,9 +854,24 @@ class MyDisplay(Display):
         else:
             self.ui.listWidget_counters.setCurrentRow(0)
         self.ui.listWidget_counters.setCurrentRow(list_.index(value))
-        self.set_xlabel_combobox_options()
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
+
+    def remove_counter_file(self):
+        item = self.ui.listWidget_counters.currentItem()
+        value = item.text()
+        os.system("daf.mc -r {}".format(value))
+        self.counters_scroll_area()
+
+    def set_counter_combobox_options(self):
+        with open('/etc/xdg/scan-utils/config.yml') as conf:
+            config_data = yaml.safe_load(conf)
+        counters = config_data['counters'].keys()
+        self.ui.comboBox_counters.addItems(counters)
+        self.ui.comboBox_counters.setEditable(True)
+        self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
     def remove_counter(self):
+        dict_ = du.read()
         getSelected = self.ui.treeWidget_counters.selectedItems()
         if getSelected:
             baseNode = getSelected[0]
@@ -755,50 +885,7 @@ class MyDisplay(Display):
             else:
                 self.ui.listWidget_counters.setCurrentRow(0)
             self.ui.listWidget_counters.setCurrentRow(list_.index(value))
-        self.set_xlabel_combobox_options()
-
-    def start_scan(self):
-        if not self.scan:
-            self.scan = True
-            prefix = self.ui.lineEdit.text()
-            file = self.ui.lineEdit_2.text()
-            output = prefix + '/' + file
-            hi = self.ui.lineEdit_hi.text()
-            hf = self.ui.lineEdit_hf.text()
-            ki = self.ui.lineEdit_ki.text()
-            kf = self.ui.lineEdit_kf.text()
-            li = self.ui.lineEdit_li.text()
-            lf = self.ui.lineEdit_lf.text()
-            hi = self.ui.lineEdit_hi.text()
-            self.step = self.ui.lineEdit_step.text()
-            time = self.ui.lineEdit_time.text()
-            xlabel = self.ui.comboBox_xlabel.currentText()
-            csv_fn = self.ui.lineEdit_csv_filename.text()
-            
-            os.system('echo "" > .my_scan_counter.csv')
-            if self.ui.checkBox_only_csv.isChecked():
-                subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -c -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
-                    shell = True)
-            else:
-                subprocess.Popen('daf.scan {} {} {} {} {} {} {} -t {} -n {} -x {} -o {} -g'.format(hi, ki, li, hf, kf, lf, self.step, time, csv_fn, xlabel, output), 
-                    shell=True)
-
-    def progress_bar(self, fname = '.my_scan_counter.csv'):
-        if self.scan:
-            self.ui.progressBar.show()
-            self.ui.label_generating_points.show()
-            with open(fname) as f:
-                lines = 0
-                for i in f:
-                    lines += 1
-            percentage =  ((lines-1) / (int(self.step) + 1))*100
-            self.ui.progressBar.setValue(int(percentage))
-            if (percentage) >= 100:
-                self.ui.progressBar.hide()
-                self.ui.label_generating_points.hide()
-                self.scan = False
-                self.ui.progressBar.setValue(0)
-
+        self.main_counter_cbox(dict_['default_counters'], dict_['main_scan_counter'])
 
     def update(self):        
         # if self.delay_counter == self.delay:
@@ -806,7 +893,6 @@ class MyDisplay(Display):
         #     self.delay_counter = 0
 
         self.refresh_pydm_motors()
-        self.progress_bar()
 
 
         lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
@@ -842,7 +928,7 @@ class MyDisplay(Display):
         self.ui.label_cons5.setText(str(data_to_update['cons'][4][1]))
 
         # Update status experiment label
-        self.ui.label_exp1.setText(str(data_to_update['exp_list'][0]))
+        # self.ui.label_exp1.setText(str(data_to_update['exp_list'][0]))
         self.ui.label_exp2.setText(str(data_to_update['exp_list'][1]))
         self.ui.label_exp3.setText(str(data_to_update['exp_list'][2]))
         self.ui.label_exp4.setText(str(data_to_update['exp_list'][3]))

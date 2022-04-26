@@ -1,15 +1,17 @@
-from os import path
-from pydm import Display
 import os
+from os import path
 import subprocess
-import dafutilities as du
+
 import xrayutilities as xu
-import numpy as np
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QCheckBox, QHBoxLayout, QHeaderView
-from PyQt5.QtCore import Qt, QTimer
+from pydm import Display
 from qtpy.QtWidgets import QApplication
-import qdarkstyle
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QCheckBox, QHBoxLayout, QHeaderView, QMenu
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import Qt, QTimer
+import numpy as np
+
+import dafutilities as du
 
 class MyDisplay(Display):
 
@@ -19,25 +21,13 @@ class MyDisplay(Display):
 
         self.app = QApplication.instance()
         self.loop()
-        self.default_theme()
         self.update_reflections()
-        self.ui.pushButton_refs_save.clicked.connect(self.get_reflection)
-        
-        self.pushButton_2_ref_calc.clicked.connect(self.calc_from_2_ref)
-        self.pushButton_3_ref_calc.clicked.connect(self.calc_from_3_ref)
-        self.pushButton_sample.clicked.connect(self.set_new_sample)
-
-        # Umat
-        self.update_u_labels()
-        self.ui.pushButton_reset_u.clicked.connect(self.update_u_labels)
-        self.ui.pushButton_set_u.clicked.connect(self.set_u_matrix)
-
-        # UBmat
-        self.update_ub_labels()
-        self.ui.pushButton_reset_ub.clicked.connect(self.update_ub_labels)
-        self.ui.pushButton_set_ub.clicked.connect(self.set_ub_matrix)
-
+        self.link_table_2_menu()
+        self.make_connections()
         self.set_tab_order()
+        self.build_icons()
+        self.set_icons()
+        self.center()
 
     def ui_filename(self):
         return 'ub.ui'
@@ -49,25 +39,41 @@ class MyDisplay(Display):
         """Loop to check if a curve is selected or not"""
         self.timer = QTimer()
         self.timer.timeout.connect(self.update)
-        self.timer.start(2000) #trigger every .25 seconds.
+        self.timer.start(2000) #trigger every 2 seconds.
 
-    def default_theme(self):
-        dict_args = du.read()
-        if dict_args['dark_mode']:
-            style = qdarkstyle.load_stylesheet_pyqt5()
-            self.app.setStyleSheet(style)
-        else:
-            self.app.setStyleSheet('')
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
+
+    def build_icons(self):
+        """Build used icons"""
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        self.check_icon = path.join(pixmap_path, 'check.svg')
+        self.pen_icon = path.join(pixmap_path, 'pen.svg')
+
+    def set_icons(self):
+        """Set used icons"""
+        self.ui.pushButton_set_u.setIcon(QIcon(self.check_icon))
+        self.ui.pushButton_set_i.setIcon(QIcon(self.pen_icon))
+        self.ui.pushButton_set_ub.setIcon(QIcon(self.check_icon))
+
+    def make_connections(self):
+        """Make the needed connections"""
+        
+        # Umat
+        self.update_u_labels()
+        self.ui.pushButton_set_u.clicked.connect(self.set_u_matrix)
+        self.ui.pushButton_set_i.clicked.connect(self.set_u_to_i)
+
+        # UBmat
+        self.update_ub_labels()
+        self.ui.pushButton_set_ub.clicked.connect(self.update_ub_labels)
 
     def set_tab_order(self):
 
-        # Calc UB
-        self.setTabOrder(self.ui.tab_calcUB, self.ui.pushButton_refs_save)
-        self.setTabOrder(self.ui.pushButton_refs_save, self.ui.pushButton_2_ref_calc)
-        self.setTabOrder(self.ui.pushButton_2_ref_calc, self.ui.pushButton_3_ref_calc)
-        self.setTabOrder(self.ui.pushButton_3_ref_calc, self.ui.pushButton_sample)
-        self.setTabOrder(self.ui.pushButton_sample, self.ui.tab_calcUB)
-        
         # Set U and UB
         self.setTabOrder(self.ui.tab_UB, self.ui.lineEdit_u_00)
         self.setTabOrder(self.ui.lineEdit_u_00, self.ui.lineEdit_u_01)
@@ -79,8 +85,8 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.lineEdit_u_20, self.ui.lineEdit_u_21)
         self.setTabOrder(self.ui.lineEdit_u_21, self.ui.lineEdit_u_22)
         self.setTabOrder(self.ui.lineEdit_u_22, self.ui.pushButton_set_u)
-        self.setTabOrder(self.ui.pushButton_set_u, self.ui.pushButton_reset_u)
-        self.setTabOrder(self.ui.pushButton_reset_u, self.ui.lineEdit_ub_00)
+        self.setTabOrder(self.ui.pushButton_set_u, self.ui.pushButton_set_i)
+        self.setTabOrder(self.ui.pushButton_set_i, self.ui.lineEdit_ub_00)
         self.setTabOrder(self.ui.lineEdit_ub_00, self.ui.lineEdit_ub_01)
         self.setTabOrder(self.ui.lineEdit_ub_01, self.ui.lineEdit_ub_02)
         self.setTabOrder(self.ui.lineEdit_ub_02, self.ui.lineEdit_ub_10)
@@ -90,12 +96,11 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.lineEdit_ub_20, self.ui.lineEdit_ub_21)
         self.setTabOrder(self.ui.lineEdit_ub_21, self.ui.lineEdit_ub_22)
         self.setTabOrder(self.ui.lineEdit_ub_22, self.ui.pushButton_set_ub)
-        self.setTabOrder(self.ui.pushButton_set_ub, self.ui.pushButton_reset_ub)
-        self.setTabOrder(self.ui.pushButton_reset_ub, self.ui.tab_UB)
+        self.setTabOrder(self.ui.pushButton_set_ub, self.ui.tab_UB)
 
 
     def get_experiment_file(self):
-
+        """Get data from the .Experiment file"""
         dict_args = du.read()
         return dict_args
 
@@ -103,13 +108,14 @@ class MyDisplay(Display):
         return "{:.5f}".format(float(x)) # format float with 5 decimals
 
     def update(self):
+        """Get data to update, if things change update"""
         data = self.get_experiment_file()
         refs = data['reflections']
         if self.refs != refs:
             self.update_reflections()
 
     def update_reflections(self):
-
+        """Update table"""
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
         lb = lambda x: "{:.5f}".format(float(x))
@@ -119,7 +125,6 @@ class MyDisplay(Display):
         row = 0
         self.table_checkboxes = {} 
         for i in range(len(refs)):
-
             idx = str(i+1)
             idx_for_table = QTableWidgetItem(idx)
             idx_for_table.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
@@ -171,13 +176,38 @@ class MyDisplay(Display):
             header = self.tableWidget.horizontalHeader()
             header.setResizeMode(i, QHeaderView.Stretch)
 
+    def link_table_2_menu(self):
+        """Link the table widget to the menu options"""
+        self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tableWidget.customContextMenuRequested[QtCore.QPoint].connect(self.table_menu_builder)
+
+    def table_menu_builder(self):
+        """Build the menu that will pop when with right clicks in the table"""
+        self.table_menu = QMenu(self.tableWidget)
+        # Refresh plot
+        
+        get_reflection = self.table_menu.addAction('Get Current Pos')
+        get_reflection.triggered.connect(self.get_reflection)
+        calc_from_2 = self.table_menu.addAction('Calc From 2 Refs')
+        calc_from_2.triggered.connect(self.calc_from_2_ref)
+        calc_from_3 = self.table_menu.addAction('Calc From 3 Refs')
+        calc_from_3.triggered.connect(self.calc_from_3_ref)
+
+        self.table_menu.exec_(QtGui.QCursor.pos())
 
     def get_reflection(self):
-        os.system("daf.ub -rn")
-        self.update_reflections()
+        """Get the reflection now, user must pass the HKL position"""
+        text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 
+                                                      'What is the current HKL position? (use the format H,K,L)')
+        if result:
+            hkl_now = text.split(',')
+            # print("daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]))
+            p = subprocess.Popen("daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]), shell = True)
+            p.wait()
+            self.update_reflections()
 
     def calc_from_2_ref(self):
-
+        """Do the calculation with 2 selected reflections"""
         inp = []
         for key, value in self.table_checkboxes.items():
             if value.isChecked():
@@ -188,10 +218,11 @@ class MyDisplay(Display):
             msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
             ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
         else:
-            os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
+            # os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
+            subprocess.Popen("daf.ub -c2 {} {}".format(inp[0], inp[1]), shell = True)
 
     def calc_from_3_ref(self):
-
+        """Do the calculation with 3 selected reflections"""
         inp = []
         for key, value in self.table_checkboxes.items():
             if value.isChecked():
@@ -202,47 +233,62 @@ class MyDisplay(Display):
             msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
             ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
         else:
-            os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
-        self.update_samp_parameters()
+            # os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
+            subprocess.Popen("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]), shell = True)
 
-    def update_samp_parameters(self):
-        data = self.get_experiment_file()
-        self.label_a.setText(self.format_decimals(data['lparam_a']))
-        self.label_b.setText(self.format_decimals(data['lparam_b']))
-        self.label_c.setText(self.format_decimals(data['lparam_c']))
-        self.label_alpha.setText(self.format_decimals(data['lparam_alpha']))
-        self.label_beta.setText(self.format_decimals(data['lparam_beta']))
-        self.label_gamma.setText(self.format_decimals(data['lparam_gama']))
+        # self.update_samp_parameters()
 
-    def set_new_sample(self):
-        dict_args = du.read()
-        samples = dict_args['user_samples']
-        text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New sample name')
-        a = dict_args['lparam_a']
-        b = dict_args['lparam_b']
-        c = dict_args['lparam_c']
-        alpha = dict_args['lparam_alpha']
-        beta = dict_args['lparam_beta']
-        gamma = dict_args['lparam_gama']
-        if result:
-            if text in samples.keys():
-                msgbox = QtWidgets.QMessageBox()
-                msgbox_text = 'This samples name {} already exists, \ndo you want to overwrite it?'.format(text)
-                ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+    # def update_samp_parameters(self):
+    #     """"""
+    #     data = self.get_experiment_file()
+    #     self.label_a.setText(self.format_decimals(data['lparam_a']))
+    #     self.label_b.setText(self.format_decimals(data['lparam_b']))
+    #     self.label_c.setText(self.format_decimals(data['lparam_c']))
+    #     self.label_alpha.setText(self.format_decimals(data['lparam_alpha']))
+    #     self.label_beta.setText(self.format_decimals(data['lparam_beta']))
+    #     self.label_gamma.setText(self.format_decimals(data['lparam_gama']))
 
-                if ret == QtWidgets.QMessageBox.Ok:
-                    os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+    # def set_new_sample(self):
+    #     dict_args = du.read()
+    #     samples = dict_args['user_samples']
+    #     text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New sample name')
+    #     a = dict_args['lparam_a']
+    #     b = dict_args['lparam_b']
+    #     c = dict_args['lparam_c']
+    #     alpha = dict_args['lparam_alpha']
+    #     beta = dict_args['lparam_beta']
+    #     gamma = dict_args['lparam_gama']
+    #     if result:
+    #         if text in samples.keys():
+    #             msgbox = QtWidgets.QMessageBox()
+    #             msgbox_text = 'This samples name {} already exists, \ndo you want to overwrite it?'.format(text)
+    #             ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
 
-            else:
-                os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+    #             if ret == QtWidgets.QMessageBox.Ok:
+    #                 # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+    #                 subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
+
+
+    #         else:
+    #             # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
+    #             subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
+
+    def set_u_to_i(self):
+        """Set the U lineEdits values to identity matrix"""
+        self.ui.lineEdit_u_00.setText(self.format_decimals(1))
+        self.ui.lineEdit_u_01.setText(self.format_decimals(0))
+        self.ui.lineEdit_u_02.setText(self.format_decimals(0))
+        self.ui.lineEdit_u_10.setText(self.format_decimals(0))
+        self.ui.lineEdit_u_11.setText(self.format_decimals(1))
+        self.ui.lineEdit_u_12.setText(self.format_decimals(0))
+        self.ui.lineEdit_u_20.setText(self.format_decimals(0))
+        self.ui.lineEdit_u_21.setText(self.format_decimals(0))
+        self.ui.lineEdit_u_22.setText(self.format_decimals(1))
 
     def update_u_labels(self):
-
+        """Set the U lineEdits values based on the .Experiment file"""
         data = self.get_experiment_file()
-        
         U = np.array(data['U_mat'])
-
-        
         self.ui.lineEdit_u_00.setText(self.format_decimals(str(U[0][0])))
         self.ui.lineEdit_u_01.setText(self.format_decimals(str(U[0][1])))
         self.ui.lineEdit_u_02.setText(self.format_decimals(str(U[0][2])))
@@ -254,7 +300,7 @@ class MyDisplay(Display):
         self.ui.lineEdit_u_22.setText(self.format_decimals(str(U[2][2])))
 
     def set_u_matrix(self):
-
+        """Set the U matrix based on the values in the lineEdits"""
         u_00 = self.ui.lineEdit_u_00.text()
         u_01 = self.ui.lineEdit_u_01.text()
         u_02 = self.ui.lineEdit_u_02.text()
@@ -264,21 +310,16 @@ class MyDisplay(Display):
         u_20 = self.ui.lineEdit_u_20.text()
         u_21 = self.ui.lineEdit_u_21.text()
         u_22 = self.ui.lineEdit_u_22.text()
-        
-        # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-        # subprocess.Popen("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22), shell = True)
-        os.system("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22))
+
+        subprocess.Popen("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22), shell = True)
         # Whenever U changes UB changes as well, since UB depend from U
         self.update_ub_labels()
 
 
     def update_ub_labels(self):
-
+        """Set the UB lineEdits values based on the .Experiment file"""
         data = self.get_experiment_file()
-
         UB = np.array(data['UB_mat'])
-
-        
         self.ui.lineEdit_ub_00.setText(self.format_decimals(str(UB[0][0])))
         self.ui.lineEdit_ub_01.setText(self.format_decimals(str(UB[0][1])))
         self.ui.lineEdit_ub_02.setText(self.format_decimals(str(UB[0][2])))
@@ -290,7 +331,7 @@ class MyDisplay(Display):
         self.ui.lineEdit_ub_22.setText(self.format_decimals(str(UB[2][2])))
 
     def set_ub_matrix(self):
-
+        """Set the UB matrix based on the values in the lineEdits"""
         ub_00 = self.ui.lineEdit_ub_00.text()
         ub_01 = self.ui.lineEdit_ub_01.text()
         ub_02 = self.ui.lineEdit_ub_02.text()
@@ -301,25 +342,5 @@ class MyDisplay(Display):
         ub_21 = self.ui.lineEdit_ub_21.text()
         ub_22 = self.ui.lineEdit_ub_22.text()
         
-        # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
-        print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
-        os.system("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
-
-
-
-
-
-        
-
-
-
-
-
-
-        
-        
-            
-
-
-
-        
+        # print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
+        subprocess.Popen("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22), shell = True)

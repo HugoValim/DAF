@@ -7,13 +7,15 @@ import subprocess
 import daf
 import numpy as np
 import dafutilities as du
-import scan_daf as sd
+# import scan_daf as sd
 import pandas as pd
 import yaml
 import argparse as ap
 import h5py
 from PyQt5.QtWidgets import QApplication, QDesktopWidget
-
+from datetime import datetime
+import time
+import signal
 
 # Py4Syn imports
 import py4syn
@@ -32,12 +34,35 @@ from scan_utils import WriteType
 from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
+
+def sigint_handler_utilities(signum, frame):
+    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    dict_args = du.read()
+    dict_args['scan_running'] = False
+    du.write(dict_args)
+    print('\n')
+    exit(1)
+
+signal.signal(signal.SIGINT, sigint_handler_utilities)
+
 class DAFScan(ScanOperationCLI):
 
     def __init__(self, args, close_window=False):
         super().__init__(**args)
         self.close_window = close_window
-        
+        signal.signal(signal.SIGINT, self.sigint_handler)
+
+    def sigint_handler(self, signum, frame):
+        """Function to handle ctrl + c and dont let daf.live lost"""
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        dict_args = du.read()
+        dict_args['scan_running'] = False
+        du.write(dict_args)
+        self.reset_motors()
+        print('\n')
+        exit(1)
+
     def on_operation_begin(self):
         """Routine to be done before this scan operation."""
         counter_dict = dict(py4syn.counterDB.items())
@@ -146,6 +171,102 @@ class DAFScan(ScanOperationCLI):
                 dict_args['scan_running'] = False
                 du.write(dict_args)
 
+    def add_scan_attrs(self):
+        with h5py.File(self.unique_filename, 'a') as h5w:
+                scan_idx = list(h5w['Scan'].keys())
+                scan_idx = (scan_idx[-1])
+
+                _instrument_path = 'Scan/' + scan_idx + '/instrument/'
+
+                dict_args = du.read()
+                default_counter = dict_args["main_scan_counter"]
+
+                h5w['Scan/' + scan_idx + '/instrument/'].attrs["main_motor"] = self.motor[0]
+                if default_counter in self.counters_name:
+                    h5w['Scan/' + scan_idx + '/instrument/'].attrs["main_counter"] = default_counter
+                else:
+                    h5w['Scan/' + scan_idx + '/instrument/'].attrs["main_counter"] = self.counters_name[0]
+
+
+    def pos_scan_callback(self, **kwargs):
+
+        print("pos_scan_callback")
+
+        import py4syn
+        import h5py
+        self.n_trys = 0
+
+        def open_fileH5(detector_file):
+            try:
+                while self.n_trys < 10:
+                    return h5py.File(detector_file, 'r')
+            except:
+                time.sleep(.5)
+                self.n_trys += 1
+                return open_fileH5(detector_file)
+
+        for counter_name, counter in py4syn.counterDB.items():
+            # Remove dataset aux to 2d scan.
+            with h5py.File(self.unique_filename, 'a') as h5w:
+                scan_idx = list(h5w['Scan'].keys())
+                scan_idx = (scan_idx[-1])
+                _dataset_name = 'Scan/' + scan_idx + '/instrument/' + \
+                    counter_name + '/' + counter_name
+                _dataset_name_aux = _dataset_name + '_aux'
+                try:
+                    if len(h5w[_dataset_name_aux].shape) == 1:
+                        del h5w[_dataset_name_aux]
+                    else:
+                        del h5w[_dataset_name]
+                        h5w[_dataset_name] = h5w[_dataset_name_aux]
+                        del h5w[_dataset_name_aux]
+                except:
+                    pass
+
+                h5w.flush()
+
+            if counter['autowrite'] and counter['write']:
+                filename = counter['device'].getFileName(
+                ) + '_' + format(counter['device'].getRepeatNumber(), '03')
+                filepath = counter['device'].getFilePath()
+
+                detector_file = filepath + filename + '.hdf5'
+
+                print("Time before open: ", datetime.now())
+                print(detector_file)
+                h5r = open_fileH5(detector_file)
+                print("Time after open: ", datetime.now())
+
+                if h5r is None:
+                    print("PROBLEM")
+                    continue
+
+                with h5py.File(self.unique_filename, 'a') as h5w:
+                    for group in h5r.keys():
+                        for ds in h5r[group].keys():
+                            if 'link' in counter.keys():
+                                if counter['link'] == 'Copy':
+                                    ds_arr = h5r[group][ds]['data']
+                                    scan_idx = list(h5w['Scan'].keys())
+                                    scan_idx = (scan_idx[-1])
+                                    _dataset_data = 'Scan/' + scan_idx + \
+                                                    '/instrument/' + \
+                                                    counter_name + \
+                                                    '/data'
+
+                                    del h5w[_dataset_data]
+                                    print("Time before Compression: ",
+                                          datetime.now())
+                                    h5w.create_dataset(_dataset_data,
+                                                       data=ds_arr,
+                                                       shape=ds_arr.shape,
+                                                       compression='gzip',
+                                                       compression_opts=2)
+                                    print("Time after Compression: ",
+                                          datetime.now())
+                print('done')
+
+
     def on_operation_end(self):
         """Routine to be done after this scan operation."""
         if self.plot_type == PlotType.pyqtgraph:
@@ -157,6 +278,7 @@ class DAFScan(ScanOperationCLI):
             self.reset_motors()
         self.write_stat()
         self.write_hkl()
+        self.add_scan_attrs()
         #Close scan window
         if self.close_window:
             self.app.quit()
@@ -181,6 +303,8 @@ class DAFScan(ScanOperationCLI):
 
             self.on_scan_end()
 
+            # except KeyboardInterrupt:
+            #     print('oioi')
             # self.fit_values()
 
         # if self.optimum:
@@ -195,3 +319,4 @@ class DAFScan(ScanOperationCLI):
         #         subprocess.run(self.postscan_cmd, shell=True)
         #     except (OSError, RuntimeError) as exception:
         #         die(exception)
+    

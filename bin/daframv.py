@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Move the diffractometer by direct change in the angles"""
+"""Move the diffractometer by direct change in the angles with relative movement"""
 
 import argparse as ap
 import sys
@@ -10,10 +10,8 @@ import dafutilities as du
 
 epi = '''
 Eg:
-    daf.amv --Del 30 --Eta 15
-    daf.amv -d 30 -e 15
-    daf.amv -d CEN
-    daf.amv -d MAX -co roi1
+    daf.ramv --Del 30 --Eta 15
+    daf.ramv -d 30 -e 15
     '''
 
 parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)

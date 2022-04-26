@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 104 104" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1.45428,0,0,1.45428,-90.4062,-28.1323)">
+        <path d="M78.742,70.758L116.39,71.074" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <g transform="matrix(1.0602,0,0,1.0602,48.1207,-3.26589)">
+            <circle cx="46.811" cy="55.262" r="32.205" style="fill:rgb(235,235,235);fill-opacity:0;stroke:black;stroke-width:1.62px;"/>
+        </g>
+        <g transform="matrix(1.01935,0,0,1.02124,-1.30801,-0.866598)">
+            <path d="M67.58,40.802L83.88,85.364" style="fill:none;stroke:black;stroke-width:1.68px;"/>
+        </g>
+        <g transform="matrix(1.03101,0,0,1.02573,-3.97455,-1.0465)">
+            <path d="M128.179,40.671L111.222,85.627" style="fill:none;stroke:black;stroke-width:1.67px;"/>
+        </g>
+        <path d="M98.821,30.495L98.737,38.572" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M94.951,36.553L110.346,45.218" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M102.354,36.721L87.211,45.302" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M90.66,39.245L90.744,56.659" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M84.014,39.329L90.68,43.282" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M106.813,39.245L106.813,56.575" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M113.711,39.161L106.813,43.451" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M110.346,50.434L95.119,59.436" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M87.295,50.518L102.438,59.351" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M113.627,56.575L106.56,52.789" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M98.737,65.156L98.821,57.585" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+        <path d="M83.846,56.744L90.324,53.21" style="fill:none;stroke:black;stroke-width:1.72px;"/>
+    </g>
+</svg>
