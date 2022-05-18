@@ -40,7 +40,7 @@ def write_angs():
 
     for motor in dic.keys():
         if dic[motor] is not None:
-            dict_args[motor.capitalize()] = motor_dict[motor] + dic[motor]
+            dict_args[motor.capitalize()] = float(motor_dict[motor] + dic[motor])
     du.write(dict_args)
 write_angs()
 
@@ -62,11 +62,14 @@ else:
     
 exp.set_U(U)
 hklnow = exp.calc_from_angs(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
-hklnow = list(hklnow)
+hklnow = [float(i) for i in hklnow]
 pseudo = exp.calc_pseudo(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
 pseudo_dict = {'alpha':pseudo[0], 'qaz':pseudo[1], 'naz':pseudo[2], 'tau':pseudo[3], 'psi':pseudo[4], 'beta':pseudo[5], 'omega':pseudo[6], 'hklnow':hklnow}
 
 for j,k in pseudo_dict.items():
     if j in dict_args:
-        dict_args[j] = k
+        if not isinstance(k, list):
+            dict_args[j] = float(k)
+        else:
+            dict_args[j] = k
 du.write(dict_args)
