@@ -629,58 +629,61 @@ class Control(ReciprocalMapWindow):
 
 
     def set_constraints(self, *args, setineq = None, **kwargs):
-
-        lb = lambda x: "{:.5f}".format(float(x))
+        """Set constraints values to motor and pseudo angle constraints. They should be passed as Keyword Arguments"""
         self.pseudo_constraints_w_value_list = list()
-        if kwargs:
-            if 'Mu' in kwargs.keys() and 'Mu' in self.fixed_motor_list:
-                self.Mu_bound = kwargs['Mu']
 
-            if 'Eta' in kwargs.keys() and 'Eta' in self.fixed_motor_list:
-                self.Eta_bound = kwargs['Eta']
+        if 'Mu' in kwargs.keys() and 'Mu' in self.fixed_motor_list:
+            self.Mu_bound = kwargs['Mu']
 
-            if 'Chi' in kwargs.keys() and 'Chi' in self.fixed_motor_list:
-                self.Chi_bound = kwargs['Chi']
+        if 'Eta' in kwargs.keys() and 'Eta' in self.fixed_motor_list:
+            self.Eta_bound = kwargs['Eta']
 
-            if 'Phi' in kwargs.keys() and 'Phi' in self.fixed_motor_list:
-                self.Phi_bound = kwargs['Phi']
+        if 'Chi' in kwargs.keys() and 'Chi' in self.fixed_motor_list:
+            self.Chi_bound = kwargs['Chi']
 
-            if 'Nu' in kwargs.keys() and 'Nu' in self.fixed_motor_list:
-                self.Nu_bound = kwargs['Nu']
+        if 'Phi' in kwargs.keys() and 'Phi' in self.fixed_motor_list:
+            self.Phi_bound = kwargs['Phi']
 
-            if 'Del' in kwargs.keys() and 'Del' in self.fixed_motor_list:
-                self.Del_bound = kwargs['Del']
+        if 'Nu' in kwargs.keys() and 'Nu' in self.fixed_motor_list:
+            self.Nu_bound = kwargs['Nu']
 
-            if 'qaz' in kwargs.keys() and 'qaz' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('qaz', kwargs['qaz']))
+        if 'Del' in kwargs.keys() and 'Del' in self.fixed_motor_list:
+            self.Del_bound = kwargs['Del']
 
-            if 'naz' in kwargs.keys() and 'naz' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('naz', kwargs['naz']))
+        if 'qaz' in kwargs.keys() and 'qaz' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('qaz', kwargs['qaz']))
 
-            if 'alpha' in kwargs.keys() and 'alpha' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('alpha', kwargs['alpha']))
+        if 'naz' in kwargs.keys() and 'naz' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('naz', kwargs['naz']))
 
-            if 'beta' in kwargs.keys() and 'beta' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('beta', kwargs['beta']))
+        if 'alpha' in kwargs.keys() and 'alpha' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('alpha', kwargs['alpha']))
 
-            if 'psi' in kwargs.keys() and 'psi' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('psi', kwargs['psi']))
+        if 'beta' in kwargs.keys() and 'beta' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('beta', kwargs['beta']))
 
-            if 'omega' in kwargs.keys() and 'omega' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('omega', kwargs['omega']))
+        if 'psi' in kwargs.keys() and 'psi' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('psi', kwargs['psi']))
 
-            if 'aeqb' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('aeqb', '--'))
+        if 'omega' in kwargs.keys() and 'omega' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('omega', kwargs['omega']))
 
-            if 'eta=del/2' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('eta=del/2', '--'))
+        if 'aeqb' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('aeqb', '--'))
 
-            if 'mu=nu/2' in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append(('mu=nu/2', '--'))
+        if 'eta=del/2' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('eta=del/2', '--'))
 
+        if 'mu=nu/2' in self.pseudo_angle_constraints:
+            self.pseudo_constraints_w_value_list.append(('mu=nu/2', '--'))
+
+        self.motor_bounds_list = (self.Mu_bound, self.Eta_bound, self.Chi_bound,
+                        self.Phi_bound, self.Nu_bound, self.Del_bound)
+
+        return self.motor_bounds_list, self.pseudo_constraints_w_value_list
 
     def set_circle_constrain(self, **kwargs):
-
+        """Deprecated, check and remove"""
         if 'Mu' in kwargs.keys() and 'Mu' not in self.fixed_motor_list:
             self.Mu_bound = kwargs['Mu']
 

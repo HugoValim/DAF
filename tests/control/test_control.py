@@ -100,8 +100,58 @@ class TestControl(unittest.TestCase):
 			assert sample_now.name == sample
 			count += 1
 
+	def test_GIVEN_a_motor_or_pseudo_constraint_WHEN_user_set_new_value_THEN_check_if_was_correctly_defined(self):
+		constraints_dict = {'Mu': 30, 'Eta': 20, 'Chi': 2, 'Phi': 23, 'Nu': 67, 'Del': 38,
+							'qaz': 41, 'naz': 35.3, 'alpha': 22.5, 'beta': 44, 'psi': 47,
+							'omega': 90, 'aeqb': '--', 'eta=del/2': '--', 'mu=nu/2': '--'}
+
+		exp = Control(2, 0, 1, 2)
+		motor_constraint, pseudo_constraints = exp.set_constraints(**constraints_dict)
+		assert motor_constraint[4] == 67
+		assert motor_constraint[1] == 20
+		assert motor_constraint[0] == 30
+
+		exp = Control(1, 0, 3, 4)
+		motor_constraint, pseudo_constraints = exp.set_constraints(**constraints_dict)
+		assert motor_constraint[5] == 38
+		assert motor_constraint[2] == 2
+		assert motor_constraint[3] == 23
+
+		exp = Control(3, 1, 5)
+		motor_constraint, pseudo_constraints = exp.set_constraints(**constraints_dict)
+		for constraint in pseudo_constraints:
+			if 'qaz' in constraint:
+				assert constraint[1] == 41
+			if 'aeqb' in constraint:
+				assert constraint[1] == '--'
+			if 'eta=del/2' in constraint:
+				assert constraint[1] == '--'
+
+		exp = Control(4, 3, 1)
+		motor_constraint, pseudo_constraints = exp.set_constraints(**constraints_dict)
+		for constraint in pseudo_constraints:
+			if 'naz' in constraint:
+				assert constraint[1] == 35.3
+			if 'beta' in constraint:
+				assert constraint[1] == 44
+			if 'omega' in constraint:
+				assert constraint[1] == 90
+
+		exp = Control(0, 2, 1, 1)
+		motor_constraint, pseudo_constraints = exp.set_constraints(**constraints_dict)
+		for constraint in pseudo_constraints:
+			if 'alpha' in constraint:
+				assert constraint[1] == 22.5
+
+		exp = Control(0, 4, 1, 1)
+		motor_constraint, pseudo_constraints = exp.set_constraints(**constraints_dict)
+		for constraint in pseudo_constraints:
+			if 'psi' in constraint:
+				assert constraint[1] == 47
+
+
 
 
 if __name__ == "__main__":
 	obj = TestControl()
-	obj.test_GIVEN_a_predefined_sample_list_WHEN_defining_a_new_sample_THEN_check_if_the_sample_was_correctly_defined()
+	obj.test_GIVEN_a_motor_or_pseudo_constraint_WHEN_user_set_new_value_THEN_check_if_was_correctly_defined()
