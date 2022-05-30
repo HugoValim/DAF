@@ -50,7 +50,7 @@ class TablePrinter:
 
 class Control(ReciprocalMapWindow):
 
-    colunas = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
+    COLUNAS = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
                2:{0 : '--', 1 : 'alpha = beta', 2 : 'alpha fix', 3 : 'beta fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
                3:{0 : 'omega fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : 'eta = delta/2', 6 : 'mu = nu/2'},
                4:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'},
@@ -59,35 +59,9 @@ class Control(ReciprocalMapWindow):
 
     def __init__(self, *args):
 
-        for i in (args):
-            if i not in (0,1,2,3,4,5,6):
-                raise ValueError('The values of columns must be between 0 and 6')
-
-        if args[0] == 0 and args[1] == 0:
-            if len(args) <= 3:
-                raise ValueError('''If de two first columns are set to 0, the columns 4 and 5 must be given''')
-            elif args[3] == 0 or args[4] == 0:
-                raise ValueError('''If de two first columns are set to 0, the columns 4 and 5 must not be 0''')
-
-        if args[0] == 5:
-            raise('Zone mode was not implemented yet')
-        if args[0] == 6:
-            raise('Energy mode was not implemented yet')
-
-        self.col1 = args[0]
-        self.col2 = args[1]
-        self.col3 = args[2]
-
-        if len(args) >= 4:
-            self.col4 = args[3]
-        else:
-            self.col4 = 0
-
-        if len(args) == 5:
-            self.col5 = args[4]
-        else:
-            self.col5 = 0
-
+        
+        self.parse_mode_args(args)
+        
         self.space = 12
         self.marker = '-'
         self.column_marker = '|'
@@ -95,8 +69,8 @@ class Control(ReciprocalMapWindow):
         self.roundfit = 5
         self.centshow = "{:^" + str(16 - 2) + "}"
 
-        self.setup = (Control.colunas[1][self.col1], Control.colunas[2][self.col2], Control.colunas[3][self.col3],
-              Control.colunas[4][self.col4], Control.colunas[5][self.col5])
+        self.setup = (Control.COLUNAS[1][self.col1], Control.COLUNAS[2][self.col2], Control.COLUNAS[3][self.col3],
+              Control.COLUNAS[4][self.col4], Control.COLUNAS[5][self.col5])
 
 
         angles = {'--' : 'x', 'del_fix' : 'Del', 'nu_fix' : 'Nu', 'mu_fix' : 'Mu',
@@ -178,6 +152,38 @@ class Control(ReciprocalMapWindow):
         self.U = np.identity(3)
         # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
         self.qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Coordenada YOU 1999
+
+    def parse_mode_args(self, mode):
+        self.mode = mode
+
+        for i in (mode):
+            if i not in (0,1,2,3,4,5,6):
+                raise ValueError('The values of columns must be between 0 and 6')
+
+        if mode[0] == 0 and mode[1] == 0:
+            if len(mode) <= 3:
+                raise ValueError('''If de two first columns are set to 0, the columns 4 and 5 must be given''')
+            elif mode[3] == 0 or mode[4] == 0:
+                raise ValueError('''If de two first columns are set to 0, the columns 4 and 5 must not be 0''')
+
+        if mode[0] == 5:
+            raise('Zone mode was not implemented yet')
+        if mode[0] == 6:
+            raise('Energy mode was not implemented yet')
+
+        self.col1 = mode[0]
+        self.col2 = mode[1]
+        self.col3 = mode[2]
+
+        if len(mode) >= 4:
+            self.col4 = mode[3]
+        else:
+            self.col4 = 0
+
+        if len(mode) == 5:
+            self.col5 = mode[4]
+        else:
+            self.col5 = 0
 
     def show(self, sh, ident = 3, space = 22):
 
