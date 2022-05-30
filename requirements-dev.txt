@@ -1,0 +1,6 @@
+# Mirror the basic requirements
+-r requirements.txt
+
+# Testing
+pytest
+pytest-cov
