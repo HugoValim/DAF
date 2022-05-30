@@ -5,6 +5,9 @@ from bin.daf import Control
 class TestControl(unittest.TestCase):
 
 	MODES_TO_TEST = ((2, 0, 1, 4), (2, 1, 5), (0, 0, 1, 2, 3), (0, 2, 1, 3))
+	HKLS_TO_TEST = ((1, 1, 1), (0, 1, 1), (0, 0, 1), (1, 0, 1), (2, 3, 10))
+	SAMPLE_LIST = ('Si', 'Ge', 'AlAs', 'Mo', 'Ir20Mn80')
+
 
 	def test_GIVEN_operation_modes_WHEN_mode_is_correct_THEN_it_is_right_setted(self):
 		for test_mode in self.MODES_TO_TEST:
@@ -88,8 +91,17 @@ class TestControl(unittest.TestCase):
 			assert expected[count] == pseudo_constraints_w_value_list
 			count += 1
 
+	def test_GIVEN_a_predefined_sample_list_WHEN_defining_a_new_sample_THEN_check_if_the_sample_was_correctly_defined(self):
+		count = 0
+		for sample in self.SAMPLE_LIST:
+			exp = Control(2, 1, 5)
+			exp.set_material(sample)
+			sample_now = exp.samp
+			assert sample_now.name == sample
+			count += 1
+
 
 
 if __name__ == "__main__":
 	obj = TestControl()
-	obj.test_GIVEN_operation_modes_WHEN_building_only_pseudo_constraint_lists_THEN_check_if_the_lists_are_correct()
+	obj.test_GIVEN_a_predefined_sample_list_WHEN_defining_a_new_sample_THEN_check_if_the_sample_was_correctly_defined()
