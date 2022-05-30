@@ -59,32 +59,10 @@ class Control(ReciprocalMapWindow):
 
     def __init__(self, *args):
 
-        
         self.setup = self.parse_mode_args(args)
         self.handle_constraints()
-
-        self.space = 12
-        self.marker = '-'
-        self.column_marker = '|'
-        self.center = self.column_marker+"{:^" + str(self.space - 2) + "}" + self.column_marker
-        self.roundfit = 5
-        self.centshow = "{:^" + str(16 - 2) + "}"
-
-
-        
-
-        self.nref = (0,0,1)
-        self.idir = (0,0,1)
-        self.ndir = (1,1,0)
-        self.sampleor = 'x+'
-        self.en = 8000
-        self.lam = xu.en2lam(self.en)
-        self.posrestrict = ()
-        self.negrestrict = ()
-        self.fcsv = '{0:.4f}'.format
-        self.U = np.identity(3)
-        # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
-        self.qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Coordenada YOU 1999
+        self.define_standard_experiment()
+        self.define_standard_print_parameters()
 
     def parse_mode_args(self, mode):
         self.mode = mode
@@ -179,7 +157,27 @@ class Control(ReciprocalMapWindow):
 
         self.pseudo_constraints_w_value_list = [(self.pseudo_angle_constraints[i],0) if self.pseudo_angle_constraints[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.pseudo_angle_constraints[i], '--') for i in range(len(self.pseudo_angle_constraints))]
 
+    def define_standard_experiment(self):
+        self.nref = (0,0,1)
+        self.idir = (0,0,1)
+        self.ndir = (1,1,0)
+        self.sampleor = 'x+'
+        self.en = 8000
+        self.lam = xu.en2lam(self.en)
+        self.posrestrict = ()
+        self.negrestrict = ()
+        self.fcsv = '{0:.4f}'.format
+        self.U = np.identity(3)
+        # self.qconv = xu.experiment.QConversion(['y+', 'x-', 'z+', 'x-'], ['y+', 'x-'], [0, 0, 1]) # Sirius coordinate axes system
+        self.qconv = xu.experiment.QConversion(['x+', 'z-', 'y+', 'z-'], ['x+', 'z-'], [0, 1, 0]) # Coordenada YOU 1999
 
+    def define_standard_print_parameters(self):
+        self.space = 12
+        self.marker = '-'
+        self.column_marker = '|'
+        self.center = self.column_marker+"{:^" + str(self.space - 2) + "}" + self.column_marker
+        self.roundfit = 5
+        self.centshow = "{:^" + str(16 - 2) + "}"
 
     def show(self, sh, ident = 3, space = 22):
 
