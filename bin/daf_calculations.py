@@ -52,6 +52,141 @@ class DAFCalculations:
                         'phi': phi_rotation, 'nu': nu_rotation, 'del': del_rotation}
         return result_dict
 
+    def calculate_pseudo_angle_from_motor_angles(self, Mu, Eta, Chi, Phi, Nu, Del):
+        """Calculate all pseudo angles from motor angles and return a dict with the calculated values"""
+
+        calculated_matrixes = self.calculate_rotation_matrix_from_diffractometer_angles(
+            Mu, Eta, Chi, Phi, Nu, Del
+        )
+
+        MU = calculated_matrixes["mu"]
+        ETA = calculated_matrixes["eta"]
+        CHI = calculated_matrixes["chi"]
+        PHI = calculated_matrixes["phi"]
+        NU = calculated_matrixes["nu"]
+        DEL = calculated_matrixes["del"]
+
+
+        Z = MU.dot(ETA).dot(CHI).dot(PHI)
+        n = self.nref
+        nc = self.samp.B.dot(n)
+        nchat = nc/LA.norm(nc)
+        nphi = self.U.dot(nc)
+        nphihat = nphi/LA.norm(nphi)
+        nz = Z.dot(nphihat)
+
+        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
+        tB1 = ttB1/2
+
+
+        A1 = (self.samp.a1)
+        A2 = (self.samp.a2)
+        A3 = (self.samp.a3)
+
+        vcell = A1.dot(np.cross(A2,A3))
+
+        B1 = np.cross(self.samp.a2,self.samp.a3)/vcell
+        B2 = np.cross(self.samp.a3,self.samp.a1)/vcell
+        B3 = np.cross(self.samp.a1,self.samp.a2)/vcell
+
+        q = self.samp.Q(self.hkl) # eq (1)
+        self.Qshow = q
+        normQ = LA.norm(q)
+        self.Qnorm = normQ
+        Qhat = np.round(q/normQ,5)
+
+
+        k = (2*np.pi)/(self.lam)
+        Ki = k*np.array([0,1,0])
+        Kf0 = Ki ##### eq (6)
+        Kfnu = k*MAT([ np.sin(rad(Del)), np.cos(rad(Nu))*np.cos(rad(Del)), np.sin(rad(Nu))*np.cos(rad(Del))])
+        Kfnunorm = LA.norm(Kfnu)
+        Kfnuhat = Kfnu/Kfnunorm
+
+
+        taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat),5)))
+
+
+        alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz,[0,1,0])))
+
+        # upsipseudo = deg(np.arctan(np.tan(rad(Del))/np.sin(rad(Nu+0.000001))))
+
+
+        qaz = deg(np.arctan2(np.tan(rad(Del)),np.sin(rad(Nu))))
+
+
+        # QLhat = MAT([ np.cos(rad(tB1))*np.sin(rad(qaz)),
+        #             -np.sin(rad(tB1)),
+        #             np.cos(rad(tB1))*np.cos(rad(qaz))])
+
+        # taupseudo = deg(np.arccos(QLhat.dot(nz)))
+
+
+        # naz = deg(np.arctan(np.tan(rad(Eta))/np.sin(rad(Mu))))
+
+        naz = deg(np.arctan2((nz.dot([1,0,0])),(nz.dot([0,0,1]))))
+
+
+        if taupseudo == 0 or taupseudo == 180:
+
+            Qphi = Qhat.dot(self.samp.B)
+            Qphinorm = LA.norm(Qphi)
+            Qphihat = Qphi/Qphinorm
+
+            newref = MAT([np.sqrt(Qphihat[1]**2 + Qphihat[2]**2),
+                                  -(Qphihat[0]*Qphihat[1])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2)),
+                                  -(Qphihat[0]*Qphihat[2])/(np.sqrt(Qphihat[1]**2 + Qphihat[2]**2))])
+
+            ntmp = newref
+            nctmp = self.samp.B.dot(ntmp)
+            nchattmp = nc/LA.norm(nctmp)
+            nphitmp = self.U.dot(nctmp)
+            nphihattmp = nphitmp/LA.norm(nphitmp)
+
+            nztmp = Z.dot(nphihattmp)
+            alphatmp = deg(np.arcsin(-xu.math.vector.VecDot(nztmp,[0,1,0])))
+            tautemp = deg(np.arccos(Qhat.dot(newref)))
+
+            arg2 = np.round((np.cos(rad(tautemp))*np.sin(rad(tB1))-np.sin(rad(alphatmp)))/(np.sin(rad(tautemp))*np.cos(rad(tB1))),8)
+
+
+            # print('')
+            # print(' The reference vector is parallel to the Q vector, in order to calculate psi the reference\n vector {} will be used.'.format(np.round(newref,5)))
+
+        else:
+
+            arg2 = np.round((np.cos(rad(taupseudo))*np.sin(rad(tB1))-np.sin(rad(alphain)))/(np.sin(rad(taupseudo))*np.cos(rad(tB1))),8)
+
+        psipseudo = deg(np.arccos(arg2))
+
+        # arg3 = 2*np.sin(rad(tB1))*np.cos(rad(taupseudo)) - np.sin(rad(alphain))
+        # # arg3 = ((np.cos(rad(taupseudo))*np.sin(rad(tB1))) + (np.cos(rad(tB1))*np.sin(rad(taupseudo))*np.cos(rad(psipseudo))))
+
+        # if arg3 >1:
+        #     arg3 = 0.99999999999999999999
+        # elif arg3 < -1:
+        #     arg3 = -0.9999999999999999999
+
+        # betaout = deg(np.arcsin(arg3))
+
+        betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
+
+
+        arg4 = np.round((np.sin(rad(Eta))*np.sin(rad(qaz))+np.sin(rad(Mu))*np.cos(rad(Eta))*np.cos(rad(qaz)))*np.cos(rad(tB1))-np.cos(rad(Mu))*np.cos(rad(Eta))*np.sin(rad(tB1)),5)
+        # if arg4 >1:
+        #   arg4 = 0.999999999999999999999
+        # elif  arg4 < -1:
+        #     arg4 = -0.999999999999999999
+        omega = deg(np.arcsin(arg4))
+
+        result_dict = {'alpha': alphain, 'qaz': qaz, 'naz': naz,
+                        'tau': taupseudo, 'psi': psipseudo,
+                        'beta': betaout, 'omega': omega, 'twotheta': ttB1,
+                        'theta': tB1}
+
+        return result_dict
+
+
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
 
 
@@ -442,6 +577,8 @@ class DAFCalculations:
         # elif  arg4 < -1:
         #     arg4 = -0.999999999999999999
         omega = deg(np.arcsin(arg4))
+
+        print((alphain, qaz, naz, taupseudo, psipseudo, betaout, omega))
 
         return (alphain, qaz, naz, taupseudo, psipseudo, betaout, omega)
 

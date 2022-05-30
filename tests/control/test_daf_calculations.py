@@ -78,7 +78,33 @@ class TestControl(unittest.TestCase):
                 self.assertAlmostEqual(calculated_matrixes["nu"][i][j], NU[i][j], 5)
                 self.assertAlmostEqual(calculated_matrixes["del"][i][j], DEL[i][j], 5)
 
+    def test_GIVEN_diffractometer_angles_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
+        self,
+    ):
+        del_, eta, chi, phi, nu, mu = (
+            10.73240,
+            5.36620,
+            35.26439,
+            45.00000,
+            0.00000,
+            0.00000,
+        )
+
+        exp = Control(2, 1, 5)
+        exp.set_material('Si')
+        exp.set_hkl((1, 1 ,1))
+        exp.set_exp_conditions(idir = (0, 1, 0), ndir = (0, 0, 1), rdir = (0, 0, 1), en = 0.58649)
+        calculated_pseudo_angles = exp.calculate_pseudo_angle_from_motor_angles(
+            mu, eta, chi, phi, nu, del_
+        )
+
+        pseudo_angles_to_compare = {"twotheta": 10.732397035244944, "theta": 5.366198517622472, "alpha": 3.0951538829252416, "qaz": 90.0, 
+                                    "naz": 35.145842304193756, "tau": 54.735629207009254, 
+                                    "psi": 90.00000171887339, "beta": 3.095153882925248, "omega": -0.0}
+        for key in pseudo_angles_to_compare:
+            self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 5)
+
 
 if __name__ == "__main__":
     obj = TestControl()
-    obj.test_GIVEN_diffractometer_angles_WHEN_performing_rotation_matrix_calculation_THEN_check_if_is_correct()
+    obj.test_GIVEN_diffractometer_angles_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct()
