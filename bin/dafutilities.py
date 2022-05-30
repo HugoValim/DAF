@@ -4,6 +4,7 @@
 import atexit
 import sys
 import os
+from os import path
 import epics
 import yaml
 import time
@@ -56,14 +57,17 @@ def only_read(filepath=DEFAULT):
     with open(filepath) as file:
         data = yaml.safe_load(file)
         return data
-dict_ = only_read()
+try:
+    dict_ = only_read()
+except FileNotFoundError:
+    dict_ = only_read(path.join(path.dirname(path.realpath(__file__)), "../tests/.Experiment"))
 
 if not dict_['simulated']:
     PV_PREFIX = "EMA:B:PB18"
     BL_PVS = { 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'}
 else:
     PV_PREFIX = "SOL:S"
-    BL_PVS = { 'PV_energy' : 'SOL:S:m7'}
+    BL_PVS = { 'PV_energy' : 'SOL:S:m6'}
     # PV_PREFIX = "IOC"
 
 PVS = {
