@@ -10,7 +10,7 @@ from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
 
-from dafutilities import read as du_read
+import dafutilities as du
 
 class ReciprocalMapWindow:
 
@@ -268,7 +268,7 @@ class ReciprocalMapWindow:
 	                if cont:
 	                    popts = numpy.get_printoptions()
 	                    numpy.set_printoptions(precision=4, suppress=True)
-	                    dict_args = du_read()
+	                    dict_args = du.read()
 	                    startvalue = [float(dict_args["Mu"]), float(dict_args["Eta"]), float(dict_args["Chi"]), float(dict_args["Phi"]), float(dict_args["Nu"]), float(dict_args["Del"])]
 
 	                    hkl = (d['hkl'][m][ind['ind'][0]])

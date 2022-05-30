@@ -50,7 +50,7 @@ class TablePrinter:
 
 class Control(ReciprocalMapWindow):
 
-    COLUNAS = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
+    COLUMNS = {1:{0 : '--', 1 : 'del_fix', 2 : 'nu_fix', 3 : 'qaz_fix', 4 : 'naz_fix', 5 : 'zone', 6 : '--'},
                2:{0 : '--', 1 : 'alpha = beta', 2 : 'alpha fix', 3 : 'beta fix', 4 : 'psi_fix', 5 : '--', 6 : '--'},
                3:{0 : 'omega fix', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : 'eta = delta/2', 6 : 'mu = nu/2'},
                4:{0 : '--', 1 : 'eta_fix', 2 : 'mu_fix', 3 : 'chi_fix', 4 : 'phi_fix', 5 : '--', 6 : '--'},
@@ -60,8 +60,9 @@ class Control(ReciprocalMapWindow):
     def __init__(self, *args):
 
         
-        self.parse_mode_args(args)
-        
+        self.setup = self.parse_mode_args(args)
+        self.handle_constraints()
+
         self.space = 12
         self.marker = '-'
         self.column_marker = '|'
@@ -69,76 +70,8 @@ class Control(ReciprocalMapWindow):
         self.roundfit = 5
         self.centshow = "{:^" + str(16 - 2) + "}"
 
-        self.setup = (Control.COLUNAS[1][self.col1], Control.COLUNAS[2][self.col2], Control.COLUNAS[3][self.col3],
-              Control.COLUNAS[4][self.col4], Control.COLUNAS[5][self.col5])
 
-
-        angles = {'--' : 'x', 'del_fix' : 'Del', 'nu_fix' : 'Nu', 'mu_fix' : 'Mu',
-                  'eta_fix' : 'Eta', 'chi_fix' : 'Chi','phi_fix' : 'Phi'}
-
-        cons = {'--' : 'x', 'qaz_fix' : 'qaz', 'naz_fix' : 'naz', 'alpha = beta' : 'aeqb',
-                     'alpha fix' : 'alpha', 'beta fix' : 'beta', 'psi_fix' : 'psi', 'omega fix' : 'omega',
-                     'eta = delta/2' : 'eta=del/2', 'mu = nu/2' : 'mu=nu/2'}
-
-        self.motcon = list()
-        self.const = list()
-
-        for i in range(len(self.setup)):
-            if self.setup[i] in angles.keys():
-                if i == 0 and self.setup[i] == '--':
-                    pass
-
-                elif i == 1 and self.setup[i] == '--':
-                    pass
-
-                else:
-                    self.motcon.append(angles[self.setup[i]])
-
-            else:
-                if self.setup[i] in cons.keys():
-                    self.const.append(cons[self.setup[i]])
-
-
-        self.fix = list()
-
-
-        for i in self.motcon:
-            if i != 'x':
-               self.fix.append(i)
-
-
-        if 'Mu' in self.fix:
-            self.Mu_bound = 0
-        else:
-            self.Mu_bound = (-180,180)
-
-        if 'Eta' in self.fix:
-            self.Eta_bound = 0
-        else:
-            self.Eta_bound = (-180,180)
-
-        if 'Chi' in self.fix:
-            self.Chi_bound = 0
-        else:
-            self.Chi_bound = (-5,95)
-
-        if 'Phi' in self.fix:
-            self.Phi_bound = 0
-        else:
-            self.Phi_bound = (30,400)
-
-        if 'Nu' in self.fix:
-            self.Nu_bound = 0
-        else:
-            self.Nu_bound = (-180,180)
-
-        if 'Del' in self.fix:
-            self.Del_bound = 0
-        else:
-            self.Del_bound = (-180,180)
-
-
-        self.constrain = [(self.const[i],0) if self.const[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.const[i], '--') for i in range(len(self.const))]
+        
 
         self.nref = (0,0,1)
         self.idir = (0,0,1)
@@ -185,6 +118,69 @@ class Control(ReciprocalMapWindow):
         else:
             self.col5 = 0
 
+        return (self.COLUMNS[1][self.col1], self.COLUMNS[2][self.col2], self.COLUMNS[3][self.col3],
+              self.COLUMNS[4][self.col4], self.COLUMNS[5][self.col5])
+
+    def handle_constraints(self):
+        """Logic to set up the constraints based on the given operation mode"""
+        angles = {'--' : 'x', 'del_fix' : 'Del', 'nu_fix' : 'Nu', 'mu_fix' : 'Mu',
+                  'eta_fix' : 'Eta', 'chi_fix' : 'Chi','phi_fix' : 'Phi'}
+
+        cons = {'--' : 'x', 'qaz_fix' : 'qaz', 'naz_fix' : 'naz', 'alpha = beta' : 'aeqb',
+                     'alpha fix' : 'alpha', 'beta fix' : 'beta', 'psi_fix' : 'psi', 'omega fix' : 'omega',
+                     'eta = delta/2' : 'eta=del/2', 'mu = nu/2' : 'mu=nu/2'}
+
+        self.motor_constraints = []
+        self.pseudo_angle_constraints = []
+
+        for i in range(len(self.setup)):
+            if self.setup[i] in angles.keys():
+                if i == 0 and self.setup[i] == '--':
+                    pass
+
+                elif i == 1 and self.setup[i] == '--':
+                    pass
+
+                else:
+                    self.motor_constraints.append(angles[self.setup[i]])
+
+            else:
+                if self.setup[i] in cons.keys():
+                    self.pseudo_angle_constraints.append(cons[self.setup[i]])
+
+        self.fixed_motor_list = []
+        for i in self.motor_constraints:
+            if i != 'x':
+               self.fixed_motor_list.append(i)
+        if 'Mu' in self.fixed_motor_list:
+            self.Mu_bound = 0
+        else:
+            self.Mu_bound = (-180,180)
+        if 'Eta' in self.fixed_motor_list:
+            self.Eta_bound = 0
+        else:
+            self.Eta_bound = (-180,180)
+        if 'Chi' in self.fixed_motor_list:
+            self.Chi_bound = 0
+        else:
+            self.Chi_bound = (-5,95)
+        if 'Phi' in self.fixed_motor_list:
+            self.Phi_bound = 0
+        else:
+            self.Phi_bound = (30,400)
+        if 'Nu' in self.fixed_motor_list:
+            self.Nu_bound = 0
+        else:
+            self.Nu_bound = (-180,180)
+        if 'Del' in self.fixed_motor_list:
+            self.Del_bound = 0
+        else:
+            self.Del_bound = (-180,180)                
+
+        self.pseudo_constraints_w_value_list = [(self.pseudo_angle_constraints[i],0) if self.pseudo_angle_constraints[i] not in ('eta=del/2', 'mu=nu/2', 'aeqb') else (self.pseudo_angle_constraints[i], '--') for i in range(len(self.pseudo_angle_constraints))]
+
+
+
     def show(self, sh, ident = 3, space = 22):
 
         self.centshow = "{:^" + str(space - 2) + "}"
@@ -195,14 +191,14 @@ class Control(ReciprocalMapWindow):
         lb = lambda x: "{:.5f}".format(float(x))
 
 
-        self.forprint = self.constrain.copy()
+        self.forprint = self.pseudo_constraints_w_value_list.copy()
 
         if self.col1 in (1,2):
             if self.col1 == 1:
                 self.forprint.insert(0,(self.setup[0],self.Del_bound))
             elif self.col1 == 2:
                 self.forprint.insert(0,(self.setup[0],self.Nu_bound))
-            for i in self.motcon:
+            for i in self.motor_constraints:
                 if i not in ('Del', 'Nu'):
                     self.forprint.append((i,dprint[i]) )
             if self.col2 ==0:
@@ -214,7 +210,7 @@ class Control(ReciprocalMapWindow):
                 self.forprint.insert(0,('XD', '--'))
                 self.forprint.insert(0,('XD', '--'))
 
-                for i in self.motcon:
+                for i in self.motor_constraints:
                     self.forprint.append((i,dprint[i]))
 
 
@@ -223,7 +219,7 @@ class Control(ReciprocalMapWindow):
                 self.forprint.insert(0,('XD', '--'))
 
 
-                for i in self.motcon:
+                for i in self.motor_constraints:
                     self.forprint.append((i,dprint[i]))
 
 
@@ -231,10 +227,10 @@ class Control(ReciprocalMapWindow):
                 self.forprint.insert(1,('XD', '--'))
                 # self.forprint.pop()
 
-                for i in self.motcon:
+                for i in self.motor_constraints:
                     self.forprint.append((i,dprint[i]))
             else:
-                for i in self.motcon:
+                for i in self.motor_constraints:
                     self.forprint.append((i,dprint[i]))
 
         conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
@@ -637,72 +633,72 @@ class Control(ReciprocalMapWindow):
     def set_constraints(self, *args, setineq = None, **kwargs):
 
         lb = lambda x: "{:.5f}".format(float(x))
-        self.constrain = list()
+        self.pseudo_constraints_w_value_list = list()
         if kwargs:
-            if 'Mu' in kwargs.keys() and 'Mu' in self.fix:
+            if 'Mu' in kwargs.keys() and 'Mu' in self.fixed_motor_list:
                 self.Mu_bound = kwargs['Mu']
 
-            if 'Eta' in kwargs.keys() and 'Eta' in self.fix:
+            if 'Eta' in kwargs.keys() and 'Eta' in self.fixed_motor_list:
                 self.Eta_bound = kwargs['Eta']
 
-            if 'Chi' in kwargs.keys() and 'Chi' in self.fix:
+            if 'Chi' in kwargs.keys() and 'Chi' in self.fixed_motor_list:
                 self.Chi_bound = kwargs['Chi']
 
-            if 'Phi' in kwargs.keys() and 'Phi' in self.fix:
+            if 'Phi' in kwargs.keys() and 'Phi' in self.fixed_motor_list:
                 self.Phi_bound = kwargs['Phi']
 
-            if 'Nu' in kwargs.keys() and 'Nu' in self.fix:
+            if 'Nu' in kwargs.keys() and 'Nu' in self.fixed_motor_list:
                 self.Nu_bound = kwargs['Nu']
 
-            if 'Del' in kwargs.keys() and 'Del' in self.fix:
+            if 'Del' in kwargs.keys() and 'Del' in self.fixed_motor_list:
                 self.Del_bound = kwargs['Del']
 
-            if 'qaz' in kwargs.keys() and 'qaz' in self.const:
-                self.constrain.append(('qaz', kwargs['qaz']))
+            if 'qaz' in kwargs.keys() and 'qaz' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('qaz', kwargs['qaz']))
 
-            if 'naz' in kwargs.keys() and 'naz' in self.const:
-                self.constrain.append(('naz', kwargs['naz']))
+            if 'naz' in kwargs.keys() and 'naz' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('naz', kwargs['naz']))
 
-            if 'alpha' in kwargs.keys() and 'alpha' in self.const:
-                self.constrain.append(('alpha', kwargs['alpha']))
+            if 'alpha' in kwargs.keys() and 'alpha' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('alpha', kwargs['alpha']))
 
-            if 'beta' in kwargs.keys() and 'beta' in self.const:
-                self.constrain.append(('beta', kwargs['beta']))
+            if 'beta' in kwargs.keys() and 'beta' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('beta', kwargs['beta']))
 
-            if 'psi' in kwargs.keys() and 'psi' in self.const:
-                self.constrain.append(('psi', kwargs['psi']))
+            if 'psi' in kwargs.keys() and 'psi' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('psi', kwargs['psi']))
 
-            if 'omega' in kwargs.keys() and 'omega' in self.const:
-                self.constrain.append(('omega', kwargs['omega']))
+            if 'omega' in kwargs.keys() and 'omega' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('omega', kwargs['omega']))
 
-            if 'aeqb' in self.const:
-                self.constrain.append(('aeqb', '--'))
+            if 'aeqb' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('aeqb', '--'))
 
-            if 'eta=del/2' in self.const:
-                self.constrain.append(('eta=del/2', '--'))
+            if 'eta=del/2' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('eta=del/2', '--'))
 
-            if 'mu=nu/2' in self.const:
-                self.constrain.append(('mu=nu/2', '--'))
+            if 'mu=nu/2' in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append(('mu=nu/2', '--'))
 
 
     def set_circle_constrain(self, **kwargs):
 
-        if 'Mu' in kwargs.keys() and 'Mu' not in self.fix:
+        if 'Mu' in kwargs.keys() and 'Mu' not in self.fixed_motor_list:
             self.Mu_bound = kwargs['Mu']
 
-        if 'Eta' in kwargs.keys() and 'Eta' not in self.fix:
+        if 'Eta' in kwargs.keys() and 'Eta' not in self.fixed_motor_list:
             self.Eta_bound = kwargs['Eta']
 
-        if 'Chi' in kwargs.keys() and 'Chi' not in self.fix:
+        if 'Chi' in kwargs.keys() and 'Chi' not in self.fixed_motor_list:
             self.Chi_bound = kwargs['Chi']
 
-        if 'Phi' in kwargs.keys() and 'Phi' not in self.fix:
+        if 'Phi' in kwargs.keys() and 'Phi' not in self.fixed_motor_list:
             self.Phi_bound = kwargs['Phi']
 
-        if 'Nu' in kwargs.keys() and 'Nu' not in self.fix:
+        if 'Nu' in kwargs.keys() and 'Nu' not in self.fixed_motor_list:
             self.Nu_bound = kwargs['Nu']
 
-        if 'Del' in kwargs.keys() and 'Del' not in self.fix:
+        if 'Del' in kwargs.keys() and 'Del' not in self.fixed_motor_list:
             self.Del_bound = kwargs['Del']
 
     def set_exp_conditions(self, idir = (0,0,1), ndir = (1,1,0), rdir = (0,0,1), sampleor = 'x+', en = 8000):
@@ -774,7 +770,7 @@ class Control(ReciprocalMapWindow):
                       'Phi' : self.Phi_bound, 'Nu' : self.Nu_bound, 'Del' : self.Del_bound}
 
 
-            self.forprint = self.constrain.copy()
+            self.forprint = self.pseudo_constraints_w_value_list.copy()
 
 
             if self.col1 in (1,2):
@@ -782,7 +778,7 @@ class Control(ReciprocalMapWindow):
                     self.forprint.insert(0,(self.setup[0],self.Del_bound))
                 elif self.col1 == 2:
                     self.forprint.insert(0,(self.setup[0],self.Nu_bound))
-                for i in self.motcon:
+                for i in self.motor_constraints:
                     if i not in ('Del', 'Nu'):
                         self.forprint.append((i,dprint[i]) )
                 if self.col2 ==0:
@@ -794,7 +790,7 @@ class Control(ReciprocalMapWindow):
                     self.forprint.insert(0,('XD', '--'))
                     self.forprint.insert(0,('XD', '--'))
 
-                    for i in self.motcon:
+                    for i in self.motor_constraints:
                         self.forprint.append((i,dprint[i]))
 
 
@@ -803,7 +799,7 @@ class Control(ReciprocalMapWindow):
                     self.forprint.insert(0,('XD', '--'))
 
 
-                    for i in self.motcon:
+                    for i in self.motor_constraints:
                         self.forprint.append((i,dprint[i]))
 
 
@@ -811,10 +807,10 @@ class Control(ReciprocalMapWindow):
                     self.forprint.insert(1,('XD', '--'))
                     # self.forprint.pop()
 
-                    for i in self.motcon:
+                    for i in self.motor_constraints:
                         self.forprint.append((i,dprint[i]))
                 else:
-                    for i in self.motcon:
+                    for i in self.motor_constraints:
                         self.forprint.append((i,dprint[i]))
 
             self.forprint = [(i[0], lb(i[1])) if i[1] != '--' else (i[0], i[1]) for i in self.forprint]
@@ -1259,29 +1255,29 @@ class Control(ReciprocalMapWindow):
             self.chute1 = [45,45,45,45,45,45]
 
 
-            if len(self.constrain) != 0:
+            if len(self.pseudo_constraints_w_value_list) != 0:
                     pseudoconst = Control.pseudoAngleConst
 
 
-                    if len(self.constrain) == 1:
+                    if len(self.pseudo_constraints_w_value_list) == 1:
 
 
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])}]
+                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.pseudo_constraints_w_value_list[0][0], self.pseudo_constraints_w_value_list[0][1])}]
 
 
-                    elif len(self.constrain) == 2:
+                    elif len(self.pseudo_constraints_w_value_list) == 2:
 
 
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])}]
+                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.pseudo_constraints_w_value_list[0][0], self.pseudo_constraints_w_value_list[0][1])},
+                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.pseudo_constraints_w_value_list[1][0], self.pseudo_constraints_w_value_list[1][1])}]
 
 
-                    elif len(self.constrain) == 3:
+                    elif len(self.pseudo_constraints_w_value_list) == 3:
 
 
-                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[0][0], self.constrain[0][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[1][0], self.constrain[1][1])},
-                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.constrain[2][0], self.constrain[2][1])}]
+                            restrict = [{'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.pseudo_constraints_w_value_list[0][0], self.pseudo_constraints_w_value_list[0][1])},
+                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.pseudo_constraints_w_value_list[1][0], self.pseudo_constraints_w_value_list[1][1])},
+                                        {'type':'eq', 'fun': lambda a: pseudoconst(self, a, self.pseudo_constraints_w_value_list[2][0], self.pseudo_constraints_w_value_list[2][1])}]
 
 
                     ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat = self.U)
