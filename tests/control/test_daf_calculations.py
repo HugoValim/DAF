@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
 
+from bin.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles, calculate_pseudo_angle_from_motor_angles
 from bin.daf import Control
-
 
 class TestControl(unittest.TestCase):
 
@@ -64,8 +64,7 @@ class TestControl(unittest.TestCase):
             ]
         )
 
-        exp = Control(2, 1, 5)
-        calculated_matrixes = exp.calculate_rotation_matrix_from_diffractometer_angles(
+        calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(
             mu, eta, chi, phi, nu, del_
         )
 
@@ -94,8 +93,8 @@ class TestControl(unittest.TestCase):
         exp.set_material('Si')
         exp.set_hkl((1, 1 ,1))
         exp.set_exp_conditions(idir = (0, 1, 0), ndir = (0, 0, 1), rdir = (0, 0, 1), en = 0.58649)
-        calculated_pseudo_angles = exp.calculate_pseudo_angle_from_motor_angles(
-            mu, eta, chi, phi, nu, del_
+        calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
+            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 0.58649, (0, 0, 1), exp.U
         )
 
         pseudo_angles_to_compare = {"twotheta": 10.732397035244944, "theta": 5.366198517622472, "alpha": 3.0951538829252416, "qaz": 90.0, 

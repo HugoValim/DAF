@@ -107,7 +107,7 @@ class DAFCalculations(UBMatrix):
         nphihat = nphi / LA.norm(nphi)
         nz = Z.dot(nphihat)
 
-        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
+        ttB1 = np.rad2deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         tB1 = ttB1 / 2
 
         A1 = self.samp.a1
@@ -139,13 +139,13 @@ class DAFCalculations(UBMatrix):
         Kfnunorm = LA.norm(Kfnu)
         Kfnuhat = Kfnu / Kfnunorm
 
-        taupseudo = deg(np.arccos(np.round(Qhat.dot(nchat), 5)))
+        taupseudo = np.rad2deg(np.arccos(np.round(Qhat.dot(nchat), 5)))
 
-        alphain = deg(np.arcsin(-xu.math.vector.VecDot(nz, [0, 1, 0])))
+        alphain = np.rad2deg(np.arcsin(-xu.math.vector.VecDot(nz, [0, 1, 0])))
 
-        qaz = deg(np.arctan2(np.tan(rad(Del)), np.sin(rad(Nu))))
+        qaz = np.rad2deg(np.arctan2(np.tan(rad(Del)), np.sin(rad(Nu))))
 
-        naz = deg(np.arctan2((nz.dot([1, 0, 0])), (nz.dot([0, 0, 1]))))
+        naz = np.rad2deg(np.arctan2((nz.dot([1, 0, 0])), (nz.dot([0, 0, 1]))))
 
         if taupseudo == 0 or taupseudo == 180:
 
@@ -170,8 +170,8 @@ class DAFCalculations(UBMatrix):
             nphihattmp = nphitmp / LA.norm(nphitmp)
 
             nztmp = Z.dot(nphihattmp)
-            alphatmp = deg(np.arcsin(-xu.math.vector.VecDot(nztmp, [0, 1, 0])))
-            tautemp = deg(np.arccos(Qhat.dot(newref)))
+            alphatmp = np.rad2deg(np.arcsin(-xu.math.vector.VecDot(nztmp, [0, 1, 0])))
+            tautemp = np.rad2deg(np.arccos(Qhat.dot(newref)))
 
             arg2 = np.round(
                 (np.cos(rad(tautemp)) * np.sin(rad(tB1)) - np.sin(rad(alphatmp)))
@@ -187,9 +187,9 @@ class DAFCalculations(UBMatrix):
                 8,
             )
 
-        psipseudo = deg(np.arccos(arg2))
+        psipseudo = np.rad2deg(np.arccos(arg2))
 
-        betaout = deg(np.arcsin((np.dot(Kfnuhat, nz))))
+        betaout = np.rad2deg(np.arcsin((np.dot(Kfnuhat, nz))))
 
         arg4 = np.round(
             (
@@ -200,7 +200,7 @@ class DAFCalculations(UBMatrix):
             - np.cos(rad(Mu)) * np.cos(rad(Eta)) * np.sin(rad(tB1)),
             5,
         )
-        omega = deg(np.arcsin(arg4))
+        omega = np.rad2deg(np.arcsin(arg4))
 
         result_dict = {
             "alpha": alphain,
@@ -230,7 +230,7 @@ class DAFCalculations(UBMatrix):
         NU = calculated_matrixes["nu"]
         DEL = calculated_matrixes["del"]
 
-        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
+        ttB1 = np.rad2deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
         theta = ttB1 / 2
 
         invphi = LA.inv(PHI)
@@ -332,9 +332,9 @@ class DAFCalculations(UBMatrix):
         a1 = G[0, 0] ** 0.5
         a2 = G[1, 1] ** 0.5
         a3 = G[2, 2] ** 0.5
-        alpha1 = deg(np.arccos(G[1, 2] / (a2 * a3)))
-        alpha2 = deg(np.arccos(G[0, 2] / (a1 * a3)))
-        alpha3 = deg(np.arccos(G[0, 1] / (a1 * a2)))
+        alpha1 = np.rad2deg(np.arccos(G[1, 2] / (a2 * a3)))
+        alpha2 = np.rad2deg(np.arccos(G[0, 2] / (a1 * a3)))
+        alpha3 = np.rad2deg(np.arccos(G[0, 1] / (a1 * a2)))
 
         samp = xu.materials.Crystal(
             "generic", xu.materials.SGLattice(1, a1, a2, a3, alpha1, alpha2, alpha3)
