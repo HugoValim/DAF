@@ -77,7 +77,7 @@ class TestControl(unittest.TestCase):
                 self.assertAlmostEqual(calculated_matrixes["nu"][i][j], NU[i][j], 5)
                 self.assertAlmostEqual(calculated_matrixes["del"][i][j], DEL[i][j], 5)
 
-    def test_GIVEN_diffractometer_angles_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
+    def test_GIVEN_mode_215_and_hkl_111_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
         self,
     ):
         del_, eta, chi, phi, nu, mu = (
@@ -92,7 +92,6 @@ class TestControl(unittest.TestCase):
         exp = Control(2, 1, 5)
         exp.set_material('Si')
         exp.set_hkl((1, 1 ,1))
-        exp.set_exp_conditions(idir = (0, 1, 0), ndir = (0, 0, 1), rdir = (0, 0, 1), en = 0.58649)
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
             mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 0.58649, (0, 0, 1), exp.U
         )
@@ -103,6 +102,31 @@ class TestControl(unittest.TestCase):
         for key in pseudo_angles_to_compare:
             self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 5)
 
+    def test_GIVEN_mode_215_and_hkl_203_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
+        self,
+    ):
+        del_, eta, chi, phi, nu, mu = (
+            48.60477,
+            24.30238,
+            56.30993,
+            0.00000,
+            0.00000,
+            0.00000,
+        )
+
+        exp = Control(2, 1, 5)
+        exp.set_material('Si')
+        exp.set_hkl((2, 0 ,3))
+        calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
+            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+        )
+
+        pseudo_angles_to_compare = {"twotheta": 48.604768720506975, "theta": 24.302384360253487, "alpha": 20.025125597165456, 
+                                    "qaz": 90.0, 
+                                    "naz": 53.81503362188652, "tau": 33.69009792854607, 
+                                    "psi": 90.00001260507149, "beta": 20.025126994673688, "omega": -0.0}
+        for key in pseudo_angles_to_compare:
+            self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 4)
 
 if __name__ == "__main__":
     obj = TestControl()
