@@ -103,9 +103,7 @@ def calculate_pseudo_angle_from_motor_angles(Mu: float, Eta: float, Chi:float , 
         B3 = np.cross(sample.a1, sample.a2) / vcell
 
         q = sample.Q(hkl)  # eq (1)
-        Qshow = q
         normQ = la.norm(q)
-        Qnorm = normQ
         Qhat = np.round(q / normQ, 5)
 
         k = (2 * np.pi) / (wave_length)
@@ -195,6 +193,8 @@ def calculate_pseudo_angle_from_motor_angles(Mu: float, Eta: float, Chi:float , 
             "twotheta": ttB1,
             "theta": tB1,
             "q_vector": q,
+            "q_vector_norm": normQ
         }
 
         return result_dict
+        
