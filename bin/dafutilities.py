@@ -67,7 +67,7 @@ if not dict_['simulated']:
     BL_PVS = { 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'}
 else:
     PV_PREFIX = "SOL:S"
-    BL_PVS = { 'PV_energy' : 'SOL:S:m6'}
+    BL_PVS = { 'PV_energy' : 'SOL:S:m7'}
     # PV_PREFIX = "IOC"
 
 PVS = {
