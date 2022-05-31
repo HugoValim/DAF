@@ -128,6 +128,88 @@ class TestControl(unittest.TestCase):
         for key in pseudo_angles_to_compare:
             self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 4)
 
+    def test_GIVEN_mode_2023_and_hkl_123_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
+        self,
+    ):
+        del_, eta, chi, phi, nu, mu = (
+            50.56580,
+            61.98212,
+            90.00000,
+            -26.56505,
+            0.00000,
+            0.00000,
+        )
+
+        exp = Control(2, 0, 2, 3)
+        exp.set_material('Si')
+        exp.set_hkl((1, 2 ,3))
+        calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
+            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+        )
+
+        pseudo_angles_to_compare = {"twotheta": 50.56579614878003, "theta": 25.282898074390015, "alpha": 61.98212340176453, 
+                                    "qaz": 90.0, 
+                                    "naz": 89.99999999999999, "tau": 36.699582400990124, 
+                                    "psi": 179.80995840071695, "beta": -11.416327252984509, "omega": 36.698917587899125}
+        for key in pseudo_angles_to_compare:
+            self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 4)
+
+    def test_GIVEN_mode_2023_and_hkl_111_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
+        self,
+    ):
+        del_, eta, chi, phi, nu, mu = (
+            22.80538,
+            66.13830,
+            90.00000,
+            -45.00000,
+            0.00000,
+            0.00000,
+        )
+
+        exp = Control(2, 0, 2, 3)
+        exp.set_material('Si')
+        exp.set_hkl((1, 1 ,1))
+        exp.set_constraints(chi = 90)
+        calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
+            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+        )
+
+        pseudo_angles_to_compare = {"twotheta": 22.805375914195388, "theta": 11.402687957097694, "alpha": 66.13829805185105, 
+                                    "qaz": 90.0, 
+                                    "naz": 90.0, "tau": 54.735629207009254, 
+                                    "psi": 179.9665911061182, "beta": -43.33292213765566, "omega": 54.735949624667434}
+        for key in pseudo_angles_to_compare:
+            self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 4)
+
+    def test_GIVEN_mode_2023_and_hkl_423_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct(
+        self,
+    ):
+        del_, eta, chi, phi, nu, mu = (
+            75.85801,
+            94.07449,
+            90.00000,
+            -63.43495,
+            0.00000,
+            0.00000,
+        )
+
+        exp = Control(2, 0, 2, 3)
+        exp.set_material('Si')
+        exp.set_hkl((4, 2 ,3))
+        calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
+            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+        )
+
+        pseudo_angles_to_compare = {"twotheta": 75.85801418311007, "theta": 37.929007091555036, "alpha": 85.92550772049013, 
+                                    "qaz": 90.0, 
+                                    "naz": -89.99999999999997, "tau": 56.14521021646941, 
+                                    "psi": 179.94156953791418, "beta": -18.21647809639981, "omega": 56.14499166543039}
+        for key in pseudo_angles_to_compare:
+            self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 4)
+
 if __name__ == "__main__":
     obj = TestControl()
     obj.test_GIVEN_diffractometer_angles_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct()
+
+
+    
