@@ -5,45 +5,11 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from daf.utils.print_utils import TablePrinter
 from daf.core.reciprocal_map import ReciprocalMapWindow
 from daf.core.minimization import MinimizationProc
 
-class TablePrinter:
-    "Print a list of dicts as a table"
-
-    def __init__(self, fmt, sep=" ", ul=None):
-        """
-        @param fmt: list of tuple(heading, key, width)
-                        heading: str, column label
-                        key: dictionary key to value to print
-                        width: int, column width in chars
-        @param sep: string, separation between columns
-        @param ul: string, character to underline column label, or None for no underlining
-        """
-        super(TablePrinter, self).__init__()
-        self.fmt = str(sep).join(
-            "{lb}{0}:{1}{rb}".format(key, width, lb="{", rb="}")
-            for heading, key, width in fmt
-        )
-        self.head = {key: heading for heading, key, width in fmt}
-        self.ul = {key: str(ul) * width for heading, key, width in fmt} if ul else None
-        self.width = {key: width for heading, key, width in fmt}
-
-    def row(self, data):
-        return self.fmt.format(
-            **{k: str(data.get(k, ""))[:w] for k, w in self.width.items()}
-        )
-
-    def __call__(self, dataList):
-        _r = self.row
-        res = [_r(data) for data in dataList]
-        res.insert(0, _r(self.head))
-        if self.ul:
-            res.insert(1, _r(self.ul))
-        return "\n".join(res)
-
-
-class Control(MinimizationProc, ReciprocalMapWindow):
+class DAF(MinimizationProc, ReciprocalMapWindow):
 
     COLUMNS = {
         1: {
@@ -971,7 +937,7 @@ class Control(MinimizationProc, ReciprocalMapWindow):
         gui=False,
     ):
 
-        scl = Control.scan_generator(self, hkli, hklf, points + 1)
+        scl = self.scan_generator(hkli, hklf, points + 1)
         angslist = list()
 
         if gui:

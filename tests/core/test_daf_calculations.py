@@ -2,9 +2,9 @@ import unittest
 import numpy as np
 
 from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles, calculate_pseudo_angle_from_motor_angles
-from daf.core.daf import Control
+from daf.core.main import DAF
 
-class TestControl(unittest.TestCase):
+class TestDAF(unittest.TestCase):
 
     MODES_TO_TEST = ((2, 0, 1, 4), (2, 1, 5), (0, 0, 1, 2, 3), (0, 2, 1, 3))
     HKLS_TO_TEST = ((1, 1, 1), (0, 1, 1), (0, 0, 1), (1, 0, 1), (2, 3, 10))
@@ -89,7 +89,7 @@ class TestControl(unittest.TestCase):
             0.00000,
         )
 
-        exp = Control(2, 1, 5)
+        exp = DAF(2, 1, 5)
         exp.set_material('Si')
         exp.set_hkl((1, 1 ,1))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
@@ -114,7 +114,7 @@ class TestControl(unittest.TestCase):
             0.00000,
         )
 
-        exp = Control(2, 1, 5)
+        exp = DAF(2, 1, 5)
         exp.set_material('Si')
         exp.set_hkl((2, 0 ,3))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
@@ -140,7 +140,7 @@ class TestControl(unittest.TestCase):
             0.00000,
         )
 
-        exp = Control(2, 0, 2, 3)
+        exp = DAF(2, 0, 2, 3)
         exp.set_material('Si')
         exp.set_hkl((1, 2 ,3))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
@@ -166,7 +166,7 @@ class TestControl(unittest.TestCase):
             0.00000,
         )
 
-        exp = Control(2, 0, 2, 3)
+        exp = DAF(2, 0, 2, 3)
         exp.set_material('Si')
         exp.set_hkl((1, 1 ,1))
         exp.set_constraints(chi = 90)
@@ -193,7 +193,7 @@ class TestControl(unittest.TestCase):
             0.00000,
         )
 
-        exp = Control(2, 0, 2, 3)
+        exp = DAF(2, 0, 2, 3)
         exp.set_material('Si')
         exp.set_hkl((4, 2 ,3))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
@@ -208,7 +208,7 @@ class TestControl(unittest.TestCase):
             self.assertAlmostEqual(pseudo_angles_to_compare[key], calculated_pseudo_angles[key], 4)
 
 if __name__ == "__main__":
-    obj = TestControl()
+    obj = TestDAF()
     obj.test_GIVEN_diffractometer_angles_WHEN_performing_pseudo_angle_calculation_THEN_check_if_is_correct()
 
 

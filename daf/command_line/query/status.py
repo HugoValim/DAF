@@ -4,8 +4,10 @@
 import argparse as ap
 import sys
 import os
-import daf.core.daf
 import numpy as np
+
+from daf.core.main import DAF
+from daf.utils.print_utils import TablePrinter
 import daf.utils.dafutilities as du
 
 epi = '''
@@ -41,7 +43,7 @@ Phi_bound = dict_args['bound_Phi']
 Nu_bound = dict_args['bound_Nu']
 Del_bound = dict_args['bound_Del']
 
-exp = daf.Control(*mode)
+exp = DAF(*mode)
 if dict_args['Material'] in dict_args['user_samples'].keys():
     exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
 else: 
@@ -95,8 +97,8 @@ if args.umatrix:
              {'ident':'','col1': center1.format(lb(UB3[0])), 'col2':center2.format(lb(UB3[1])), 'col3':center3.format(lb(UB3[2]))}
              ]
 
-    Utp = daf.TablePrinter(fmt1, ul='')(data1)
-    UBtp = daf.TablePrinter(fmt1, ul='')(data2)
+    Utp = TablePrinter(fmt1, ul='')(data1)
+    UBtp = TablePrinter(fmt1, ul='')(data2)
 
     print('')
     print(Utp)
@@ -148,8 +150,8 @@ if args.All:
              {'ident':'','col1': center1.format(lb(UB[2][0])), 'col2':center2.format(lb(UB[2][1])), 'col3':center3.format(lb(UB[2][2]))}
              ]
 
-    Utp = daf.TablePrinter(fmt1, ul='')(data1)
-    UBtp = daf.TablePrinter(fmt1, ul='')(data2)
+    Utp = TablePrinter(fmt1, ul='')(data1)
+    UBtp = TablePrinter(fmt1, ul='')(data2)
 
     print('')
     print(Utp)
