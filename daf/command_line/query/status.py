@@ -4,9 +4,9 @@
 import argparse as ap
 import sys
 import os
-import daf
+import daf.core.daf
 import numpy as np
-import dafutilities as du
+import daf.utils.dafutilities as du
 
 epi = '''
 Eg:
