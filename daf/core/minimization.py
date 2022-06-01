@@ -10,9 +10,9 @@ from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
 
-import bin.utils.dafutilities as du
-from bin.core.ub_matrix_calc import UBMatrix
-from bin.core.matrix_utils import (
+import daf.utils.dafutilities as du
+from daf.core.ub_matrix_calc import UBMatrix
+from daf.core.matrix_utils import (
     calculate_rotation_matrix_from_diffractometer_angles,
     calculate_pseudo_angle_from_motor_angles,
 )

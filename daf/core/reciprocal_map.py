@@ -10,7 +10,7 @@ from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
 
-import bin.utils.dafutilities as du
+import daf.utils.dafutilities as du
 
 
 class ReciprocalMapWindow:

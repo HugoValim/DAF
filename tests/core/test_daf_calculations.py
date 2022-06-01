@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
 
-from bin.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles, calculate_pseudo_angle_from_motor_angles
-from bin.core.daf import Control
+from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles, calculate_pseudo_angle_from_motor_angles
+from daf.core.daf import Control
 
 class TestControl(unittest.TestCase):
 

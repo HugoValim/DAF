@@ -10,8 +10,8 @@ from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
 
-from bin.core.reciprocal_map import ReciprocalMapWindow
-from bin.core.minimization import MinimizationProc
+from daf.core.reciprocal_map import ReciprocalMapWindow
+from daf.core.minimization import MinimizationProc
 
 PI = np.pi
 MAT = np.array
