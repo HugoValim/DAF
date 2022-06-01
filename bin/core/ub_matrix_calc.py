@@ -10,7 +10,7 @@ from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
 
-from matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
+from bin.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
 
 PI = np.pi
 MAT = np.array
@@ -19,7 +19,6 @@ deg = np.rad2deg
 
 
 class UBMatrix:
-
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
 
         calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(

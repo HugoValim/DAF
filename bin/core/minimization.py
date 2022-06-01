@@ -10,9 +10,12 @@ from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
 import os
 
-import dafutilities as du
-from ub_matrix_calc import UBMatrix
-from matrix_utils import calculate_rotation_matrix_from_diffractometer_angles, calculate_pseudo_angle_from_motor_angles
+import bin.utils.dafutilities as du
+from bin.core.ub_matrix_calc import UBMatrix
+from bin.core.matrix_utils import (
+    calculate_rotation_matrix_from_diffractometer_angles,
+    calculate_pseudo_angle_from_motor_angles,
+)
 
 PI = np.pi
 MAT = np.array
@@ -20,8 +23,7 @@ rad = np.deg2rad
 deg = np.rad2deg
 
 
-class DAFCalculations(UBMatrix):
-
+class MinimizationProc(UBMatrix):
     def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):
 
         if pseudo_angle == "eta=del/2":
@@ -404,17 +406,23 @@ class DAFCalculations(UBMatrix):
             self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
             self.Nu, self.Del = (ang[4], ang[5])
 
-            calculated_matrixes = (
-                calculate_rotation_matrix_from_diffractometer_angles(
-                    self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del
-                )
+            calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(
+                self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del
             )
 
             pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-                self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del,
-                self.samp, self.hkl, 0.58649, self.nref, self.U
+                self.Mu,
+                self.Eta,
+                self.Chi,
+                self.Phi,
+                self.Nu,
+                self.Del,
+                self.samp,
+                self.hkl,
+                0.58649,
+                self.nref,
+                self.U,
             )
-            
 
             self.ttB1 = pseudo_angles_dict["twotheta"]
             self.tB1 = pseudo_angles_dict["theta"]
@@ -430,7 +438,6 @@ class DAFCalculations(UBMatrix):
             self.FHKL = LA.norm(
                 self.samp.StructureFactor(pseudo_angles_dict["q_vector"], self.en)
             )
-
 
             return [
                 self.Mu,

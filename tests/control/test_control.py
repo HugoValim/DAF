@@ -1,6 +1,6 @@
 import unittest
 
-from bin.daf import Control
+from bin.core.daf import Control
 
 
 class TestControl(unittest.TestCase):

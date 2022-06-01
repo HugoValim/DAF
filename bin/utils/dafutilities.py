@@ -60,7 +60,7 @@ def only_read(filepath=DEFAULT):
 try:
     dict_ = only_read()
 except FileNotFoundError:
-    dict_ = only_read(path.join(path.dirname(path.realpath(__file__)), "../tests/.Experiment"))
+    dict_ = only_read(path.join(path.dirname(path.realpath(__file__)), "../../tests/.Experiment"))
 
 if not dict_['simulated']:
     PV_PREFIX = "EMA:B:PB18"
