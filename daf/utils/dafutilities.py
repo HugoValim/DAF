@@ -138,3 +138,6 @@ def write(dict_, filepath=DEFAULT, is_scan = False):
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)
         file.flush()
+
+def format(x):
+    return "{:.5f}".format(float(x))
