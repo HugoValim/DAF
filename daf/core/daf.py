@@ -1,23 +1,12 @@
 #!/usr/bin/env python3
 
-import sys
-import subprocess
 import xrayutilities as xu
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from numpy import linalg as LA
-from math import pi, sqrt, sin, cos, atan2, acos
-import os
 
 from daf.core.reciprocal_map import ReciprocalMapWindow
 from daf.core.minimization import MinimizationProc
-
-PI = np.pi
-MAT = np.array
-rad = np.deg2rad
-deg = np.rad2deg
-
 
 class TablePrinter:
     "Print a list of dicts as a table"

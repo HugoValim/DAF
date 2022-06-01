@@ -1,27 +1,14 @@
 #!/usr/bin/env python3
 
-import sys
-import subprocess
 import xrayutilities as xu
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
 from numpy import linalg as LA
-from math import pi, sqrt, sin, cos, atan2, acos
-import os
 
-import daf.utils.dafutilities as du
 from daf.core.ub_matrix_calc import UBMatrix
 from daf.core.matrix_utils import (
     calculate_rotation_matrix_from_diffractometer_angles,
     calculate_pseudo_angle_from_motor_angles,
 )
-
-PI = np.pi
-MAT = np.array
-rad = np.deg2rad
-deg = np.rad2deg
-
 
 class MinimizationProc(UBMatrix):
     def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):

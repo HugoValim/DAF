@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 
-import sys
 import subprocess
 import xrayutilities as xu
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
-from numpy import linalg as LA
-from math import pi, sqrt, sin, cos, atan2, acos
-import os
 
 import daf.utils.dafutilities as du
 

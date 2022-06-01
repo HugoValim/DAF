@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
-import subprocess
 import xrayutilities as xu
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
 from numpy import linalg as LA
 from math import pi, sqrt, sin, cos, atan2, acos
-import os
 
 from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
-
-PI = np.pi
-MAT = np.array
-rad = np.deg2rad
-deg = np.rad2deg
-
 
 class UBMatrix:
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
@@ -40,7 +29,7 @@ class UBMatrix:
         inveta = LA.inv(ETA)
         invmu = LA.inv(MU)
 
-        Ql1 = MAT(
+        Ql1 = np.array(
             [
                 np.sin(rad(Del)),
                 np.cos(rad(Del)) * np.cos(rad(Nu)) - 1,
@@ -98,8 +87,8 @@ class UBMatrix:
         t2p = normalise(t2p)
         t3p = normalise(t3p)
 
-        Tc = MAT([t1c, t2c, t3c])
-        Tp = MAT([t1p, t2p, t3p])
+        Tc = np.array([t1c, t2c, t3c])
+        Tp = np.array([t1p, t2p, t3p])
         TcI = LA.inv(Tc.T)
 
         U = Tp.T.dot(TcI)
@@ -123,8 +112,8 @@ class UBMatrix:
         h2p = (2 * np.sin(rad(th2)) / self.lam) * u2p
         h3p = (2 * np.sin(rad(th3)) / self.lam) * u3p
 
-        H = MAT([h1, h2, h3]).T
-        Hp = MAT([h1p, h2p, h3p]).T
+        H = np.array([h1, h2, h3]).T
+        Hp = np.array([h1p, h2p, h3p]).T
         HI = LA.inv(H)
         UB = Hp.dot(HI)
         UB2p = UB * 2 * PI
@@ -182,7 +171,7 @@ class UBMatrix:
         return q0, q1, q2, q3
 
     def _get_rot_matrix(self, q0, q1, q2, q3):
-        rot = MAT(
+        rot = np.array(
             [
                 [
                     q0**2 + q1**2 - q2**2 - q3**2,
@@ -213,7 +202,7 @@ class UBMatrix:
         tmp_ub = trial_u * crystal.B
 
         res = 0
-        I = MAT([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        I = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
         for ref in ref_data:
             en = ref[9]
@@ -237,7 +226,7 @@ class UBMatrix:
         NU = calculated_matrixes["nu"]
         DEL = calculated_matrixes["del"]
 
-        q_del = (NU * DEL - I) * MAT([[0], [2 * np.pi / wl], [0]])
+        q_del = (NU * DEL - I) * np.array([[0], [2 * np.pi / wl], [0]])
         q_vals = LA.inv(PHI) * LA.inv(CHI) * LA.inv(ETA) * LA.inv(MU) * q_del
 
         q_hkl = tmp_ub * hkl_vals
