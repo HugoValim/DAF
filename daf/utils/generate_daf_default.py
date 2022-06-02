@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+from os import path
+
 import numpy as np
 import yaml
 
 
-data = {'Mode': '2052',
+default = {'Mode': '2052',
 		'Material' : 'Si',
 		'IDir' : [0,1,0],
 		'IDir_print' : [0,1,0],
@@ -84,7 +86,8 @@ data = {'Mode': '2052',
 
 }
 
-def generate_default(file_name = "default"):
-	with open(file_name, 'w') as stream:
+def generate_file(data=default, file_path = "", file_name = "default"):
+	full_file_path = path.join(file_path, file_name)
+	with open(full_file_path, 'w') as stream:
 		yaml.dump(data, stream, allow_unicode=False)
 

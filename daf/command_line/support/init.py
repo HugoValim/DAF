@@ -9,7 +9,9 @@ import yaml
 import subprocess
 
 import daf.utils.dafutilities as du # This import has to be done here
-import daf.utils.generate_daf_default as gf
+import daf.utils.generate_daf_default as gdd
+import daf.utils.daf_paths as dp
+from daf.utils.log import daf_log
 
 class Init:
 
@@ -19,19 +21,15 @@ class Init:
        daf.init -s
        daf.init -a
         '''
-    SCAN_UTILS_USER_PATH = du.HOME + '/.config/scan-utils/'
-    DEFAULT_CONFIG = SCAN_UTILS_USER_PATH + 'config.yml'
-    PATH_TO_DAF_CONFIG = du.HOME + "/.daf"
 
     def __init__(self):
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.initialize_experiment_file()
-        self.experiment_file_dict = self.get_experiment_file()
         self.build_user_config()
         self.build_daf_base_config()
-        du.log_macro(self.experiment_file_dict)
         self.run_user_required_options(self.parsed_args)
+        daf_log()
 
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=self.DESC, epilog = self.EPI)
@@ -42,19 +40,17 @@ class Init:
         return args
 
     def initialize_experiment_file(self):
-        os.system('mkdir -p "$HOME/.daf/"')
-        gf.generate_default(self.PATH_TO_DAF_CONFIG + "/default")
-        os.system('cp "$HOME/.daf/default" .Experiment')
+        os.system('mkdir -p "{}"'.format(dp.DAF_CONFIGS))
+        gdd.generate_file(file_path=dp.DAF_CONFIGS, file_name="default.yml")
+        
 
-    @staticmethod
-    def get_experiment_file():
-        dict_args = du.read()
-        return dict_args
-    
-    
-    def handle_simulated_option(self):
-        self.experiment_file_dict['simulated'] = True
-        du.write(self.experiment_file_dict)
+    def build_current_file(self, simulated):
+        if simulated:
+            data_sim = gdd.default
+            data_sim["simulated"] = True
+            gdd.generate_file(data=data_sim, file_name=".Experiment")
+        else:
+            gdd.generate_file(file_name=".Experiment")
 
     @staticmethod
     def build_user_config():
@@ -62,13 +58,14 @@ class Init:
         os.system('cp /etc/xdg/scan-utils/config.default.yml "$HOME/.config/scan-utils/config.config.daf_default.yml"')
 
     @staticmethod
-    def write_yaml(dict_, file_path = DEFAULT_CONFIG):
+    def write_yaml(dict_, file_path = None):
         with open(file_path, "w") as file:
             yaml.dump(dict_, file)
     
     def build_daf_base_config(self):
         daf_default = []
-        self.write_yaml(daf_default, self.PATH_TO_DAF_CONFIG + 'config.daf_default.yml')
+        scan_utils_daf_default_path = path.join(dp.DAF_CONFIGS, 'config.daf_default.yml')
+        self.write_yaml(daf_default, scan_utils_daf_default_path)
 
     @staticmethod
     def open_daf_guis():
@@ -76,9 +73,13 @@ class Init:
 
     def run_user_required_options(self, arguments):
         if arguments.simulated:
-            self.handle_simulated_option()
+            simulated = True
+        else:
+            simulated = False
+        self.build_current_file(simulated)
         if arguments.all:
             self.open_daf_guis()
+
 
 if __name__ == "__main__":
     obj = Init()

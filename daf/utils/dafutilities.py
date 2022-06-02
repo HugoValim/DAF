@@ -13,8 +13,8 @@ import signal
 import time
 
 import daf.utils.generate_daf_default as gf
+from daf.utils.daf_paths import HOME
 
-HOME = os.getenv("HOME")
 DEFAULT = ".Experiment"
 def only_read(filepath=DEFAULT):
     """Just get the data from .Experiment file without any epics command"""
@@ -84,15 +84,6 @@ class DevNull:
         pass
 # sys.stderr = DevNull()
 
-def log_macro(dargs):
-    """Function to generate the log and macro files"""
-    log = sys.argv.pop(0).split('command_line/')[1]
-    for i in sys.argv:
-        log += ' ' + i
-    os.system("echo {} >> Log".format(log))
-    if dargs['macro_flag'] == 'True':
-        os.system("echo {} >> {}".format(log, dict_args['macro_file']))
-
 def epics_get(dict_):
     for key in MOTORS:
         dict_[key] = MOTORS[key].readback
@@ -141,6 +132,3 @@ def write(dict_, filepath=DEFAULT, is_scan = False):
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)
         file.flush()
-
-def format(x):
-    return "{:.5f}".format(float(x))

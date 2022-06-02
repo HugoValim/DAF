@@ -5,6 +5,8 @@ import numpy as np
 
 from daf.core.main import DAF
 from daf.utils.print_utils import TablePrinter
+from daf.utils.print_utils import format_5_decimals
+from daf.utils.log import daf_log
 import daf.utils.dafutilities as du
 
 
@@ -21,10 +23,9 @@ class Status:
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.experiment_file_dict = du.read()
-        # Make the command log
-        du.log_macro(self.experiment_file_dict)
         self.build_exp()
         self.show_info_based_in_passed_argument(self.parsed_args)
+        daf_log()
 
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(
@@ -164,42 +165,42 @@ class Status:
         data1 = [
             {
                 "ident": "",
-                "col1": center1.format(du.format(U[0][0])),
-                "col2": center2.format(du.format(U[0][1])),
-                "col3": center3.format(du.format(U[0][2])),
+                "col1": center1.format(format_5_decimals(U[0][0])),
+                "col2": center2.format(format_5_decimals(U[0][1])),
+                "col3": center3.format(format_5_decimals(U[0][2])),
             },
             {
                 "ident": "U    =   ",
-                "col1": center1.format(du.format(U[1][0])),
-                "col2": center2.format(du.format(U[1][1])),
-                "col3": center3.format(du.format(U[1][2])),
+                "col1": center1.format(format_5_decimals(U[1][0])),
+                "col2": center2.format(format_5_decimals(U[1][1])),
+                "col3": center3.format(format_5_decimals(U[1][2])),
             },
             {
                 "ident": "",
-                "col1": center1.format(du.format(U[2][0])),
-                "col2": center2.format(du.format(U[2][1])),
-                "col3": center3.format(du.format(U[2][2])),
+                "col1": center1.format(format_5_decimals(U[2][0])),
+                "col2": center2.format(format_5_decimals(U[2][1])),
+                "col3": center3.format(format_5_decimals(U[2][2])),
             },
         ]
 
         data2 = [
             {
                 "ident": "",
-                "col1": center1.format(du.format(UB[0][0])),
-                "col2": center2.format(du.format(UB[0][1])),
-                "col3": center3.format(du.format(UB[0][2])),
+                "col1": center1.format(format_5_decimals(UB[0][0])),
+                "col2": center2.format(format_5_decimals(UB[0][1])),
+                "col3": center3.format(format_5_decimals(UB[0][2])),
             },
             {
                 "ident": "UB   = ",
-                "col1": center1.format(du.format(UB[1][0])),
-                "col2": center2.format(du.format(UB[1][1])),
-                "col3": center3.format(du.format(UB[1][2])),
+                "col1": center1.format(format_5_decimals(UB[1][0])),
+                "col2": center2.format(format_5_decimals(UB[1][1])),
+                "col3": center3.format(format_5_decimals(UB[1][2])),
             },
             {
                 "ident": "",
-                "col1": center1.format(du.format(UB[2][0])),
-                "col2": center2.format(du.format(UB[2][1])),
-                "col3": center3.format(du.format(UB[2][2])),
+                "col1": center1.format(format_5_decimals(UB[2][0])),
+                "col2": center2.format(format_5_decimals(UB[2][1])),
+                "col3": center3.format(format_5_decimals(UB[2][2])),
             },
         ]
 

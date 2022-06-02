@@ -32,3 +32,5 @@ class TablePrinter:
             res.insert(1, _r(self.ul))
         return "\n".join(res)
         
+def format_5_decimals(x):
+    return "{:.5f}".format(float(x))
