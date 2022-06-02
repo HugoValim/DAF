@@ -84,6 +84,7 @@ data = {'Mode': '2052',
 
 }
 
-with open('default', 'w') as stream:
-	yaml.dump(data, stream, allow_unicode=False)
+def generate_default(file_name = "default"):
+	with open(file_name, 'w') as stream:
+		yaml.dump(data, stream, allow_unicode=False)
 

@@ -12,6 +12,41 @@ import numpy as np
 import signal
 import time
 
+import daf.utils.generate_daf_default as gf
+
+HOME = os.getenv("HOME")
+DEFAULT = ".Experiment"
+def only_read(filepath=DEFAULT):
+    """Just get the data from .Experiment file without any epics command"""
+    with open(filepath) as file:
+        data = yaml.safe_load(file)
+        return data
+try:
+    dict_now = only_read()
+    flag = dict_now["simulated"]
+except FileNotFoundError:
+    flag = True
+
+if not flag:
+    PV_PREFIX = "EMA:B:PB18"
+    BL_PVS = { 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'}
+else:
+    PV_PREFIX = "SOL:S"
+    BL_PVS = { 'PV_energy' : 'SOL:S:m7'}
+    # PV_PREFIX = "IOC"
+
+PVS = {
+        "Phi" : PV_PREFIX + ":m1",
+        "Chi" : PV_PREFIX + ":m2",
+        "Mu"  : PV_PREFIX + ":m3",
+        "Nu"  : PV_PREFIX + ":m4",
+        "Eta" : PV_PREFIX + ":m5",
+        "Del" : PV_PREFIX + ":m6",
+}
+MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
+
+
+
 def sigint_handler_utilities(signum, frame):
     """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
     signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -48,38 +83,6 @@ class DevNull:
     def write(self, msg):
         pass
 # sys.stderr = DevNull()
-
-HOME = os.getenv("HOME")
-DEFAULT = ".Experiment"
-
-def only_read(filepath=DEFAULT):
-    """Just get the data from .Experiment file without any epics command"""
-    with open(filepath) as file:
-        data = yaml.safe_load(file)
-        return data
-try:
-    dict_ = only_read()
-except FileNotFoundError:
-    dict_ = only_read(path.join(path.dirname(path.realpath(__file__)), "../../tests/.Experiment"))
-
-if not dict_['simulated']:
-    PV_PREFIX = "EMA:B:PB18"
-    BL_PVS = { 'PV_energy' : 'EMA:A:DCM01:GonRxEnergy_RBV'}
-else:
-    PV_PREFIX = "SOL:S"
-    BL_PVS = { 'PV_energy' : 'SOL:S:m7'}
-    # PV_PREFIX = "IOC"
-
-PVS = {
-        "Phi" : PV_PREFIX + ":m1",
-        "Chi" : PV_PREFIX + ":m2",
-        "Mu"  : PV_PREFIX + ":m3",
-        "Nu"  : PV_PREFIX + ":m4",
-        "Eta" : PV_PREFIX + ":m5",
-        "Del" : PV_PREFIX + ":m6",
-}
-
-MOTORS = {i : epics.Motor(PVS[i]) for i in PVS}
 
 def log_macro(dargs):
     """Function to generate the log and macro files"""
