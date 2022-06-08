@@ -9,7 +9,6 @@ from daf.utils.print_utils import format_5_decimals
 from daf.utils.log import daf_log
 import daf.utils.dafutilities as du
 
-
 class Status:
 
     DESC = """Show the experiment status"""
@@ -23,9 +22,7 @@ class Status:
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.experiment_file_dict = du.read()
-        self.build_exp()
-        self.show_info_based_in_passed_argument(self.parsed_args)
-        daf_log()
+        self.exp = self.build_exp()
 
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(
@@ -76,19 +73,19 @@ class Status:
         Nu_bound = self.experiment_file_dict["bound_Nu"]
         Del_bound = self.experiment_file_dict["bound_Del"]
 
-        self.exp = DAF(*mode)
+        exp = DAF(*mode)
         if (
             self.experiment_file_dict["Material"]
             in self.experiment_file_dict["user_samples"].keys()
         ):
-            self.exp.set_material(
+            exp.set_material(
                 self.experiment_file_dict["Material"],
                 *self.experiment_file_dict["user_samples"][
                     self.experiment_file_dict["Material"]
                 ]
             )
         else:
-            self.exp.set_material(
+            exp.set_material(
                 self.experiment_file_dict["Material"],
                 self.experiment_file_dict["lparam_a"],
                 self.experiment_file_dict["lparam_b"],
@@ -98,7 +95,7 @@ class Status:
                 self.experiment_file_dict["lparam_gama"],
             )
 
-        self.exp.set_exp_conditions(
+        exp.set_exp_conditions(
             idir=idir,
             ndir=ndir,
             rdir=rdir,
@@ -106,7 +103,7 @@ class Status:
             - self.experiment_file_dict["energy_offset"],
             sampleor=self.experiment_file_dict["Sampleor"],
         )
-        self.exp.set_circle_constrain(
+        exp.set_circle_constrain(
             Mu=Mu_bound,
             Eta=Eta_bound,
             Chi=Chi_bound,
@@ -115,7 +112,7 @@ class Status:
             Del=Del_bound,
         )
 
-        self.exp.set_constraints(
+        exp.set_constraints(
             Mu=self.experiment_file_dict["cons_Mu"],
             Eta=self.experiment_file_dict["cons_Eta"],
             Chi=self.experiment_file_dict["cons_Chi"],
@@ -130,23 +127,28 @@ class Status:
             naz=self.experiment_file_dict["cons_naz"],
         )
 
+        return exp
+
     def show_mode(self):
         """Show only the current mode of operation"""
         mode = self.exp.show(sh="mode")
         print(mode)
         print("")
+        return mode
 
     def show_expt(self):
         """Show sampleor, wave length, energy, idir, ndir, rdir"""
         mode = self.exp.show(sh="expt")
         print(mode)
         print("")
+        return mode
 
     def show_sample(self):
         """Show information about the sample, name and lattice parameters"""
         mode = self.exp.show(sh="sample")
         print(mode)
         print("")
+        return mode
 
     def show_u_and_ub(self):
         """Show current U and UB matrix"""
@@ -213,6 +215,8 @@ class Status:
         print(UBtp)
         print("")
 
+        return Utp, UBtp
+
     def show_bounds(self):
         """Show current motor bounds"""
         print("")
@@ -232,7 +236,7 @@ class Status:
         self.show_u_and_ub()
         self.show_bounds()
 
-    def show_info_based_in_passed_argument(self, arguments):
+    def run_cmd(self, arguments):
         """Method to print the user required information"""
         if arguments.mode:
             self.show_mode()
@@ -253,5 +257,13 @@ class Status:
             self.show_all()
 
 
-if __name__ == "__main__":
+@daf_log
+def main() -> None:
     obj = Status()
+    obj.run_cmd(obj.parsed_args)
+
+
+if __name__ == "__main__":
+    main()
+
+
