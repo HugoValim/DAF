@@ -1,62 +1,86 @@
 #!/usr/bin/env python3
-"""Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer"""
+
 
 import argparse as ap
-import sys
-import os
-import daf
-import numpy as np
-import dafutilities as du
 
-epi = '''
-Eg:
-    daf.wh
-    '''
+from daf.utils.print_utils import format_5_decimals
+from daf.utils.log import daf_log
+from daf.command_line.query.utils import QueryBase
 
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi)
-parser.add_argument('-s', '--status', action='store_true', help='Show where you are in space')
+class Where(QueryBase):
 
-args = parser.parse_args()
-dic = vars(args)
-dict_args = du.read()
-du.log_macro(dict_args)
+    DESC = """Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer"""
+    EPI = """
+    Eg:
+        daf.wh
+            """
 
-U = np.array(dict_args['U_mat'])
-mode = [int(i) for i in dict_args['Mode']]
-idir = dict_args['IDir']
-ndir = dict_args['NDir']
-rdir = dict_args['RDir']
+    def __init__(self):
+        super().__init__()
+        self.parsed_args = self.parse_command_line()
+        self.parsed_args_dict = vars(self.parsed_args)
+        self.exp = self.build_exp()
 
-exp = daf.Control(*mode)
-exp.set_exp_conditions(idir = idir, ndir = ndir, rdir = rdir, en = dict_args['PV_energy'] - dict_args['energy_offset'], sampleor = dict_args['Sampleor'])
-if dict_args['Material'] in dict_args['user_samples'].keys():
-    exp.set_material(dict_args['Material'], *dict_args['user_samples'][dict_args['Material']])
+    def parse_command_line(self):
+        self.parser = ap.ArgumentParser(
+            formatter_class=ap.RawDescriptionHelpFormatter,
+            description=self.DESC,
+            epilog=self.EPI,
+        )
+        self.parser = ap.ArgumentParser(
+            formatter_class=ap.RawDescriptionHelpFormatter,
+            description=self.DESC,
+            epilog=self.EPI,
+        )
 
-else: 
-    exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], 
-                     dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
+        args = self.parser.parse_args()
+        return args
 
-exp.set_U(U)
-hklnow = exp.calc_from_angs(dict_args["Mu"], dict_args["Eta"], dict_args["Chi"], dict_args["Phi"], dict_args["Nu"], dict_args["Del"])
-hklnow = list(hklnow)
+    def print_position(self, exp_file_dict):
+        """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
+        hklnow = self.exp.calc_from_angs(
+            exp_file_dict["Mu"],
+            exp_file_dict["Eta"],
+            exp_file_dict["Chi"],
+            exp_file_dict["Phi"],
+            exp_file_dict["Nu"],
+            exp_file_dict["Del"],
+        )
+        hklnow = list(hklnow)
+        print("")
+        print(
+            "HKL now =   ",
+            format_5_decimals(hklnow[0]),
+            format_5_decimals(hklnow[1]),
+            format_5_decimals(hklnow[2]),
+        )
+        print("")
+        print("Alpha   =    {}".format(format_5_decimals(exp_file_dict["alpha"])))
+        print("Beta    =    {}".format(format_5_decimals(exp_file_dict["beta"])))
+        print("Psi     =    {}".format(format_5_decimals(exp_file_dict["psi"])))
+        print("Tau     =    {}".format(format_5_decimals(exp_file_dict["tau"])))
+        print("Qaz     =    {}".format(format_5_decimals(exp_file_dict["qaz"])))
+        print("Naz     =    {}".format(format_5_decimals(exp_file_dict["naz"])))
+        print("Omega   =    {}".format(format_5_decimals(exp_file_dict["omega"])))
+        print("")
+        print("Del     =    {}".format(format_5_decimals(exp_file_dict["Del"])))
+        print("Eta     =    {}".format(format_5_decimals(exp_file_dict["Eta"])))
+        print("Chi     =    {}".format(format_5_decimals(exp_file_dict["Chi"])))
+        print("Phi     =    {}".format(format_5_decimals(exp_file_dict["Phi"])))
+        print("Nu      =    {}".format(format_5_decimals(exp_file_dict["Nu"])))
+        print("Mu      =    {}".format(format_5_decimals(exp_file_dict["Mu"])))
+        print("")
 
-lb = lambda x: "{:.5f}".format(float(x))
-print('')
-print('HKL now =   ', lb(hklnow[0]), lb(hklnow[1]), lb(hklnow[2]))
-print('')
-print('Alpha   =    {}'.format(lb(dict_args["alpha"])))
-print('Beta    =    {}'.format(lb(dict_args["beta"])))
-print('Psi     =    {}'.format(lb(dict_args["psi"])))
-print('Tau     =    {}'.format(lb(dict_args["tau"])))
-print('Qaz     =    {}'.format(lb(dict_args["qaz"])))
-print('Naz     =    {}'.format(lb(dict_args["naz"])))
-print('Omega   =    {}'.format(lb(dict_args["omega"])))
-print('')
-print('Del     =    {}'.format(lb(dict_args["Del"])))
-print('Eta     =    {}'.format(lb(dict_args["Eta"])))
-print('Chi     =    {}'.format(lb(dict_args["Chi"])))
-print('Phi     =    {}'.format(lb(dict_args["Phi"])))
-print('Nu      =    {}'.format(lb(dict_args["Nu"])))
-print('Mu      =    {}'.format(lb(dict_args["Mu"])))
-print('')
+    def run_cmd(self, arguments):
+        self.print_position(self.experiment_file_dict)
+
+
+@daf_log
+def main() -> None:
+    obj = Where()
+    obj.run_cmd(obj.parsed_args)
+
+
+if __name__ == "__main__":
+    main()
