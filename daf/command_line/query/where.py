@@ -9,7 +9,7 @@ from daf.command_line.query.utils import QueryBase
 
 
 class Where(QueryBase):
-
+    """Class to show the current position, both in real and reciprocal space"""
     DESC = """Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer"""
     EPI = """
     Eg:
@@ -37,9 +37,9 @@ class Where(QueryBase):
         args = self.parser.parse_args()
         return args
 
-    def print_position(self, exp_file_dict):
-        """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
-        hklnow = self.exp.calc_from_angs(
+    def calc_hkl(self, exp_file_dict: dict) -> list:
+        """Calculate the current HKL position based in the .Experiment file information"""
+        hkl_now = self.exp.calc_from_angs(
             exp_file_dict["Mu"],
             exp_file_dict["Eta"],
             exp_file_dict["Chi"],
@@ -47,13 +47,18 @@ class Where(QueryBase):
             exp_file_dict["Nu"],
             exp_file_dict["Del"],
         )
-        hklnow = list(hklnow)
+        return list(hkl_now)
+
+
+    def print_position(self, exp_file_dict: dict) -> None:
+        """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
+        hkl_now = self.calc_hkl(exp_file_dict)
         print("")
         print(
             "HKL now =   ",
-            format_5_decimals(hklnow[0]),
-            format_5_decimals(hklnow[1]),
-            format_5_decimals(hklnow[2]),
+            format_5_decimals(hkl_now[0]),
+            format_5_decimals(hkl_now[1]),
+            format_5_decimals(hkl_now[2]),
         )
         print("")
         print("Alpha   =    {}".format(format_5_decimals(exp_file_dict["alpha"])))
@@ -72,14 +77,14 @@ class Where(QueryBase):
         print("Mu      =    {}".format(format_5_decimals(exp_file_dict["Mu"])))
         print("")
 
-    def run_cmd(self, arguments):
+    def run_cmd(self, arguments: dict) -> None:
         self.print_position(self.experiment_file_dict)
 
 
 @daf_log
 def main() -> None:
     obj = Where()
-    obj.run_cmd(obj.parsed_args)
+    obj.run_cmd(obj.parsed_args_dict)
 
 
 if __name__ == "__main__":
