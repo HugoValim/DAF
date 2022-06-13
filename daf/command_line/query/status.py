@@ -6,7 +6,7 @@ import numpy as np
 from daf.utils.print_utils import TablePrinter
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.log import daf_log
-from daf.command_line.query.utils import QueryBase
+from daf.command_line.query.query_utils import QueryBase
 
 
 class Status(QueryBase):

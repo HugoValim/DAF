@@ -96,28 +96,13 @@ def read(filepath=DEFAULT):
     with open(filepath) as file:
         data = yaml.safe_load(file)
         epics_get(data)
-        # write(data)
         return data
 
 def stop():
     for key in MOTORS:
         MOTORS[key].stop()
 
-def wait(is_scan):
-    # if not is_scan:
-        # print("   PHI       CHI       MU       NU      ETA       DEL")
-    lb = lambda x: "{:.5f}".format(float(x))
-    for key in MOTORS:
-        while not MOTORS[key].done_moving:
-            pass
-            
-            # print_motors = str(lb(MOTORS["Phi"].RBV)) + '  ' + str(lb(MOTORS["Chi"].RBV)) + '  ' + str(lb(MOTORS["Mu"].RBV)) + '  ' + str(lb(MOTORS["Nu"].RBV)) + '  ' + str(lb(MOTORS["Eta"].RBV)) + '  ' + str(lb(MOTORS["Del"].RBV)) + '  '
-                
-            # print(print_motors)
-            # time.sleep(0.5)
-    # print('')
-
-def epics_put(dict_, is_scan):
+def epics_put(dict_):
     # Make sure we stop all motors.
     atexit.register(stop)
     for key in MOTORS:
@@ -125,10 +110,10 @@ def epics_put(dict_, is_scan):
         MOTORS[key].low_limit = aux[0]
         MOTORS[key].high_limit = aux[1]
         MOTORS[key].move(dict_[key], ignore_limits=True, confirm_move=True)
-    wait(is_scan)
 
-def write(dict_, filepath=DEFAULT, is_scan = False):
-    epics_put(dict_, is_scan)
+
+def write(dict_, filepath=DEFAULT):
+    epics_put(dict_)
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)
         file.flush()

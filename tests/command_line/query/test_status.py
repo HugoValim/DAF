@@ -13,7 +13,9 @@ class TestDAF(unittest.TestCase):
     
 
     def setUp(self):
-        gdd.generate_file(file_name=".Experiment")
+        data_sim = gdd.default
+        data_sim["simulated"] = True
+        gdd.generate_file(data=data_sim, file_name=".Experiment")
 
     def tearDown(self):
         os.system("rm .Experiment")

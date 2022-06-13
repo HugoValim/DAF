@@ -5,11 +5,12 @@ import argparse as ap
 
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.log import daf_log
-from daf.command_line.query.utils import QueryBase
+from daf.command_line.query.query_utils import QueryBase
 
 
 class Where(QueryBase):
     """Class to show the current position, both in real and reciprocal space"""
+
     DESC = """Show current position in reciprocal space as well as all diffractometer's angles and pseudo-angles"""
     EPI = """
     Eg:
@@ -39,7 +40,6 @@ class Where(QueryBase):
             exp_file_dict["Del"],
         )
         return list(hkl_now)
-
 
     def print_position(self, exp_file_dict: dict) -> None:
         """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""

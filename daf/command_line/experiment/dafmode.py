@@ -19,20 +19,26 @@ import os
 import daf
 import dafutilities as du
 
-epi = '''
+epi = """
 Eg:
     daf.mode 215, will set Nu fix, Alpha=Beta, Eta=Del/2
-    '''
+    """
 
-parser = ap.ArgumentParser(formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog = epi)
-parser.add_argument('Mode', type=str,help='Set the operation mode of the diffractometer, following the same modes as used in Spec, the mode should be passed without spaces')
+parser = ap.ArgumentParser(
+    formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi
+)
+parser.add_argument(
+    "Mode",
+    type=str,
+    help="Set the operation mode of the diffractometer, following the same modes as used in Spec, the mode should be passed without spaces",
+)
 
 args = parser.parse_args()
 dic = vars(args)
 dict_args = du.read()
 du.log_macro(dict_args)
 
-for j,k in dic.items():
+for j, k in dic.items():
     if j in dict_args:
         dict_args[j] = str(k)
 du.write(dict_args)

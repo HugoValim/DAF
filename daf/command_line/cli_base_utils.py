@@ -6,7 +6,7 @@ from daf.core.main import DAF
 import daf.utils.dafutilities as du
 
 
-class QueryBase:
+class CLIBase:
     def __init__(self):
         self.experiment_file_dict = du.read()
 
@@ -89,8 +89,46 @@ class QueryBase:
 
         return exp
 
+    def calculate_hkl(self, hkl: list) -> float:
+        """Calculate the angles to a given HKL"""
+        startvalue = [
+            self.experiment_file_dict["Mu"],
+            self.experiment_file_dict["Eta"],
+            self.experiment_file_dict["Chi"],
+            self.experiment_file_dict["Phi"],
+            self.experiment_file_dict["Nu"],
+            self.experiment_file_dict["Del"],
+        ]
+        self.exp.set_hkl(hkl)
+        self.exp(sv=startvalue)
+        error = self.exp.qerror
+        return error
+
+    def get_angles_from_calculated_exp(self) -> dict:
+        """Get all angles and pseudo-angles based on a previous calculation, return a dicts"""
+        angs = self.exp.export_angles()
+        exp_dict = {
+            "Mu": angs[0],
+            "Eta": angs[1],
+            "Chi": angs[2],
+            "Phi": angs[3],
+            "Nu": angs[4],
+            "Del": angs[5],
+            "tt": angs[6],
+            "theta": angs[7],
+            "alpha": angs[8],
+            "qaz": angs[9],
+            "naz": angs[10],
+            "tau": angs[11],
+            "psi": angs[12],
+            "beta": angs[13],
+            "omega": angs[14],
+            "hklnow": angs[15],
+        }
+        return exp_dict
+
     @abstractmethod
     def run_cmd(self, arguments):
-        """Method to be defined be each subclass, this is the method 
+        """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
         pass
