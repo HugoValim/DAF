@@ -10,7 +10,7 @@ from daf.command_line.query.utils import QueryBase
 
 class Where(QueryBase):
     """Class to show the current position, both in real and reciprocal space"""
-    DESC = """Show where you are in reciprocal space as well as all angles and pseudo angles of diffractometer"""
+    DESC = """Show current position in reciprocal space as well as all diffractometer's angles and pseudo-angles"""
     EPI = """
     Eg:
         daf.wh
@@ -23,16 +23,7 @@ class Where(QueryBase):
         self.exp = self.build_exp()
 
     def parse_command_line(self):
-        self.parser = ap.ArgumentParser(
-            formatter_class=ap.RawDescriptionHelpFormatter,
-            description=self.DESC,
-            epilog=self.EPI,
-        )
-        self.parser = ap.ArgumentParser(
-            formatter_class=ap.RawDescriptionHelpFormatter,
-            description=self.DESC,
-            epilog=self.EPI,
-        )
+        super().parse_command_line()
 
         args = self.parser.parse_args()
         return args

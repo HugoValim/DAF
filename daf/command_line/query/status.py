@@ -25,11 +25,7 @@ class Status(QueryBase):
         self.exp = self.build_exp()
 
     def parse_command_line(self):
-        self.parser = ap.ArgumentParser(
-            formatter_class=ap.RawDescriptionHelpFormatter,
-            description=self.DESC,
-            epilog=self.EPI,
-        )
+        super().parse_command_line()
         self.parser.add_argument(
             "-m",
             "--mode",

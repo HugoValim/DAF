@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import argparse as ap
 import numpy as np
 
 from daf.core.main import DAF
@@ -9,6 +10,13 @@ class QueryBase:
     def __init__(self):
         self.experiment_file_dict = du.read()
 
+    def parse_command_line(self):
+        self.parser = ap.ArgumentParser(
+            formatter_class=ap.RawDescriptionHelpFormatter,
+            description=self.DESC,
+            epilog=self.EPI,
+        )
+
     def build_exp(self):
         """Instantiate an instance of DAF main class setting all necessary parameters"""
         mode = [int(i) for i in self.experiment_file_dict["Mode"]]
@@ -16,12 +24,12 @@ class QueryBase:
         idir = self.experiment_file_dict["IDir_print"]
         ndir = self.experiment_file_dict["NDir_print"]
         rdir = self.experiment_file_dict["RDir"]
-        Mu_bound = self.experiment_file_dict["bound_Mu"]
-        Eta_bound = self.experiment_file_dict["bound_Eta"]
-        Chi_bound = self.experiment_file_dict["bound_Chi"]
-        Phi_bound = self.experiment_file_dict["bound_Phi"]
-        Nu_bound = self.experiment_file_dict["bound_Nu"]
-        Del_bound = self.experiment_file_dict["bound_Del"]
+        mu_bound = self.experiment_file_dict["bound_Mu"]
+        eta_bound = self.experiment_file_dict["bound_Eta"]
+        chi_bound = self.experiment_file_dict["bound_Chi"]
+        phi_bound = self.experiment_file_dict["bound_Phi"]
+        nu_bound = self.experiment_file_dict["bound_Nu"]
+        del_bound = self.experiment_file_dict["bound_Del"]
 
         exp = DAF(*mode)
         if (
@@ -54,12 +62,12 @@ class QueryBase:
             sampleor=self.experiment_file_dict["Sampleor"],
         )
         exp.set_circle_constrain(
-            Mu=Mu_bound,
-            Eta=Eta_bound,
-            Chi=Chi_bound,
-            Phi=Phi_bound,
-            Nu=Nu_bound,
-            Del=Del_bound,
+            Mu=mu_bound,
+            Eta=eta_bound,
+            Chi=chi_bound,
+            Phi=phi_bound,
+            Nu=nu_bound,
+            Del=del_bound,
         )
 
         exp.set_constraints(
@@ -83,4 +91,6 @@ class QueryBase:
 
     @abstractmethod
     def run_cmd(self, arguments):
+        """Method to be defined be each subclass, this is the method 
+        that should be run when calling the cli interface"""
         pass
