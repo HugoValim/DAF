@@ -9,13 +9,15 @@ from daf.utils import dafutilities as du
 from daf.command_line.move.move_utils import MoveBase
 
 
-class HKLMove(MoveBase):
-    DESC = """Move in the reciprocal space by giving a HKL"""
+class HKLCalc(MoveBase):
+    DESC = (
+        """Calculate the diffractometer angles needed to reach a given HKL position"""
+    )
     EPI = """
     Eg:
-        daf.mv 1 1 1
-        daf.mv 1 0 0 -q
-        daf.mv 1 1 1 -m '*' -cm 'I' -s 16
+        daf.ca 1 1 1
+        daf.ca 1 0 0 -q
+        daf.ca 1 1 1 -m '*' -cm 'I' -s 16
 
         """
 
@@ -32,7 +34,7 @@ class HKLMove(MoveBase):
             metavar="H K L",
             type=float,
             nargs=3,
-            help="H, K, L position to be moved",
+            help="H, K, L position to be calculated",
         )
         self.parser.add_argument(
             "-q", "--quiet", action="store_true", help="do not show the full output"
@@ -62,20 +64,6 @@ class HKLMove(MoveBase):
         args = self.parser.parse_args()
         return args
 
-    def write_angles_if_small_error(self, error: float) -> None:
-        """Writes to .Experiment file if the minimization was successful"""
-        if float(error) > 1e-4:
-            print("Can't find the HKL {}".format(args.Move))
-            return
-        exp_dict = self.get_angles_from_calculated_exp()
-        for j, k in exp_dict.items():
-            if j in self.experiment_file_dict:
-                if isinstance(k, np.ndarray):
-                    self.experiment_file_dict[j] = k.tolist()
-                else:
-                    self.experiment_file_dict[j] = float(k)
-        du.write(self.experiment_file_dict)
-
     def run_cmd(self, arguments) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
@@ -87,12 +75,11 @@ class HKLMove(MoveBase):
                 space=arguments["size"],
             )
             print(self.exp)
-        self.write_angles_if_small_error(error)
 
 
 @daf_log
 def main() -> None:
-    obj = HKLMove()
+    obj = HKLCalc()
     obj.run_cmd(obj.parsed_args_dict)
 
 

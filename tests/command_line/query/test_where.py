@@ -9,9 +9,8 @@ from daf.command_line.query.where import Where
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
-class TestDAF(unittest.TestCase):
-    
 
+class TestDAF(unittest.TestCase):
     def setUp(self):
         gdd.generate_file(file_name=".Experiment")
 
@@ -20,13 +19,12 @@ class TestDAF(unittest.TestCase):
 
     @staticmethod
     def make_obj(command_line_args: list) -> Where:
-        testargs = ['/home/hugo/work/SOL/tmp/daf/command_line/daf.wh']
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.wh"]
         for arg in command_line_args:
             testargs.append(arg)
-        with patch.object(sys, 'argv', testargs):
+        with patch.object(sys, "argv", testargs):
             obj = Where()
         return obj
-
 
     def test_GIVEN_a_real_position_WHEN_calling_dafwh_THEN_do_sanity_check(self):
         obj = self.make_obj([])

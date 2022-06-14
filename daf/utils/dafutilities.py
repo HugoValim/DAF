@@ -104,7 +104,7 @@ def stop():
 
 def epics_put(dict_):
     # Make sure we stop all motors.
-    atexit.register(stop)
+    # atexit.register(stop)
     for key in MOTORS:
         aux = dict_["bound_" + key]
         MOTORS[key].low_limit = aux[0]

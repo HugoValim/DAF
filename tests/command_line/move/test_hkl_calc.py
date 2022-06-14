@@ -7,7 +7,7 @@ from unittest.mock import patch
 import numpy as np
 
 import daf.utils.dafutilities as du
-from daf.command_line.move.hkl_move import HKLMove
+from daf.command_line.move.hkl_calc import HKLCalc
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
@@ -42,12 +42,12 @@ class TestDAF(unittest.TestCase):
         os.system("rm .Experiment")
 
     @staticmethod
-    def make_obj(command_line_args: list) -> HKLMove:
+    def make_obj(command_line_args: list) -> HKLCalc:
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
         for arg in command_line_args:
             testargs.append(arg)
         with patch.object(sys, "argv", testargs):
-            obj = HKLMove()
+            obj = HKLCalc()
         return obj
 
     def test_GIVEN_cli_argument_WHEN_passing_hkl_111_THEN_check_parsed_args(self):
@@ -103,16 +103,3 @@ class TestDAF(unittest.TestCase):
         iter_list = list(self.predefined_dict.keys())[:-1]
         for key in iter_list:
             self.assertAlmostEqual(self.predefined_dict[key], exp_dict[key], 4)
-
-    def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_if_it_was_written_correctly(
-        self,
-    ):
-        obj = self.make_obj(["1", "1", "1"])
-        error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
-        exp_dict = obj.get_angles_from_calculated_exp()
-        obj.write_angles_if_small_error(error)
-        dict_now = du.read()
-        print(dict_now)
-        iter_list = list(self.predefined_dict.keys())[:-1]
-        for key in iter_list:
-            self.assertAlmostEqual(self.predefined_dict[key], dict_now[key], 2)
