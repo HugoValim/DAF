@@ -66,6 +66,9 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-p", "20"])
         assert float(obj.parsed_args_dict["Phi"]) == 20
 
+    def test_GIVEN_cli_argument_WHEN_nu_is_25_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-n", "25"])
+        assert float(obj.parsed_args_dict["Nu"]) == 25
 
     # def test_GIVEN_cli_argument_WHEN_any_hkl_THEN_check_if_exp_was_created(self):
     #     obj = self.make_obj(["1", "1", "1"])
