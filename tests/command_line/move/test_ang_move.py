@@ -78,6 +78,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-d", "MAX"])
         assert obj.parsed_args_dict["Del"] == "MAX"
 
+    def test_GIVEN_cli_argument_WHEN_del_is_CEN_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-d", "CEN"])
+        assert obj.parsed_args_dict["Del"] == "CEN"
+
     # def test_GIVEN_cli_argument_WHEN_any_hkl_THEN_check_if_exp_was_created(self):
     #     obj = self.make_obj(["1", "1", "1"])
     #     assert isinstance(obj.exp, DAF)
