@@ -95,13 +95,14 @@ class TestDAF(unittest.TestCase):
         assert float(obj.parsed_args_dict["Nu"]) == 25
         assert float(obj.parsed_args_dict["Eta"]) == 10
 
-    # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_if_it_was_calculated_right(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["1", "1", "1"])
-    #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
-    #     assert error < 1e-4
-
+    def test_GIVEN_cli_argument_WHEN_eta_is_moved_THEN_check_if_written(
+        self,
+    ):
+        obj = self.make_obj(["-e", "15"])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Eta"] == 15
+        
     # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_calculated_angles(self):
     #     obj = self.make_obj(["1", "1", "1"])
     #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
