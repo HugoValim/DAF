@@ -62,8 +62,8 @@ class AngleMove(MoveBase):
         dict_ = self.experiment_file_dict["scan_stats"]
         if dict_:
             if parsed_args_dict['counter'] is not None:
-                CEN = dict_[arguments['counter']]["FWHM_at"]
-                MAX = dict_[arguments['counter']]["peak_at"]
+                CEN = dict_[parsed_args_dict['counter']]["FWHM_at"]
+                MAX = dict_[parsed_args_dict['counter']]["peak_at"]
                 stat_dict = {"CEN": CEN, "MAX": MAX}
             elif self.experiment_file_dict["main_scan_counter"]:
                 CEN = dict_[self.experiment_file_dict["main_scan_counter"]]["FWHM_at"]
