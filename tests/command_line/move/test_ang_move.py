@@ -95,6 +95,15 @@ class TestDAF(unittest.TestCase):
         assert float(obj.parsed_args_dict["Nu"]) == 25
         assert float(obj.parsed_args_dict["Eta"]) == 10
 
+    def test_GIVEN_cli_argument_WHEN_mu_is_moved_THEN_check_if_written(
+        self,
+    ):
+        pos_to_move = 5
+        obj = self.make_obj(["-m", str(pos_to_move)])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Mu"] == pos_to_move
+
     def test_GIVEN_cli_argument_WHEN_eta_is_moved_THEN_check_if_written(
         self,
     ):
