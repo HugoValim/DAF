@@ -58,6 +58,11 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", "10"])
         assert float(obj.parsed_args_dict["Eta"]) == 10
 
+    def test_GIVEN_cli_argument_WHEN_chi_is_15_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-c", "15"])
+        assert float(obj.parsed_args_dict["Chi"]) == 15
+
+
     # def test_GIVEN_cli_argument_WHEN_any_hkl_THEN_check_if_exp_was_created(self):
     #     obj = self.make_obj(["1", "1", "1"])
     #     assert isinstance(obj.exp, DAF)
