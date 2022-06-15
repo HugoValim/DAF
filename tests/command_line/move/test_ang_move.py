@@ -98,7 +98,7 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_mu_is_moved_THEN_check_if_written(
         self,
     ):
-        pos_to_move = 5
+        pos_to_move = 1
         obj = self.make_obj(["-m", str(pos_to_move)])
         obj.write_angles(obj.parsed_args_dict)
         dict_now = du.read()
@@ -107,11 +107,48 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_eta_is_moved_THEN_check_if_written(
         self,
     ):
-        obj = self.make_obj(["-e", "15"])
+        pos_to_move = 2
+        obj = self.make_obj(["-e", str(pos_to_move)])
         obj.write_angles(obj.parsed_args_dict)
         dict_now = du.read()
-        assert dict_now["Eta"] == 15
-        
+        assert dict_now["Eta"] == pos_to_move
+
+    def test_GIVEN_cli_argument_WHEN_chi_is_moved_THEN_check_if_written(
+        self,
+    ):
+        pos_to_move = 3
+        obj = self.make_obj(["-c", str(pos_to_move)])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Chi"] == pos_to_move
+
+    def test_GIVEN_cli_argument_WHEN_phi_is_moved_THEN_check_if_written(
+        self,
+    ):
+        pos_to_move = 4
+        obj = self.make_obj(["-p", str(pos_to_move)])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Phi"] == pos_to_move
+
+    def test_GIVEN_cli_argument_WHEN_nu_is_moved_THEN_check_if_written(
+        self,
+    ):
+        pos_to_move = 5
+        obj = self.make_obj(["-n", str(pos_to_move)])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Nu"] == pos_to_move
+
+    def test_GIVEN_cli_argument_WHEN_del_is_moved_THEN_check_if_written(
+        self,
+    ):
+        pos_to_move = 6
+        obj = self.make_obj(["-d", str(pos_to_move)])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Del"] == pos_to_move
+
     # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_calculated_angles(self):
     #     obj = self.make_obj(["1", "1", "1"])
     #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
