@@ -68,14 +68,8 @@ class HKLMove(MoveBase):
             print("Can't find the HKL {}".format(args.Move))
             return
         exp_dict = self.get_angles_from_calculated_exp()
-        for j, k in exp_dict.items():
-            if j in self.experiment_file_dict:
-                if isinstance(k, np.ndarray):
-                    self.experiment_file_dict[j] = k.tolist()
-                else:
-                    self.experiment_file_dict[j] = float(k)
-        du.write(self.experiment_file_dict)
-
+        self.write_to_experiment_file(exp_dict)
+        
     def run_cmd(self, arguments) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""

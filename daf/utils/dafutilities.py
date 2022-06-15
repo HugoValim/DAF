@@ -84,6 +84,12 @@ class DevNull:
         pass
 # sys.stderr = DevNull()
 
+def wait():
+    for key in MOTORS:
+        while not MOTORS[key].done_moving:
+            pass
+
+
 def epics_get(dict_):
     for key in MOTORS:
         dict_[key] = MOTORS[key].readback
@@ -92,11 +98,13 @@ def epics_get(dict_):
     for key, value in BL_PVS.items():
         dict_[key] = float(epics.caget(BL_PVS[key]))*1000
 
+    return dict_
+
 def read(filepath=DEFAULT):
     with open(filepath) as file:
         data = yaml.safe_load(file)
-        epics_get(data)
-        return data
+        data_w_caget = epics_get(data)
+        return data_w_caget
 
 def stop():
     for key in MOTORS:
@@ -104,13 +112,13 @@ def stop():
 
 def epics_put(dict_):
     # Make sure we stop all motors.
-    # atexit.register(stop)
+    atexit.register(stop)
     for key in MOTORS:
         aux = dict_["bound_" + key]
         MOTORS[key].low_limit = aux[0]
         MOTORS[key].high_limit = aux[1]
         MOTORS[key].move(dict_[key], ignore_limits=True, confirm_move=True)
-
+    wait()
 
 def write(dict_, filepath=DEFAULT):
     epics_put(dict_)

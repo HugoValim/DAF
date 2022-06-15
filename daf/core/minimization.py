@@ -406,7 +406,7 @@ class MinimizationProc(UBMatrix):
                 self.Del,
                 self.samp,
                 self.hkl,
-                0.58649,
+                self.lam,
                 self.nref,
                 self.U,
             )

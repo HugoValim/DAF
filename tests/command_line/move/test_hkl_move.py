@@ -112,7 +112,6 @@ class TestDAF(unittest.TestCase):
         exp_dict = obj.get_angles_from_calculated_exp()
         obj.write_angles_if_small_error(error)
         dict_now = du.read()
-        print(dict_now)
         iter_list = list(self.predefined_dict.keys())[:-1]
         for key in iter_list:
             self.assertAlmostEqual(self.predefined_dict[key], dict_now[key], 2)

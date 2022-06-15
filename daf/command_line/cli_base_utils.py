@@ -4,7 +4,10 @@ import numpy as np
 
 from daf.core.main import DAF
 import daf.utils.dafutilities as du
-
+from daf.core.matrix_utils import (
+    calculate_rotation_matrix_from_diffractometer_angles,
+    calculate_pseudo_angle_from_motor_angles,
+)
 
 class CLIBase:
     def __init__(self):
@@ -89,6 +92,36 @@ class CLIBase:
 
         return exp
 
+    def calculate_hkl_from_angles(self) -> np.array:
+        """Calculate current HKL position from diffractometer angles"""
+        hkl =  self.exp.calc_from_angs(
+            self.experiment_file_dict["Mu"], 
+            self.experiment_file_dict["Eta"], 
+            self.experiment_file_dict["Chi"], 
+            self.experiment_file_dict["Phi"], 
+            self.experiment_file_dict["Nu"], 
+            self.experiment_file_dict["Del"]
+        )
+        return hkl
+
+    def get_pseudo_angles_from_motor_angles(self) -> dict:
+        """Calculate pseudo-angles from diffractometer angles"""
+        pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
+                self.experiment_file_dict["Mu"], 
+                self.experiment_file_dict["Eta"], 
+                self.experiment_file_dict["Chi"], 
+                self.experiment_file_dict["Phi"], 
+                self.experiment_file_dict["Nu"], 
+                self.experiment_file_dict["Del"],
+                self.exp.samp,
+                self.calculate_hkl_from_angles(),
+                self.exp.lam,
+                self.exp.nref,
+                self.exp.U,
+            )
+
+        return pseudo_angles_dict
+
     def calculate_hkl(self, hkl: list) -> float:
         """Calculate the angles to a given HKL"""
         startvalue = [
@@ -126,6 +159,16 @@ class CLIBase:
             "hklnow": angs[15],
         }
         return exp_dict
+
+    def write_to_experiment_file(self, dict_to_write):
+        for j, k in dict_to_write.items():
+            if j in self.experiment_file_dict and k is not None:
+                if isinstance(k, np.ndarray):
+                    self.experiment_file_dict[j] = k.tolist()
+                else:
+                    self.experiment_file_dict[j] = float(k)
+        du.write(self.experiment_file_dict)
+
 
     @abstractmethod
     def run_cmd(self, arguments):
