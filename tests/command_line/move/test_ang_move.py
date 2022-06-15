@@ -36,8 +36,23 @@ class TestDAF(unittest.TestCase):
         data_sim = gdd.default
         data_sim["simulated"] = True
         data_sim["PV_energy"] = 10000.0
-        data_sim['scan_stats'] = {'mvs2_diode': {'COM': 22.689189910888672, 'FWHM': 0.519565342590736, 'FWHM_at': 21.922770471720945, 'peak': 1.23, 'peak_at': 10.8543}, 'ringcurrent': {'COM': 22.709991455078125, 'FWHM': 1.3860237677915095, 'FWHM_at': 20.983173898742514, 'peak': 82.21752166748047, 'peak_at': 21.809999465942383}}
-        data_sim['main_scan_counter'] = 'ringcurrent'
+        data_sim["scan_stats"] = {
+            "mvs2_diode": {
+                "COM": 22.689189910888672,
+                "FWHM": 0.519565342590736,
+                "FWHM_at": 21.922770471720945,
+                "peak": 1.23,
+                "peak_at": 10.8543,
+            },
+            "ringcurrent": {
+                "COM": 22.709991455078125,
+                "FWHM": 1.3860237677915095,
+                "FWHM_at": 20.983173898742514,
+                "peak": 82.21752166748047,
+                "peak_at": 21.809999465942383,
+            },
+        }
+        data_sim["main_scan_counter"] = "ringcurrent"
         gdd.generate_file(data=data_sim, file_name=".Experiment")
 
     def tearDown(self):
@@ -86,11 +101,15 @@ class TestDAF(unittest.TestCase):
 
     def test_GIVEN_cli_argument_WHEN_counter_is_passed_THEN_check_parsed_args(self):
         obj = self.make_obj(["-co", "pilatus_roi_1"])
-        assert obj.parsed_args_dict["counter"] == 'pilatus_roi_1'
+        assert obj.parsed_args_dict["counter"] == "pilatus_roi_1"
 
-    def test_GIVEN_cli_argument_WHEN_several_arguments_are_passed_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-co", "pilatus_roi_1", "-d", "CEN", "-n", "25", "-e", "10"])
-        assert obj.parsed_args_dict["counter"] == 'pilatus_roi_1'
+    def test_GIVEN_cli_argument_WHEN_several_arguments_are_passed_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(
+            ["-co", "pilatus_roi_1", "-d", "CEN", "-n", "25", "-e", "10"]
+        )
+        assert obj.parsed_args_dict["counter"] == "pilatus_roi_1"
         assert obj.parsed_args_dict["Del"] == "CEN"
         assert float(obj.parsed_args_dict["Nu"]) == 25
         assert float(obj.parsed_args_dict["Eta"]) == 10
@@ -171,7 +190,7 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         pos_to_move = "CEN"
-        obj = self.make_obj(["-e", str(pos_to_move), '-co', 'mvs2_diode'])
+        obj = self.make_obj(["-e", str(pos_to_move), "-co", "mvs2_diode"])
         obj.write_angles(obj.parsed_args_dict)
         dict_now = du.read()
         self.assertAlmostEqual(dict_now["Eta"], 21.922770471720945, 2)
@@ -180,7 +199,7 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         pos_to_move = "MAX"
-        obj = self.make_obj(["-e", str(pos_to_move), '-co', 'mvs2_diode'])
+        obj = self.make_obj(["-e", str(pos_to_move), "-co", "mvs2_diode"])
         obj.write_angles(obj.parsed_args_dict)
         dict_now = du.read()
         self.assertAlmostEqual(dict_now["Eta"], 10.8543, 2)
@@ -192,7 +211,7 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", str(pos_to_move)])
         obj.write_angles(obj.parsed_args_dict)
         dict_now = du.read()
-        dict_now['main_scan_counter'] = ''
+        dict_now["main_scan_counter"] = ""
         self.assertAlmostEqual(dict_now["Eta"], 20.983173898742514, 2)
 
     def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_MAX_without_main_counter_THEN_check_if_written(
@@ -202,17 +221,19 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", str(pos_to_move)])
         obj.write_angles(obj.parsed_args_dict)
         dict_now = du.read()
-        dict_now['main_scan_counter'] = ''
+        dict_now["main_scan_counter"] = ""
         self.assertAlmostEqual(dict_now["Eta"], 21.809999465942383, 2)
 
     def test_GIVEN_cli_argument_WHEN_any_motor_is_moved_THEN_check_pseudo_angles_write(
         self,
     ):
         pos_to_move = 10
-        obj = self.make_obj(["-e", pos_to_move])
+        obj = self.make_obj(["-e", str(pos_to_move)])
         obj.write_angles(obj.parsed_args_dict)
         pseudo_dict = obj.get_pseudo_angles_from_motor_angles()
         obj.write_to_experiment_file(pseudo_dict)
         dict_now = du.read()
+        del pseudo_dict["q_vector"]
+        del pseudo_dict["q_vector_norm"]
         for key, value in pseudo_dict.items():
             self.assertAlmostEqual(dict_now[key], pseudo_dict[key], 5)

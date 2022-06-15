@@ -9,6 +9,7 @@ from daf.utils.print_utils import TablePrinter
 from daf.core.reciprocal_map import ReciprocalMapWindow
 from daf.core.minimization import MinimizationProc
 
+
 class DAF(MinimizationProc, ReciprocalMapWindow):
 
     COLUMNS = {

@@ -3,6 +3,7 @@
 import sys
 import daf as sl
 import pandas as pd
+
 #      >detector<  >Reference<     >Sample<     >Sample<     >Sample<
 #         g_mode1      g_mode2      g_mode3      g_mode4      g_mode5
 # 0             .            .  omega-fixed            X            X  0
@@ -28,18 +29,18 @@ import pandas as pd
 #         scanarg = (2,1,1), (2.1,1,1), 100
 
 # else:
-exp = sl.Control(2,1,5)
-exp.set_hkl((2,1,1))
+exp = sl.Control(2, 1, 5)
+exp.set_hkl((2, 1, 1))
 # scanarg = (2,1,1), (2.1,1,1), 100
 
-exp.set_material('Si')
-exp.set_exp_conditions(idir = (1,0,0), ndir = (0,0,1), en = 8000)
+exp.set_material("Si")
+exp.set_exp_conditions(idir=(1, 0, 0), ndir=(0, 0, 1), en=8000)
 # exp.set_constraints(setineq=(['Del', 10]))
 # exp.set_circle_constrain(Mu=a, Eta=a, Nu=a, Del=a)
 
 
 # exp(sv =  (20,30,90,0,30,0))
-exp.set_print_options(marker = '-', column_marker = '|',   space = 16)
+exp.set_print_options(marker="-", column_marker="|", space=16)
 # exp.set_print_options(space = 10)
 # exp()
 

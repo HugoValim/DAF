@@ -9,6 +9,7 @@ from daf.core.matrix_utils import (
     calculate_pseudo_angle_from_motor_angles,
 )
 
+
 class CLIBase:
     def __init__(self):
         self.experiment_file_dict = du.read()
@@ -94,31 +95,31 @@ class CLIBase:
 
     def calculate_hkl_from_angles(self) -> np.array:
         """Calculate current HKL position from diffractometer angles"""
-        hkl =  self.exp.calc_from_angs(
-            self.experiment_file_dict["Mu"], 
-            self.experiment_file_dict["Eta"], 
-            self.experiment_file_dict["Chi"], 
-            self.experiment_file_dict["Phi"], 
-            self.experiment_file_dict["Nu"], 
-            self.experiment_file_dict["Del"]
+        hkl = self.exp.calc_from_angs(
+            self.experiment_file_dict["Mu"],
+            self.experiment_file_dict["Eta"],
+            self.experiment_file_dict["Chi"],
+            self.experiment_file_dict["Phi"],
+            self.experiment_file_dict["Nu"],
+            self.experiment_file_dict["Del"],
         )
         return hkl
 
     def get_pseudo_angles_from_motor_angles(self) -> dict:
         """Calculate pseudo-angles from diffractometer angles"""
         pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-                self.experiment_file_dict["Mu"], 
-                self.experiment_file_dict["Eta"], 
-                self.experiment_file_dict["Chi"], 
-                self.experiment_file_dict["Phi"], 
-                self.experiment_file_dict["Nu"], 
-                self.experiment_file_dict["Del"],
-                self.exp.samp,
-                self.calculate_hkl_from_angles(),
-                self.exp.lam,
-                self.exp.nref,
-                self.exp.U,
-            )
+            self.experiment_file_dict["Mu"],
+            self.experiment_file_dict["Eta"],
+            self.experiment_file_dict["Chi"],
+            self.experiment_file_dict["Phi"],
+            self.experiment_file_dict["Nu"],
+            self.experiment_file_dict["Del"],
+            self.exp.samp,
+            self.calculate_hkl_from_angles(),
+            self.exp.lam,
+            self.exp.nref,
+            self.exp.U,
+        )
 
         return pseudo_angles_dict
 
@@ -147,7 +148,7 @@ class CLIBase:
             "Phi": angs[3],
             "Nu": angs[4],
             "Del": angs[5],
-            "tt": angs[6],
+            "twotheta": angs[6],
             "theta": angs[7],
             "alpha": angs[8],
             "qaz": angs[9],
@@ -168,7 +169,6 @@ class CLIBase:
                 else:
                     self.experiment_file_dict[j] = float(k)
         du.write(self.experiment_file_dict)
-
 
     @abstractmethod
     def run_cmd(self, arguments):

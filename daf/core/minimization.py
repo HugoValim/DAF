@@ -10,6 +10,7 @@ from daf.core.matrix_utils import (
     calculate_pseudo_angle_from_motor_angles,
 )
 
+
 class MinimizationProc(UBMatrix):
     def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):
 

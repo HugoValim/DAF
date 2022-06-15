@@ -11,8 +11,8 @@ import qdarkstyle
 
 import dafutilities as du
 
-class MyDisplay(Display):
 
+class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
@@ -24,7 +24,7 @@ class MyDisplay(Display):
         self.make_connections()
 
     def ui_filename(self):
-        return 'experiment.ui'
+        return "experiment.ui"
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
@@ -32,7 +32,9 @@ class MyDisplay(Display):
     def center(self):
         """Center the launched GUI in the midle of the current screen"""
         frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        screen = QtGui.QApplication.desktop().screenNumber(
+            QtGui.QApplication.desktop().cursor().pos()
+        )
         centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
@@ -40,7 +42,7 @@ class MyDisplay(Display):
     def build_icons(self):
         """Build used icons"""
         pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
-        self.check_icon = path.join(pixmap_path, 'check.svg')
+        self.check_icon = path.join(pixmap_path, "check.svg")
 
     def set_icons(self):
         """Set used icons"""
@@ -83,59 +85,81 @@ class MyDisplay(Display):
 
     def on_combobox_en_changed(self):
         """Switch the energy lineEdit between energy and Wave length based in the QComboBox"""
-        lb = lambda x: "{:.5f}".format(float(x)) # format float with 5 decimals
+        lb = lambda x: "{:.5f}".format(float(x))  # format float with 5 decimals
         dict_args = self.get_experiment_file()
-        if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
-            self.ui.lineEdit_e_wl.setText(str(lb(dict_args['PV_energy'] - dict_args['energy_offset'])))
-        elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wl':
+        if str(self.ui.comboBox_e_wl.currentText()).lower() == "energy":
+            self.ui.lineEdit_e_wl.setText(
+                str(lb(dict_args["PV_energy"] - dict_args["energy_offset"]))
+            )
+        elif str(self.ui.comboBox_e_wl.currentText()).lower() == "wl":
             # lb = lambda x: "{:.5f}".format(float(x))
-            wl = xu.en2lam(dict_args['PV_energy'] - dict_args['energy_offset'])
+            wl = xu.en2lam(dict_args["PV_energy"] - dict_args["energy_offset"])
             self.ui.lineEdit_e_wl.setText(str(lb(wl)))
 
     def set_labels(self):
         """Set default labels"""
         lb = lambda x: "{:.5f}".format(float(x))
-        dict_args = self.get_experiment_file()     
-        if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy': 
-            self.ui.lineEdit_e_wl.setText(str(lb(dict_args['PV_energy'] - dict_args['energy_offset'])))
-        elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wave length':
-            wl = xu.en2lam(dict_args['PV_energy'] - dict_args['energy_offset'])
+        dict_args = self.get_experiment_file()
+        if str(self.ui.comboBox_e_wl.currentText()).lower() == "energy":
+            self.ui.lineEdit_e_wl.setText(
+                str(lb(dict_args["PV_energy"] - dict_args["energy_offset"]))
+            )
+        elif str(self.ui.comboBox_e_wl.currentText()).lower() == "wave length":
+            wl = xu.en2lam(dict_args["PV_energy"] - dict_args["energy_offset"])
             self.ui.lineEdit_e_wl.setText(str(lb(wl)))
 
-        idir = dict_args['IDir']
+        idir = dict_args["IDir"]
         self.ui.lineEdit_i_1.setText(str(idir[0]))
         self.ui.lineEdit_i_2.setText(str(idir[1]))
         self.ui.lineEdit_i_3.setText(str(idir[2]))
 
-        ndir = dict_args['NDir']
+        ndir = dict_args["NDir"]
         self.ui.lineEdit_n_1.setText(str(ndir[0]))
         self.ui.lineEdit_n_2.setText(str(ndir[1]))
         self.ui.lineEdit_n_3.setText(str(ndir[2]))
 
-        rdir = dict_args['RDir']
+        rdir = dict_args["RDir"]
         self.ui.lineEdit_r_1.setText(str(rdir[0]))
         self.ui.lineEdit_r_2.setText(str(rdir[1]))
         self.ui.lineEdit_r_3.setText(str(rdir[2]))
 
     def set_energy(self):
         """Sets experiment energy/wl"""
-        if str(self.ui.comboBox_e_wl.currentText()).lower() == 'energy':
+        if str(self.ui.comboBox_e_wl.currentText()).lower() == "energy":
             energy = self.ui.lineEdit_e_wl.text()
-        elif str(self.ui.comboBox_e_wl.currentText()).lower() == 'wl':
+        elif str(self.ui.comboBox_e_wl.currentText()).lower() == "wl":
             energy = xu.lam2en(float(self.ui.lineEdit_e_wl.text()))
         subprocess.Popen("daf.expt -e {}".format(energy), shell=True)
 
     def set_idir(self):
         """Sets experiment idir vector"""
-        idir = self.ui.lineEdit_i_1.text() + ' ' + self.ui.lineEdit_i_2.text() + ' ' + self.ui.lineEdit_i_3.text()
+        idir = (
+            self.ui.lineEdit_i_1.text()
+            + " "
+            + self.ui.lineEdit_i_2.text()
+            + " "
+            + self.ui.lineEdit_i_3.text()
+        )
         subprocess.Popen("daf.expt -i {}".format(idir), shell=True)
 
     def set_ndir(self):
         """Sets experiment ndir vector"""
-        ndir = self.ui.lineEdit_n_1.text() + ' ' + self.ui.lineEdit_n_2.text() + ' ' + self.ui.lineEdit_n_3.text()
+        ndir = (
+            self.ui.lineEdit_n_1.text()
+            + " "
+            + self.ui.lineEdit_n_2.text()
+            + " "
+            + self.ui.lineEdit_n_3.text()
+        )
         subprocess.Popen("daf.expt -n {}".format(ndir), shell=True)
 
     def set_rdir(self):
         """Sets experiment rdir vector"""
-        rdir = self.ui.lineEdit_r_1.text() + ' ' + self.ui.lineEdit_r_2.text() + ' ' + self.ui.lineEdit_r_3.text()
-        subprocess.Popen("daf.expt -r {}".format(rdir), shell=True)     
+        rdir = (
+            self.ui.lineEdit_r_1.text()
+            + " "
+            + self.ui.lineEdit_r_2.text()
+            + " "
+            + self.ui.lineEdit_r_3.text()
+        )
+        subprocess.Popen("daf.expt -r {}".format(rdir), shell=True)

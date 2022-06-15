@@ -20,7 +20,6 @@ class AngleMove(MoveBase):
         daf.amv -d MAX -co roi1
         """
 
-
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -30,22 +29,46 @@ class AngleMove(MoveBase):
     def parse_command_line(self):
         super().parse_command_line()
         self.parser.add_argument(
-            "-m", "--Mu", metavar="ang", type=str, help="sets Mu angle to a desired position"
+            "-m",
+            "--Mu",
+            metavar="ang",
+            type=str,
+            help="sets Mu angle to a desired position",
         )
         self.parser.add_argument(
-            "-e", "--Eta", metavar="ang", type=str, help="sets Eta angle to a desired position"
+            "-e",
+            "--Eta",
+            metavar="ang",
+            type=str,
+            help="sets Eta angle to a desired position",
         )
         self.parser.add_argument(
-            "-c", "--Chi", metavar="ang", type=str, help="sets Chi angle to a desired position"
+            "-c",
+            "--Chi",
+            metavar="ang",
+            type=str,
+            help="sets Chi angle to a desired position",
         )
         self.parser.add_argument(
-            "-p", "--Phi", metavar="ang", type=str, help="sets Phi angle to a desired position"
+            "-p",
+            "--Phi",
+            metavar="ang",
+            type=str,
+            help="sets Phi angle to a desired position",
         )
         self.parser.add_argument(
-            "-n", "--Nu", metavar="ang", type=str, help="sets Nu angle to a desired position"
+            "-n",
+            "--Nu",
+            metavar="ang",
+            type=str,
+            help="sets Nu angle to a desired position",
         )
         self.parser.add_argument(
-            "-d", "--Del", metavar="ang", type=str, help="sets Del angle to a desired position"
+            "-d",
+            "--Del",
+            metavar="ang",
+            type=str,
+            help="sets Del angle to a desired position",
         )
         self.parser.add_argument(
             "-co",
@@ -61,9 +84,9 @@ class AngleMove(MoveBase):
         """Write the passed angle arguments"""
         dict_ = self.experiment_file_dict["scan_stats"]
         if dict_:
-            if parsed_args_dict['counter'] is not None:
-                CEN = dict_[parsed_args_dict['counter']]["FWHM_at"]
-                MAX = dict_[parsed_args_dict['counter']]["peak_at"]
+            if parsed_args_dict["counter"] is not None:
+                CEN = dict_[parsed_args_dict["counter"]]["FWHM_at"]
+                MAX = dict_[parsed_args_dict["counter"]]["peak_at"]
                 stat_dict = {"CEN": CEN, "MAX": MAX}
             elif self.experiment_file_dict["main_scan_counter"]:
                 CEN = dict_[self.experiment_file_dict["main_scan_counter"]]["FWHM_at"]
@@ -77,7 +100,10 @@ class AngleMove(MoveBase):
                 MAX = dict_[first_key]["peak_at"]
                 stat_dict = {"CEN": CEN, "MAX": MAX}
 
-        dict_parsed_with_counter_stats = { key:(stat_dict[value] if (value == "CEN" or value == "MAX") else value )for key, value in parsed_args_dict.items()} 
+        dict_parsed_with_counter_stats = {
+            key: (stat_dict[value] if (value == "CEN" or value == "MAX") else value)
+            for key, value in parsed_args_dict.items()
+        }
         self.write_to_experiment_file(dict_parsed_with_counter_stats)
 
     def run_cmd(self, arguments) -> None:
@@ -87,6 +113,7 @@ class AngleMove(MoveBase):
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()
         self.write_to_experiment_file(pseudo_dict)
 
+
 @daf_log
 def main() -> None:
     obj = AngleMove()
@@ -95,8 +122,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
-

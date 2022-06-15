@@ -11,8 +11,8 @@ import qdarkstyle
 
 # import dafutilities as du
 
-class MyDisplay(Display):
 
+class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
@@ -21,16 +21,19 @@ class MyDisplay(Display):
         self.set_icons()
         self.set_tab_order()
         self.center()
-# 
+
+    #
     def ui_filename(self):
-        return 'goto_hkl.ui'
+        return "goto_hkl.ui"
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        screen = QtGui.QApplication.desktop().screenNumber(
+            QtGui.QApplication.desktop().cursor().pos()
+        )
         centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
@@ -38,7 +41,7 @@ class MyDisplay(Display):
     def build_icons(self):
         """Build used icons"""
         pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
-        self.check_icon = path.join(pixmap_path, 'check.svg')
+        self.check_icon = path.join(pixmap_path, "check.svg")
 
     def set_icons(self):
         """Set used icons"""
@@ -57,8 +60,8 @@ class MyDisplay(Display):
         L = self.ui.L_set.text()
 
         # os.system("daf.mv {} {} {} -q".format(H, K, L))
-        subprocess.Popen("daf.mv {} {} {}".format(H, K, L), shell = True)
+        subprocess.Popen("daf.mv {} {} {}".format(H, K, L), shell=True)
 
-        self.H_set.setText('')
-        self.K_set.setText('')
-        self.L_set.setText('')
+        self.H_set.setText("")
+        self.K_set.setText("")
+        self.L_set.setText("")

@@ -6,16 +6,22 @@ import xrayutilities as xu
 from pydm import Display
 from qtpy.QtWidgets import QApplication
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QCheckBox, QHBoxLayout, QHeaderView, QMenu
+from PyQt5.QtWidgets import (
+    QTableWidgetItem,
+    QWidget,
+    QCheckBox,
+    QHBoxLayout,
+    QHeaderView,
+    QMenu,
+)
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QTimer
 import numpy as np
 
 import dafutilities as du
 
+
 class MyDisplay(Display):
-
-
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
@@ -30,7 +36,7 @@ class MyDisplay(Display):
         self.center()
 
     def ui_filename(self):
-        return 'ub.ui'
+        return "ub.ui"
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
@@ -39,11 +45,13 @@ class MyDisplay(Display):
         """Loop to check if a curve is selected or not"""
         self.timer = QTimer()
         self.timer.timeout.connect(self.update)
-        self.timer.start(2000) #trigger every 2 seconds.
+        self.timer.start(2000)  # trigger every 2 seconds.
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        screen = QtGui.QApplication.desktop().screenNumber(
+            QtGui.QApplication.desktop().cursor().pos()
+        )
         centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
@@ -51,8 +59,8 @@ class MyDisplay(Display):
     def build_icons(self):
         """Build used icons"""
         pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
-        self.check_icon = path.join(pixmap_path, 'check.svg')
-        self.pen_icon = path.join(pixmap_path, 'pen.svg')
+        self.check_icon = path.join(pixmap_path, "check.svg")
+        self.pen_icon = path.join(pixmap_path, "pen.svg")
 
     def set_icons(self):
         """Set used icons"""
@@ -62,7 +70,7 @@ class MyDisplay(Display):
 
     def make_connections(self):
         """Make the needed connections"""
-        
+
         # Umat
         self.update_u_labels()
         self.ui.pushButton_set_u.clicked.connect(self.set_u_matrix)
@@ -98,19 +106,18 @@ class MyDisplay(Display):
         self.setTabOrder(self.ui.lineEdit_ub_22, self.ui.pushButton_set_ub)
         self.setTabOrder(self.ui.pushButton_set_ub, self.ui.tab_UB)
 
-
     def get_experiment_file(self):
         """Get data from the .Experiment file"""
         dict_args = du.read()
         return dict_args
 
     def format_decimals(self, x):
-        return "{:.5f}".format(float(x)) # format float with 5 decimals
+        return "{:.5f}".format(float(x))  # format float with 5 decimals
 
     def update(self):
         """Get data to update, if things change update"""
         data = self.get_experiment_file()
-        refs = data['reflections']
+        refs = data["reflections"]
         if self.refs != refs:
             self.update_reflections()
 
@@ -120,18 +127,18 @@ class MyDisplay(Display):
         self.tableWidget.setRowCount(0)
         lb = lambda x: "{:.5f}".format(float(x))
         data = self.get_experiment_file()
-        refs = data['reflections']
+        refs = data["reflections"]
         self.refs = refs
         row = 0
-        self.table_checkboxes = {} 
+        self.table_checkboxes = {}
         for i in range(len(refs)):
-            idx = str(i+1)
+            idx = str(i + 1)
             idx_for_table = QTableWidgetItem(idx)
-            idx_for_table.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
+            idx_for_table.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             h = QTableWidgetItem(str(refs[i][0]))
-            h.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
+            h.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             k = QTableWidgetItem(str(refs[i][1]))
-            k.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter) 
+            k.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             l = QTableWidgetItem(str(refs[i][2]))
             l.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             mu = QTableWidgetItem(str(refs[i][3]))
@@ -167,7 +174,7 @@ class MyDisplay(Display):
             layoutH = QHBoxLayout(widget)
             layoutH.addWidget(self.table_checkboxes[idx])
             layoutH.setAlignment(QtCore.Qt.AlignCenter)
-            layoutH.setContentsMargins(10, 0, 0, 0)           
+            layoutH.setContentsMargins(10, 0, 0, 0)
             self.tableWidget.setCellWidget(row, 11, widget)
             self.tableWidget.setCellWidget(row, 11, self.table_checkboxes[idx])
             row += 1
@@ -179,30 +186,38 @@ class MyDisplay(Display):
     def link_table_2_menu(self):
         """Link the table widget to the menu options"""
         self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.tableWidget.customContextMenuRequested[QtCore.QPoint].connect(self.table_menu_builder)
+        self.tableWidget.customContextMenuRequested[QtCore.QPoint].connect(
+            self.table_menu_builder
+        )
 
     def table_menu_builder(self):
         """Build the menu that will pop when with right clicks in the table"""
         self.table_menu = QMenu(self.tableWidget)
         # Refresh plot
-        
-        get_reflection = self.table_menu.addAction('Get Current Pos')
+
+        get_reflection = self.table_menu.addAction("Get Current Pos")
         get_reflection.triggered.connect(self.get_reflection)
-        calc_from_2 = self.table_menu.addAction('Calc From 2 Refs')
+        calc_from_2 = self.table_menu.addAction("Calc From 2 Refs")
         calc_from_2.triggered.connect(self.calc_from_2_ref)
-        calc_from_3 = self.table_menu.addAction('Calc From 3 Refs')
+        calc_from_3 = self.table_menu.addAction("Calc From 3 Refs")
         calc_from_3.triggered.connect(self.calc_from_3_ref)
 
         self.table_menu.exec_(QtGui.QCursor.pos())
 
     def get_reflection(self):
         """Get the reflection now, user must pass the HKL position"""
-        text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 
-                                                      'What is the current HKL position? (use the format H,K,L)')
+        text, result = QtWidgets.QInputDialog.getText(
+            self,
+            "Input Dialog",
+            "What is the current HKL position? (use the format H,K,L)",
+        )
         if result:
-            hkl_now = text.split(',')
+            hkl_now = text.split(",")
             # print("daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]))
-            p = subprocess.Popen("daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]), shell = True)
+            p = subprocess.Popen(
+                "daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]),
+                shell=True,
+            )
             p.wait()
             self.update_reflections()
 
@@ -215,11 +230,17 @@ class MyDisplay(Display):
 
         if len(inp) != 2:
             msgbox = QtWidgets.QMessageBox()
-            msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
-            ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+            msgbox_text = "The number of checked items \nmust be 2 for this calculation"
+            ret = msgbox.question(
+                self,
+                "Warning",
+                msgbox_text,
+                QtWidgets.QMessageBox.Ok,
+                QtWidgets.QMessageBox.Ok,
+            )
         else:
             # os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
-            subprocess.Popen("daf.ub -c2 {} {}".format(inp[0], inp[1]), shell = True)
+            subprocess.Popen("daf.ub -c2 {} {}".format(inp[0], inp[1]), shell=True)
 
     def calc_from_3_ref(self):
         """Do the calculation with 3 selected reflections"""
@@ -230,11 +251,19 @@ class MyDisplay(Display):
 
         if len(inp) != 3:
             msgbox = QtWidgets.QMessageBox()
-            msgbox_text = 'The number of checked items \nmust be 2 for this calculation'
-            ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+            msgbox_text = "The number of checked items \nmust be 2 for this calculation"
+            ret = msgbox.question(
+                self,
+                "Warning",
+                msgbox_text,
+                QtWidgets.QMessageBox.Ok,
+                QtWidgets.QMessageBox.Ok,
+            )
         else:
             # os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
-            subprocess.Popen("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]), shell = True)
+            subprocess.Popen(
+                "daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]), shell=True
+            )
 
         # self.update_samp_parameters()
 
@@ -268,7 +297,6 @@ class MyDisplay(Display):
     #                 # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
     #                 subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
 
-
     #         else:
     #             # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
     #             subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
@@ -288,7 +316,7 @@ class MyDisplay(Display):
     def update_u_labels(self):
         """Set the U lineEdits values based on the .Experiment file"""
         data = self.get_experiment_file()
-        U = np.array(data['U_mat'])
+        U = np.array(data["U_mat"])
         self.ui.lineEdit_u_00.setText(self.format_decimals(str(U[0][0])))
         self.ui.lineEdit_u_01.setText(self.format_decimals(str(U[0][1])))
         self.ui.lineEdit_u_02.setText(self.format_decimals(str(U[0][2])))
@@ -311,15 +339,19 @@ class MyDisplay(Display):
         u_21 = self.ui.lineEdit_u_21.text()
         u_22 = self.ui.lineEdit_u_22.text()
 
-        subprocess.Popen("daf.ub -U {} {} {} {} {} {} {} {} {}".format(u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22), shell = True)
+        subprocess.Popen(
+            "daf.ub -U {} {} {} {} {} {} {} {} {}".format(
+                u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22
+            ),
+            shell=True,
+        )
         # Whenever U changes UB changes as well, since UB depend from U
         self.update_ub_labels()
-
 
     def update_ub_labels(self):
         """Set the UB lineEdits values based on the .Experiment file"""
         data = self.get_experiment_file()
-        UB = np.array(data['UB_mat'])
+        UB = np.array(data["UB_mat"])
         self.ui.lineEdit_ub_00.setText(self.format_decimals(str(UB[0][0])))
         self.ui.lineEdit_ub_01.setText(self.format_decimals(str(UB[0][1])))
         self.ui.lineEdit_ub_02.setText(self.format_decimals(str(UB[0][2])))
@@ -341,6 +373,11 @@ class MyDisplay(Display):
         ub_20 = self.ui.lineEdit_ub_20.text()
         ub_21 = self.ui.lineEdit_ub_21.text()
         ub_22 = self.ui.lineEdit_ub_22.text()
-        
+
         # print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
-        subprocess.Popen("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22), shell = True)
+        subprocess.Popen(
+            "daf.ub -UB {} {} {} {} {} {} {} {} {}".format(
+                ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22
+            ),
+            shell=True,
+        )

@@ -69,7 +69,7 @@ class HKLMove(MoveBase):
             return
         exp_dict = self.get_angles_from_calculated_exp()
         self.write_to_experiment_file(exp_dict)
-        
+
     def run_cmd(self, arguments) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""

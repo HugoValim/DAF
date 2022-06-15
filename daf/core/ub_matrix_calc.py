@@ -7,6 +7,7 @@ from math import pi, sqrt, sin, cos, atan2, acos
 
 from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
 
+
 class UBMatrix:
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
 
