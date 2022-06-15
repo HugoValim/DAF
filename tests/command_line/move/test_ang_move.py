@@ -36,6 +36,8 @@ class TestDAF(unittest.TestCase):
         data_sim = gdd.default
         data_sim["simulated"] = True
         data_sim["PV_energy"] = 10000.0
+        data_sim['scan_stats'] = {'mvs2_diode': {'COM': 22.689189910888672, 'FWHM': 0.519565342590736, 'FWHM_at': 21.922770471720945, 'peak': 0.000359382014721632, 'peak_at': 21.809999465942383}, 'ringcurrent': {'COM': 22.709991455078125, 'FWHM': 1.3860237677915095, 'FWHM_at': 20.983173898742514, 'peak': 82.21752166748047, 'peak_at': 21.809999465942383}}
+        data_sim['main_scan_counter'] = 'ringcurrent'
         gdd.generate_file(data=data_sim, file_name=".Experiment")
 
     def tearDown(self):
@@ -86,9 +88,12 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-co", "pilatus_roi_1"])
         assert obj.parsed_args_dict["counter"] == 'pilatus_roi_1'
 
-    # def test_GIVEN_cli_argument_WHEN_any_hkl_THEN_check_if_exp_was_created(self):
-    #     obj = self.make_obj(["1", "1", "1"])
-    #     assert isinstance(obj.exp, DAF)
+    def test_GIVEN_cli_argument_WHEN_several_arguments_are_passed_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-co", "pilatus_roi_1", "-d", "CEN", "-n", "25", "-e", "10"])
+        assert obj.parsed_args_dict["counter"] == 'pilatus_roi_1'
+        assert obj.parsed_args_dict["Del"] == "CEN"
+        assert float(obj.parsed_args_dict["Nu"]) == 25
+        assert float(obj.parsed_args_dict["Eta"]) == 10
 
     # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_if_it_was_calculated_right(
     #     self,
