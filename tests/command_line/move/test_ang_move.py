@@ -149,6 +149,15 @@ class TestDAF(unittest.TestCase):
         dict_now = du.read()
         assert dict_now["Del"] == pos_to_move
 
+    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_THEN_check_if_written(
+        self,
+    ):
+        pos_to_move = "CEN"
+        obj = self.make_obj(["-e", str(pos_to_move)])
+        obj.write_angles(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert dict_now["Eta"] == dict_now["scan_stats"][dict_now["main_scan_counter"]][pos_to_move]
+
     # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_calculated_angles(self):
     #     obj = self.make_obj(["1", "1", "1"])
     #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
