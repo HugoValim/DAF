@@ -28,6 +28,8 @@ class TestDAF(unittest.TestCase):
 
     def test_GIVEN_a_real_position_WHEN_calling_dafwh_THEN_do_sanity_check(self):
         obj = self.make_obj([])
+        obj.experiment_file_dict["Mu"] = 0.0
+        obj.experiment_file_dict["Nu"] = 0.0
         obj.experiment_file_dict["Phi"] = 45.00006
         obj.experiment_file_dict["Eta"] = 15.66943
         obj.experiment_file_dict["Del"] = 31.33886
