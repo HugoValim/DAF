@@ -5,7 +5,10 @@ import xrayutilities as xu
 import numpy as np
 
 import daf.utils.dafutilities as du
-
+from daf.core.matrix_utils import (
+    calculate_rotation_matrix_from_diffractometer_angles,
+    calculate_pseudo_angle_from_motor_angles,
+)
 
 class ReciprocalMapWindow:
     def two_theta_max(self):
@@ -357,7 +360,9 @@ class ReciprocalMapWindow:
                     )
                     numpy.set_printoptions(**popts)
 
-                    pseudo = self.calc_pseudo(*angles[:6])
+                    pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
+                        *angles[:6], self.samp, self.hkl, self.lam, self.nref, self.U
+                    )
                     exp_dict = {
                         "Mu": angles[0],
                         "Eta": angles[1],
@@ -365,13 +370,13 @@ class ReciprocalMapWindow:
                         "Phi": angles[3],
                         "Nu": angles[4],
                         "Del": angles[5],
-                        "alpha": pseudo[0],
-                        "qaz": pseudo[1],
-                        "naz": pseudo[2],
-                        "tau": pseudo[3],
-                        "psi": pseudo[4],
-                        "beta": pseudo[5],
-                        "omega": pseudo[6],
+                        "alpha": pseudo_angles_dict["alpha"],
+                        "qaz": pseudo_angles_dict["qaz"],
+                        "naz": pseudo_angles_dict["naz"],
+                        "tau": pseudo_angles_dict["tau"],
+                        "psi": pseudo_angles_dict["psi"],
+                        "beta": pseudo_angles_dict["beta"],
+                        "omega": pseudo_angles_dict["omega"],
                         "hklnow": list(self.hkl_calc),
                     }
                     self.set_print_options(marker="", column_marker="", space=14)

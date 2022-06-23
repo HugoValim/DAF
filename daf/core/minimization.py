@@ -49,7 +49,7 @@ class MinimizationProc(UBMatrix):
             return Del - fix_angle
 
         pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-            Mu, Eta, Chi, Phi, Nu, Del, self.samp, self.hkl, 0.58649, self.nref, self.U
+            Mu, Eta, Chi, Phi, Nu, Del, self.samp, self.hkl, self.lam, self.nref, self.U
         )
 
         alphain = pseudo_angles_dict["alpha"]
