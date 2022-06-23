@@ -892,11 +892,25 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
         return self.U.dot(self.samp.B)
 
-    def calc_from_angs(self, Mu, Eta, Chi, Phi, Nu, Del):
-
+    def build_xrd_experiment(self):
+        """Build the XRD experiment"""
         self.hrxrd = xu.HXRD(
             self.idir, self.ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor
         )
+
+    def build_bounds(self):
+        """Build the bounds to be used in the minimization"""
+        self.bounds = (
+            self.Mu_bound,
+            self.Eta_bound,
+            self.Chi_bound,
+            self.Phi_bound,
+            self.Nu_bound,
+            self.Del_bound,
+        )
+
+    def calc_from_angs(self, Mu, Eta, Chi, Phi, Nu, Del):
+
         hkl = self.hrxrd.Ang2HKL(
             Mu, Eta, Chi, Phi, Nu, Del, mat=self.samp, en=self.en, U=self.U
         )

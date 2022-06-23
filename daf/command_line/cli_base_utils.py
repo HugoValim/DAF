@@ -90,6 +90,8 @@ class CLIBase:
         )
 
         exp.set_U(U)
+        exp.build_xrd_experiment()
+        exp.build_bounds()
 
         return exp
 
