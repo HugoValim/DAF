@@ -10,6 +10,7 @@ from daf.core.matrix_utils import (
     calculate_pseudo_angle_from_motor_angles,
 )
 
+
 class ReciprocalMapWindow:
     def two_theta_max(self):
         """Method to get the maximum 2theta to show in the 2D reciprocal map"""
