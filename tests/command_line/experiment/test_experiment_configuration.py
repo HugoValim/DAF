@@ -76,6 +76,18 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict["Lattice_parameters"][4] == 91.
         assert obj.parsed_args_dict["Lattice_parameters"][5] == 92.
 
+    def test_GIVEN_full_cli_argument_WHEN_inputing_idir_110_THEN_check_parsed_args(self):
+        obj = self.make_obj(["--IDir_print", "1", "1", "0"])
+        assert obj.parsed_args_dict["IDir_print"][0] == 1.
+        assert obj.parsed_args_dict["IDir_print"][1] == 1.
+        assert obj.parsed_args_dict["IDir_print"][2] == 0.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_idir_110_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-i", "1", "1", "0"])
+        assert obj.parsed_args_dict["IDir_print"][0] == 1.
+        assert obj.parsed_args_dict["IDir_print"][1] == 1.
+        assert obj.parsed_args_dict["IDir_print"][2] == 0.
+
     # def test_GIVEN_cli_argument_WHEN_passing_several_option_THEN_check_parsed_args(
     #     self,
     # ):
