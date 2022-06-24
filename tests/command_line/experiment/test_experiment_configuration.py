@@ -88,6 +88,31 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict["IDir_print"][1] == 1.
         assert obj.parsed_args_dict["IDir_print"][2] == 0.
 
+    def test_GIVEN_full_cli_argument_WHEN_inputing_ndir_110_THEN_check_parsed_args(self):
+        obj = self.make_obj(["--NDir_print", "1", "1", "0"])
+        assert obj.parsed_args_dict["NDir_print"][0] == 1.
+        assert obj.parsed_args_dict["NDir_print"][1] == 1.
+        assert obj.parsed_args_dict["NDir_print"][2] == 0.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_ndir_110_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-n", "1", "1", "0"])
+        assert obj.parsed_args_dict["NDir_print"][0] == 1.
+        assert obj.parsed_args_dict["NDir_print"][1] == 1.
+        assert obj.parsed_args_dict["NDir_print"][2] == 0.
+
+    def test_GIVEN_full_cli_argument_WHEN_inputing_rdir_110_THEN_check_parsed_args(self):
+        obj = self.make_obj(["--RDir", "1", "1", "0"])
+        assert obj.parsed_args_dict["RDir"][0] == 1.
+        assert obj.parsed_args_dict["RDir"][1] == 1.
+        assert obj.parsed_args_dict["RDir"][2] == 0.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_rdir_110_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-r", "1", "1", "0"])
+        assert obj.parsed_args_dict["RDir"][0] == 1.
+        assert obj.parsed_args_dict["RDir"][1] == 1.
+        assert obj.parsed_args_dict["RDir"][2] == 0.
+
+
     # def test_GIVEN_cli_argument_WHEN_passing_several_option_THEN_check_parsed_args(
     #     self,
     # ):
