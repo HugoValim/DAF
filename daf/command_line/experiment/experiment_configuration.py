@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+
+import argparse as ap
+import numpy as np
+
+from daf.utils.print_utils import format_5_decimals
+from daf.utils.log import daf_log
+from daf.utils import dafutilities as du
+from daf.command_line.experiment.experiment_utils import ExperimentBase
+
+
+class ExperimentConfiguration(ExperimentBase):
+    DESC = """Sets several experiment configuration conditions"""
+
+    EPI = """
+    Eg:
+        daf.expt --Material Si --energy 8000
+        daf.expt -m Si -e 8000
+        daf.expt -s x+
+        daf.expt -i 1 0 0 -n 0 1 0
+        """
+
+    def __init__(self):
+        super().__init__()
+        self.parsed_args = self.parse_command_line()
+        self.parsed_args_dict = vars(self.parsed_args)
+
+    def parse_command_line(self):
+        super().parse_command_line()
+        self.parser.add_argument(
+            "-m",
+            "--Material",
+            metavar="samp",
+            type=str,
+            help="Sets the material that is going to be used in the experiment",
+        )
+        self.parser.add_argument(
+            "-p",
+            "--Lattice_parameters",
+            metavar=("a", "b", "c", "alpha", "beta", "gamma "),
+            type=float,
+            nargs=6,
+            help="Sets lattice parameters, must be passed if defining a new material",
+        )
+        self.parser.add_argument(
+            "-i",
+            "--IDir_print",
+            metavar=("x", "y", "z"),
+            type=float,
+            nargs=3,
+            help="Sets the reflection paralel to the incident beam",
+        )
+        self.parser.add_argument(
+            "-n",
+            "--NDir_print",
+            metavar=("x", "y", "z"),
+            type=float,
+            nargs=3,
+            help="Sets the reflection perpendicular to the incident beam",
+        )
+        self.parser.add_argument(
+            "-r",
+            "--RDir",
+            metavar=("x", "y", "z"),
+            type=float,
+            nargs=3,
+            help="Sets the reference vector",
+        )
+        self.parser.add_argument(
+            "-s",
+            "--Sampleor",
+            metavar="or",
+            type=str,
+            help="Sets the sample orientation at Phi axis",
+        )
+        self.parser.add_argument(
+            "-e",
+            "--energy",
+            metavar="en",
+            type=float,
+            help="Sets the energy of the experiment (eV), wavelength can also be given (angstrom)",
+        )
+
+        args = self.parser.parse_args()
+        return args
+
+    def set_lattice_parameters(self, lattice_parameters: list):
+        """Sets the inputed lattice parameters to the .Experiment file"""
+        self.experiment_file_dict["lparam_a"] = lattice_parameters[0]
+        self.experiment_file_dict["lparam_b"] = lattice_parameters[1]
+        self.experiment_file_dict["lparam_c"] = lattice_parameters[2]
+        self.experiment_file_dict["lparam_alpha"] = lattice_parameters[3]
+        self.experiment_file_dict["lparam_beta"] = lattice_parameters[4]
+        self.experiment_file_dict["lparam_gama"] = lattice_parameters[5]
+
+    def set_energy(self, energy_to_set):
+        """Sets the energy to the .Experiment file"""
+        offset = self.experiment_file_dict["PV_energy"] - energy_to_set
+        self.experiment_file_dict["energy_offset"] = offset
+
+    def set_u_and_ub_based_in_idir_ndir(self, idir, ndir):
+        """
+        Calculate U and UB from idir and ndirm using a standard diffractometer angles.
+        This will be used as the main "idir" and "ndir" but works better setting the
+        U and UB matrix from that then using the raw idir, ndir.
+        """
+        exp = self.build_exp()
+        hkl1 = idir
+        angs1 = [0, 5, 0, -90, 0, 10]
+        hkl2 = ndir
+        angs2 = [0, 5, 90, 0, 0, 10]
+        U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+
+        self.experiment_file_dict["U_mat"] = U.tolist()
+        self.experiment_file_dict["UB_mat"] = UB.tolist()
+
+    def set_material(self, sample):
+        """Sets a new material from a predefined xrayutilities sample or a new sample from lattice parameters"""
+        self.experiment_file_dict["Material"] = sample
+        exp = self.build_exp()
+        predef = exp.predefined_samples
+        if (
+            sample not in predef
+            and sample not in self.experiment_file_dict["user_samples"].keys()
+        ):
+            nsamp_dict = self.experiment_file_dict["user_samples"]
+            nsamp_dict[sample] = [
+                self.experiment_file_dict["lparam_a"],
+                self.experiment_file_dict["lparam_b"],
+                self.experiment_file_dict["lparam_c"],
+                self.experiment_file_dict["lparam_alpha"],
+                self.experiment_file_dict["lparam_beta"],
+                self.experiment_file_dict["lparam_gama"],
+            ]
+            self.experiment_file_dict["user_samples"] = nsamp_dict
+        if (
+            self.experiment_file_dict["Material"]
+            in self.experiment_file_dict["user_samples"].keys()
+        ):
+            exp.set_material(
+                self.experiment_file_dict["Material"],
+                *self.experiment_file_dict["user_samples"][
+                    self.experiment_file_dict["Material"]
+                ]
+            )
+        else:
+            exp.set_material(
+                self.experiment_file_dict["Material"],
+                self.experiment_file_dict["lparam_a"],
+                self.experiment_file_dict["lparam_b"],
+                self.experiment_file_dict["lparam_c"],
+                self.experiment_file_dict["lparam_alpha"],
+                self.experiment_file_dict["lparam_beta"],
+                self.experiment_file_dict["lparam_gama"],
+            )
+        UB = exp.calcUB()
+        # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+        self.experiment_file_dict["UB_mat"] = UB.tolist()
+
+    def run_cmd(self, arguments: dict) -> None:
+        """Method to be defined be each subclass, this is the method
+        that should be run when calling the cli interface"""
+        if arguments["Lattice_parameters"]:
+            self.set_lattice_parameters(arguments["Lattice_parameters"])
+        if arguments["energy"]:
+            self.set_energy(arguments["energy"])
+        if arguments["IDir_print"] is not None and arguments["NDir_print"] is not None:
+            self.set_u_and_ub_based_in_idir_ndir(
+                arguments["IDir_print"], arguments["NDir_print"]
+            )
+        if arguments["Material"]:
+            self.set_material(arguments["Material"])
+        du.write(self.experiment_file_dict)
+
+
+@daf_log
+def main() -> None:
+    obj = ExperimentConfiguration()
+    obj.run_cmd(obj.parsed_args_dict)
+
+
+if __name__ == "__main__":
+    main()

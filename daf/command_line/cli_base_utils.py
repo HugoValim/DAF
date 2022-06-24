@@ -173,7 +173,7 @@ class CLIBase:
         du.write(self.experiment_file_dict)
 
     @abstractmethod
-    def run_cmd(self, arguments):
+    def run_cmd(self, arguments: dict):
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
         pass

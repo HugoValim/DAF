@@ -3,7 +3,7 @@
 import xrayutilities as xu
 import numpy as np
 from numpy import linalg as LA
-from math import pi, sqrt, sin, cos, atan2, acos
+from math import sqrt, sin, cos, atan2, acos
 
 from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
 
@@ -22,7 +22,7 @@ class UBMatrix:
         NU = calculated_matrixes["nu"]
         DEL = calculated_matrixes["del"]
 
-        ttB1 = deg(np.arccos(np.cos(rad(Nu)) * np.cos(rad(Del))))
+        ttB1 = np.rad2deg(np.arccos(np.cos(np.deg2rad(Nu)) * np.cos(np.deg2rad(Del))))
         theta = ttB1 / 2
 
         invphi = LA.inv(PHI)
@@ -32,24 +32,19 @@ class UBMatrix:
 
         Ql1 = np.array(
             [
-                np.sin(rad(Del)),
-                np.cos(rad(Del)) * np.cos(rad(Nu)) - 1,
-                np.cos(rad(Del)) * np.sin(rad(Nu)),
+                np.sin(np.deg2rad(Del)),
+                np.cos(np.deg2rad(Del)) * np.cos(np.deg2rad(Nu)) - 1,
+                np.cos(np.deg2rad(Del)) * np.sin(np.deg2rad(Nu)),
             ]
         )
 
-        Ql = Ql1 * (1 / (2 * np.sin(rad(theta))))
+        Ql = Ql1 * (1 / (2 * np.sin(np.deg2rad(theta))))
 
         # uphi = invphi.dot(invchi).dot(inveta).dot(invmu).dot(Ql)
         uphi = PHI.T.dot(CHI.T).dot(ETA.T).dot(MU.T).dot(Ql)
         return uphi, theta
 
     def calc_U_2HKL(self, h1, angh1, h2, angh2):
-
-        PI = np.pi
-        MAT = np.array
-        rad = np.deg2rad
-        deg = np.rad2deg
 
         u1p, th1 = self.uphi(*angh1)
         u2p, th2 = self.uphi(*angh2)
@@ -99,34 +94,28 @@ class UBMatrix:
         return U, self.UB
 
     def calc_U_3HKL(self, h1, angh1, h2, angh2, h3, angh3):
-
-        PI = np.pi
-        MAT = np.array
-        rad = np.deg2rad
-        deg = np.rad2deg
-
         u1p, th1 = self.uphi(*angh1)
         u2p, th2 = self.uphi(*angh2)
         u3p, th3 = self.uphi(*angh3)
 
-        h1p = (2 * np.sin(rad(th1)) / self.lam) * u1p
-        h2p = (2 * np.sin(rad(th2)) / self.lam) * u2p
-        h3p = (2 * np.sin(rad(th3)) / self.lam) * u3p
+        h1p = (2 * np.sin(np.deg2rad(th1)) / self.lam) * u1p
+        h2p = (2 * np.sin(np.deg2rad(th2)) / self.lam) * u2p
+        h3p = (2 * np.sin(np.deg2rad(th3)) / self.lam) * u3p
 
         H = np.array([h1, h2, h3]).T
         Hp = np.array([h1p, h2p, h3p]).T
         HI = LA.inv(H)
         UB = Hp.dot(HI)
-        UB2p = UB * 2 * PI
+        UB2p = UB * 2 * np.pi
 
         GI = UB.T.dot(UB)
         G = LA.inv(GI)
         a1 = G[0, 0] ** 0.5
         a2 = G[1, 1] ** 0.5
         a3 = G[2, 2] ** 0.5
-        alpha1 = deg(np.arccos(G[1, 2] / (a2 * a3)))
-        alpha2 = deg(np.arccos(G[0, 2] / (a1 * a3)))
-        alpha3 = deg(np.arccos(G[0, 1] / (a1 * a2)))
+        alpha1 = np.rad2deg(np.arccos(G[1, 2] / (a2 * a3)))
+        alpha2 = np.rad2deg(np.arccos(G[0, 2] / (a1 * a3)))
+        alpha3 = np.rad2deg(np.arccos(G[0, 1] / (a1 * a2)))
 
         samp = xu.materials.Crystal(
             "generic", xu.materials.SGLattice(1, a1, a2, a3, alpha1, alpha2, alpha3)
@@ -165,10 +154,10 @@ class UBMatrix:
         return x
 
     def _get_quat_from_u123(self, u1, u2, u3):
-        q0, q1 = sqrt(1.0 - u1) * sin(2.0 * pi * u2), sqrt(1.0 - u1) * cos(
-            2.0 * pi * u2
+        q0, q1 = sqrt(1.0 - u1) * sin(2.0 * np.pi * u2), sqrt(1.0 - u1) * cos(
+            2.0 * np.pi * u2
         )
-        q2, q3 = sqrt(u1) * sin(2.0 * pi * u3), sqrt(u1) * cos(2.0 * pi * u3)
+        q2, q3 = sqrt(u1) * sin(2.0 * np.pi * u3), sqrt(u1) * cos(2.0 * np.pi * u3)
         return q0, q1, q2, q3
 
     def _get_rot_matrix(self, q0, q1, q2, q3):
@@ -227,7 +216,7 @@ class UBMatrix:
         NU = calculated_matrixes["nu"]
         DEL = calculated_matrixes["del"]
 
-        q_del = (NU * DEL - I) * np.array([[0], [2 * np.pi / wl], [0]])
+        q_del = (NU * DEL - I) * np.array([[0], [2 * np.np.pi / wl], [0]])
         q_vals = LA.inv(PHI) * LA.inv(CHI) * LA.inv(ETA) * LA.inv(MU) * q_del
 
         q_hkl = tmp_ub * hkl_vals
@@ -250,8 +239,8 @@ class UBMatrix:
         q2 = sgn_q2 * sqrt(1.0 - um[0, 0] + um[1, 1] - um[2, 2]) / 2.0
         q3 = sgn_q3 * sqrt(1.0 - um[0, 0] - um[1, 1] + um[2, 2]) / 2.0
         u1 = (1.0 - um[0, 0]) / 2.0
-        u2 = atan2(q0, q1) / (2.0 * pi)
-        u3 = atan2(q2, q3) / (2.0 * pi)
+        u2 = atan2(q0, q1) / (2.0 * np.pi)
+        u3 = atan2(q2, q3) / (2.0 * np.pi)
         if u2 < 0:
             u2 += 1.0
         if u3 < 0:
@@ -290,6 +279,6 @@ class UBMatrix:
         xr = q1 / sqrt(1.0 - q0 * q0)
         yr = q2 / sqrt(1.0 - q0 * q0)
         zr = q3 / sqrt(1.0 - q0 * q0)
-        TODEG = 180 / (2 * np.pi)
+        TODEG = 180 / (2 * np.np.pi)
         print(angle * TODEG, (xr, yr, zr), res)
         return res_u
