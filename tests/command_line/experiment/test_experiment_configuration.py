@@ -137,47 +137,26 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict["NDir_print"][1] == 0.
         assert obj.parsed_args_dict["NDir_print"][2] == 1.
 
+    def test_GIVEN_cli_argument_WHEN_defining_predefined_sample_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        sample = "Cu"
+        obj = self.make_obj(["-m", sample])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert sample == dict_now["Material"]
 
-    # def test_GIVEN_cli_argument_WHEN_passing_several_option_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(
-    #         ["1", "1", "1", "--quiet", "-m", "-", "-cm", "%", "-s", "16"]
-    #     )
-    #     assert obj.parsed_args_dict["hkl-position"] == [1.0, 1.0, 1.0]
-    #     assert obj.parsed_args_dict["quiet"] == True
-    #     assert obj.parsed_args_dict["marker"] == "-"
-    #     assert obj.parsed_args_dict["column_marker"] == "%"
-    #     assert obj.parsed_args_dict["size"] == 16
-
-    # def test_GIVEN_cli_argument_WHEN_any_hkl_THEN_check_if_exp_was_created(self):
-    #     obj = self.make_obj(["1", "1", "1"])
-    #     assert isinstance(obj.exp, DAF)
-
-    # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_if_it_was_calculated_right(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["1", "1", "1"])
-    #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
-    #     assert error < 1e-4
-
-    # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_calculated_angles(self):
-    #     obj = self.make_obj(["1", "1", "1"])
-    #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
-    #     exp_dict = obj.get_angles_from_calculated_exp()
-    #     # Do not need to compare the hkl value, only angles
-    #     iter_list = list(self.predefined_dict.keys())[:-1]
-    #     for key in iter_list:
-    #         self.assertAlmostEqual(self.predefined_dict[key], exp_dict[key], 4)
-
-    # def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["1", "1", "1"])
-    #     error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
-    #     exp_dict = obj.get_angles_from_calculated_exp()
-    #     obj.write_angles_if_small_error(error)
-    #     dict_now = du.read()
-    #     iter_list = list(self.predefined_dict.keys())[:-1]
-    #     for key in iter_list:
-    #         self.assertAlmostEqual(self.predefined_dict[key], dict_now[key], 2)
+    def test_GIVEN_cli_argument_WHEN_defining_new_sample_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        sample =  "my_si"
+        obj = self.make_obj(["-m", sample, "-p", "5.4", "5.5", "5.6", "90",  "91", "92"])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert sample == dict_now["Material"]
+        assert 5.4 == dict_now["lparam_a"]
+        assert 5.5 == dict_now["lparam_b"]
+        assert 5.6 == dict_now["lparam_c"]
+        assert 90. == dict_now["lparam_alpha"]
+        assert 91. == dict_now["lparam_beta"]
+        assert 92. == dict_now["lparam_gama"]
