@@ -121,6 +121,22 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", "10000"])
         assert obj.parsed_args_dict["energy"] == 10000.
 
+    def test_GIVEN_cli_argument_WHEN_inputing_several_args_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-m", "Ag", "-p", "5.4", "5.5", "5.6", "90",  "91", "92", "-i", "1", "1", "0", "-n", "0", "0", "1"])
+        assert obj.parsed_args_dict["Material"] == "Ag"
+        assert obj.parsed_args_dict["Lattice_parameters"][0] == 5.4
+        assert obj.parsed_args_dict["Lattice_parameters"][1] == 5.5
+        assert obj.parsed_args_dict["Lattice_parameters"][2] == 5.6
+        assert obj.parsed_args_dict["Lattice_parameters"][3] == 90.
+        assert obj.parsed_args_dict["Lattice_parameters"][4] == 91.
+        assert obj.parsed_args_dict["Lattice_parameters"][5] == 92.
+        assert obj.parsed_args_dict["IDir_print"][0] == 1.
+        assert obj.parsed_args_dict["IDir_print"][1] == 1.
+        assert obj.parsed_args_dict["IDir_print"][2] == 0.
+        assert obj.parsed_args_dict["NDir_print"][0] == 0.
+        assert obj.parsed_args_dict["NDir_print"][1] == 0.
+        assert obj.parsed_args_dict["NDir_print"][2] == 1.
+
 
     # def test_GIVEN_cli_argument_WHEN_passing_several_option_THEN_check_parsed_args(
     #     self,
