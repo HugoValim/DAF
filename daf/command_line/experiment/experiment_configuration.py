@@ -159,6 +159,10 @@ class ExperimentConfiguration(ExperimentBase):
         # yaml doesn't handle numpy arrays well, so using python's list is a better choice
         self.experiment_file_dict["UB_mat"] = UB.tolist()
 
+    def set_rdir(self, rdir):
+        """Sets RDir"""
+        self.experiment_file_dict["RDir"] = rdir
+
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
@@ -166,6 +170,8 @@ class ExperimentConfiguration(ExperimentBase):
             self.set_lattice_parameters(arguments["Lattice_parameters"])
         if arguments["energy"]:
             self.set_energy(arguments["energy"])
+        if arguments["RDir"]:
+            self.set_rdir(arguments["RDir"])
         if arguments["IDir_print"] is not None and arguments["NDir_print"] is not None:
             self.set_u_and_ub_based_in_idir_ndir(
                 arguments["IDir_print"], arguments["NDir_print"]

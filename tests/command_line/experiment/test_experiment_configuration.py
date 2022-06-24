@@ -241,7 +241,7 @@ class TestDAF(unittest.TestCase):
         U, UB = obj.set_u_and_ub_based_in_idir_ndir([1,1,0], [0,0,1])
         obj.run_cmd(obj.parsed_args_dict)
         dict_now = du.read()
-        
+
         for i in range(len(U)):
             for j in range(len(U[i])):
                 assert U[i][j] == dict_now["U_mat"][i][j]
@@ -249,3 +249,11 @@ class TestDAF(unittest.TestCase):
         for i in range(len(UB)):
             for j in range(len(UB[i])):
                 assert UB[i][j] == dict_now["UB_mat"][i][j]
+
+    def test_GIVEN_cli_argument_WHEN_defining_new_rdir_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        obj = self.make_obj(["-r", "0", "1", "0"])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        assert [0, 1, 0] == dict_now["RDir"]
