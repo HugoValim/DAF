@@ -93,10 +93,11 @@ class ExperimentConfiguration(ExperimentBase):
         self.experiment_file_dict["lparam_beta"] = lattice_parameters[4]
         self.experiment_file_dict["lparam_gama"] = lattice_parameters[5]
 
-    def set_energy(self, energy_to_set):
+    def set_energy(self, energy_to_set) -> float:
         """Sets the energy to the .Experiment file"""
         offset = self.experiment_file_dict["PV_energy"] - energy_to_set
         self.experiment_file_dict["energy_offset"] = offset
+        return offset
 
     def set_u_and_ub_based_in_idir_ndir(self, idir, ndir):
         """
@@ -113,6 +114,7 @@ class ExperimentConfiguration(ExperimentBase):
 
         self.experiment_file_dict["U_mat"] = U.tolist()
         self.experiment_file_dict["UB_mat"] = UB.tolist()
+        return U, UB 
 
     def set_material(self, sample):
         """Sets a new material from a predefined xrayutilities sample or a new sample from lattice parameters"""
