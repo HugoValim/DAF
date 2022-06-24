@@ -112,6 +112,15 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict["RDir"][1] == 1.
         assert obj.parsed_args_dict["RDir"][2] == 0.
 
+    def test_GIVEN_full_cli_argument_WHEN_inputing_energy_10kev_THEN_check_parsed_args(self):
+        obj = self.make_obj(["--energy", "10000"])
+        assert obj.parsed_args_dict["energy"] == 10000.
+
+
+    def test_GIVEN_cli_argument_WHEN_inputing_energy_10kev_THEN_check_parsed_args(self):
+        obj = self.make_obj(["-e", "10000"])
+        assert obj.parsed_args_dict["energy"] == 10000.
+
 
     # def test_GIVEN_cli_argument_WHEN_passing_several_option_THEN_check_parsed_args(
     #     self,
