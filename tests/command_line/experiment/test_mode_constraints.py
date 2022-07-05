@@ -37,6 +37,83 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-m", "1"])
         assert obj.parsed_args_dict["cons_Mu"] == 1.
 
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_eta_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-e", "2"])
+        assert obj.parsed_args_dict["cons_Eta"] == 2.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_chi_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-c", "3"])
+        assert obj.parsed_args_dict["cons_Chi"] == 3.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_phi_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-p", "4"])
+        assert obj.parsed_args_dict["cons_Phi"] == 4.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_nu_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-n", "5"])
+        assert obj.parsed_args_dict["cons_Nu"] == 5.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_del_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-d", "6"])
+        assert obj.parsed_args_dict["cons_Del"] == 6.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_alpha_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-a", "7"])
+        assert obj.parsed_args_dict["cons_alpha"] == 7.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_beta_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-b", "8"])
+        assert obj.parsed_args_dict["cons_beta"] == 8.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_psi_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-psi", "9"])
+        assert obj.parsed_args_dict["cons_psi"] == 9.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_omega_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-o", "10"])
+        assert obj.parsed_args_dict["cons_omega"] == 10.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_qaz_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-q", "11"])
+        assert obj.parsed_args_dict["cons_qaz"] == 11.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_cons_naz_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-cnaz", "12"])
+        assert obj.parsed_args_dict["cons_naz"] == 12.
+
+    def test_GIVEN_cli_argument_WHEN_inputing_reset_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-r"])
+        assert obj.parsed_args_dict["Reset"] == True
+
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_check_parsed_args(
+        self,
+    ):
+        obj = self.make_obj(["-l"])
+        assert obj.parsed_args_dict["List"] == True
 
 
     # def test_GIVEN_cli_argument_WHEN_inputing_mode_225_THEN_check_if_it_was_written_correctly(
