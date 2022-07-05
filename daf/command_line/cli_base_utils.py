@@ -21,7 +21,7 @@ class CLIBase:
             epilog=self.EPI,
         )
 
-    def build_exp(self):
+    def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
         mode = [int(i) for i in self.experiment_file_dict["Mode"]]
         U = np.array(self.experiment_file_dict["U_mat"])
@@ -163,11 +163,14 @@ class CLIBase:
         }
         return exp_dict
 
-    def write_to_experiment_file(self, dict_to_write):
+    def write_to_experiment_file(self, dict_to_write, is_str=False):
+        """Write to the .Experiment file based on a inputted dict"""
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):
                     self.experiment_file_dict[j] = k.tolist()
+                elif is_str:
+                    self.experiment_file_dict[j] = str(k)
                 else:
                     self.experiment_file_dict[j] = float(k)
         du.write(self.experiment_file_dict)

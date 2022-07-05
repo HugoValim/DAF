@@ -84,7 +84,7 @@ class ExperimentConfiguration(ExperimentBase):
         args = self.parser.parse_args()
         return args
 
-    def set_lattice_parameters(self, lattice_parameters: list):
+    def set_lattice_parameters(self, lattice_parameters: list) -> None:
         """Sets the inputed lattice parameters to the .Experiment file"""
         self.experiment_file_dict["lparam_a"] = lattice_parameters[0]
         self.experiment_file_dict["lparam_b"] = lattice_parameters[1]
@@ -93,13 +93,13 @@ class ExperimentConfiguration(ExperimentBase):
         self.experiment_file_dict["lparam_beta"] = lattice_parameters[4]
         self.experiment_file_dict["lparam_gama"] = lattice_parameters[5]
 
-    def set_energy(self, energy_to_set) -> float:
+    def set_energy(self, energy_to_set: float) -> float:
         """Sets the energy to the .Experiment file"""
         offset = self.experiment_file_dict["PV_energy"] - energy_to_set
         self.experiment_file_dict["energy_offset"] = offset
         return offset
 
-    def set_u_and_ub_based_in_idir_ndir(self, idir, ndir):
+    def set_u_and_ub_based_in_idir_ndir(self, idir: np.array, ndir: np.array) -> tuple:
         """
         Calculate U and UB from idir and ndirm using a standard diffractometer angles.
         This will be used as the main "idir" and "ndir" but works better setting the
@@ -114,9 +114,9 @@ class ExperimentConfiguration(ExperimentBase):
 
         self.experiment_file_dict["U_mat"] = U.tolist()
         self.experiment_file_dict["UB_mat"] = UB.tolist()
-        return U, UB 
+        return U, UB
 
-    def set_material(self, sample):
+    def set_material(self, sample: str) -> None:
         """Sets a new material from a predefined xrayutilities sample or a new sample from lattice parameters"""
         self.experiment_file_dict["Material"] = sample
         exp = self.build_exp()
@@ -159,7 +159,7 @@ class ExperimentConfiguration(ExperimentBase):
         # yaml doesn't handle numpy arrays well, so using python's list is a better choice
         self.experiment_file_dict["UB_mat"] = UB.tolist()
 
-    def set_rdir(self, rdir):
+    def set_rdir(self, rdir: np.array):
         """Sets RDir"""
         self.experiment_file_dict["RDir"] = rdir
 
