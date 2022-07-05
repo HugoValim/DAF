@@ -163,7 +163,7 @@ class ModeConstraints(ExperimentBase):
 
 @daf_log
 def main() -> None:
-    obj = OperationMode()
+    obj = ModeConstraints()
     obj.run_cmd(obj.parsed_args_dict)
 
 
