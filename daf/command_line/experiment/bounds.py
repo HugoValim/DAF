@@ -11,6 +11,15 @@ class Bounds(ExperimentBase):
         daf.bounds -m -180 180 -n -180 180
         """
 
+    DEFAULT_BOUNDS = {
+    "bound_Mu": [-20.0, 160.0],
+    "bound_Eta": [-20.0, 160.0],
+    "bound_Chi": [-5.0, 95.0],
+    "bound_Phi": [-400.0, 400.0],
+    "bound_Nu": [-20.0, 160.0],
+    "bound_Del": [-20.0, 160.0],
+        }
+
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -78,15 +87,7 @@ class Bounds(ExperimentBase):
 
     def reset_bounds_to_default(self) -> None:
         """Reset all motor bounds to default. It writes directly to the .Experiment file"""
-        default_bounds = {
-            "bound_Mu": [-20.0, 160.0],
-            "bound_Eta": [-20.0, 160.0],
-            "bound_Chi": [-5.0, 95.0],
-            "bound_Phi": [-400.0, 400.0],
-            "bound_Nu": [-20.0, 160.0],
-            "bound_Del": [-20.0, 160.0],
-        }
-        self.write_to_experiment_file(default_bounds)
+        self.write_to_experiment_file(self.DEFAULT_BOUNDS)
 
     def list_bounds(self) -> None:
         """Method to print the current bounds"""

@@ -169,6 +169,8 @@ class CLIBase:
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):
                     self.experiment_file_dict[j] = k.tolist()
+                elif isinstance(k, list):
+                    self.experiment_file_dict[j] = k
                 elif is_str:
                     self.experiment_file_dict[j] = str(k)
                 else:
