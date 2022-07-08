@@ -67,7 +67,7 @@ class Bounds(ExperimentBase):
             help="Sets Del bounds",
         )
         self.parser.add_argument(
-            "-l", "--list", action="store_true", help="List the current bounds"
+            "-l", "--List", action="store_true", help="List the current bounds"
         )
         self.parser.add_argument(
             "-r", "--Reset", action="store_true", help="Reset all bounds to default"
