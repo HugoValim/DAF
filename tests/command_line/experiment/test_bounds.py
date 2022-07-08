@@ -177,9 +177,9 @@ class TestDAF(unittest.TestCase):
         assert dict_now["bound_Del"][0] == obj.DEFAULT_BOUNDS["bound_Del"][0]
         assert dict_now["bound_Del"][1] == obj.DEFAULT_BOUNDS["bound_Del"][1]
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_anything_THEN_search_for_problems(
-    #     self,
-    # ):
-    #     testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-m", "3"]
-    #     with patch.object(sys, "argv", testargs):
-    #         main()
+    def test_GIVEN_cli_argument_WHEN_inputing_anything_THEN_search_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-m", "-3", "30"] 
+        with patch.object(sys, "argv", testargs):
+            main()
