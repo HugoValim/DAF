@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
+import os
+from os import path
+
 import argparse as ap
 import numpy as np
+import yaml
 
-from daf.utils.print_utils import format_5_decimals
 from daf.utils.log import daf_log
 from daf.utils import dafutilities as du
 from daf.utils import daf_paths as dp
@@ -21,6 +24,9 @@ class ManageCounters(ExperimentBase):
        daf.mc -r my_setup1 my_setup2 my_setup3
        daf.mc -rc new_config counter1 
         """
+
+    YAML_PREFIX = "config."
+    YAML_SUFIX = ".yml"
 
 
     def __init__(self):
@@ -66,7 +72,7 @@ class ManageCounters(ExperimentBase):
             "--list_counters",
             metavar="file",
             nargs="*",
-            help="List all setups, showing in which one you are",
+            help="List counters in a specific file, more than one file can be passed",
         )
         self.parser.add_argument(
             "-lac",
@@ -85,10 +91,33 @@ class ManageCounters(ExperimentBase):
         return args
 
     @staticmethod
+    def read_yaml(file_path: str):
+        with open(file_path) as file:
+            data = yaml.safe_load(file)
+            return data
+
+    @staticmethod
+    def write_yaml(list_: list, file_path: str):
+        with open(file_path, "w") as file:
+            yaml.dump(list_, file)
+
+    def get_full_file_path(self, file_name: str) -> str:
+        """Get full file path of a config file and return it"""
+        yaml_file_name = self.YAML_PREFIX + file_name + self.YAML_SUFIX
+        user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
+        sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
+        if yaml_file_name in user_configs:
+            path_to_use = dp.SCAN_UTILS_USER_PATH
+        elif yaml_file_name in sys_configs:
+            path_to_use = dp.SCAN_UTILS_SYS_PATH
+        full_file_path = path.join(path_to_use, yaml_file_name)
+        return full_file_path
+
+    @staticmethod
     def list_configuration_files():
         """List all configuration files, both user and system configuration."""
         user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
-        sys_configs = os.listdir(SCAN_UTILS_SYS_PATH)
+        sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
         all_configs = user_configs + sys_configs
         configs = [i for i in all_configs if len(i.split(".")) == 3 and i.endswith(".yml")]
         configs.sort()
@@ -104,60 +133,62 @@ class ManageCounters(ExperimentBase):
         for i in counters:
             print(i)
 
+    def set_default_counters(self, default_counter: str):
+        """Set the file that should be used in the further scans"""
+        self.experiment_file_dict["default_counters"] = self.YAML_PREFIX + default_counter + self.YAML_SUFIX
+        du.write(self.experiment_file_dict)
+
+    def create_new_configuration_file(self, file_name: str):
+        """Create a new empty configuration counter file, counters should be added in advance."""
+        yaml_file_name = self.YAML_PREFIX + file_name + self.YAML_SUFIX
+        full_file_path = path.join(dp.SCAN_UTILS_USER_PATH, yaml_file_name)
+        self.write_yaml([], full_file_path)
+
+    def list_counter_in_a_configuration_file(self, file_name):
+        """List all counters in a configuration file"""
+        full_file_path = self.get_full_file_path(file_name)
+        data = self.read_yaml(full_file_path)
+        print("Counters in: {}".format(file_name))
+        for counter in data:
+            print(counter)
+
+    def add_counters_to_a_file(self, file_name, counters):
+        """Add counters to a config file"""
+        full_file_path = self.get_full_file_path(file_name)
+        data = self.read_yaml(full_file_path)
+        if isinstance(data, list):
+            for counter in counters:
+                if counter not in data:
+                    data.append(counter)
+            self.write_yaml(data, full_file_path)
+        else:
+            list_ = []
+            for counter in counters:
+                if counter not in list_:
+                    list_.append(counter)
+            self.write_yaml(list_, full_file_path)
+
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
         if arguments["list"]:
             self.list_configuration_files()
 
-        if args.list_all_counters:
+        if arguments["list_all_counters"]:
             self.list_all_counters()
 
-        # if args.set_default:
-        #     dict_args["default_counters"] = prefix + args.set_default + sufix
-        #     du.write(dict_args)
+        if arguments["set_default"]:
+            self.set_default_counters(arguments["set_default"])
 
-        # if args.new:
-        #     file_name = args.new
-        #     os.system("touch $HOME/.config/scan-utils/{}".format(prefix + file_name + sufix))
+        if arguments["new"]:
+            self.create_new_configuration_file(arguments["new"])
 
-        # if isinstance(args.list_counters, list):
-        #     file_name = args.list_counters[0]
-        #     complete_file = prefix + file_name + sufix
-        #     user_configs = os.listdir(path)
-        #     sys_configs = os.listdir(sys_path)
-        #     if complete_file in user_configs:
-        #         path_to_use = path
-        #     elif complete_file in sys_configs:
-        #         path_to_use = sys_path
+        if isinstance(arguments["list_counters"], list):
+            for file in arguments["list_counters"]:
+                self.list_counter_in_a_configuration_file(file)
 
-        #     data = read_yaml(filepath=path_to_use + complete_file)
-        #     for counter in data:
-        #         print(counter)
-
-        # if args.add_counter:
-        #     file_name = args.add_counter[0]
-        #     complete_file = prefix + file_name + sufix
-        #     user_configs = os.listdir(path)
-        #     sys_configs = os.listdir(sys_path)
-        #     if complete_file in user_configs:
-        #         path_to_use = path
-        #     elif complete_file in sys_configs:
-        #         path_to_use = sys_path
-
-        #     data = read_yaml(filepath=path_to_use + complete_file)
-
-        #     if isinstance(data, list):
-        #         for counter in args.add_counter[1:]:
-        #             if counter not in data:
-        #                 data.append(counter)
-        #         write_yaml(data, filepath=path_to_use + complete_file)
-        #     else:
-        #         list_ = []
-        #         for counter in args.add_counter[1:]:
-        #             if counter not in list_:
-        #                 list_.append(counter)
-        #         write_yaml(list_, filepath=path_to_use + complete_file)
+        if arguments["add_counter"]:
+            self.add_counters_to_a_file(arguments["add_counter"][0], arguments["add_counter"][1:])
 
         # if args.remove_counter:
         #     file_name = args.remove_counter[0]
@@ -196,7 +227,7 @@ class ManageCounters(ExperimentBase):
 
 @daf_log
 def main() -> None:
-    obj = ExperimentConfiguration()
+    obj = ManageCounters()
     obj.run_cmd(obj.parsed_args_dict)
 
 
@@ -204,22 +235,8 @@ if __name__ == "__main__":
     main()
 
 
-path = du.HOME + "/.config/scan-utils/"
-sys_path = "/etc/xdg/scan-utils/"
-DEFAULT = path + "config.yml"
-prefix = "config."
-sufix = ".yml"
 
 
-def read_yaml(filepath=DEFAULT):
-    with open(filepath) as file:
-        data = yaml.safe_load(file)
-        return data
-
-
-def write_yaml(dict_, filepath=DEFAULT):
-    with open(filepath, "w") as file:
-        yaml.dump(dict_, file)
 
 
 
