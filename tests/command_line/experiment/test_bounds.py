@@ -11,6 +11,7 @@ from daf.command_line.experiment.bounds import Bounds, main
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
+
 class TestDAF(unittest.TestCase):
     def setUp(self):
         pass
@@ -166,7 +167,7 @@ class TestDAF(unittest.TestCase):
         dict_now = du.read()
         assert dict_now["bound_Mu"][0] == obj.DEFAULT_BOUNDS["bound_Mu"][0]
         assert dict_now["bound_Mu"][1] == obj.DEFAULT_BOUNDS["bound_Mu"][1]
-        assert dict_now["bound_Eta"][0] == obj.DEFAULT_BOUNDS["bound_Eta"][0]  
+        assert dict_now["bound_Eta"][0] == obj.DEFAULT_BOUNDS["bound_Eta"][0]
         assert dict_now["bound_Eta"][1] == obj.DEFAULT_BOUNDS["bound_Eta"][1]
         assert dict_now["bound_Chi"][0] == obj.DEFAULT_BOUNDS["bound_Chi"][0]
         assert dict_now["bound_Chi"][1] == obj.DEFAULT_BOUNDS["bound_Chi"][1]
@@ -180,6 +181,11 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_anything_THEN_search_for_problems(
         self,
     ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-m", "-3", "30"] 
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-m",
+            "-3",
+            "30",
+        ]
         with patch.object(sys, "argv", testargs):
             main()

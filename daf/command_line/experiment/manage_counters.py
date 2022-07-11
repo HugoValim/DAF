@@ -15,7 +15,6 @@ from daf.command_line.experiment.experiment_utils import ExperimentBase
 
 class ManageCounters(ExperimentBase):
     DESC = """Manage counter configuration files"""
-
     EPI = """
     Eg:
        daf.mc -s default
@@ -24,10 +23,8 @@ class ManageCounters(ExperimentBase):
        daf.mc -r my_setup1 my_setup2 my_setup3
        daf.mc -rc new_config counter1 
         """
-
     YAML_PREFIX = "config."
     YAML_SUFIX = ".yml"
-
 
     def __init__(self):
         super().__init__()
@@ -46,7 +43,9 @@ class ManageCounters(ExperimentBase):
         self.parser.add_argument(
             "-n", "--new", metavar="config name", type=str, help="Create a new setup"
         )
-        self.parser.add_argument("-r", "--remove", metavar="file", nargs="*", help="Remove a setup")
+        self.parser.add_argument(
+            "-r", "--remove", metavar="file", nargs="*", help="Remove a setup"
+        )
         self.parser.add_argument(
             "-a",
             "--add_counter",
@@ -119,7 +118,9 @@ class ManageCounters(ExperimentBase):
         user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
         sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
         all_configs = user_configs + sys_configs
-        configs = [i for i in all_configs if len(i.split(".")) == 3 and i.endswith(".yml")]
+        configs = [
+            i for i in all_configs if len(i.split(".")) == 3 and i.endswith(".yml")
+        ]
         configs.sort()
         for i in configs:
             print(i.split(".")[1])
@@ -135,8 +136,9 @@ class ManageCounters(ExperimentBase):
 
     def set_default_counters(self, default_counter: str):
         """Set the file that should be used in the further scans"""
-        self.experiment_file_dict["default_counters"] = self.YAML_PREFIX + default_counter + self.YAML_SUFIX
-        du.write(self.experiment_file_dict)
+        self.experiment_file_dict["default_counters"] = (
+            self.YAML_PREFIX + default_counter + self.YAML_SUFIX
+        )
 
     def create_new_configuration_file(self, file_name: str):
         """Create a new empty configuration counter file, counters should be added in advance."""
@@ -152,7 +154,7 @@ class ManageCounters(ExperimentBase):
         for counter in data:
             print(counter)
 
-    def add_counters_to_a_file(self, file_name, counters):
+    def add_counters_to_a_file(self, file_name: str, counters: list):
         """Add counters to a config file"""
         full_file_path = self.get_full_file_path(file_name)
         data = self.read_yaml(full_file_path)
@@ -167,6 +169,28 @@ class ManageCounters(ExperimentBase):
                 if counter not in list_:
                     list_.append(counter)
             self.write_yaml(list_, full_file_path)
+
+    def remove_counters_from_file(self, file_name: str, counters: list):
+        """Remove counters from a configuragtion file"""
+        full_file_path = self.get_full_file_path(file_name)
+        data = self.read_yaml(full_file_path)
+        if isinstance(data, list):
+            for counter in counters:
+                if counter in data:
+                    data.remove(counter)
+        self.write_yaml(data, full_file_path)
+
+    def set_main_counter(self, counter: str):
+        """
+        Sets de main counter that will be used in the scans. This will set the counter
+        thats going to be shown in the main tab in the DAF live view (daf.live)
+        """
+        self.experiment_file_dict["main_scan_counter"] = counter
+
+    def delete_configuration_file(self, file_name: str):
+        """Delete a configuration file configuration. Sometimes it wont be possible to delete a sys conf file"""
+        full_file_path = self.get_full_file_path(file_name)
+        os.remove(full_file_path)
 
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
@@ -188,42 +212,24 @@ class ManageCounters(ExperimentBase):
                 self.list_counter_in_a_configuration_file(file)
 
         if arguments["add_counter"]:
-            self.add_counters_to_a_file(arguments["add_counter"][0], arguments["add_counter"][1:])
+            self.add_counters_to_a_file(
+                arguments["add_counter"][0], arguments["add_counter"][1:]
+            )
 
-        # if args.remove_counter:
-        #     file_name = args.remove_counter[0]
-        #     complete_file = prefix + file_name + sufix
-        #     user_configs = os.listdir(path)
-        #     sys_configs = os.listdir(sys_path)
-        #     if complete_file in user_configs:
-        #         path_to_use = path
-        #     elif complete_file in sys_configs:
-        #         path_to_use = sys_path
+        if arguments["remove_counter"]:
+            self.remove_counters_from_file(
+                arguments["remove_counter"][0], arguments["remove_counter"][1:]
+            )
 
-        #     data = read_yaml(filepath=path_to_use + complete_file)
+        if arguments["main_counter"]:
+            self.set_main_counter(arguments["main_counter"])
 
-        #     if isinstance(data, list):
-        #         for counter in args.remove_counter[1:]:
-        #             if counter in data:
-        #                 data.remove(counter)
+        if arguments["remove"]:
+            for file in arguments["remove"]:
+                self.delete_user_configuration_file(file)
 
-        #     write_yaml(data, filepath=path_to_use + complete_file)
+        du.write(self.experiment_file_dict)
 
-        # if args.main_counter:
-        #     dict_args["main_scan_counter"] = args.main_counter
-        #     du.write(dict_args)
-
-
-        # if args.remove:
-        #     for file in args.remove:
-        #         complete_file = prefix + file + sufix
-        #         user_configs = os.listdir(path)
-        #         sys_configs = os.listdir(sys_path)
-        #         if complete_file in user_configs:
-        #             path_to_use = path
-        #         elif complete_file in sys_configs:
-        #             path_to_use = sys_path
-        #         os.system('rm -f "{}"'.format(path_to_use + complete_file))
 
 @daf_log
 def main() -> None:
@@ -233,10 +239,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
