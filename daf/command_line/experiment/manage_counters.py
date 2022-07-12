@@ -30,6 +30,7 @@ class ManageCounters(ExperimentBase):
         super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
+        self.write_flag = False
 
     def parse_command_line(self):
         super().parse_command_line()
@@ -139,6 +140,7 @@ class ManageCounters(ExperimentBase):
         self.experiment_file_dict["default_counters"] = (
             self.YAML_PREFIX + default_counter + self.YAML_SUFIX
         )
+        self.write_flag = True
 
     def create_new_configuration_file(self, file_name: str):
         """Create a new empty configuration counter file, counters should be added in advance."""
@@ -174,10 +176,9 @@ class ManageCounters(ExperimentBase):
         """Remove counters from a configuragtion file"""
         full_file_path = self.get_full_file_path(file_name)
         data = self.read_yaml(full_file_path)
-        if isinstance(data, list):
-            for counter in counters:
-                if counter in data:
-                    data.remove(counter)
+        for counter in counters:
+            if counter in data:
+                data.remove(counter)
         self.write_yaml(data, full_file_path)
 
     def set_main_counter(self, counter: str):
@@ -186,6 +187,7 @@ class ManageCounters(ExperimentBase):
         thats going to be shown in the main tab in the DAF live view (daf.live)
         """
         self.experiment_file_dict["main_scan_counter"] = counter
+        self.write_flag = True
 
     def delete_configuration_file(self, file_name: str):
         """Delete a configuration file configuration. Sometimes it wont be possible to delete a sys conf file"""
@@ -195,21 +197,11 @@ class ManageCounters(ExperimentBase):
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        if arguments["list"]:
-            self.list_configuration_files()
-
-        if arguments["list_all_counters"]:
-            self.list_all_counters()
-
         if arguments["set_default"]:
             self.set_default_counters(arguments["set_default"])
 
         if arguments["new"]:
             self.create_new_configuration_file(arguments["new"])
-
-        if isinstance(arguments["list_counters"], list):
-            for file in arguments["list_counters"]:
-                self.list_counter_in_a_configuration_file(file)
 
         if arguments["add_counter"]:
             self.add_counters_to_a_file(
@@ -226,9 +218,20 @@ class ManageCounters(ExperimentBase):
 
         if arguments["remove"]:
             for file in arguments["remove"]:
-                self.delete_user_configuration_file(file)
+                self.delete_configuration_file(file)
 
-        du.write(self.experiment_file_dict)
+        if arguments["list"]:
+            self.list_configuration_files()
+
+        if arguments["list_all_counters"]:
+            self.list_all_counters()
+
+        if isinstance(arguments["list_counters"], list):
+            for file in arguments["list_counters"]:
+                self.list_counter_in_a_configuration_file(file)
+
+        if self.write_flag:
+            du.write(self.experiment_file_dict)
 
 
 @daf_log

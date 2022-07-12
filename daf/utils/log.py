@@ -1,6 +1,8 @@
 import os
 import sys
 
+LOG_FILE_NAME = "Log"
+
 
 def daf_log(func):
     """Function to be used as a decorator. It builds the log file"""
@@ -8,11 +10,11 @@ def daf_log(func):
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
         # Do the log
-        log = sys.argv.pop(0).split("command_line/")[1]
+        log_message = sys.argv.pop(0).split("command_line/")[1]
         for i in sys.argv:
-            log += " " + i
-        os.system("echo {} >> Log".format(log))
-
+            log_message += " " + i
+        with open(LOG_FILE_NAME, "a") as file_object:
+            file_object.write(log_message + "\n")
     return wrapper
 
 
