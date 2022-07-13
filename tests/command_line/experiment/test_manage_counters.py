@@ -152,7 +152,7 @@ class TestDAF(unittest.TestCase):
         obj.get_full_file_path(param[0])
         full_file_path = obj.get_full_file_path(param[0])
         data = obj.read_yaml(full_file_path)
-        assert param[1] in data
+        assert param[1] not in data
 
     def test_GIVEN_cli_argument_WHEN_inputing_remove_THEN_check_if_the_file_was_created(
         self,
@@ -286,9 +286,23 @@ class TestDAF(unittest.TestCase):
     #     assert 11 == dict_now["cons_qaz"]
     #     assert 12 == dict_now["cons_naz"]
 
-    def test_GIVEN_cli_argument_WHEN_inputing_anything_THEN_search_for_problems(
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_test_for_problems(
         self,
     ):
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-l"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_list_all_counters_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-lac"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_list_counters_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-n", "test_list", "-lc", "test_list"]
         with patch.object(sys, "argv", testargs):
             main()
