@@ -43,86 +43,74 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_set_default_THEN_check_parsed_args(
         self,
     ):
-        obj = self.make_obj(["-s", "test_counter"])
-        assert obj.parsed_args_dict['set_default'] == "test_counter"
+        arg = "-s"
+        full_arg = 'set_default'
+        param = "test_counter"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == param
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_eta_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-e", "2"])
-    #     assert obj.parsed_args_dict["cons_Eta"] == 2.0
+    def test_GIVEN_cli_argument_WHEN_inputing_new_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-n"
+        full_arg = 'new'
+        param = "test_counter"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == param
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_chi_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-c", "3"])
-    #     assert obj.parsed_args_dict["cons_Chi"] == 3.0
+    def test_GIVEN_cli_argument_WHEN_inputing_add_counter_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-a"
+        full_arg = 'add_counter'
+        param = "test_counter"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == [param]
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_phi_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-p", "4"])
-    #     assert obj.parsed_args_dict["cons_Phi"] == 4.0
+    def test_GIVEN_cli_argument_WHEN_inputing_remove_counter_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-rc"
+        full_arg = 'remove_counter'
+        param = "test_counter"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == [param]
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_nu_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-n", "5"])
-    #     assert obj.parsed_args_dict["cons_Nu"] == 5.0
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-l"
+        full_arg = 'list'
+        param = True
+        obj = self.make_obj([arg])
+        assert obj.parsed_args_dict[full_arg] == param
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_del_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-d", "6"])
-    #     assert obj.parsed_args_dict["cons_Del"] == 6.0
+    def test_GIVEN_cli_argument_WHEN_inputing_list_counters_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-lc"
+        full_arg = 'list_counters'
+        param = "test_counters"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == [param]
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_alpha_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-a", "7"])
-    #     assert obj.parsed_args_dict["cons_alpha"] == 7.0
+    def test_GIVEN_cli_argument_WHEN_inputing_list_all_counters_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-lac"
+        full_arg = 'list_all_counters'
+        param = True
+        obj = self.make_obj([arg])
+        assert obj.parsed_args_dict[full_arg] == param
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_beta_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-b", "8"])
-    #     assert obj.parsed_args_dict["cons_beta"] == 8.0
-
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_psi_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-psi", "9"])
-    #     assert obj.parsed_args_dict["cons_psi"] == 9.0
-
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_omega_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-o", "10"])
-    #     assert obj.parsed_args_dict["cons_omega"] == 10.0
-
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_qaz_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-q", "11"])
-    #     assert obj.parsed_args_dict["cons_qaz"] == 11.0
-
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_naz_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-cnaz", "12"])
-    #     assert obj.parsed_args_dict["cons_naz"] == 12.0
-
-    # def test_GIVEN_cli_argument_WHEN_inputing_reset_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-r"])
-    #     assert obj.parsed_args_dict["Reset"] == True
-
-    # def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_check_parsed_args(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-l"])
-    #     assert obj.parsed_args_dict["List"] == True
+    def test_GIVEN_cli_argument_WHEN_inputing_main_counter_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-m"
+        full_arg = 'main_counter'
+        param = "test_counter"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == param
 
     # def test_GIVEN_cli_argument_WHEN_inputing_cons_mu_THEN_check_if_it_was_written_correctly(
     #     self,
