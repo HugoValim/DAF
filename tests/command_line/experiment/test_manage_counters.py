@@ -139,6 +139,21 @@ class TestDAF(unittest.TestCase):
         data = obj.read_yaml(full_file_path)
         assert param[1] in data
 
+    def test_GIVEN_cli_argument_WHEN_inputing_delte_counter_THEN_check_if_it_was_written(
+        self,
+    ):
+        arg = "-rc"
+        full_arg = 'remove_counter'
+        param = ["test_delete", "ringcurrent"]
+        obj = self.make_obj([arg, param[0], param[1]])
+        obj.create_new_configuration_file(param[0])
+        obj.add_counters_to_a_file(param[0], [param[1]])
+        obj.run_cmd(obj.parsed_args_dict)
+        obj.get_full_file_path(param[0])
+        full_file_path = obj.get_full_file_path(param[0])
+        data = obj.read_yaml(full_file_path)
+        assert param[1] in data
+
     def test_GIVEN_cli_argument_WHEN_inputing_remove_THEN_check_if_the_file_was_created(
         self,
     ):
