@@ -9,6 +9,7 @@ import numpy as np
 import daf.utils.dafutilities as du
 from daf.command_line.experiment.manage_counters import ManageCounters, main
 import daf.utils.generate_daf_default as gdd
+from daf.utils import daf_paths as dp
 from daf.core.main import DAF
 
 
@@ -112,14 +113,44 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, param])
         assert obj.parsed_args_dict[full_arg] == param
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_cons_mu_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-m", "1"])
-    #     assert obj.parsed_args_dict["cons_Mu"] == 1.0
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert 1.0 == dict_now["cons_Mu"]
+    def test_GIVEN_cli_argument_WHEN_inputing_new_THEN_check_if_the_file_was_created(
+        self,
+    ):
+        arg = "-n"
+        full_arg = 'new'
+        param = "new_config"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == param
+        obj.run_cmd(obj.parsed_args_dict)
+        full_file_path = obj.get_full_file_path(param)
+        assert os.path.isfile(full_file_path) 
+
+    def test_GIVEN_cli_argument_WHEN_inputing_add_counter_THEN_check_if_it_was_written(
+        self,
+    ):
+        arg = "-a"
+        full_arg = 'add_counter'
+        param = ["test_add", "ringcurrent"]
+        obj = self.make_obj([arg, param[0], param[1]])
+        obj.create_new_configuration_file(param[0])
+        obj.run_cmd(obj.parsed_args_dict)
+        obj.get_full_file_path(param[0])
+        full_file_path = obj.get_full_file_path(param[0])
+        data = obj.read_yaml(full_file_path)
+        assert param[1] in data
+
+    def test_GIVEN_cli_argument_WHEN_inputing_remove_THEN_check_if_the_file_was_created(
+        self,
+    ):
+        arg = "-r"
+        full_arg = 'remove'
+        param = "file_to_remove"
+        obj = self.make_obj([arg, param])
+        assert obj.parsed_args_dict[full_arg] == [param]
+        obj.create_new_configuration_file("file_to_remove")
+        obj.run_cmd(obj.parsed_args_dict)
+        full_file_path = obj.get_full_file_path(param)
+        assert os.path.isfile(full_file_path) == False 
 
     # def test_GIVEN_cli_argument_WHEN_inputing_cons_eta_THEN_check_if_it_was_written_correctly(
     #     self,

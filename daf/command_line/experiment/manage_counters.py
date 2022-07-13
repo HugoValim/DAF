@@ -106,10 +106,10 @@ class ManageCounters(ExperimentBase):
         yaml_file_name = self.YAML_PREFIX + file_name + self.YAML_SUFIX
         user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
         sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
-        if yaml_file_name in user_configs:
-            path_to_use = dp.SCAN_UTILS_USER_PATH
-        elif yaml_file_name in sys_configs:
+        if yaml_file_name in sys_configs:
             path_to_use = dp.SCAN_UTILS_SYS_PATH
+        else:
+            path_to_use = dp.SCAN_UTILS_USER_PATH
         full_file_path = path.join(path_to_use, yaml_file_name)
         return full_file_path
 
