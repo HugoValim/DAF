@@ -91,13 +91,13 @@ class ManageCounters(ExperimentBase):
         return args
 
     @staticmethod
-    def read_yaml(file_path: str):
+    def read_yaml(file_path: str) -> list:
         with open(file_path) as file:
             data = yaml.safe_load(file)
             return data
 
     @staticmethod
-    def write_yaml(list_: list, file_path: str):
+    def write_yaml(list_: list, file_path: str) -> None:
         with open(file_path, "w") as file:
             yaml.dump(list_, file)
 
@@ -114,7 +114,7 @@ class ManageCounters(ExperimentBase):
         return full_file_path
 
     @staticmethod
-    def list_configuration_files():
+    def list_configuration_files() -> None:
         """List all configuration files, both user and system configuration."""
         user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
         sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
@@ -127,7 +127,7 @@ class ManageCounters(ExperimentBase):
             print(i.split(".")[1])
 
     @staticmethod
-    def list_all_counters():
+    def list_all_counters() -> None:
         """List all available counters for the current beamline"""
         with open(dp.DEFAULT_SCAN_UTILS_CONFIG) as conf:
             config_data = yaml.safe_load(conf)
@@ -135,20 +135,20 @@ class ManageCounters(ExperimentBase):
         for i in counters:
             print(i)
 
-    def set_default_counters(self, default_counter: str):
+    def set_default_counters(self, default_counter: str) -> None:
         """Set the file that should be used in the further scans"""
         self.experiment_file_dict["default_counters"] = (
             self.YAML_PREFIX + default_counter + self.YAML_SUFIX
         )
         self.write_flag = True
 
-    def create_new_configuration_file(self, file_name: str):
+    def create_new_configuration_file(self, file_name: str) -> None:
         """Create a new empty configuration counter file, counters should be added in advance."""
         yaml_file_name = self.YAML_PREFIX + file_name + self.YAML_SUFIX
         full_file_path = path.join(dp.SCAN_UTILS_USER_PATH, yaml_file_name)
         self.write_yaml([], full_file_path)
 
-    def list_counter_in_a_configuration_file(self, file_name):
+    def list_counter_in_a_configuration_file(self, file_name: str) -> None:
         """List all counters in a configuration file"""
         full_file_path = self.get_full_file_path(file_name)
         data = self.read_yaml(full_file_path)
@@ -156,7 +156,7 @@ class ManageCounters(ExperimentBase):
         for counter in data:
             print(counter)
 
-    def add_counters_to_a_file(self, file_name: str, counters: list):
+    def add_counters_to_a_file(self, file_name: str, counters: list) -> None:
         """Add counters to a config file"""
         full_file_path = self.get_full_file_path(file_name)
         data = self.read_yaml(full_file_path)
@@ -172,7 +172,7 @@ class ManageCounters(ExperimentBase):
                     list_.append(counter)
             self.write_yaml(list_, full_file_path)
 
-    def remove_counters_from_file(self, file_name: str, counters: list):
+    def remove_counters_from_file(self, file_name: str, counters: list) -> None:
         """Remove counters from a configuragtion file"""
         full_file_path = self.get_full_file_path(file_name)
         data = self.read_yaml(full_file_path)
@@ -181,7 +181,7 @@ class ManageCounters(ExperimentBase):
                 data.remove(counter)
         self.write_yaml(data, full_file_path)
 
-    def set_main_counter(self, counter: str):
+    def set_main_counter(self, counter: str) -> None:
         """
         Sets de main counter that will be used in the scans. This will set the counter
         thats going to be shown in the main tab in the DAF live view (daf.live)
