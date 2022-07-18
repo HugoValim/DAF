@@ -307,15 +307,53 @@ class CalcUB(ExperimentBase):
     def calculate_u_mat_from_2_reflections(self, idx_reflection_1: int, idx_reflection_2: int) -> None:
         """Calculate U matrix from 2 reflection and write it"""
         refs = self.experiment_file_dict["reflections"]
+
         index_first_reflection = idx_reflection_1 - 1
         hkl1 = refs[index_first_reflection][:3]
         angs1 = refs[index_first_reflection][3:-1]
+
         index_second_reflection = idx_reflection_2 - 1
         hkl2 = refs[index_second_reflection][:3]
         angs2 = refs[index_second_reflection][3:-1]
+
         U, UB = self.exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
         self.experiment_file_dict["U_mat"] = U.tolist()
         self.experiment_file_dict["UB_mat"] = UB.tolist()
+        self.write_flag = True
+
+    def calculate_u_mat_from_3_reflections(self, idx_reflection_1: int, idx_reflection_2: int, idx_reflection_3: int) -> None:
+        """Calculate U matrix from 3 reflection and write it"""
+        refs = self.experiment_file_dict["reflections"]
+
+        index_first_reflection = idx_reflection_1 - 1
+        hkl1 = refs[index_first_reflection][:3]
+        angs1 = refs[index_first_reflection][3:-1]
+        e1 = refs[index_first_reflection][9]
+
+        index_second_reflection = idx_reflection_2 - 1
+        hkl2 = refs[index_second_reflection][:3]
+        angs2 = refs[index_second_reflection][3:-1]
+        e2 = refs[index_second_reflection][9]
+
+        index_third_reflection = idx_reflection_3 - 1
+        hkl3 = refs[index_third_reflection][:3]
+        angs3 = refs[index_third_reflection][3:-1]
+        e3 = refs[index_third_reflection][9]
+
+        average_energy = (e1 + e2 + e3) / 3
+        self.exp.set_exp_conditions(en=average_energy)
+        U, UB, calculated_lattice_parameters = self.exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
+        float_lp = [
+            float(i) for i in calculated_lattice_parameters
+        ]  # Problems when saving numpy64floats, better to use python's float
+        self.experiment_file_dict["U_mat"] = U.tolist()
+        self.experiment_file_dict["UB_mat"] = UB.tolist()
+        self.experiment_file_dict["lparam_a"] = float_lp[0]
+        self.experiment_file_dict["lparam_b"] = float_lp[1]
+        self.experiment_file_dict["lparam_c"] = float_lp[2]
+        self.experiment_file_dict["lparam_alpha"] = float_lp[3]
+        self.experiment_file_dict["lparam_beta"] = float_lp[4]
+        self.experiment_file_dict["lparam_gama"] = float_lp[5]
         self.write_flag = True
 
     def run_cmd(self, arguments: dict) -> None:
@@ -335,6 +373,8 @@ class CalcUB(ExperimentBase):
             self.clear_all_stored_reflections()
         if arguments["Calc2"] is not None:
             self.calculate_u_mat_from_2_reflections(arguments["Calc2"][0], arguments["Calc2"][1])
+        if arguments["Calc3"] is not None:
+            self.calculate_u_mat_from_3_reflections(arguments["Calc3"][0], arguments["Calc3"][1], arguments["Calc3"][2])
         if arguments["Show"]:
             u_to_print, ub_to_print = self.build_u_and_ub_print()
             print("{} \n \n {} \n".format(u_to_print, ub_to_print))
@@ -358,40 +398,6 @@ if __name__ == "__main__":
 
 
 
-    
-
-# if args.Calc3 is not None:
-#     self.experiment_file_dict = du.read()
-#     refs = self.experiment_file_dict["reflections"]
-#     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
-#     exp = daf.Control(*mode)
-#     # self.exp.set_material(self.experiment_file_dict['Material'])
-
-#     hkl1 = refs[args.Calc3[0] - 1][:3]
-#     angs1 = refs[args.Calc3[0] - 1][3:-1]
-#     e1 = refs[args.Calc3[0] - 1][9]
-#     hkl2 = refs[args.Calc3[1] - 1][:3]
-#     angs2 = refs[args.Calc3[1] - 1][3:-1]
-#     e2 = refs[args.Calc3[1] - 1][9]
-#     hkl3 = refs[args.Calc3[2] - 1][:3]
-#     angs3 = refs[args.Calc3[2] - 1][3:-1]
-#     e3 = refs[args.Calc3[2] - 1][9]
-#     e = (e1 + e2 + e3) / 3
-#     self.exp.set_exp_conditions(en=e)
-#     U, UB, rp = self.exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
-
-#     rpf = [
-#         float(i) for i in rp
-#     ]  # Problems when saving numpy64floats, better to use python's float
-#     self.experiment_file_dict["U_mat"] = U.tolist()
-#     self.experiment_file_dict["UB_mat"] = UB.tolist()
-#     self.experiment_file_dict["lparam_a"] = rpf[0]
-#     self.experiment_file_dict["lparam_b"] = rpf[1]
-#     self.experiment_file_dict["lparam_c"] = rpf[2]
-#     self.experiment_file_dict["lparam_alpha"] = rpf[3]
-#     self.experiment_file_dict["lparam_beta"] = rpf[4]
-#     self.experiment_file_dict["lparam_gama"] = rpf[5]
-#     du.write(self.experiment_file_dict)
 
 # if args.fit:
 #     self.experiment_file_dict = du.read()
