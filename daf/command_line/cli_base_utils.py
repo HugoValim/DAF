@@ -34,7 +34,10 @@ class CLIBase:
         phi_bound = self.experiment_file_dict["bound_Phi"]
         nu_bound = self.experiment_file_dict["bound_Nu"]
         del_bound = self.experiment_file_dict["bound_Del"]
-        self.en = self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"]
+        self.en = (
+            self.experiment_file_dict["PV_energy"]
+            - self.experiment_file_dict["energy_offset"]
+        )
 
         exp = DAF(*mode)
         if (

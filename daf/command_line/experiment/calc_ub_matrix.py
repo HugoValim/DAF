@@ -304,7 +304,9 @@ class CalcUB(ExperimentBase):
         print("gamma    =    {}".format(self.experiment_file_dict["lparam_gama"]))
         print("")
 
-    def calculate_u_mat_from_2_reflections(self, idx_reflection_1: int, idx_reflection_2: int) -> None:
+    def calculate_u_mat_from_2_reflections(
+        self, idx_reflection_1: int, idx_reflection_2: int
+    ) -> None:
         """Calculate U matrix from 2 reflection and write it"""
         refs = self.experiment_file_dict["reflections"]
 
@@ -321,7 +323,9 @@ class CalcUB(ExperimentBase):
         self.experiment_file_dict["UB_mat"] = UB.tolist()
         self.write_flag = True
 
-    def calculate_u_mat_from_3_reflections(self, idx_reflection_1: int, idx_reflection_2: int, idx_reflection_3: int) -> None:
+    def calculate_u_mat_from_3_reflections(
+        self, idx_reflection_1: int, idx_reflection_2: int, idx_reflection_3: int
+    ) -> None:
         """Calculate U matrix from 3 reflection and write it"""
         refs = self.experiment_file_dict["reflections"]
 
@@ -342,7 +346,9 @@ class CalcUB(ExperimentBase):
 
         average_energy = (e1 + e2 + e3) / 3
         self.exp.set_exp_conditions(en=average_energy)
-        U, UB, calculated_lattice_parameters = self.exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
+        U, UB, calculated_lattice_parameters = self.exp.calc_U_3HKL(
+            hkl1, angs1, hkl2, angs2, hkl3, angs3
+        )
         float_lp = [
             float(i) for i in calculated_lattice_parameters
         ]  # Problems when saving numpy64floats, better to use python's float
@@ -368,7 +374,7 @@ class CalcUB(ExperimentBase):
         self.write_flag = True
 
     def run_cmd(self, arguments: dict) -> None:
-        """Method to be defined be each subclass, this is the method
+        """Method to be defined by each subclass, this is the method
         that should be run when calling the cli interface"""
         if arguments["Umatrix"]:
             self.set_u_matrix(arguments["Umatrix"])
@@ -383,9 +389,13 @@ class CalcUB(ExperimentBase):
         if arguments["clear_all"]:
             self.clear_all_stored_reflections()
         if arguments["Calc2"] is not None:
-            self.calculate_u_mat_from_2_reflections(arguments["Calc2"][0], arguments["Calc2"][1])
+            self.calculate_u_mat_from_2_reflections(
+                arguments["Calc2"][0], arguments["Calc2"][1]
+            )
         if arguments["Calc3"] is not None:
-            self.calculate_u_mat_from_3_reflections(arguments["Calc3"][0], arguments["Calc3"][1], arguments["Calc3"][2])
+            self.calculate_u_mat_from_3_reflections(
+                arguments["Calc3"][0], arguments["Calc3"][1], arguments["Calc3"][2]
+            )
         if arguments["fit"]:
             self.fit_u_matrix()
         if arguments["Show"]:
