@@ -32,7 +32,7 @@ class CalcUB(ExperimentBase):
         super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
-        self.build_exp()
+        self.exp = self.build_exp()
         self.write_flag = False
 
     def parse_command_line(self):
@@ -118,8 +118,24 @@ class CalcUB(ExperimentBase):
         args = self.parser.parse_args()
         return args
 
+    def set_u_matrix(self, u_list: list) -> None:
+        """Set U matrix based in the user input"""
+        U = np.array(u_list).reshape(3, 3)
+        self.exp.set_U(U)
+        UB = self.exp.calcUB()
+        self.experiment_file_dict[
+            "U_mat"
+        ] = (
+            U.tolist()
+        )  # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+        self.experiment_file_dict[
+            "UB_mat"
+        ] = (
+            UB.tolist()
+        )  # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+        self.write_flag = True
 
-    def set_ub(self, ub_list: list) -> None:
+    def set_ub_matrix(self, ub_list: list) -> None:
         """Set UB matrix based in the user input"""
         UB = np.array(ub_list).reshape(3, 3)
         self.experiment_file_dict["UB_mat"] = UB.tolist()
@@ -156,6 +172,11 @@ class CalcUB(ExperimentBase):
         for idx in index_list:
             reflection_list.pop(idx - 1)
         self.experiment_file_dict["reflections"] = reflection_list
+        self.write_flag = True
+
+    def clear_all_stored_reflections(self):
+        """Clear all stored reflections"""
+        self.experiment_file_dict["reflections"] = []
         self.write_flag = True
 
     def build_u_and_ub_print(self) -> tuple:
@@ -283,17 +304,26 @@ class CalcUB(ExperimentBase):
         print("gamma    =    {}".format(self.experiment_file_dict["lparam_gama"]))
         print("")
 
+    def calculate_u_mat_from_2_reflections(self, ):
+        """Calculate U matrix from 2 reflection and write it"""
+        pass
+
+
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
+        if arguments["Umatrix"]:
+            self.set_u_matrix(arguments["Umatrix"])
         if arguments["UBmatrix"]:
-            self.set_ub(arguments["UBmatrix"])
+            self.set_ub_matrix(arguments["UBmatrix"])
         if arguments["reflection"] is not None:
             self.store_reflections(arguments["reflection"])
         if arguments["reflection_now"] is not None:
             self.store_current_reflection(arguments["reflection_now"])
         if arguments["clear_reflections"] is not None:
             self.clear_stored_reflection(arguments["clear_reflections"])
+        if arguments["clear_all"]:
+            self.clear_all_stored_reflections()
         if arguments["Show"]:
             u_to_print, ub_to_print = self.build_u_and_ub_print()
             print("{} \n \n {} \n".format(u_to_print, ub_to_print))
@@ -316,66 +346,13 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
-
-
-
-
-
-# if args.clear_all:
-#     self.experiment_file_dict = du.read()
-#     self.experiment_file_dict["reflections"] = []
-#     du.write(self.experiment_file_dict)
-
-# if args.Umatrix:
-#     self.experiment_file_dict = du.read()
-#     U = np.array(args.Umatrix).reshape(3, 3)
-#     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
-
-#     exp = daf.Control(*mode)
-
-#     if self.experiment_file_dict["Material"] in self.experiment_file_dict["user_samples"].keys():
-#         exp.set_material(
-#             self.experiment_file_dict["Material"], *self.experiment_file_dict["user_samples"][self.experiment_file_dict["Material"]]
-#         )
-
-#     else:
-#         exp.set_material(
-#             self.experiment_file_dict["Material"],
-#             self.experiment_file_dict["lparam_a"],
-#             self.experiment_file_dict["lparam_b"],
-#             self.experiment_file_dict["lparam_c"],
-#             self.experiment_file_dict["lparam_alpha"],
-#             self.experiment_file_dict["lparam_beta"],
-#             self.experiment_file_dict["lparam_gama"],
-#         )
-
-#     # exp.set_material(self.experiment_file_dict['Material'], self.experiment_file_dict["lparam_a"], self.experiment_file_dict["lparam_b"], self.experiment_file_dict["lparam_c"], self.experiment_file_dict["lparam_alpha"], self.experiment_file_dict["lparam_beta"], self.experiment_file_dict["lparam_gama"])
-#     exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
-#     exp.set_U(U)
-#     UB = exp.calcUB()
-#     self.experiment_file_dict[
-#         "U_mat"
-#     ] = (
-#         U.tolist()
-#     )  # yaml doesn't handle numpy arrays well, so using python's list is a better choice
-#     self.experiment_file_dict[
-#         "UB_mat"
-#     ] = (
-#         UB.tolist()
-#     )  # yaml doesn't handle numpy arrays well, so using python's list is a better choice
-#     du.write(self.experiment_file_dict)
-
-
 # if args.Calc2 is not None:
 #     self.experiment_file_dict = du.read()
 #     refs = self.experiment_file_dict["reflections"]
 #     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
 
 #     exp = daf.Control(*mode)
-#     exp.set_material(
+#     self.exp.set_material(
 #         self.experiment_file_dict["Material"],
 #         self.experiment_file_dict["lparam_a"],
 #         self.experiment_file_dict["lparam_b"],
@@ -384,12 +361,12 @@ if __name__ == "__main__":
 #         self.experiment_file_dict["lparam_beta"],
 #         self.experiment_file_dict["lparam_gama"],
 #     )
-#     exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
+#     self.exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
 #     hkl1 = refs[args.Calc2[0] - 1][:3]
 #     angs1 = refs[args.Calc2[0] - 1][3:-1]
 #     hkl2 = refs[args.Calc2[1] - 1][:3]
 #     angs2 = refs[args.Calc2[1] - 1][3:-1]
-#     U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+#     U, UB = self.exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
 
 #     self.experiment_file_dict["U_mat"] = U.tolist()
 #     self.experiment_file_dict["UB_mat"] = UB.tolist()
@@ -400,7 +377,7 @@ if __name__ == "__main__":
 #     refs = self.experiment_file_dict["reflections"]
 #     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
 #     exp = daf.Control(*mode)
-#     # exp.set_material(self.experiment_file_dict['Material'])
+#     # self.exp.set_material(self.experiment_file_dict['Material'])
 
 #     hkl1 = refs[args.Calc3[0] - 1][:3]
 #     angs1 = refs[args.Calc3[0] - 1][3:-1]
@@ -412,8 +389,8 @@ if __name__ == "__main__":
 #     angs3 = refs[args.Calc3[2] - 1][3:-1]
 #     e3 = refs[args.Calc3[2] - 1][9]
 #     e = (e1 + e2 + e3) / 3
-#     exp.set_exp_conditions(en=e)
-#     U, UB, rp = exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
+#     self.exp.set_exp_conditions(en=e)
+#     U, UB, rp = self.exp.calc_U_3HKL(hkl1, angs1, hkl2, angs2, hkl3, angs3)
 
 #     rpf = [
 #         float(i) for i in rp
@@ -434,7 +411,7 @@ if __name__ == "__main__":
 #     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
 
 #     exp = daf.Control(*mode)
-#     exp.set_material(
+#     self.exp.set_material(
 #         self.experiment_file_dict["Material"],
 #         self.experiment_file_dict["lparam_a"],
 #         self.experiment_file_dict["lparam_b"],
@@ -443,15 +420,15 @@ if __name__ == "__main__":
 #         self.experiment_file_dict["lparam_beta"],
 #         self.experiment_file_dict["lparam_gama"],
 #     )
-#     exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
+#     self.exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
 #     U = np.array(self.experiment_file_dict["U_mat"])
 #     if self.experiment_file_dict["Material"] in self.experiment_file_dict["user_samples"].keys():
-#         exp.set_material(
+#         self.exp.set_material(
 #             self.experiment_file_dict["Material"], *self.experiment_file_dict["user_samples"][self.experiment_file_dict["Material"]]
 #         )
 
 #     else:
-#         exp.set_material(
+#         self.exp.set_material(
 #             self.experiment_file_dict["Material"],
 #             self.experiment_file_dict["lparam_a"],
 #             self.experiment_file_dict["lparam_b"],
@@ -461,7 +438,7 @@ if __name__ == "__main__":
 #             self.experiment_file_dict["lparam_gama"],
 #         )
 
-#     fitted = exp.fit_u_matrix(U, refs)
+#     fitted = self.exp.fit_u_matrix(U, refs)
 #     lbd = [[float(format_5_decimals(i)) for i in j] for j in fitted]
 #     print(np.array(lbd))
 
