@@ -34,6 +34,7 @@ class CLIBase:
         phi_bound = self.experiment_file_dict["bound_Phi"]
         nu_bound = self.experiment_file_dict["bound_Nu"]
         del_bound = self.experiment_file_dict["bound_Del"]
+        self.en = self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"]
 
         exp = DAF(*mode)
         if (
@@ -61,8 +62,7 @@ class CLIBase:
             idir=idir,
             ndir=ndir,
             rdir=rdir,
-            en=self.experiment_file_dict["PV_energy"]
-            - self.experiment_file_dict["energy_offset"],
+            en=self.en,
             sampleor=self.experiment_file_dict["Sampleor"],
         )
         exp.set_circle_constrain(
