@@ -205,7 +205,7 @@ class UBMatrix:
             Nu = ref[7]
             Del = ref[8]
 
-        calculated_matrixes = self.calculate_rotation_matrix_from_diffractometer_angles(
+        calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(
             Mu, Eta, Chi, Phi, Nu, Del
         )
 
@@ -216,7 +216,7 @@ class UBMatrix:
         NU = calculated_matrixes["nu"]
         DEL = calculated_matrixes["del"]
 
-        q_del = (NU * DEL - I) * np.array([[0], [2 * np.np.pi / wl], [0]])
+        q_del = (NU * DEL - I) * np.array([[0], [2 * np.pi / wl], [0]])
         q_vals = LA.inv(PHI) * LA.inv(CHI) * LA.inv(ETA) * LA.inv(MU) * q_del
 
         q_hkl = tmp_ub * hkl_vals
@@ -279,6 +279,6 @@ class UBMatrix:
         xr = q1 / sqrt(1.0 - q0 * q0)
         yr = q2 / sqrt(1.0 - q0 * q0)
         zr = q3 / sqrt(1.0 - q0 * q0)
-        TODEG = 180 / (2 * np.np.pi)
+        TODEG = 180 / (2 * np.pi)
         print(angle * TODEG, (xr, yr, zr), res)
         return res_u

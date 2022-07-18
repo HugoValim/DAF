@@ -356,6 +356,17 @@ class CalcUB(ExperimentBase):
         self.experiment_file_dict["lparam_gama"] = float_lp[5]
         self.write_flag = True
 
+    def fit_u_matrix(self) -> None:
+        """Do a fit using several reflections to calculate UB"""
+        refs = self.experiment_file_dict["reflections"]
+        U = np.array(self.experiment_file_dict["U_mat"])
+        fitted = self.exp.fit_u_matrix(U, refs)
+        formated_fitted = [[float(format_5_decimals(i)) for i in j] for j in fitted]
+        print(np.array(formated_fitted))
+        self.experiment_file_dict["U_mat"] = U.tolist()
+        # self.experiment_file_dict['UB_mat'] = UB.tolist()
+        self.write_flag = True
+
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
@@ -375,6 +386,8 @@ class CalcUB(ExperimentBase):
             self.calculate_u_mat_from_2_reflections(arguments["Calc2"][0], arguments["Calc2"][1])
         if arguments["Calc3"] is not None:
             self.calculate_u_mat_from_3_reflections(arguments["Calc3"][0], arguments["Calc3"][1], arguments["Calc3"][2])
+        if arguments["fit"]:
+            self.fit_u_matrix()
         if arguments["Show"]:
             u_to_print, ub_to_print = self.build_u_and_ub_print()
             print("{} \n \n {} \n".format(u_to_print, ub_to_print))
@@ -395,47 +408,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
-# if args.fit:
-#     self.experiment_file_dict = du.read()
-#     refs = self.experiment_file_dict["reflections"]
-#     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
-
-#     exp = daf.Control(*mode)
-#     self.exp.set_material(
-#         self.experiment_file_dict["Material"],
-#         self.experiment_file_dict["lparam_a"],
-#         self.experiment_file_dict["lparam_b"],
-#         self.experiment_file_dict["lparam_c"],
-#         self.experiment_file_dict["lparam_alpha"],
-#         self.experiment_file_dict["lparam_beta"],
-#         self.experiment_file_dict["lparam_gama"],
-#     )
-#     self.exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
-#     U = np.array(self.experiment_file_dict["U_mat"])
-#     if self.experiment_file_dict["Material"] in self.experiment_file_dict["user_samples"].keys():
-#         self.exp.set_material(
-#             self.experiment_file_dict["Material"], *self.experiment_file_dict["user_samples"][self.experiment_file_dict["Material"]]
-#         )
-
-#     else:
-#         self.exp.set_material(
-#             self.experiment_file_dict["Material"],
-#             self.experiment_file_dict["lparam_a"],
-#             self.experiment_file_dict["lparam_b"],
-#             self.experiment_file_dict["lparam_c"],
-#             self.experiment_file_dict["lparam_alpha"],
-#             self.experiment_file_dict["lparam_beta"],
-#             self.experiment_file_dict["lparam_gama"],
-#         )
-
-#     fitted = self.exp.fit_u_matrix(U, refs)
-#     lbd = [[float(format_5_decimals(i)) for i in j] for j in fitted]
-#     print(np.array(lbd))
-
-#     self.experiment_file_dict["U_mat"] = U.tolist()
-#     # self.experiment_file_dict['UB_mat'] = UB.tolist()
-#     du.write(self.experiment_file_dict)
