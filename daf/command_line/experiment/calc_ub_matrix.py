@@ -304,10 +304,19 @@ class CalcUB(ExperimentBase):
         print("gamma    =    {}".format(self.experiment_file_dict["lparam_gama"]))
         print("")
 
-    def calculate_u_mat_from_2_reflections(self, ):
+    def calculate_u_mat_from_2_reflections(self, idx_reflection_1: int, idx_reflection_2: int) -> None:
         """Calculate U matrix from 2 reflection and write it"""
-        pass
-
+        refs = self.experiment_file_dict["reflections"]
+        index_first_reflection = idx_reflection_1 - 1
+        hkl1 = refs[index_first_reflection][:3]
+        angs1 = refs[index_first_reflection][3:-1]
+        index_second_reflection = idx_reflection_2 - 1
+        hkl2 = refs[index_second_reflection][:3]
+        angs2 = refs[index_second_reflection][3:-1]
+        U, UB = self.exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+        self.experiment_file_dict["U_mat"] = U.tolist()
+        self.experiment_file_dict["UB_mat"] = UB.tolist()
+        self.write_flag = True
 
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
@@ -324,6 +333,8 @@ class CalcUB(ExperimentBase):
             self.clear_stored_reflection(arguments["clear_reflections"])
         if arguments["clear_all"]:
             self.clear_all_stored_reflections()
+        if arguments["Calc2"] is not None:
+            self.calculate_u_mat_from_2_reflections(arguments["Calc2"][0], arguments["Calc2"][1])
         if arguments["Show"]:
             u_to_print, ub_to_print = self.build_u_and_ub_print()
             print("{} \n \n {} \n".format(u_to_print, ub_to_print))
@@ -346,31 +357,8 @@ if __name__ == "__main__":
     main()
 
 
-# if args.Calc2 is not None:
-#     self.experiment_file_dict = du.read()
-#     refs = self.experiment_file_dict["reflections"]
-#     mode = [int(i) for i in self.experiment_file_dict["Mode"]]
 
-#     exp = daf.Control(*mode)
-#     self.exp.set_material(
-#         self.experiment_file_dict["Material"],
-#         self.experiment_file_dict["lparam_a"],
-#         self.experiment_file_dict["lparam_b"],
-#         self.experiment_file_dict["lparam_c"],
-#         self.experiment_file_dict["lparam_alpha"],
-#         self.experiment_file_dict["lparam_beta"],
-#         self.experiment_file_dict["lparam_gama"],
-#     )
-#     self.exp.set_exp_conditions(en=self.experiment_file_dict["PV_energy"] - self.experiment_file_dict["energy_offset"])
-#     hkl1 = refs[args.Calc2[0] - 1][:3]
-#     angs1 = refs[args.Calc2[0] - 1][3:-1]
-#     hkl2 = refs[args.Calc2[1] - 1][:3]
-#     angs2 = refs[args.Calc2[1] - 1][3:-1]
-#     U, UB = self.exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
-
-#     self.experiment_file_dict["U_mat"] = U.tolist()
-#     self.experiment_file_dict["UB_mat"] = UB.tolist()
-#     du.write(self.experiment_file_dict)
+    
 
 # if args.Calc3 is not None:
 #     self.experiment_file_dict = du.read()
