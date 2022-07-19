@@ -104,6 +104,51 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == [int(i) for i in param]
 
+    def test_GIVEN_cli_argument_WHEN_inputing_clear_reflections_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-cr"
+        full_arg = "clear_reflections"
+        param = ["1", "2", "3"]
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == [int(i) for i in param]
+
+    def test_GIVEN_cli_argument_WHEN_inputing_clear_all_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-ca"
+        full_arg = "clear_all"
+        param = []
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == True
+
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-l"
+        full_arg = "list"
+        param = []
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == True
+
+    def test_GIVEN_cli_argument_WHEN_inputing_Show_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-s"
+        full_arg = "Show"
+        param = []
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == True
+
+    def test_GIVEN_cli_argument_WHEN_inputing_Params_THEN_check_parsed_args(
+        self,
+    ):
+        arg = "-p"
+        full_arg = "Params"
+        param = []
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == True
+
     # def test_GIVEN_cli_argument_WHEN_defining_predefined_sample_THEN_check_if_it_was_written_correctly(
     #     self,
     # ):
