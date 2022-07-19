@@ -258,7 +258,6 @@ class TestDAF(unittest.TestCase):
         full_arg = "Calc3"
         param = ["1", "2", "3"]
         obj = self.make_obj([arg, *param])
-
         obj.run_cmd(obj.parsed_args_dict)
         dict_now = du.read()
 
@@ -276,6 +275,38 @@ class TestDAF(unittest.TestCase):
             self.assertAlmostEqual(
                 dict_now[key], self.CALCULATED_LATTICE_PARAMETERS[key], 5
             )
+
+    def test_GIVEN_cli_argument_WHEN_inputing_clear_reflections_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "1", "0", '0', '5.28232', '2', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "0", "1", '0', '5.28232', '92', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-cr"
+        full_arg = "clear_reflections"
+        param = ["1", "2"]
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+
+        dict_now = du.read()
+        assert len(dict_now["reflections"]) == 1
+
+
 
 
     # def test_GIVEN_cli_argument_WHEN_defining_new_sample_THEN_check_if_it_was_written_correctly(
