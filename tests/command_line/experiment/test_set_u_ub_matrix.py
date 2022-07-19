@@ -23,7 +23,7 @@ class TestDAF(unittest.TestCase):
     def setUp(self):
         data_sim = gdd.default
         data_sim["simulated"] = True
-        data_sim["PV_energy"] = 10000.0
+        data_sim["PV_energy"] = 1
         gdd.generate_file(data=data_sim, file_name=".Experiment")
 
     def tearDown(self):
@@ -226,6 +226,35 @@ class TestDAF(unittest.TestCase):
                 dict_now["U_mat"][i][j], self.CALCULATED_U[i][j], 5
             )
 
+    def test_GIVEN_cli_argument_WHEN_inputing_Calc3_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "1", "0", '0', '5.28232', '2', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "0", "1", '0', '5.28232', '92', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-c3"
+        full_arg = "Calc3"
+        param = ["1", "2", "3"]
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        for i in range(len(self.CALCULATED_U)):
+            for j in range(len(self.CALCULATED_U[i])):
+                self.assertAlmostEqual(
+                dict_now["U_mat"][i][j], self.CALCULATED_U[i][j], 5
+            )
 
 
     # def test_GIVEN_cli_argument_WHEN_defining_new_sample_THEN_check_if_it_was_written_correctly(
