@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-from os import path
-
 import argparse as ap
 import numpy as np
 import yaml
@@ -15,7 +12,7 @@ from daf.utils import daf_paths as dp
 from daf.command_line.experiment.experiment_utils import ExperimentBase
 
 
-class CalcUB(ExperimentBase):
+class SetUUB(ExperimentBase):
     DESC = """Defines UB matrix and Calculate UB matrix from 2 or 3 reflections"""
     EPI = """
     Eg:
@@ -412,7 +409,7 @@ class CalcUB(ExperimentBase):
 
 @daf_log
 def main() -> None:
-    obj = CalcUB()
+    obj = SetUUB()
     obj.run_cmd(obj.parsed_args_dict)
 
 
