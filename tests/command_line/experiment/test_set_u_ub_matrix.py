@@ -149,14 +149,70 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == True
 
-    # def test_GIVEN_cli_argument_WHEN_defining_predefined_sample_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     sample = "Cu"
-    #     obj = self.make_obj(["-m", sample])
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert sample == dict_now["Material"]
+    def test_GIVEN_cli_argument_WHEN_inputing_reflection_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        for i in range(len(obj.parsed_args_dict[full_arg])):
+            assert dict_now["reflections"][0][i] == obj.parsed_args_dict[full_arg][i]
+
+    def test_GIVEN_cli_argument_WHEN_inputing_reflection_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        for i in range(len(obj.parsed_args_dict[full_arg])):
+            assert dict_now["reflections"][0][i] == obj.parsed_args_dict[full_arg][i]
+
+    def test_GIVEN_cli_argument_WHEN_inputing_reflection_now_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-rn"
+        full_arg = "reflection_now"
+        param = ["0", "1", "0"]
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        for i in range(len(obj.parsed_args_dict[full_arg])):
+            assert dict_now["reflections"][0][i] == obj.parsed_args_dict[full_arg][i]
+
+    def test_GIVEN_cli_argument_WHEN_inputing_Umatrix_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-U"
+        full_arg = "Umatrix"
+        param = ["1", "0", "0", "0", "1", "0", "0", "0", "1"]
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        input_mat = np.array(obj.parsed_args_dict[full_arg]).reshape(3, 3)
+        for i in range(len(input_mat)):
+            for j in range(len(input_mat[i])):
+                assert dict_now["U_mat"][i][j] == input_mat[i][j]
+
+    def test_GIVEN_cli_argument_WHEN_inputing_UBmatrix_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-UB"
+        full_arg = "UBmatrix"
+        param = ["1", "0", "0", "1", "1", "1", "0", "0", "1"]
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        input_mat = np.array(obj.parsed_args_dict[full_arg]).reshape(3, 3)
+        for i in range(len(input_mat)):
+            for j in range(len(input_mat[i])):
+                assert dict_now["UB_mat"][i][j] == input_mat[i][j]
+
 
     # def test_GIVEN_cli_argument_WHEN_defining_new_sample_THEN_check_if_it_was_written_correctly(
     #     self,
