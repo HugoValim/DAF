@@ -19,6 +19,8 @@ class TestDAF(unittest.TestCase):
     CALCULATED_UB =  np.array([[1.15620, -0.04035, 0.00141],
                               [0.04037, 1.15549, -0.04035],
                               [-0.00000, 0.04038, 1.15620]])
+    CALCULATED_LATTICE_PARAMETERS =  {"lparam_a": 5.431013398913497, "lparam_b": 5.431013398912699, "lparam_c": 5.431013398913498, 
+                            "lparam_alpha": 90.0000000000157, "lparam_beta": 90.00003104698489, "lparam_gama": 90.0000000182752}
 
     def setUp(self):
         data_sim = gdd.default
@@ -225,6 +227,11 @@ class TestDAF(unittest.TestCase):
                 self.assertAlmostEqual(
                 dict_now["U_mat"][i][j], self.CALCULATED_U[i][j], 5
             )
+        for i in range(len(self.CALCULATED_UB)):
+            for j in range(len(self.CALCULATED_UB[i])):
+                self.assertAlmostEqual(
+                dict_now["UB_mat"][i][j], self.CALCULATED_UB[i][j], 5
+            )
 
     def test_GIVEN_cli_argument_WHEN_inputing_Calc3_THEN_check_if_it_was_written_correctly(
         self,
@@ -233,27 +240,41 @@ class TestDAF(unittest.TestCase):
         full_arg = "reflection"
         param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
         obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
         obj.run_cmd(obj.parsed_args_dict)
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "1", "0", '0', '5.28232', '2', '92', '0', '10.5647']
         obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
         obj.run_cmd(obj.parsed_args_dict)
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "0", "1", '0', '5.28232', '92', '92', '0', '10.5647']
         obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
         obj.run_cmd(obj.parsed_args_dict)
         arg = "-c3"
         full_arg = "Calc3"
         param = ["1", "2", "3"]
         obj = self.make_obj([arg, *param])
+
         obj.run_cmd(obj.parsed_args_dict)
         dict_now = du.read()
+
         for i in range(len(self.CALCULATED_U)):
             for j in range(len(self.CALCULATED_U[i])):
                 self.assertAlmostEqual(
                 dict_now["U_mat"][i][j], self.CALCULATED_U[i][j], 5
+            )
+        for i in range(len(self.CALCULATED_UB)):
+            for j in range(len(self.CALCULATED_UB[i])):
+                self.assertAlmostEqual(
+                dict_now["UB_mat"][i][j], self.CALCULATED_UB[i][j], 4
+            )
+        for key, value in self.CALCULATED_LATTICE_PARAMETERS.items():
+            self.assertAlmostEqual(
+                dict_now[key], self.CALCULATED_LATTICE_PARAMETERS[key], 5
             )
 
 
