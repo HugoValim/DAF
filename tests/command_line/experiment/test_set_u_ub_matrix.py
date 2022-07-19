@@ -7,7 +7,7 @@ from unittest.mock import patch
 import numpy as np
 
 import daf.utils.dafutilities as du
-from daf.command_line.experiment.set_u_ub_matrix import SetUUB
+from daf.command_line.experiment.set_u_ub_matrix import SetUUB, main
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
@@ -306,84 +306,59 @@ class TestDAF(unittest.TestCase):
         dict_now = du.read()
         assert len(dict_now["reflections"]) == 1
 
+    def test_GIVEN_cli_argument_WHEN_inputing_clear_all_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "1", "0", '0', '5.28232', '2', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "0", "1", '0', '5.28232', '92', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.en = 1 #  Set to the right energy
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-ca"
+        full_arg = "clear_all"
+        param = []
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
 
+        dict_now = du.read()
+        assert len(dict_now["reflections"]) == 0
 
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-l"]
+        with patch.object(sys, "argv", testargs):
+            main()
 
-    # def test_GIVEN_cli_argument_WHEN_defining_new_sample_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     sample = "my_si"
-    #     obj = self.make_obj(["-m", sample, "-p", "5.4", "5.5", "5.6", "90", "91", "92"])
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert sample == dict_now["Material"]
-    #     assert 5.4 == dict_now["lparam_a"]
-    #     assert 5.5 == dict_now["lparam_b"]
-    #     assert 5.6 == dict_now["lparam_c"]
-    #     assert 90.0 == dict_now["lparam_alpha"]
-    #     assert 91.0 == dict_now["lparam_beta"]
-    #     assert 92.0 == dict_now["lparam_gama"]
-    #     assert sample in dict_now["user_samples"].keys()
-    #     assert 5.4 == dict_now["user_samples"][sample][0]
-    #     assert 5.5 == dict_now["user_samples"][sample][1]
-    #     assert 5.6 == dict_now["user_samples"][sample][2]
-    #     assert 90.0 == dict_now["user_samples"][sample][3]
-    #     assert 91.0 == dict_now["user_samples"][sample][4]
-    #     assert 92.0 == dict_now["user_samples"][sample][5]
+    def test_GIVEN_cli_argument_WHEN_inputing_Params_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-p",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
 
-    # def test_GIVEN_cli_argument_WHEN_defining_new_energy_in_ev_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     energy = 15000
-    #     obj = self.make_obj(["-e", str(energy)])
-    #     offset = obj.set_energy(energy)
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert offset == dict_now["energy_offset"]
-
-    # def test_GIVEN_cli_argument_WHEN_defining_new_energy_in_wl_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     energy = 1
-    #     obj = self.make_obj(["-e", str(energy)])
-    #     offset = obj.set_energy(energy)
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert offset == dict_now["energy_offset"]
-
-    # def test_GIVEN_cli_argument_WHEN_defining_idir_and_ndir_THEN_check_if_U_and_UB_was_written_correctly(
-    #     self,
-    # ):
-
-    #     obj = self.make_obj(
-    #         [
-    #             "-i",
-    #             "1",
-    #             "1",
-    #             "0",
-    #             "-n",
-    #             "0",
-    #             "0",
-    #             "1",
-    #         ]
-    #     )
-
-    #     U, UB = obj.set_u_and_ub_based_in_idir_ndir([1, 1, 0], [0, 0, 1])
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-
-    #     for i in range(len(U)):
-    #         for j in range(len(U[i])):
-    #             assert U[i][j] == dict_now["U_mat"][i][j]
-
-    #     for i in range(len(UB)):
-    #         for j in range(len(UB[i])):
-    #             assert UB[i][j] == dict_now["UB_mat"][i][j]
-
-    # def test_GIVEN_cli_argument_WHEN_defining_new_rdir_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     obj = self.make_obj(["-r", "0", "1", "0"])
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert [0, 1, 0] == dict_now["RDir"]
+    def test_GIVEN_cli_argument_WHEN_inputing_Show_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-s",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
