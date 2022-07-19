@@ -13,24 +13,12 @@ from daf.core.main import DAF
 
 
 class TestDAF(unittest.TestCase):
-    predefined_dict = {
-        "Mu": 1.1971657231936314e-22,
-        "Eta": 11.402686406409414,
-        "Chi": 35.26439476525327,
-        "Phi": 44.999999194854674,
-        "Nu": 0.0,
-        "Del": 22.805372812818828,
-        "twotheta": 22.805372812818835,
-        "theta": 11.402686406409417,
-        "alpha": 6.554258723031806,
-        "qaz": 90.0,
-        "naz": 34.727763787897146,
-        "tau": 54.735629207009254,
-        "psi": 90.00000458366236,
-        "beta": 6.554258723031807,
-        "omega": -0.0,
-        "hklnow": np.array([1.0, 1.0, 1.0]),
-    }
+    CALCULATED_U =  np.array([[0.99939, -0.03488, 0.00122],
+                             [0.03490, 0.99878, -0.03488],
+                             [-0.00000, 0.03490, 0.99939]])
+    CALCULATED_UB =  np.array([[1.15620, -0.04035, 0.00141],
+                              [0.04037, 1.15549, -0.04035],
+                              [-0.00000, 0.04038, 1.15620]])
 
     def setUp(self):
         data_sim = gdd.default
@@ -212,6 +200,32 @@ class TestDAF(unittest.TestCase):
         for i in range(len(input_mat)):
             for j in range(len(input_mat[i])):
                 assert dict_now["UB_mat"][i][j] == input_mat[i][j]
+
+    def test_GIVEN_cli_argument_WHEN_inputing_Calc2_THEN_check_if_it_was_written_correctly(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["1", "0", "0", '0', '5.28232', '0', '2', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-r"
+        full_arg = "reflection"
+        param = ["0", "1", "0", '0', '5.28232', '2', '92', '0', '10.5647']
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        arg = "-c2"
+        full_arg = "Calc2"
+        param = ["1", "2"]
+        obj = self.make_obj([arg, *param])
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_now = du.read()
+        for i in range(len(self.CALCULATED_U)):
+            for j in range(len(self.CALCULATED_U[i])):
+                self.assertAlmostEqual(
+                dict_now["U_mat"][i][j], self.CALCULATED_U[i][j], 5
+            )
+
 
 
     # def test_GIVEN_cli_argument_WHEN_defining_new_sample_THEN_check_if_it_was_written_correctly(
