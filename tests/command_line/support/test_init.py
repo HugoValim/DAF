@@ -44,6 +44,15 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict["simulated"] == True
         assert obj.parsed_args_dict["all"] == True
 
+    def test_GIVEN_cli_argument_WHEN_inputing_raw_command_THEN_check_if_the_file_was_created(
+        self,
+    ):
+        os.remove(".Experiment")
+        assert not os.path.isfile(".Experiment") 
+        obj = self.make_obj([])
+        obj.run_cmd(obj.parsed_args_dict)
+        assert os.path.isfile(".Experiment") 
+
     def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_test_for_problems(
         self,
     ):

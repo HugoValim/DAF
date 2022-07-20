@@ -23,7 +23,6 @@ class Init(SupportBase):
         """
 
     def __init__(self):
-        super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.initialize_experiment_file()
