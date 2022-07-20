@@ -5,10 +5,21 @@ import pytest
 import unittest
 from unittest.mock import patch
 
-from daf.command_line.support.init import Init
-
+import daf.utils.dafutilities as du
+from daf.command_line.support.init import Init, main
+import daf.utils.generate_daf_default as gdd
 
 class TestDAF(unittest.TestCase):
+
+    def setUp(self):
+        data_sim = gdd.default
+        data_sim["simulated"] = True
+        data_sim["PV_energy"] = 1
+        gdd.generate_file(data=data_sim, file_name=".Experiment")
+
+    def tearDown(self):
+        os.system("rm .Experiment")
+
     @staticmethod
     def make_obj(command_line_args: list) -> Init:
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
@@ -32,3 +43,14 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["--all", "--simulated"])
         assert obj.parsed_args_dict["simulated"] == True
         assert obj.parsed_args_dict["all"] == True
+
+    def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-s",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+
