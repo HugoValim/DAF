@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Initialize Diffractometer Angles Finder"""
 
 import argparse as ap
 import sys
@@ -8,13 +7,13 @@ from os import path
 import yaml
 import subprocess
 
-import daf.utils.dafutilities as du
+from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 import daf.utils.daf_paths as dp
 from daf.utils.log import daf_log
 
 
-class Init:
+class Init(SupportBase):
 
     DESC = """Initialize Diffractometer Angles Finder"""
     EPI = """
@@ -24,6 +23,7 @@ class Init:
         """
 
     def __init__(self):
+        super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.initialize_experiment_file()
@@ -31,11 +31,7 @@ class Init:
         self.build_daf_base_config()
 
     def parse_command_line(self) -> ap.Namespace:
-        self.parser = ap.ArgumentParser(
-            formatter_class=ap.RawDescriptionHelpFormatter,
-            description=self.DESC,
-            epilog=self.EPI,
-        )
+        super().parse_command_line()
         self.parser.add_argument(
             "-s",
             "--simulated",
