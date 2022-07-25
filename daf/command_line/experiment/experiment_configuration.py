@@ -5,9 +5,8 @@ import numpy as np
 
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.log import daf_log
-from daf.utils import dafutilities as du
 from daf.command_line.experiment.experiment_utils import ExperimentBase
-
+from daf.utils import dafutilities as du
 
 class ExperimentConfiguration(ExperimentBase):
     DESC = """Sets several experiment configuration conditions"""
@@ -79,6 +78,18 @@ class ExperimentConfiguration(ExperimentBase):
             metavar="en",
             type=float,
             help="Sets the energy of the experiment (eV), wavelength can also be given (angstrom)",
+        )
+        self.parser.add_argument(
+            "-sim",
+            "--simulated",
+            action="store_true",
+            help="Use simulated somotors",
+        )
+        self.parser.add_argument(
+            "-rl",
+            "--real",
+            action="store_true",
+            help="Use real motors",
         )
 
         args = self.parser.parse_args()
@@ -163,6 +174,14 @@ class ExperimentConfiguration(ExperimentBase):
         """Sets RDir"""
         self.experiment_file_dict["RDir"] = rdir
 
+    def set_simulated_motors(self):
+        """Use simulated motors for all DAF functions"""
+        self.experiment_file_dict["simulated"] = True
+
+    def set_real_motors(self):
+        """Use real motors for all DAF functions"""
+        self.experiment_file_dict["simulated"] = False
+
     def run_cmd(self, arguments: dict) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
@@ -178,6 +197,10 @@ class ExperimentConfiguration(ExperimentBase):
             )
         if arguments["Material"]:
             self.set_material(arguments["Material"])
+        if arguments["simulated"]:
+            self.set_simulated_motors()
+        if arguments["real"]:
+            self.set_real_motors()
         du.write(self.experiment_file_dict)
 
 
