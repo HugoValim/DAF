@@ -26,6 +26,7 @@ class Setup(SupportBase):
         """
 
     def __init__(self):
+        super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.write_flag = False
@@ -45,10 +46,15 @@ class Setup(SupportBase):
         self.parser.add_argument(
             "-s",
             "--save",
-            metavar="file",
-            nargs="?",
-            const="no_args",
-            help="Save the current setup, if only -s is passed them de command will overwrite de current setup",
+            action="store_true",
+            help="Save the current setup",
+        )
+        self.parser.add_argument(
+            "-sa",
+            "--save-as",
+            metavar="setup name",
+            type=str,
+            help="Save the current setup as a new setup",
         )
         self.parser.add_argument("-r", "--remove", metavar="file", nargs="*", help="Remove a setup")
         self.parser.add_argument(
@@ -76,6 +82,9 @@ class Setup(SupportBase):
         args = self.parser.parse_args()
         return args
 
+    def get_current_setup(self):
+        return self.experiment_file_dict["setup"]
+
     @staticmethod
     def create_new_setup(setup_name):
         """Create a new DAF setup"""
@@ -94,13 +103,24 @@ class Setup(SupportBase):
     @staticmethod
     def list_all_setups():
         """List all the setups that a user has"""
-        setup_now = self.experiment_file_dict["setup"]
+        setup_now = self.get_current_setup()
         os.system(
             "ls -A1 --ignore=*.py $HOME/.daf/ | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(
                 setup_now, setup_now
             )
         )
 
+    def save_setup(self):
+        """Save the current setup"""
+        setup_now = self.get_current_setup()
+        file_path_to_save = os.path.join(dp.DAF_CONFIGS, setup_now)
+        os.system('cp .Experiment {}'.format(file_path_to_save))
+
+    def save_as_setup(self, setup_name):
+        """Save the current setup as a new setup"""
+        setup_now = self.get_current_setup()
+        file_path_to_save = os.path.join(dp.DAF_CONFIGS, setup_name)
+        os.system('cp .Experiment {}'.format(file_path_to_save))
 
     @staticmethod
     def write_yaml(dict_, file_path=None) -> None:
@@ -114,10 +134,13 @@ class Setup(SupportBase):
         if arguments["checkout"]:
             self.checkout_setup(arguments["checkout"])
         if arguments["list"]:
-            self.list_all_setups()       
+            self.list_all_setups()
+        if arguments["save"]:
+            self.save_setup()
+        if arguments["save_as"]:
+            self.save_as_setup(arguments["save_as"])         
         if self.write_flag:
             du.write(self.experiment_file_dict)
-
 
 
 @daf_log
@@ -129,14 +152,6 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 
-
-# if args.save:
-#     dict_args = du.read()
-#     setup_now = dict_args["setup"]
-#     if args.save == "no_args":
-#         os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
-#     else:
-#         os.system('cp .Experiment "$HOME/.daf/{}"'.format(args.save))
 
 # if args.remove:
 #     dict_args = du.read()
