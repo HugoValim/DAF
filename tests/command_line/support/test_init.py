@@ -9,8 +9,8 @@ import daf.utils.dafutilities as du
 from daf.command_line.support.init import Init, main
 import daf.utils.generate_daf_default as gdd
 
-class TestDAF(unittest.TestCase):
 
+class TestDAF(unittest.TestCase):
     def setUp(self):
         data_sim = gdd.default
         data_sim["simulated"] = True
@@ -48,10 +48,10 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         os.remove(".Experiment")
-        assert not os.path.isfile(".Experiment") 
+        assert not os.path.isfile(".Experiment")
         obj = self.make_obj([])
         obj.run_cmd(obj.parsed_args_dict)
-        assert os.path.isfile(".Experiment") 
+        assert os.path.isfile(".Experiment")
 
     def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_test_for_problems(
         self,
@@ -62,4 +62,3 @@ class TestDAF(unittest.TestCase):
         ]
         with patch.object(sys, "argv", testargs):
             main()
-

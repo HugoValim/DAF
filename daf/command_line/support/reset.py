@@ -18,7 +18,6 @@ class Reset(SupportBase):
         daf.reset -a
         """
 
-
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -70,4 +69,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -9,8 +9,8 @@ import daf.utils.dafutilities as du
 from daf.command_line.support.reset import Reset, main
 import daf.utils.generate_daf_default as gdd
 
-class TestDAF(unittest.TestCase):
 
+class TestDAF(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         data_sim = gdd.default
@@ -46,16 +46,16 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         dict_now = du.read()
-        dict_now["Mode"] = '2023'
+        dict_now["Mode"] = "2023"
         du.write(dict_now)
         arg = "-a"
         full_arg = "all"
         param = []
         obj = self.make_obj([arg, *param])
-        assert obj.experiment_file_dict["Mode"] == '2023'
+        assert obj.experiment_file_dict["Mode"] == "2023"
         obj.run_cmd(obj.parsed_args_dict)
         dict_now = du.read()
-        assert dict_now["Mode"] == '2052'
+        assert dict_now["Mode"] == "2052"
 
     def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(
         self,
@@ -66,5 +66,3 @@ class TestDAF(unittest.TestCase):
         ]
         with patch.object(sys, "argv", testargs):
             main()
-
-

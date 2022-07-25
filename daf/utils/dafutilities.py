@@ -38,7 +38,7 @@ else:
     PV_PREFIX = "SOL:S"
     BL_PVS = {"PV_energy": "SOL:S:m7"}
     # PV_PREFIX = "IOC"
-try: 
+try:
     PVS = {
         "Phi": PV_PREFIX + ":m1",
         "Chi": PV_PREFIX + ":m2",

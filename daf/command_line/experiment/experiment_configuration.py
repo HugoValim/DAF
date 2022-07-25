@@ -8,6 +8,7 @@ from daf.utils.log import daf_log
 from daf.command_line.experiment.experiment_utils import ExperimentBase
 from daf.utils import dafutilities as du
 
+
 class ExperimentConfiguration(ExperimentBase):
     DESC = """Sets several experiment configuration conditions"""
 
