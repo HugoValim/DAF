@@ -10,6 +10,7 @@ import subprocess
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 import daf.utils.daf_paths as dp
+import daf.utils.dafutilities as du
 from daf.utils.log import daf_log
 
 
@@ -27,9 +28,7 @@ class Setup(SupportBase):
     def __init__(self):
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
-        self.initialize_experiment_file()
-        self.build_user_config()
-        self.build_daf_base_config()
+        self.write_flag = False
 
     def parse_command_line(self) -> ap.Namespace:
         super().parse_command_line()
@@ -82,6 +81,27 @@ class Setup(SupportBase):
         """Create a new DAF setup"""
         gdd.generate_file(file_name=setup_name, file_path=dp.DAF_CONFIGS)
 
+    def checkout_setup(self, setup_name):
+        """Change to a new DAF setup"""
+        full_file_path = os.path.join(dp.DAF_CONFIGS, setup_name)
+        os.system(
+            "cat {} > {}".format(full_file_path, du.DEFAULT)
+        )
+        self.experiment_file_dict = du.read()
+        self.experiment_file_dict["setup"] = setup_name
+        self.write_flag = True
+
+    @staticmethod
+    def list_all_setups():
+        """List all the setups that a user has"""
+        setup_now = self.experiment_file_dict["setup"]
+        os.system(
+            "ls -A1 --ignore=*.py $HOME/.daf/ | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(
+                setup_now, setup_now
+            )
+        )
+
+
     @staticmethod
     def write_yaml(dict_, file_path=None) -> None:
         """Method to write to a yaml file"""
@@ -91,6 +111,13 @@ class Setup(SupportBase):
     def run_cmd(self, arguments: dict) -> None:
         if arguments["new"]:
             self.create_new_setup(arguments["new"])
+        if arguments["checkout"]:
+            self.checkout_setup(arguments["checkout"])
+        if arguments["list"]:
+            self.list_all_setups()       
+        if self.write_flag:
+            du.write(self.experiment_file_dict)
+
 
 
 @daf_log
@@ -103,25 +130,6 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
-
-
-# if args.new:
-
-
-# if args.checkout:
-#     dict_args = du.read()
-#     setup_now = dict_args["setup"]
-#     # os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
-#     os.system(
-#         "cat /home/ABTLUS/hugo.campos/.daf/{} > .Experiment".format(args.checkout)
-#     )
-#     dict_args = du.read()
-#     dict_args["setup"] = str(args.checkout)
-#     du.write(dict_args)
-
 # if args.save:
 #     dict_args = du.read()
 #     setup_now = dict_args["setup"]
@@ -129,15 +137,6 @@ if __name__ == "__main__":
 #         os.system('cp .Experiment "$HOME/.daf/{}"'.format(setup_now))
 #     else:
 #         os.system('cp .Experiment "$HOME/.daf/{}"'.format(args.save))
-
-# if args.list:
-#     dict_args = du.read()
-#     setup_now = dict_args["setup"]
-#     os.system(
-#         "ls -A1 --ignore=*.py $HOME/.daf/ | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(
-#             setup_now, setup_now
-#         )
-#     )
 
 # if args.remove:
 #     dict_args = du.read()
