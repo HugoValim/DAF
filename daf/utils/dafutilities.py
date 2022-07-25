@@ -38,16 +38,28 @@ else:
     PV_PREFIX = "SOL:S"
     BL_PVS = {"PV_energy": "SOL:S:m7"}
     # PV_PREFIX = "IOC"
-
-PVS = {
-    "Phi": PV_PREFIX + ":m1",
-    "Chi": PV_PREFIX + ":m2",
-    "Mu": PV_PREFIX + ":m3",
-    "Nu": PV_PREFIX + ":m4",
-    "Eta": PV_PREFIX + ":m5",
-    "Del": PV_PREFIX + ":m6",
-}
-MOTORS = {i: epics.Motor(PVS[i]) for i in PVS}
+try: 
+    PVS = {
+        "Phi": PV_PREFIX + ":m1",
+        "Chi": PV_PREFIX + ":m2",
+        "Mu": PV_PREFIX + ":m3",
+        "Nu": PV_PREFIX + ":m4",
+        "Eta": PV_PREFIX + ":m5",
+        "Del": PV_PREFIX + ":m6",
+    }
+    MOTORS = {i: epics.Motor(PVS[i]) for i in PVS}
+except epics.motor.MotorException:
+    PV_PREFIX = "SOL:S"
+    BL_PVS = {"PV_energy": "SOL:S:m7"}
+    PVS = {
+        "Phi": PV_PREFIX + ":m1",
+        "Chi": PV_PREFIX + ":m2",
+        "Mu": PV_PREFIX + ":m3",
+        "Nu": PV_PREFIX + ":m4",
+        "Eta": PV_PREFIX + ":m5",
+        "Del": PV_PREFIX + ":m6",
+    }
+    MOTORS = {i: epics.Motor(PVS[i]) for i in PVS}
 
 
 def sigint_handler_utilities(signum, frame):
