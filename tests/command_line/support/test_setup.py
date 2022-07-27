@@ -142,6 +142,20 @@ class TestDAF(unittest.TestCase):
         dict_args = du.read(filepath=path_to_the_setup)
         assert dict_args["setup_desc"] == "test desc"
 
+    def test_GIVEN_cli_argument_WHEN_inputing_save_as_THEN_check_if_the_setup_was_saved(
+        self,
+    ):
+        arg = "-sa"
+        full_arg = "save_as"
+        param = ["my_awesome_setup"]
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == param[0]
+        obj.update_setup_description(".", "test desc 2")
+        obj.run_cmd(obj.parsed_args_dict)
+        path_to_the_setup = os.path.join(dp.DAF_CONFIGS, param[0])
+        dict_args = du.read(filepath=path_to_the_setup)
+        assert dict_args["setup_desc"] == "test desc 2"
+
     # def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(
     #     self,
     # ):
