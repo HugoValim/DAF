@@ -37,7 +37,7 @@ if not flag:
 else:
     PV_PREFIX = "SOL:S"
     BL_PVS = {"PV_energy": "SOL:S:m7"}
-
+    # PV_PREFIX = "IOC"
 try:
     PVS = {
         "Phi": PV_PREFIX + ":m1",
@@ -48,7 +48,6 @@ try:
         "Del": PV_PREFIX + ":m6",
     }
     MOTORS = {i: epics.Motor(PVS[i]) for i in PVS}
-    MOTORS["Phi"].readback
 except epics.motor.MotorException:
     PV_PREFIX = "SOL:S"
     BL_PVS = {"PV_energy": "SOL:S:m7"}

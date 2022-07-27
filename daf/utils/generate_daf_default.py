@@ -84,7 +84,7 @@ default = {
     "current_scan_file": "",  # Tells daf.live which file to look after to plot the current scan
     "main_scan_counter": None,  # Defines the counter main counter to use in daf.live
     "main_scan_motor": "",  # Defines the xlabel motor for daf.live
-    "simulated": False,  # Defines in DAF will use simulated motors or not
+    "simulated": True,  # Defines in DAF will use simulated motors or not
 }
 
 

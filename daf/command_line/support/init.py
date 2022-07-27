@@ -48,7 +48,7 @@ class Init(SupportBase):
     def initialize_experiment_file() -> None:
         """Build the .daf dir in the user home, also add the DAF default experiment file to it"""
         os.system('mkdir -p "{}"'.format(dp.DAF_CONFIGS))
-        gdd.generate_file(file_path=dp.DAF_CONFIGS, file_name="default.yml")
+        gdd.generate_file(file_path=dp.DAF_CONFIGS, file_name="default")
 
     @staticmethod
     def build_current_file(simulated: bool) -> None:

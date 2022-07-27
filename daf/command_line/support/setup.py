@@ -114,14 +114,11 @@ class Setup(SupportBase):
     def save_setup(self) -> None:
         """Save the current setup"""
         setup_now = self.get_current_setup()
-        file_path_to_save = os.path.join(dp.DAF_CONFIGS, setup_now)
-        os.system("cp .Experiment {}".format(file_path_to_save))
+        gdd.generate_file(self.experiment_file_dict, file_path=dp.DAF_CONFIGS, file_name=setup_now)
 
     def save_as_setup(self, setup_name: str) -> None:
         """Save the current setup as a new setup"""
-        setup_now = self.get_current_setup()
-        file_path_to_save = os.path.join(dp.DAF_CONFIGS, setup_name)
-        os.system("cp .Experiment {}".format(file_path_to_save))
+        gdd.generate_file(self.experiment_file_dict, file_path=dp.DAF_CONFIGS, file_name=setup_name)
 
     def remove_setup(self, setup_name: str) -> None:
         """Remove  a setup from users configuration"""
