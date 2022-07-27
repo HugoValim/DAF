@@ -122,6 +122,7 @@ class TestDAF(unittest.TestCase):
         param = ["my_awesome_setup"]
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == param[0]
+        obj.create_new_setup(param[0])
         obj.run_cmd(obj.parsed_args_dict)
         dict_args = du.read()
         os.system("daf.expt -sim")
@@ -156,12 +157,51 @@ class TestDAF(unittest.TestCase):
         dict_args = du.read(filepath=path_to_the_setup)
         assert dict_args["setup_desc"] == "test desc 2"
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(
-    #     self,
-    # ):
-    #     testargs = [
-    #         "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-    #         "-a",
-    #     ]
-    #     with patch.object(sys, "argv", testargs):
-    #         main()
+    def test_GIVEN_cli_argument_WHEN_inputing_remove_THEN_check_if_the_setup_was_saved(
+        self,
+    ):
+        arg = "-r"
+        full_arg = "remove"
+        param = ["my_awesome_setup", "my_awesome_setup_2"]
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == param
+        obj.create_new_setup(param[0])
+        obj.create_new_setup(param[1])
+        obj.run_cmd(obj.parsed_args_dict)
+        full_file_path_1 = os.path.join(dp.DAF_CONFIGS, param[0])
+        full_file_path_2 = os.path.join(dp.DAF_CONFIGS, param[1])
+        assert not os.path.isfile(full_file_path_1)
+        assert not os.path.isfile(full_file_path_2)
+
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-l",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_description_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-d",
+            ".",
+            "teste"
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_info_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-i",
+            ".",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
