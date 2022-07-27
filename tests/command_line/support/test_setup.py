@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 
 import daf.utils.dafutilities as du
+import daf.utils.daf_paths as dp
 from daf.command_line.support.setup import Setup, main
 import daf.utils.generate_daf_default as gdd
 
@@ -104,25 +105,45 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == param[0]
 
+    def test_GIVEN_cli_argument_WHEN_inputing_new_THEN_check_if_the_file_was_created(
+        self,
+    ):
+        arg = "-n"
+        full_arg = "new"
+        param = ["my_awesome_setup"]
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == param[0]
+        obj.run_cmd(obj.parsed_args_dict)
+        full_file_path = os.path.join(dp.DAF_CONFIGS, param[0])
+        assert os.path.isfile(full_file_path)
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_hard_option_THEN_check_parsed_args(self):
-    #     obj = self.make_obj(["--hard"])
-    #     assert obj.parsed_args_dict["hard"] == True
+    def test_GIVEN_cli_argument_WHEN_inputing_checkout_THEN_check_if_the_file_setup_was_succesfully_changed(
+        self,
+    ):
+        arg = "-c"
+        full_arg = "checkout"
+        param = ["my_awesome_setup"]
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == param[0]
+        obj.run_cmd(obj.parsed_args_dict)
+        dict_args = du.read()
+        os.system("daf.expt -sim")
+        assert dict_args["setup"] == param[0]
 
-    # def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_check_if_it_was_written_correctly(
-    #     self,
-    # ):
-    #     dict_now = du.read()
-    #     dict_now["Mode"] = "2023"
-    #     du.write(dict_now)
-    #     arg = "-a"
-    #     full_arg = "all"
-    #     param = []
-    #     obj = self.make_obj([arg, *param])
-    #     assert obj.experiment_file_dict["Mode"] == "2023"
-    #     obj.run_cmd(obj.parsed_args_dict)
-    #     dict_now = du.read()
-    #     assert dict_now["Mode"] == "2052"
+    def test_GIVEN_cli_argument_WHEN_inputing_save_THEN_check_if_the_setup_was_saved(
+        self,
+    ):
+        arg = "-s"
+        full_arg = "save"
+        param = []
+        obj = self.make_obj([arg, *param])
+        assert obj.parsed_args_dict[full_arg] == True
+        obj.checkout_setup("default")
+        obj.update_setup_description("default", "test desc")
+        obj.run_cmd(obj.parsed_args_dict)
+        path_to_the_setup = os.path.join(dp.DAF_CONFIGS, "default")
+        dict_args = du.read(filepath=path_to_the_setup)
+        assert dict_args["setup_desc"] == "test desc"
 
     # def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(
     #     self,
