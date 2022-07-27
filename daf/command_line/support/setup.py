@@ -41,7 +41,7 @@ class Setup(SupportBase):
         self.parser.add_argument(
             "-c",
             "--checkout",
-            metavar="[file]",
+            metavar="setup",
             type=str,
             help="Change current setup to another",
         )
