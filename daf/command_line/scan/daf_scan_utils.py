@@ -11,7 +11,7 @@ from scan_utils import PlotType
 from daf.core.main import DAF
 import daf.utils.dafutilities as du
 from daf.command_line.cli_base_utils import CLIBase
-
+import scan_daf as sd
 
 class ScanBase(CLIBase):
     def __init__(self, number_of_motors: int, *args, **kwargs):
