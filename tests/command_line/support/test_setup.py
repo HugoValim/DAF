@@ -190,7 +190,7 @@ class TestDAF(unittest.TestCase):
             "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
             "-d",
             ".",
-            "teste"
+            "teste",
         ]
         with patch.object(sys, "argv", testargs):
             main()

@@ -12,7 +12,11 @@ from daf.core.matrix_utils import (
 
 class CLIBase:
     def __init__(self):
-        self.experiment_file_dict = du.read()
+        self.experiment_file_dict = self.read_experiment_file()
+
+    @staticmethod
+    def read_experiment_file():
+        return du.read()
 
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(
