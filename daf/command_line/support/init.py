@@ -14,13 +14,15 @@ from daf.utils.log import daf_log
 
 
 class Init(SupportBase):
-
     DESC = """Initialize Diffractometer Angles Finder"""
     EPI = """
     Eg:
        daf.init -s
        daf.init -a
         """
+    DEFAULT_COUNTERS = [
+        "ringcurrent",
+    ]
 
     def __init__(self):
         self.parsed_args = self.parse_command_line()
@@ -60,11 +62,14 @@ class Init(SupportBase):
         else:
             gdd.generate_file(file_name=".Experiment")
 
-    @staticmethod
-    def build_user_config() -> None:
+    def build_user_config(self) -> None:
         """Build the scan-utils configuration"""
-        os.system("mkdir -p $HOME/.config/scan-utils")
-        # os.system('cp /etc/xdg/scan-utils/config.default.yml "$HOME/.config/scan-utils/config.daf_default.yml"')
+        os.system("mkdir -p {}".format(dp.SCAN_UTILS_USER_PATH))
+        gdd.generate_file(
+            data=self.DEFAULT_COUNTERS,
+            file_path=dp.SCAN_UTILS_USER_PATH,
+            file_name="config.daf_default.yml",
+        )
 
     @staticmethod
     def write_yaml(dict_, file_path=None) -> None:
