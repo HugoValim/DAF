@@ -18,7 +18,7 @@ class A2Scan(ScanBase):
         """
 
     def __init__(self):
-        super().__init__(2)
+        super().__init__(2, "absolute")
 
     def run_cmd(self, arguments):
         """Method to print the user required information"""

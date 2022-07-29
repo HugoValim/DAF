@@ -14,14 +14,14 @@ from daf.command_line.cli_base_utils import CLIBase
 import scan_daf as sd
 
 class ScanBase(CLIBase):
-    def __init__(self, number_of_motors: int, *args, **kwargs):
+    def __init__(self, number_of_motors: int, scan_type: str, *args, **kwargs):
         super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.motor_map = self.create_motor_map()
         self.ordered_motors = self.get_inputed_motor_order(sys.argv, self.motor_map)
         self.scan_args = self.config_scan_inputs(
-            self.parsed_args_dict, self.motor_map, self.ordered_motors, number_of_motors
+            self.parsed_args_dict, self.motor_map, self.ordered_motors, number_of_motors, scan_type
         )
         signal.signal(signal.SIGINT, self.sigint_handler_utilities)
 
@@ -193,14 +193,25 @@ class ScanBase(CLIBase):
 
         return motor_order
 
-    def config_scan_inputs(
-        self,
-        arguments: dict,
-        motor_map: dict,
-        ordered_motors: list,
-        number_of_motors: int,
-    ) -> dict:
-        """Generate all needed params for the scan based on the user input"""
+    def get_current_motor_pos(self) -> dict:
+        """Get the current motor pos and return a dict"""
+        mu_now = self.experiment_file_dict["Mu"]
+        eta_now = self.experiment_file_dict["Eta"]
+        chi_now = self.experiment_file_dict["Chi"]
+        phi_now = self.experiment_file_dict["Phi"]
+        nu_now = self.experiment_file_dict["Nu"]
+        del_now = self.experiment_file_dict["Del"]
+        current_motor_pos = {
+            "mu": mu_now,
+            "eta": eta_now,
+            "chi": chi_now,
+            "phi": phi_now,
+            "nu": nu_now,
+            "del": del_now,
+        }
+        return current_motor_pos
+
+    def generate_data_for_absolute_scan(self, arguments: dict, number_of_motors: int, motor_map: dict) -> dict:
         number_of_iters = 0
         motors = []
         data_for_scan = {}
@@ -214,6 +225,41 @@ class ScanBase(CLIBase):
                 number_of_iters += 1
             if number_of_iters == number_of_motors:
                 break
+        return data_for_scan
+
+    def generate_data_for_relative_scan(self, arguments: dict, number_of_motors: int, motor_map: dict, current_motor_pos: dict) -> dict:
+        n = 0
+        motors = []
+        data_for_scan = {}
+        for key, val in dic.items():
+            if isinstance(val, list):
+                motor = key
+                motors.append(motor_map[motor])
+                points = np.linspace(
+                    current_motor_pos[motor] + val[0], current_motor_pos[motor] + val[1], args.step + 1
+                )
+                points = [float(i) for i in points]
+                data_for_scan[motor_map[motor]] = points
+                n += 1
+            if n == 2:
+                break
+
+    def config_scan_inputs(
+        self,
+        arguments: dict,
+        motor_map: dict,
+        ordered_motors: list,
+        number_of_motors: int,
+        scan_type: str,
+    ) -> dict:
+        """
+        Generate all needed params for the scan based on the user input.
+        scan_type must be absolute (abs), relative or hkl_scan (hkl).
+        """
+        if scan_type == "absolute" or scan_type == "abs":
+            data_for_scan = self.generate_data_for_absolute_scan(arguments, number_of_motors, motor_map)
+        elif scan_type == "relative" or scan_type == "rel":
+           data_for_scan = self.generate_data_for_relative_scan(arguments, number_of_motors, motor_map, self.get_current_motor_pos())
 
         with open(".points.yaml", "w") as stream:
             yaml.dump(data_for_scan, stream, allow_unicode=False)
@@ -221,7 +267,7 @@ class ScanBase(CLIBase):
         if arguments["xlabel"] == None:
             xlabel = ordered_motors[0]
         else:
-            xlabel = data[arguments["xlabel"]]
+            xlabel = motor_map[arguments["xlabel"]]
 
         scan_args = {
             "configuration": self.experiment_file_dict["default_counters"].split(".")[
