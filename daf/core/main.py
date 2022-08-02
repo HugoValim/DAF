@@ -948,92 +948,49 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         write=False,
         name="testscan.txt",
         sep=",",
-        startvalues=[0, 0, 0, 0, 0, 0],
-        gui=False,
+        startvalues=[0, 0, 0, 0, 0, 0]
     ):
 
         scl = self.scan_generator(hkli, hklf, points + 1)
         angslist = list()
+        for i in tqdm(scl):
+            self.hkl = i
+            a, b = self.motor_angles(self, sv=startvalues)
+            angslist.append(b)
+            teste = np.abs(np.array(a[:6]) - np.array(startvalues))
 
-        if gui:
-            for i in scl:
-                self.hkl = i
-                a, b = self.motor_angles(self, sv=startvalues)
-                angslist.append(b)
-                teste = np.abs(np.array(a[:6]) - np.array(startvalues))
+            if np.max(teste) > diflimit and diflimit != 0:
+                raise ("Exceded max limit of angles variation")
 
-                if np.max(teste) > diflimit and diflimit != 0:
-                    raise ("Exceded max limit of angles variation")
+            if float(a[-1]) > 1e-5:
+                raise ("qerror is too big, process failed")
 
-                if float(a[-1]) > 1e-5:
-                    raise ("qerror is too big, process failed")
+            startvalues = a[:6]
 
-                startvalues = a[:6]
-
-                pd.DataFrame(
-                    [b],
-                    columns=[
-                        "Mu",
-                        "Eta",
-                        "Chi",
-                        "Phi",
-                        "Nu",
-                        "Del",
-                        "2theta",
-                        "theta",
-                        "alpha",
-                        "qaz",
-                        "naz",
-                        "tau",
-                        "psi",
-                        "beta",
-                        "omega",
-                        "H",
-                        "K",
-                        "L",
-                        "Error",
-                    ],
-                ).to_csv(".my_scan_counter.csv", mode="a", header=False)
-
-        else:
-            for i in tqdm(scl):
-                self.hkl = i
-                a, b = self.motor_angles(self, sv=startvalues)
-                angslist.append(b)
-                teste = np.abs(np.array(a[:6]) - np.array(startvalues))
-
-                if np.max(teste) > diflimit and diflimit != 0:
-                    raise ("Exceded max limit of angles variation")
-
-                if float(a[-1]) > 1e-5:
-                    raise ("qerror is too big, process failed")
-
-                startvalues = a[:6]
-
-                pd.DataFrame(
-                    [b],
-                    columns=[
-                        "Mu",
-                        "Eta",
-                        "Chi",
-                        "Phi",
-                        "Nu",
-                        "Del",
-                        "2theta",
-                        "theta",
-                        "alpha",
-                        "qaz",
-                        "naz",
-                        "tau",
-                        "psi",
-                        "beta",
-                        "omega",
-                        "H",
-                        "K",
-                        "L",
-                        "Error",
-                    ],
-                ).to_csv(".my_scan_counter.csv", mode="a", header=False)
+            pd.DataFrame(
+                [b],
+                columns=[
+                    "Mu",
+                    "Eta",
+                    "Chi",
+                    "Phi",
+                    "Nu",
+                    "Del",
+                    "2theta",
+                    "theta",
+                    "alpha",
+                    "qaz",
+                    "naz",
+                    "tau",
+                    "psi",
+                    "beta",
+                    "omega",
+                    "H",
+                    "K",
+                    "L",
+                    "Error",
+                ],
+            ).to_csv(".my_scan_counter.csv", mode="a", header=False)
 
         self.isscan = True
 
@@ -1074,4 +1031,4 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
 
-        return scan_points
+        return self.formscantxt

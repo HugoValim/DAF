@@ -14,14 +14,13 @@ from daf.command_line.cli_base_utils import CLIBase
 import scan_daf as sd
 
 class ScanBase(CLIBase):
-    def __init__(self, number_of_motors: int, scan_type: str, *args, **kwargs):
+    def __init__(self, *args, number_of_motors: int = None, scan_type: str = None,  **kwargs):
         super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.motor_map = self.create_motor_map()
-        self.ordered_motors = self.get_inputed_motor_order(sys.argv, self.motor_map)
         self.scan_args = self.config_scan_inputs(
-            self.parsed_args_dict, self.motor_map, self.ordered_motors, number_of_motors, scan_type
+            self.parsed_args_dict, self.motor_map, number_of_motors, scan_type
         )
         signal.signal(signal.SIGINT, self.sigint_handler_utilities)
 
@@ -83,6 +82,12 @@ class ScanBase(CLIBase):
             nargs=2,
             help="Start and end for Del",
         )
+        self.common_cli_scan_arguments()
+        args = self.parser.parse_args()
+        return args
+
+    def common_cli_scan_arguments(self):
+        """This are the arguments that are common to all daf scans"""
         self.parser.add_argument(
             "step", metavar="step", type=int, help="Number of steps"
         )
@@ -125,8 +130,6 @@ class ScanBase(CLIBase):
             default=False,
             action="store_true",
         )
-        args = self.parser.parse_args()
-        return args
 
     @staticmethod
     def create_motor_map():
@@ -154,7 +157,7 @@ class ScanBase(CLIBase):
 
     @staticmethod
     def get_inputed_motor_order(sysargv: sys.argv, motor_map: dict):
-        """method to pass the order that use choose to the scan_utils routine"""
+        """Method to pass the order that use choose to the scan_utils routine"""
         all_possibilities = [
             "-m",
             "-e",
@@ -212,6 +215,7 @@ class ScanBase(CLIBase):
         return current_motor_pos
 
     def generate_data_for_absolute_scan(self, arguments: dict, number_of_motors: int, motor_map: dict) -> dict:
+        """Generate the scan path for absolute scans"""
         number_of_iters = 0
         motors = []
         data_for_scan = {}
@@ -228,27 +232,70 @@ class ScanBase(CLIBase):
         return data_for_scan
 
     def generate_data_for_relative_scan(self, arguments: dict, number_of_motors: int, motor_map: dict, current_motor_pos: dict) -> dict:
-        n = 0
+        """Generate the scan path for relative scans"""
+        number_of_iters = 0
         motors = []
         data_for_scan = {}
-        for key, val in dic.items():
+        for key, val in arguments.items():
             if isinstance(val, list):
                 motor = key
                 motors.append(motor_map[motor])
                 points = np.linspace(
-                    current_motor_pos[motor] + val[0], current_motor_pos[motor] + val[1], args.step + 1
+                    current_motor_pos[motor] + val[0], current_motor_pos[motor] + val[1], arguments["step"] + 1
                 )
                 points = [float(i) for i in points]
                 data_for_scan[motor_map[motor]] = points
-                n += 1
-            if n == 2:
+                number_of_iters += 1
+            if number_of_iters == number_of_motors:
                 break
+        return data_for_scan
+
+    def generate_data_for_hkl_scan(self, arguments: dict, motor_map: dict) -> np.array:
+        start_values = [i for i in self.get_current_motor_pos().values()]
+        self.exp = self.build_exp()
+        scan_points = self.exp.scan(
+        arguments['hkli'],
+        arguments['hklf'],
+        arguments['step'],
+        diflimit=arguments["max_diff"],
+        name=arguments["scan_name"],
+        write=True,
+        sep=arguments["separator"],
+        startvalues=start_values,
+        )
+        mu_points = [
+            float(i) for i in scan_points["Mu"]
+        ]  # Get only the points related to mu
+        eta_points = [
+            float(i) for i in scan_points["Eta"]
+        ]  # Get only the points related to eta
+        chi_points = [
+            float(i) for i in scan_points["Chi"]
+        ]  # Get only the points related to chi
+        phi_points = [
+            float(i) for i in scan_points["Phi"]
+        ]  # Get only the points related to phi
+        nu_points = [
+            float(i) for i in scan_points["Nu"]
+        ]  # Get only the points related to nu
+        del_points = [
+            float(i) for i in scan_points["Del"]
+        ]  # Get only the points related to del
+        data_for_scan = {
+            motor_map["mu"]: mu_points,
+            motor_map["eta"]: eta_points,
+            motor_map["chi"]: chi_points,
+            motor_map["phi"]: phi_points,
+            motor_map["nu"]: nu_points,
+            motor_map["del"]: del_points,
+        }
+
+        return data_for_scan
 
     def config_scan_inputs(
         self,
         arguments: dict,
         motor_map: dict,
-        ordered_motors: list,
         number_of_motors: int,
         scan_type: str,
     ) -> dict:
@@ -256,10 +303,17 @@ class ScanBase(CLIBase):
         Generate all needed params for the scan based on the user input.
         scan_type must be absolute (abs), relative or hkl_scan (hkl).
         """
+        reset_motors_pos_on_scan_end = False
         if scan_type == "absolute" or scan_type == "abs":
             data_for_scan = self.generate_data_for_absolute_scan(arguments, number_of_motors, motor_map)
+            ordered_motors = self.get_inputed_motor_order(sys.argv, motor_map)
         elif scan_type == "relative" or scan_type == "rel":
-           data_for_scan = self.generate_data_for_relative_scan(arguments, number_of_motors, motor_map, self.get_current_motor_pos())
+            data_for_scan = self.generate_data_for_relative_scan(arguments, number_of_motors, motor_map, self.get_current_motor_pos())
+            ordered_motors = self.get_inputed_motor_order(sys.argv, motor_map)
+            reset_motors_pos_on_scan_end = True
+        elif scan_type == "hkl":
+            data_for_scan = self.generate_data_for_hkl_scan(arguments, motor_map)
+            ordered_motors = [i for i in data_for_scan.keys()]
 
         with open(".points.yaml", "w") as stream:
             yaml.dump(data_for_scan, stream, allow_unicode=False)
@@ -286,7 +340,7 @@ class ScanBase(CLIBase):
             "postscan": "pwd",
             "plot_type": arguments["show_plot"],
             "relative": False,
-            "reset": False,
+            "reset": reset_motors_pos_on_scan_end,
             "step_mode": False,
             "points_mode": False,
             "start": None,

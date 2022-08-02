@@ -186,6 +186,8 @@ class CLIBase:
 
     @abstractmethod
     def run_cmd(self, arguments: dict):
-        """Method to be defined be each subclass, this is the method
-        that should be run when calling the cli interface"""
+        """
+        Method to be defined be each subclass, this is the method
+        that should be run when calling the cli interface
+        """
         pass
