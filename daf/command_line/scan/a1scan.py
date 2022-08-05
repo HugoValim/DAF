@@ -6,6 +6,7 @@ import numpy as np
 from daf.utils.log import daf_log
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
+
 class A1Scan(ScanBase):
 
     DESC = """Perform an absolute scan in one of the diffractometer motors"""
@@ -32,12 +33,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
 
 
 # #!/usr/bin/env python3

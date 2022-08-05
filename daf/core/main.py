@@ -948,7 +948,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         write=False,
         name="testscan.txt",
         sep=",",
-        startvalues=[0, 0, 0, 0, 0, 0]
+        startvalues=[0, 0, 0, 0, 0, 0],
     ):
 
         scl = self.scan_generator(hkli, hklf, points + 1)

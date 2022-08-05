@@ -46,18 +46,6 @@ class DAFScan(ScanOperationCLI):
         super().__init__(**args)
         self.close_window = close_window
 
-    #     signal.signal(signal.SIGINT, self.sigint_handler)
-
-    # def sigint_handler(self, signum, frame):
-    #     """Function to handle ctrl + c and dont let daf.live lost"""
-    #     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    #     dict_args = du.read()
-    #     dict_args["scan_running"] = False
-    #     du.write(dict_args)
-    #     self.reset_motors()
-    #     print("\n")
-    #     exit(1)
-
     def on_operation_begin(self):
         """Routine to be done before this scan operation."""
         counter_dict = dict(py4syn.counterDB.items())
@@ -230,6 +218,7 @@ class DAFScan(ScanOperationCLI):
                     x = [i for i in range(len(y))]
                 else:
                     x = h5w[_xlabel_points][:]
+                print(x, y)
                 scanModule.fitData(x[: len(y)], y)
                 dict_[counter_name] = {}
                 dict_[counter_name]["peak"] = float(scanModule.PEAK)

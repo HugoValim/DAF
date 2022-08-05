@@ -13,8 +13,11 @@ import daf.utils.dafutilities as du
 from daf.command_line.cli_base_utils import CLIBase
 import scan_daf as sd
 
+
 class ScanBase(CLIBase):
-    def __init__(self, *args, number_of_motors: int = None, scan_type: str = None,  **kwargs):
+    def __init__(
+        self, *args, number_of_motors: int = None, scan_type: str = None, **kwargs
+    ):
         super().__init__()
         self.number_of_motors = number_of_motors
         self.scan_type = scan_type
@@ -223,8 +226,15 @@ class ScanBase(CLIBase):
             "del": del_now,
         }
         return current_motor_pos
-    
-    def generate_data_for_scan(self, arguments: dict, number_of_motors: int, motor_map: dict, current_motor_pos: dict, scan_type: str) -> tuple:
+
+    def generate_data_for_scan(
+        self,
+        arguments: dict,
+        number_of_motors: int,
+        motor_map: dict,
+        current_motor_pos: dict,
+        scan_type: str,
+    ) -> tuple:
         """Generate the scan path for relative scans"""
         number_of_iters = 0
         motors = []
@@ -237,7 +247,9 @@ class ScanBase(CLIBase):
                     points = np.linspace(val[0], val[1], arguments["step"] + 1)
                 elif scan_type == "relative" or scan_type == "rel":
                     points = np.linspace(
-                        current_motor_pos[motor] + val[0], current_motor_pos[motor] + val[1], arguments["step"] + 1
+                        current_motor_pos[motor] + val[0],
+                        current_motor_pos[motor] + val[1],
+                        arguments["step"] + 1,
                     )
                 points = [float(i) for i in points]
                 data_for_scan[motor_map[motor]] = points
@@ -254,7 +266,8 @@ class ScanBase(CLIBase):
         number_of_motors: int,
         scan_type: str,
         data_for_scan: dict,
-        ordered_motors: list
+        ordered_motors: list,
+        xlabel: str,
     ) -> dict:
         """
         Generate all needed params for the scan based on the user input.
@@ -262,11 +275,6 @@ class ScanBase(CLIBase):
         """
         with open(".points.yaml", "w") as stream:
             yaml.dump(data_for_scan, stream, allow_unicode=False)
-
-        if arguments["xlabel"] == None:
-            xlabel = ordered_motors[0]
-        else:
-            xlabel = motor_map[arguments["xlabel"]]
 
         scan_args = {
             "configuration": self.experiment_file_dict["default_counters"].split(".")[
@@ -298,9 +306,25 @@ class ScanBase(CLIBase):
         return scan_args
 
     def configure_scan(self):
-        data_for_scan, ordered_motors = self.generate_data_for_scan(self.parsed_args_dict, self.number_of_motors, self.motor_map, self.get_current_motor_pos(), self.scan_type)
+        data_for_scan, ordered_motors = self.generate_data_for_scan(
+            self.parsed_args_dict,
+            self.number_of_motors,
+            self.motor_map,
+            self.get_current_motor_pos(),
+            self.scan_type,
+        )
+        if arguments["xlabel"] == None:
+            xlabel = ordered_motors[0]
+        else:
+            xlabel = motor_map[self.parsed_args_dict["xlabel"].lower()]
         scan_args = self.config_scan_inputs(
-            self.parsed_args_dict, self.motor_map, self.number_of_motors, self.scan_type, data_for_scan, ordered_motors
+            self.parsed_args_dict,
+            self.motor_map,
+            self.number_of_motors,
+            self.scan_type,
+            data_for_scan,
+            ordered_motors,
+            xlabel,
         )
         return scan_args
 

@@ -17,7 +17,6 @@ class D6Scan(ScanBase):
 
         """
 
-
     def __init__(self):
         super().__init__(number_of_motors=6, scan_type="relative")
 

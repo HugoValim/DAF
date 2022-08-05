@@ -17,7 +17,6 @@ class D3Scan(ScanBase):
 
         """
 
-
     def __init__(self):
         super().__init__(number_of_motors=3, scan_type="relative")
 
