@@ -17,7 +17,7 @@ class A1Scan(ScanBase):
         """
 
     def __init__(self):
-        super().__init__(1)
+        super().__init__(number_of_motors=1, scan_type="absolute")
 
     def run_cmd(self, arguments):
         """Method to print the user required information"""

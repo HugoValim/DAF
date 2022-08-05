@@ -13,16 +13,17 @@ class HKLScan(ScanBase):
     DESC = """Perform a scan using HKL coordinates"""
     EPI = """
     Eg: 
-        daf.scan 1 1 1 1.1 1.1 1.1 100 -n my_scan
-        daf.scan 1 1 1 1.1 1.1 1.1 1000 -n my_scan -sep \; -v
-        daf.scan 1 1 1 1.1 1.1 1.1 100 -p -t 0.5
+        daf.scan 1 1 1 1.1 1.1 1.1 100 0.1 -n my_scan
+        daf.scan 1 1 1 1.1 1.1 1.1 1000 0.1 -n my_scan -sep \; -v
+        daf.scan 1 1 1 1.1 1.1 1.1 100 0.1 -p -t 0.5
         """
 
 
     def __init__(self):
         super().__init__(scan_type="hkl")
-    
-    def parse_command_line(self):
+        self.exp = self.build_exp()
+
+    def parse_command_line(self):   
         CLIBase.parse_command_line(self)
         self.parser.add_argument(
             "hkli", metavar=("Hi, Ki, Li"), type=float, nargs=3, help="Initial HKL for scan"
@@ -62,6 +63,54 @@ class HKLScan(ScanBase):
         self.common_cli_scan_arguments()
         args = self.parser.parse_args()
         return args
+
+    def generate_data_for_scan(self, arguments: dict, motor_map: dict) -> np.array:
+        start_values = [i for i in self.get_current_motor_pos().values()]
+        scan_points = self.exp.scan(
+        arguments['hkli'],
+        arguments['hklf'],
+        arguments['step'],
+        diflimit=arguments["max_diff"],
+        name=arguments["scan_name"],
+        write=True,
+        sep=arguments["separator"],
+        startvalues=start_values,
+        )
+        mu_points = [
+            float(i) for i in scan_points["Mu"]
+        ]  # Get only the points related to mu
+        eta_points = [
+            float(i) for i in scan_points["Eta"]
+        ]  # Get only the points related to eta
+        chi_points = [
+            float(i) for i in scan_points["Chi"]
+        ]  # Get only the points related to chi
+        phi_points = [
+            float(i) for i in scan_points["Phi"]
+        ]  # Get only the points related to phi
+        nu_points = [
+            float(i) for i in scan_points["Nu"]
+        ]  # Get only the points related to nu
+        del_points = [
+            float(i) for i in scan_points["Del"]
+        ]  # Get only the points related to del
+        data_for_scan = {
+            motor_map["mu"]: mu_points,
+            motor_map["eta"]: eta_points,
+            motor_map["chi"]: chi_points,
+            motor_map["phi"]: phi_points,
+            motor_map["nu"]: nu_points,
+            motor_map["del"]: del_points,
+        }
+        ordered_motors = [i for i in data_for_scan.keys()]
+        return data_for_scan, ordered_motors
+
+    def configure_scan(self):
+        data_for_scan, ordered_motors = self.generate_data_for_scan(self.parsed_args_dict, self.motor_map)
+        scan_args = self.config_scan_inputs(
+            self.parsed_args_dict, self.motor_map, self.number_of_motors, self.scan_type, data_for_scan, ordered_motors
+        )
+        return scan_args
 
     def run_cmd(self, arguments):
         """

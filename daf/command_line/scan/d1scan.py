@@ -7,19 +7,20 @@ from daf.utils.log import daf_log
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
 
-class D2Scan(ScanBase):
+class D1Scan(ScanBase):
 
-    DESC = """Perform a relative scan in two of the diffractometer motors"""
+    DESC = """Perform a relative scan in one of the diffractometer motors"""
     EPI = """
     Eg: 
-        daf.d2scan -m -2 2 -e -4 4 100 .1
-        daf.d2scan -m -2 2 -e -4 4 100 .1 -np -o my_file
+        daf.lup -m -2 2 100 .1
+        daf.dscan -m -2 2 100 .1
+        daf.dscan -m -2 2 100 .1 -np -o my_file
 
         """
 
 
     def __init__(self):
-        super().__init__(number_of_motors=2, scan_type="relative")
+        super().__init__(number_of_motors=1, scan_type="relative")
 
     def run_cmd(self, arguments):
         """
@@ -31,7 +32,7 @@ class D2Scan(ScanBase):
 
 @daf_log
 def main() -> None:
-    obj = D2Scan()
+    obj = D1Scan()
     obj.run_cmd(obj.parsed_args)
 
 

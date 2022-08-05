@@ -7,18 +7,17 @@ from daf.utils.log import daf_log
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
 
-class A2Scan(ScanBase):
+class A3Scan(ScanBase):
 
-    DESC = """Perform an absolute scan using two of the diffractometer motors"""
+    DESC = """Perform an absolute scan using three of the diffractometer motors"""
     EPI = """
     Eg:
-        daf.a2scan -d 1 10 -e 1 20  100 .1
-        daf.a2scan -d 1 10 -e 1 20  100 .1 -o my_scan
-
+        daf.a3scan -d 1 10 -e 1 20 -c 5 20 100 .1
+        daf.a3scan -d 1 10 -e 1 20 -c 5 20 100 .1 -o my_scan -np
         """
 
     def __init__(self):
-        super().__init__(number_of_motors=2, scan_type="absolute")
+        super().__init__(number_of_motors=3, scan_type="absolute")
 
     def run_cmd(self, arguments):
         """Method to print the user required information"""
@@ -27,7 +26,7 @@ class A2Scan(ScanBase):
 
 @daf_log
 def main() -> None:
-    obj = A2Scan()
+    obj = A3Scan()
     obj.run_cmd(obj.parsed_args)
 
 
