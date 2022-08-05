@@ -313,7 +313,7 @@ class ScanBase(CLIBase):
             self.get_current_motor_pos(),
             self.scan_type,
         )
-        if arguments["xlabel"] == None:
+        if self.parsed_args_dict["xlabel"] == None:
             xlabel = ordered_motors[0]
         else:
             xlabel = motor_map[self.parsed_args_dict["xlabel"].lower()]

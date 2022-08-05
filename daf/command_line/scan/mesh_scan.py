@@ -1,170 +1,132 @@
 #!/usr/bin/env python3
-"""Perform a mesh scan using two of the diffractometer motors"""
 
 import sys
-import os
-import subprocess
 
-import numpy as np
-import yaml
 import argparse as ap
+import numpy as np
 
-# scan-utils imports
-# from scan_utils.hdf5_writer import HDF5Writer
-# from scan_utils import cleanup, die
-# from scan_utils import Configuration, processUserField, get_counters_in_config
-# from scan_utils.scan_pyqtgraph_plot import PlotScan
-# from scan_utils.scan_hdf_plot import PlotHDFScan
-from scan_utils import PlotType
+from daf.utils.log import daf_log
+from daf.command_line.scan.daf_scan_utils import ScanBase
 
-# from scan_utils import WriteType
-# from scan_utils import DefaultParser
-# from scan_utils.scan import ScanOperationCLI
 
-import dafutilities as du
-import scan_daf as sd
+class MeshScan(ScanBase):
 
-epi = """
-Eg:
-    daf.mesh -e -2 2 -d -2 6 100 .1
-    daf.mesh -e -2 2 -d -2 6 100 .1 -np
+    DESC = """Perform a mesh scan using two of the diffractometer motors"""
+    EPI = """
+    Eg:
+        daf.mesh -e -2 2 -d -2 6 100 .1
+        daf.mesh -e -2 2 -d -2 6 100 .1 -np
 
-    """
+        """
 
-parser = ap.ArgumentParser(
-    formatter_class=ap.RawDescriptionHelpFormatter, description=__doc__, epilog=epi
-)
-parser.add_argument(
-    "-m", "--mu", metavar="ang", type=float, nargs=2, help="Start and end for Mu"
-)
-parser.add_argument(
-    "-e", "--eta", metavar="ang", type=float, nargs=2, help="Start and end for Eta"
-)
-parser.add_argument(
-    "-c", "--chi", metavar="ang", type=float, nargs=2, help="Start and end for Chi"
-)
-parser.add_argument(
-    "-p", "--phi", metavar="ang", type=float, nargs=2, help="Start and end for Phi"
-)
-parser.add_argument(
-    "-n", "--nu", metavar="ang", type=float, nargs=2, help="Start and end for Nu"
-)
-parser.add_argument(
-    "-d", "--del", metavar="ang", type=float, nargs=2, help="Start and end for Del"
-)
-parser.add_argument("step", metavar="step", type=int, help="Number of steps")
-parser.add_argument(
-    "time", metavar="time", type=float, help="Acquisition time in each point in seconds"
-)
-parser.add_argument(
-    "-x",
-    "--xlabel",
-    help="motor which position is shown in x axis (if not set, point index is shown instead)",
-    default="points",
-)
-parser.add_argument(
-    "-cf",
-    "--configuration",
-    type=str,
-    help="choose a counter configuration file",
-    default="default",
-)
-parser.add_argument(
-    "-o",
-    "--output",
-    help="output data to file output-prefix/<fileprefix>_nnnn",
-    default=os.getcwd() + "/scan_daf",
-)
-parser.add_argument(
-    "-sp",
-    "--show-plot",
-    help="Do not plot de scan",
-    action="store_const",
-    const=PlotType.hdf,
-    default=PlotType.none,
-)
-parser.add_argument(
-    "-cw",
-    "--close-window",
-    help="Close the scan window after it is done",
-    default=False,
-    action="store_true",
-)
+    def __init__(self):
+        super().__init__(scan_type="mesh")
 
-"""
-BUG FOR STATS CALCULATIONS, BECAUSE IT EXPECTS A 1D VECTOR
+    def generate_data_for_scan(
+        self,
+        arguments: dict,
+        number_of_motors: int,
+        motor_map: dict,
+        current_motor_pos: dict,
+        scan_type: str,
+    ) -> tuple:
+        ordered_motors = self.get_inputed_motor_order(sys.argv, motor_map)
+        start = []
+        end = []
+        step = []
+        data_for_scan = {}
+        inv_map = {v: k for k, v in motor_map.items()}
+        for motor in ordered_motors:
+            motor_daf_mapped = inv_map[motor]
+            if isinstance(arguments[motor_daf_mapped], list):
+                start.append(arguments[motor_daf_mapped][0])
+                end.append(arguments[motor_daf_mapped][1])
+                step.append(arguments['step'])
+                data_for_scan[motor] = {}
+                data_for_scan[motor]["start"] = start
+                data_for_scan[motor]["end"] = end
+                data_for_scan[motor]["step"] = step
+        return data_for_scan, ordered_motors
 
-"""
+    def config_scan_inputs(
+        self,
+        arguments: dict,
+        motor_map: dict,
+        number_of_motors: int,
+        scan_type: str,
+        data_for_scan: dict,
+        ordered_motors: list,
+        xlabel: str,
+    ) -> dict:
+        """
+        Generate all needed params for the scan based on the user input.
+        scan_type must be absolute (abs), relative or hkl_scan (hkl).
+        """
+        start = [data_for_scan[key]["start"] for key in data_for_scan.keys()]
+        end = [data_for_scan[key]["end"] for key in data_for_scan.keys()]
+        step = [data_for_scan[key]["step"] for key in data_for_scan.keys()]
+        scan_args = {
+            "motor": ordered_motors,
+            "start": start,
+            "end": end,
+            "step_or_points": step,
+            "time": [[arguments["time"]]],
+            "configuration": self.experiment_file_dict["default_counters"].split(".")[
+                        1
+                    ],
+            "optimum": None,
+            "repeat": 1,
+            "sleep": 0,
+            "message": None,
+            "output": arguments["output"],
+            "sync": True,
+            "snake": False,
+            "xlabel": xlabel,
+            "prescan": "ls",
+            "postscan": "pwd",
+            "plot_type": arguments["show_plot"],
+            "relative": False,
+            "reset": False,
+            "step_mode": False,
+            "points_mode": True,
+        }
 
-args = parser.parse_args()
-dic = vars(args)
-dict_args = du.read()
-du.log_macro(dict_args)
 
-if du.PV_PREFIX == "EMA:B:PB18":
-    data = {
-        "mu": "huber_mu",
-        "eta": "huber_eta",
-        "chi": "huber_chi",
-        "phi": "huber_phi",
-        "nu": "huber_nu",
-        "del": "huber_del",
-    }
+        return scan_args
 
-else:
-    data = {
-        "mu": "sol_m3",
-        "eta": "sol_m5",
-        "chi": "sol_m2",
-        "phi": "sol_m1",
-        "nu": "sol_m4",
-        "del": "sol_m6",
-    }
+    def configure_scan(self):
+        data_for_scan, ordered_motors = self.generate_data_for_scan(
+            self.parsed_args_dict,
+            self.number_of_motors,
+            self.motor_map,
+            self.get_current_motor_pos(),
+            self.scan_type,
+        )
+        if self.parsed_args_dict["xlabel"] == None:
+            xlabel = ordered_motors[0]
+        else:
+            xlabel = motor_map[self.parsed_args_dict["xlabel"].lower()]
+        scan_args = self.config_scan_inputs(
+            self.parsed_args_dict,
+            self.motor_map,
+            self.number_of_motors,
+            self.scan_type,
+            data_for_scan,
+            ordered_motors,
+            xlabel,
+        )
+        return scan_args
 
-n = 0
-motors = []
-start = []
-end = []
-step = []
-for key, val in dic.items():
-    if isinstance(val, list):
-        motor = key
-        motors.append(data[motor])
-        start.append(val[0])
-        end.append(val[1])
-        step.append(args.step)
-        n += 1
-    if n == 2:
-        break
+    def run_cmd(self, arguments):
+        """Method to print the user required information"""
+        self.run_scan()
 
-if args.xlabel != "points":
-    xlabel = data[args.xlabel]
-else:
-    xlabel = "points"
 
-args = {
-    "motor": motors,
-    "start": [start],
-    "end": [end],
-    "step_or_points": [step],
-    "time": [[args.time]],
-    "configuration": dict_args["default_counters"].split(".")[1],
-    "optimum": None,
-    "repeat": 1,
-    "sleep": 0,
-    "message": None,
-    "output": args.output,
-    "sync": True,
-    "snake": False,
-    "xlabel": xlabel,
-    "prescan": "ls",
-    "postscan": "pwd",
-    "plot_type": args.show_plot,
-    "relative": False,
-    "reset": False,
-    "step_mode": False,
-    "points_mode": True,
-}
+@daf_log
+def main() -> None:
+    obj = MeshScan()
+    obj.run_cmd(obj.parsed_args)
 
-scan = sd.DAFScan(args, close_window=dic["close_window"])
-scan.run()
+
+if __name__ == "__main__":
+    main()
