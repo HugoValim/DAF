@@ -28,6 +28,7 @@ class ScanBase(CLIBase):
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.motor_map = self.create_motor_map()
+        self.scan_args = self.configure_scan()
         signal.signal(signal.SIGINT, self.sigint_handler_utilities)
 
     def sigint_handler_utilities(self, signum, frame):
@@ -39,6 +40,7 @@ class ScanBase(CLIBase):
         exit(1)
 
     def parse_command_line(self):
+        """The majority of the scans use this, but some not and have to overwrite this method"""
         super().parse_command_line()
         self.parser.add_argument(
             "-m",
@@ -92,11 +94,12 @@ class ScanBase(CLIBase):
         args = self.parser.parse_args()
         return args
 
-    def common_cli_scan_arguments(self):
+    def common_cli_scan_arguments(self, step=True):
         """This are the arguments that are common to all daf scans"""
-        self.parser.add_argument(
-            "step", metavar="step", type=int, help="Number of steps"
-        )
+        if step:
+            self.parser.add_argument(
+                "step", metavar="step", type=int, help="Number of steps"
+            )
         self.parser.add_argument(
             "time",
             metavar="time",
@@ -330,6 +333,5 @@ class ScanBase(CLIBase):
 
     def run_scan(self):
         """Run the scan"""
-        scan_args = self.configure_scan()
-        scan = sd.DAFScan(scan_args)
+        scan = sd.DAFScan(self.scan_args)
         scan.run()
