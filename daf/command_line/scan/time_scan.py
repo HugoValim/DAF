@@ -2,10 +2,6 @@
 
 import signal
 
-import argparse as ap
-import numpy as np
-import pandas as pd
-
 from daf.utils.log import daf_log
 from daf.command_line.cli_base_utils import CLIBase
 from daf.command_line.scan.daf_scan_utils import ScanBase

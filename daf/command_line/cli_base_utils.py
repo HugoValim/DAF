@@ -5,7 +5,6 @@ import numpy as np
 from daf.core.main import DAF
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import (
-    calculate_rotation_matrix_from_diffractometer_angles,
     calculate_pseudo_angle_from_motor_angles,
 )
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse as ap
 import numpy as np
 import pandas as pd
 
@@ -72,7 +71,7 @@ class FromFileScan(ScanBase):
         data_for_scan, ordered_motors = self.generate_data_for_scan(
             self.parsed_args_dict["file_name"], self.motor_map
         )
-        if self.parsed_args_dict["xlabel"] != None:
+        if self.parsed_args_dict["xlabel"] is not None:
             xlabel = self.motor_map[self.parsed_args_dict["xlabel"].lower()]
         else:
             xlabel = "points"

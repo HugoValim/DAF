@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse as ap
-import numpy as np
-
 from daf.utils.log import daf_log
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
@@ -11,11 +8,10 @@ class D1Scan(ScanBase):
 
     DESC = """Perform a relative scan in one of the diffractometer motors"""
     EPI = """
-    Eg: 
+    Eg:
         daf.lup -m -2 2 100 .1
         daf.dscan -m -2 2 100 .1
         daf.dscan -m -2 2 100 .1 -np -o my_file
-
         """
 
     def __init__(self):

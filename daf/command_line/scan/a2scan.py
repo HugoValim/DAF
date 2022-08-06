@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse as ap
-import numpy as np
-
 from daf.utils.log import daf_log
 from daf.command_line.scan.daf_scan_utils import ScanBase
 

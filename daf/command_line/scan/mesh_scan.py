@@ -2,9 +2,6 @@
 
 import sys
 
-import argparse as ap
-import numpy as np
-
 from daf.utils.log import daf_log
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
@@ -101,10 +98,10 @@ class MeshScan(ScanBase):
             self.get_current_motor_pos(),
             self.scan_type,
         )
-        if self.parsed_args_dict["xlabel"] == None:
+        if self.parsed_args_dict["xlabel"] is None:
             xlabel = ordered_motors[0]
         else:
-            xlabel = motor_map[self.parsed_args_dict["xlabel"].lower()]
+            xlabel = self.motor_map[self.parsed_args_dict["xlabel"].lower()]
         scan_args = self.config_scan_inputs(
             self.parsed_args_dict,
             self.motor_map,
