@@ -1,0 +1,178 @@
+import sys
+import os
+import subprocess
+from os import path
+import time
+import threading
+
+import numpy as np
+import yaml
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
+from PyQt5.QtGui import QPixmap, QIcon
+from qtpy.QtWidgets import (
+    QApplication,
+    QTreeWidgetItem,
+    QMenu,
+    QAction,
+    QHeaderView,
+    QTableWidgetItem,
+    QMenu,
+    QComboBox,
+    QListWidget,
+)
+from pydm import Display
+from pydm.widgets import PyDMEmbeddedDisplay
+import json
+import qdarkstyle
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg,
+    NavigationToolbar2QT as NavigationToolbar,
+)
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+
+# DAF GUIs imports
+import scan_gui_daf
+import scan_hkl_daf
+import set_mode
+import experiment
+import sample
+import ub
+import bounds
+import goto_hkl
+import daf.utils.dafutilities as du
+from daf.core.main import DAF
+from daf.core.matrix_utils import (
+    calculate_rotation_matrix_from_diffractometer_angles,
+    calculate_pseudo_angle_from_motor_angles,
+)
+
+
+class RMapWidget(FigureCanvasQTAgg):
+    """Class to handle the RMap plot in the GUI"""
+
+    def __init__(
+        self,
+        parent=None,
+        dict_args=None,
+        move=False,
+        samples=None,
+        idirp=None,
+        ndirp=None,
+    ):
+        U = np.array(dict_args["U_mat"])
+        mode = [int(i) for i in dict_args["Mode"]]
+        idir = dict_args["IDir"]
+        ndir = dict_args["NDir"]
+        rdir = dict_args["RDir"]
+        paradir = idirp
+        normdir = ndirp
+        Mu_bound = dict_args["bound_Mu"]
+        Eta_bound = dict_args["bound_Eta"]
+        Chi_bound = dict_args["bound_Chi"]
+        Phi_bound = dict_args["bound_Phi"]
+        Nu_bound = dict_args["bound_Nu"]
+        Del_bound = dict_args["bound_Del"]
+
+        exp = DAF(*mode)
+        if dict_args["Material"] in dict_args["user_samples"].keys():
+            exp.set_material(
+                dict_args["Material"], *dict_args["user_samples"][dict_args["Material"]]
+            )
+
+        else:
+            exp.set_material(
+                dict_args["Material"],
+                dict_args["lparam_a"],
+                dict_args["lparam_b"],
+                dict_args["lparam_c"],
+                dict_args["lparam_alpha"],
+                dict_args["lparam_beta"],
+                dict_args["lparam_gama"],
+            )
+
+        exp.set_exp_conditions(
+            idir=idir,
+            ndir=ndir,
+            rdir=rdir,
+            en=dict_args["PV_energy"] - dict_args["energy_offset"],
+            sampleor=dict_args["Sampleor"],
+        )
+        exp.set_circle_constrain(
+            Mu=Mu_bound,
+            Eta=Eta_bound,
+            Chi=Chi_bound,
+            Phi=Phi_bound,
+            Nu=Nu_bound,
+            Del=Del_bound,
+        )
+        exp.set_U(U)
+        exp.set_constraints(
+            Mu=dict_args["cons_Mu"],
+            Eta=dict_args["cons_Eta"],
+            Chi=dict_args["cons_Chi"],
+            Phi=dict_args["cons_Phi"],
+            Nu=dict_args["cons_Nu"],
+            Del=dict_args["cons_Del"],
+            alpha=dict_args["cons_alpha"],
+            beta=dict_args["cons_beta"],
+            psi=dict_args["cons_psi"],
+            omega=dict_args["cons_omega"],
+            qaz=dict_args["cons_qaz"],
+            naz=dict_args["cons_naz"],
+        )
+
+        exp.build_xrd_experiment()
+        exp.build_bounds()
+        ttmax, ttmin = exp.two_theta_max()
+        self.ax, h = exp.show_reciprocal_space_plane(
+            ttmax=ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, move=move
+        )
+        for i in samples:
+            exp = DAF(*mode)
+            exp.set_material(str(i))
+            exp.set_exp_conditions(
+                idir=idir,
+                ndir=ndir,
+                rdir=rdir,
+                en=dict_args["PV_energy"] - dict_args["energy_offset"],
+                sampleor=dict_args["Sampleor"],
+            )
+            exp.set_circle_constrain(
+                Mu=Mu_bound,
+                Eta=Eta_bound,
+                Chi=Chi_bound,
+                Phi=Phi_bound,
+                Nu=Nu_bound,
+                Del=Del_bound,
+            )
+            exp.set_U(U)
+            exp.set_constraints(
+                Mu=dict_args["cons_Mu"],
+                Eta=dict_args["cons_Eta"],
+                Chi=dict_args["cons_Chi"],
+                Phi=dict_args["cons_Phi"],
+                Nu=dict_args["cons_Nu"],
+                Del=dict_args["cons_Del"],
+                alpha=dict_args["cons_alpha"],
+                beta=dict_args["cons_beta"],
+                psi=dict_args["cons_psi"],
+                omega=dict_args["cons_omega"],
+                qaz=dict_args["cons_qaz"],
+                naz=dict_args["cons_naz"],
+            )
+            exp.build_xrd_experiment()
+            exp.build_bounds()
+            ttmax, ttmin = exp.two_theta_max()
+            ax, h2 = exp.show_reciprocal_space_plane(
+                ttmax=ttmax,
+                ttmin=ttmin,
+                idir=paradir,
+                ndir=normdir,
+                scalef=100,
+                ax=self.ax,
+                move=move,
+            )
+
+        super().__init__(self.ax.figure)
