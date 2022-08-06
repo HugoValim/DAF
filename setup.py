@@ -10,9 +10,9 @@ def readme():
 
 
 setup(
-    name="sol-view",
-    version="1.0.2",
-    description="A Module to plot data stored in hdf files",
+    name="daf_test",
+    version="0.0.1",
+    description="A Module to control x-ray diffraction experiments that uses a 6-circle diffractometer",
     long_description=readme(),
     classifiers=[
         "Development Status :: 1 - Planning",
@@ -23,21 +23,15 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     author="Hugo Campos",
-    author_email="hugohvlcampos96@gmail.com",
+    author_email="hugo.campos@lnls.br",
     url="https://github.com/lnls-sol/sol-view",
     install_requires=[
-        "wheel",
-        "pydm",
-        "PyQt5",
-        "silx",
-        "numpy",
-        "python-dateutil",
-        "lmfit",
-        "qdarkstyle",
-        "pymca",
         "pandas",
     ],
-    package_data={"sol_view": ["*.ui", "icons/*.png"]},
-    packages=find_packages(exclude=["test", "test.*"]),
-    entry_points={"console_scripts": ["sol_view=sol_view.scripts.run:run_sol_view"]},
+    package_data={"daf.gui.ui": ["*.ui", "icons/*.svg"]},
+    include_package_data=True,
+    packages=find_packages(where=".", exclude=["test", "test.*", "tests"]),
+    entry_points={
+        "console_scripts": ["hello-world = daf.command_line.query.status:main"]
+    },
 )
