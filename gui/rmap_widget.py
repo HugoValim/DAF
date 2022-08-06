@@ -1,52 +1,8 @@
-import sys
-import os
-import subprocess
-from os import path
-import time
-import threading
-
 import numpy as np
-import yaml
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
-from PyQt5.QtGui import QPixmap, QIcon
-from qtpy.QtWidgets import (
-    QApplication,
-    QTreeWidgetItem,
-    QMenu,
-    QAction,
-    QHeaderView,
-    QTableWidgetItem,
-    QMenu,
-    QComboBox,
-    QListWidget,
-)
-from pydm import Display
-from pydm.widgets import PyDMEmbeddedDisplay
-import json
-import qdarkstyle
-from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg,
-    NavigationToolbar2QT as NavigationToolbar,
-)
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 # DAF GUIs imports
-import scan_gui_daf
-import scan_hkl_daf
-import set_mode
-import experiment
-import sample
-import ub
-import bounds
-import goto_hkl
-import daf.utils.dafutilities as du
 from daf.core.main import DAF
-from daf.core.matrix_utils import (
-    calculate_rotation_matrix_from_diffractometer_angles,
-    calculate_pseudo_angle_from_motor_angles,
-)
 
 
 class RMapWidget(FigureCanvasQTAgg):

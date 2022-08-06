@@ -1,13 +1,11 @@
-import os
 from os import path
 import subprocess
 
 import xrayutilities as xu
 from pydm import Display
 from qtpy.QtWidgets import QApplication
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtGui import QPixmap, QIcon
-import qdarkstyle
+from PyQt5 import QtGui
+from PyQt5.QtGui import QIcon
 
 import daf.utils.dafutilities as du
 

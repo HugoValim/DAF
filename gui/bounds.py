@@ -1,17 +1,12 @@
+import os
 from os import path
 from pydm import Display
 
-import sys
-import os
-import daf
-import numpy as np
-import daf.utils.dafutilities as du
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
-from pydm.widgets import PyDMEmbeddedDisplay
+from PyQt5 import QtGui
+from PyQt5.QtCore import QCoreApplication
 from qtpy.QtWidgets import QApplication
-import json
-import qdarkstyle
+
+import daf.utils.dafutilities as du
 
 
 class MyDisplay(Display):

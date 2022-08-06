@@ -2,17 +2,12 @@
 
 import threading
 import time
-import os
-import sys
 from os import path
 
-import numpy as np
 import silx
-from silx.gui import qt
 from silx.gui.utils import concurrent
 from silx.gui.plot import Plot1D
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, QTimer
+from PyQt5.QtCore import QTimer
 from pydm import Display
 from PyQt5.QtWidgets import (
     QTableWidget,

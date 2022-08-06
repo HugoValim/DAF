@@ -1,10 +1,9 @@
-import os
 from os import path
 import subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QIcon
 
 
 class MyWindow(QWidget):

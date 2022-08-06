@@ -1,8 +1,6 @@
-import os
 from os import path
 import subprocess
 
-import xrayutilities as xu
 from pydm import Display
 from qtpy.QtWidgets import QApplication
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -14,7 +12,7 @@ from PyQt5.QtWidgets import (
     QHeaderView,
     QMenu,
 )
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QTimer
 import numpy as np
 

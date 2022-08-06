@@ -1,10 +1,9 @@
-import os
 import subprocess
 from os import path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QFileDialog
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtWidgets import QWidget, QFileDialog
+from PyQt5.QtGui import QIcon
 
 import pandas as pd
 
