@@ -23,7 +23,7 @@ class MyDisplay(Display):
         self.center()
 
     def ui_filename(self):
-        return "bounds.ui"
+        return "ui/bounds.ui"
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())

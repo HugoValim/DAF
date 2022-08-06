@@ -361,8 +361,14 @@ class MyDisplay(Display):
         )  # Cooldown to delay, it start with the same value so it runs in the first loop
         self.scan_windows = {}
 
+    def ui_filename(self):
+        return "ui/main.ui"
+
+    def ui_filepath(self):
+        return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
+
     def build_icons(self):
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
         self.settings_icon = path.join(pixmap_path, "settings.svg")
         self.cached_icon = path.join(pixmap_path, "cached1.svg")
 
@@ -601,12 +607,6 @@ class MyDisplay(Display):
         self.thread.started.connect(self.worker.run)
         self.thread.start()
         self.worker.update_labels.connect(self.update)
-
-    def ui_filename(self):
-        return "main.ui"
-
-    def ui_filepath(self):
-        return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
     def open_scan_window(self, n_motors, scan_type):
         self.scan_windows[scan_type + str(n_motors)] = scan_gui_daf.MyWindow(

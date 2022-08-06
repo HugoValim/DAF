@@ -32,7 +32,7 @@ class MyWindow(QWidget):
         self.center()
 
     def build_icons(self):
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
         self.folder_icon = path.join(pixmap_path, "folder-open.svg")
         self.check_icon = path.join(pixmap_path, "check.svg")
 

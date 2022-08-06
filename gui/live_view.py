@@ -115,7 +115,7 @@ class MyDisplay(Display):
         self.loop()
 
     def ui_filename(self):
-        return "live_view.ui"
+        return "ui/live_view.ui"
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())

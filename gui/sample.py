@@ -26,7 +26,7 @@ class MyDisplay(Display):
         self.center()
 
     def ui_filename(self):
-        return "sample.ui"
+        return "ui/sample.ui"
 
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
@@ -42,7 +42,7 @@ class MyDisplay(Display):
 
     def build_icons(self):
         """Build used icons"""
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
         self.check_icon = path.join(pixmap_path, "check.svg")
 
     def set_icons(self):

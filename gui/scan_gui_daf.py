@@ -25,7 +25,7 @@ class MyWindow(QWidget):
         self.move(frameGm.topLeft())
 
     def build_icons(self):
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "icons")
+        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
         self.check_icon = path.join(pixmap_path, "check.svg")
 
     def initUI(self):
