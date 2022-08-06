@@ -10,7 +10,7 @@ def daf_log(func):
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
         # Do the log
-        log_message = sys.argv.pop(0).split("command_line/")[1]
+        log_message = sys.argv.pop(0).split("/")[-1]
         for i in sys.argv:
             log_message += " " + i
         with open(LOG_FILE_NAME, "a") as file_object:
