@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QPixmap, QIcon
 import qdarkstyle
 
-import dafutilities as du
+import daf.utils.dafutilities as du
 
 DEFAULT = ".Experiment"
 

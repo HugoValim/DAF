@@ -5,7 +5,7 @@ import sys
 import os
 import daf
 import numpy as np
-import dafutilities as du
+import daf.utils.dafutilities as du
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication
 from pydm.widgets import PyDMEmbeddedDisplay

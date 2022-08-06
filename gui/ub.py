@@ -18,7 +18,7 @@ from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QTimer
 import numpy as np
 
-import dafutilities as du
+import daf.utils.dafutilities as du
 
 
 class MyDisplay(Display):

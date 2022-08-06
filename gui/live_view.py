@@ -25,8 +25,8 @@ from PyQt5.QtWidgets import (
 )
 import qdarkstyle
 
-import dafutilities as du
-import fits_daf as fits
+import daf.utils.dafutilities as du
+import daf.utils.fits_daf as fits
 
 
 class UpdateThread(threading.Thread):

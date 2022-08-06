@@ -1,14 +1,12 @@
-from os import path
-from pydm import Display
-
 import sys
 import os
 import subprocess
-import daf
-import numpy as np
-import dafutilities as du
-import yaml
+from os import path
 import time
+import threading
+
+import numpy as np
+import yaml
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QCoreApplication, Qt
 from PyQt5.QtGui import QPixmap, QIcon
@@ -23,6 +21,7 @@ from qtpy.QtWidgets import (
     QComboBox,
     QListWidget,
 )
+from pydm import Display
 from pydm.widgets import PyDMEmbeddedDisplay
 import json
 import qdarkstyle
@@ -32,7 +31,6 @@ from matplotlib.backends.backend_qt5agg import (
 )
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-import threading
 
 # DAF GUIs imports
 import scan_gui_daf
@@ -43,6 +41,13 @@ import sample
 import ub
 import bounds
 import goto_hkl
+import daf.utils.dafutilities as du
+from daf.core.main import DAF
+from daf.core.matrix_utils import (
+    calculate_rotation_matrix_from_diffractometer_angles,
+    calculate_pseudo_angle_from_motor_angles,
+)
+
 
 DEFAULT = ".Experiment"
 
@@ -95,7 +100,7 @@ class Worker(QObject):
         idir = dict_args["IDir_print"]
         ndir = dict_args["NDir_print"]
         rdir = dict_args["RDir"]
-        exp = daf.Control(*mode)
+        exp = DAF(*mode)
         exp.set_exp_conditions(
             idir=idir,
             ndir=ndir,
@@ -135,6 +140,8 @@ class Worker(QObject):
             qaz=dict_args["cons_qaz"],
             naz=dict_args["cons_naz"],
         )
+        exp.build_xrd_experiment()
+        exp.build_bounds()
 
         hklnow = exp.calc_from_angs(
             dict_args["Mu"],
@@ -145,24 +152,19 @@ class Worker(QObject):
             dict_args["Del"],
         )
 
-        pseudo = exp.calc_pseudo(
+        pseudo_dict = calculate_pseudo_angle_from_motor_angles(
             dict_args["Mu"],
             dict_args["Eta"],
             dict_args["Chi"],
             dict_args["Phi"],
             dict_args["Nu"],
             dict_args["Del"],
+            exp.samp,
+            hklnow,
+            exp.lam,
+            exp.nref,
+            exp.U,
         )
-        pseudo_dict = {
-            "alpha": pseudo[0],
-            "qaz": pseudo[1],
-            "naz": pseudo[2],
-            "tau": pseudo[3],
-            "psi": pseudo[4],
-            "beta": pseudo[5],
-            "omega": pseudo[6],
-            "hklnow": hklnow,
-        }
 
         hklnow = list(hklnow)
 
@@ -227,7 +229,7 @@ class RMap(FigureCanvasQTAgg):
         Nu_bound = dict_args["bound_Nu"]
         Del_bound = dict_args["bound_Del"]
 
-        exp = daf.Control(*mode)
+        exp = DAF(*mode)
         if dict_args["Material"] in dict_args["user_samples"].keys():
             exp.set_material(
                 dict_args["Material"], *dict_args["user_samples"][dict_args["Material"]]
@@ -275,13 +277,14 @@ class RMap(FigureCanvasQTAgg):
             naz=dict_args["cons_naz"],
         )
 
-        exp(calc=False)
+        exp.build_xrd_experiment()
+        exp.build_bounds()
         ttmax, ttmin = exp.two_theta_max()
         self.ax, h = exp.show_reciprocal_space_plane(
             ttmax=ttmax, ttmin=ttmin, idir=paradir, ndir=normdir, scalef=100, move=move
         )
         for i in samples:
-            exp = daf.Control(*mode)
+            exp = DAF(*mode)
             exp.set_material(str(i))
             exp.set_exp_conditions(
                 idir=idir,
@@ -313,7 +316,8 @@ class RMap(FigureCanvasQTAgg):
                 qaz=dict_args["cons_qaz"],
                 naz=dict_args["cons_naz"],
             )
-            exp(calc=False)
+            exp.build_xrd_experiment()
+            exp.build_bounds()
             ttmax, ttmin = exp.two_theta_max()
             ax, h2 = exp.show_reciprocal_space_plane(
                 ttmax=ttmax,
