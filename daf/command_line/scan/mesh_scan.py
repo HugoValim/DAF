@@ -41,7 +41,7 @@ class MeshScan(ScanBase):
             if isinstance(arguments[motor_daf_mapped], list):
                 start.append(arguments[motor_daf_mapped][0])
                 end.append(arguments[motor_daf_mapped][1])
-                step.append(arguments['step'])
+                step.append(arguments["step"])
                 data_for_scan[motor] = {}
                 data_for_scan[motor]["start"] = start
                 data_for_scan[motor]["end"] = end
@@ -72,8 +72,8 @@ class MeshScan(ScanBase):
             "step_or_points": step,
             "time": [[arguments["time"]]],
             "configuration": self.experiment_file_dict["default_counters"].split(".")[
-                        1
-                    ],
+                1
+            ],
             "optimum": None,
             "repeat": 1,
             "sleep": 0,
@@ -90,7 +90,6 @@ class MeshScan(ScanBase):
             "step_mode": False,
             "points_mode": True,
         }
-
 
         return scan_args
 

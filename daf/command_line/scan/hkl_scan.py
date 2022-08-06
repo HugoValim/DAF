@@ -21,7 +21,7 @@ class HKLScan(ScanBase):
 
     def __init__(self):
         super().__init__(scan_type="hkl")
-        
+
     def parse_command_line(self):
         CLIBase.parse_command_line(self)
         self.parser.add_argument(
@@ -79,6 +79,7 @@ class HKLScan(ScanBase):
         return args
 
     def generate_data_for_scan(self, arguments: dict, motor_map: dict) -> np.array:
+        """Generate the scan path for scans"""
         self.exp = self.build_exp()
         start_values = [i for i in self.get_current_motor_pos().values()]
         scan_points = self.exp.scan(
@@ -122,11 +123,12 @@ class HKLScan(ScanBase):
         return data_for_scan, ordered_motors
 
     def configure_scan(self):
+        """Basically, a wrapper for configure_scan_inputs. It may differ from scan to scan"""
         data_for_scan, ordered_motors = self.generate_data_for_scan(
             self.parsed_args_dict, self.motor_map
         )
-        if self.parsed_args_dict['xlabel'] != None:
-            xlabel = self.motor_map[self.parsed_args_dict['xlabel'].lower()]
+        if self.parsed_args_dict["xlabel"] != None:
+            xlabel = self.motor_map[self.parsed_args_dict["xlabel"].lower()]
         else:
             xlabel = "points"
         scan_args = self.config_scan_inputs(
@@ -145,7 +147,6 @@ class HKLScan(ScanBase):
         pd.options.display.max_rows = None
         pd.options.display.max_columns = 0
         print(self.exp)
-
 
     def run_cmd(self, arguments):
         """

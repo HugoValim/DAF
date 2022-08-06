@@ -3,20 +3,18 @@
 import sys
 import os
 import subprocess
-import daf
-import numpy as np
-import dafutilities as du
+from datetime import datetime
+import time
+import signal
 
-# import scan_daf as sd
 import pandas as pd
 import yaml
 import argparse as ap
 import h5py
 from PyQt5.QtWidgets import QApplication, QDesktopWidget
-from datetime import datetime
-import time
-import signal
+
 import numpy
+import numpy as np
 
 # Py4Syn imports
 import py4syn
@@ -28,49 +26,19 @@ from py4syn.utils.scan import (
     createUniqueFileName,
 )
 
-
 # scan-utils imports
 from scan_utils.hdf5_writer import HDF5Writer
-
-# from scan_utils import cleanup, die
-# from scan_utils import Configuration, processUserField, get_counters_in_config
-# from scan_utils.scan_pyqtgraph_plot import PlotScan
-# from scan_utils.scan_hdf_plot import PlotHDFScan
-# from scan_utils import PlotType
-# from scan_utils import WriteType
-# from scan_utils import DefaultParser
 from scan_utils.scan import ScanOperationCLI
 
-
-def sigint_handler_utilities(signum, frame):
-    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    dict_args = du.read()
-    dict_args["scan_running"] = False
-    du.write(dict_args)
-    print("\n")
-    exit(1)
-
-
-signal.signal(signal.SIGINT, sigint_handler_utilities)
+from daf.utils import dafutilities as du
 
 
 class DAFTimeScan(ScanOperationCLI):
-    def __init__(self, args, close_window=False, delay=False, n_points_count=100000):
+    def __init__(self, args, close_window=False, delay=False, n_points_count=10000):
         self.close_window = close_window
         super().__init__(**args)
-        signal.signal(signal.SIGINT, self.sigint_handler)
         self.delay = delay
         self.n_points_count = n_points_count
-
-    def sigint_handler(self, signum, frame):
-        """Function to handle ctrl + c and dont let daf.live lost"""
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
-        dict_args = du.read()
-        dict_args["scan_running"] = False
-        du.write(dict_args)
-        print("\n")
-        exit(1)
 
     def configure_step_mode(self):
         """

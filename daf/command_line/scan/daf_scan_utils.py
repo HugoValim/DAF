@@ -31,7 +31,7 @@ class ScanBase(CLIBase):
         self.scan_args = self.configure_scan()
         signal.signal(signal.SIGINT, self.sigint_handler_utilities)
 
-    def sigint_handler_utilities(self, signum, frame):
+    def sigint_handler_utilities(self, signum: signal, frame: "function") -> None:
         """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         self.experiment_file_dict["scan_running"] = False
@@ -94,7 +94,7 @@ class ScanBase(CLIBase):
         args = self.parser.parse_args()
         return args
 
-    def common_cli_scan_arguments(self, step=True):
+    def common_cli_scan_arguments(self, step=True) -> None:
         """This are the arguments that are common to all daf scans"""
         if step:
             self.parser.add_argument(
@@ -148,7 +148,7 @@ class ScanBase(CLIBase):
         )
 
     @staticmethod
-    def create_motor_map():
+    def create_motor_map() -> dict:
         """Create a map for the motors based in the PV prefix"""
         if du.PV_PREFIX == "EMA:B:PB18":
             data = {
@@ -172,8 +172,8 @@ class ScanBase(CLIBase):
         return data
 
     @staticmethod
-    def get_inputed_motor_order(sysargv: sys.argv, motor_map: dict):
-        """Method to pass the order that use choose to the scan_utils routine"""
+    def get_inputed_motor_order(sysargv: sys.argv, motor_map: dict) -> list:
+        """Method to retrieve the right order that the user input arguments through shell"""
         all_possibilities = [
             "-m",
             "-e",
@@ -238,7 +238,7 @@ class ScanBase(CLIBase):
         current_motor_pos: dict,
         scan_type: str,
     ) -> tuple:
-        """Generate the scan path for relative scans"""
+        """Generate the scan path for scans"""
         number_of_iters = 0
         motors = []
         data_for_scan = {}
@@ -308,7 +308,8 @@ class ScanBase(CLIBase):
 
         return scan_args
 
-    def configure_scan(self):
+    def configure_scan(self) -> dict:
+        """Basically, a wrapper for configure_scan_inputs. It may differ from scan to scan"""
         data_for_scan, ordered_motors = self.generate_data_for_scan(
             self.parsed_args_dict,
             self.number_of_motors,
@@ -331,7 +332,7 @@ class ScanBase(CLIBase):
         )
         return scan_args
 
-    def run_scan(self):
-        """Run the scan"""
+    def run_scan(self) -> None:
+        """Perform the scan"""
         scan = sd.DAFScan(self.scan_args)
         scan.run()
