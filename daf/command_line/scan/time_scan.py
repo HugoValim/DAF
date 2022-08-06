@@ -5,7 +5,7 @@ import signal
 from daf.utils.log import daf_log
 from daf.command_line.cli_base_utils import CLIBase
 from daf.command_line.scan.daf_scan_utils import ScanBase
-import time_scan_daf as td
+import daf.command_line.scan.time_scan_daf as td
 
 
 class TimeScan(CLIBase):

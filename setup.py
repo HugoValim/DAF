@@ -65,6 +65,8 @@ setup(
             "daf.init = daf.command_line.support.init:main",
             "daf.reset = daf.command_line.support.reset:main",
             "daf.setup = daf.command_line.support.setup:main",
+            "daf.gui = daf.gui.scripts.daf_gui_caller:main",
+            "daf.live = daf.gui.scripts.live_view_caller:main",
         ],
     },
 )
