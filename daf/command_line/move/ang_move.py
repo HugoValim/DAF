@@ -104,6 +104,7 @@ class AngleMove(MoveBase):
             key: (stat_dict[value] if (value == "CEN" or value == "MAX") else value)
             for key, value in parsed_args_dict.items()
         }
+        print(dict_parsed_with_counter_stats)
         self.write_to_experiment_file(dict_parsed_with_counter_stats)
 
     def run_cmd(self, arguments) -> None:

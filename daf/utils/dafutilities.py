@@ -25,42 +25,11 @@ def only_read(filepath=DEFAULT):
         return data
 
 
-try:
+if os.path.isfile(DEFAULT):
     dict_now = only_read()
-    flag = dict_now["simulated"]
-except FileNotFoundError:
-    flag = True
-
-if not flag:
-    PV_PREFIX = "EMA:B:PB18"
-    BL_PVS = {"PV_energy": "EMA:A:DCM01:GonRxEnergy_RBV"}
-else:
-    PV_PREFIX = "SOL:S"
-    BL_PVS = {"PV_energy": "SOL:S:m7"}
-    # PV_PREFIX = "IOC"
-try:
-    PVS = {
-        "Phi": PV_PREFIX + ":m1",
-        "Chi": PV_PREFIX + ":m2",
-        "Mu": PV_PREFIX + ":m3",
-        "Nu": PV_PREFIX + ":m4",
-        "Eta": PV_PREFIX + ":m5",
-        "Del": PV_PREFIX + ":m6",
-    }
-    MOTORS = {i: epics.Motor(PVS[i]) for i in PVS}
-except epics.motor.MotorException:
-    PV_PREFIX = "SOL:S"
-    BL_PVS = {"PV_energy": "SOL:S:m7"}
-    PVS = {
-        "Phi": PV_PREFIX + ":m1",
-        "Chi": PV_PREFIX + ":m2",
-        "Mu": PV_PREFIX + ":m3",
-        "Nu": PV_PREFIX + ":m4",
-        "Eta": PV_PREFIX + ":m5",
-        "Del": PV_PREFIX + ":m6",
-    }
-    MOTORS = {i: epics.Motor(PVS[i]) for i in PVS}
-
+    MOTOR_PVS = {key: dict_now[key]["pv"] for key, value in dict_now.items() if key.startswith("motor_")}
+    BL_PVS = {key: dict_now[key]["pv"] for key, value in dict_now.items() if key.startswith("bl_")}
+    MOTORS = {i: epics.Motor(MOTOR_PVS[i]) for i in MOTOR_PVS.keys()}
 
 def sigint_handler_utilities(signum, frame):
     """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
@@ -92,8 +61,8 @@ def wait():
 
 def epics_get(dict_):
     for key in MOTORS:
-        dict_[key] = MOTORS[key].readback
-        dict_["bound_" + key] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
+        dict_[key]["value"] = MOTORS[key].readback
+        dict_[key]["bounds"] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
 
     for key, value in BL_PVS.items():
         dict_[key] = float(epics.caget(BL_PVS[key])) * 1000
@@ -117,14 +86,14 @@ def epics_put(dict_):
     # Make sure we stop all motors.
     atexit.register(stop)
     for key in MOTORS:
-        aux = dict_["bound_" + key]
-        MOTORS[key].low_limit = aux[0]
-        MOTORS[key].high_limit = aux[1]
-        MOTORS[key].move(dict_[key], ignore_limits=True, confirm_move=True)
+        MOTORS[key].low_limit = dict_[key]["bounds"][0]
+        MOTORS[key].high_limit = dict_[key]["bounds"][1]
+        MOTORS[key].move(dict_[key]["value"], ignore_limits=True, confirm_move=True)
     wait()
 
 
 def write(dict_, filepath=DEFAULT):
+    print(dict_)
     epics_put(dict_)
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)
