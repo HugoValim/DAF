@@ -147,12 +147,12 @@ class Status(QueryBase):
     def show_bounds(self):
         """Show current motor bounds"""
         print("")
-        print("Mu    =    {}".format(self.experiment_file_dict["bound_Mu"]))
-        print("Eta   =    {}".format(self.experiment_file_dict["bound_Eta"]))
-        print("Chi   =    {}".format(self.experiment_file_dict["bound_Chi"]))
-        print("Phi   =    {}".format(self.experiment_file_dict["bound_Phi"]))
-        print("Nu    =    {}".format(self.experiment_file_dict["bound_Nu"]))
-        print("Del   =    {}".format(self.experiment_file_dict["bound_Del"]))
+        print("Mu    =    {}".format(self.experiment_file_dict["motors"]["mu"]["bounds"]))
+        print("Eta   =    {}".format(self.experiment_file_dict["motors"]["eta"]["bounds"]))
+        print("Chi   =    {}".format(self.experiment_file_dict["motors"]["chi"]["bounds"]))
+        print("Phi   =    {}".format(self.experiment_file_dict["motors"]["phi"]["bounds"]))
+        print("Nu    =    {}".format(self.experiment_file_dict["motors"]["nu"]["bounds"]))
+        print("Del   =    {}".format(self.experiment_file_dict["motors"]["del"]["bounds"]))
         print("")
 
     def show_all(self):

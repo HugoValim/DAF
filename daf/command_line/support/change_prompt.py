@@ -24,7 +24,6 @@ class Init(SupportBase):
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
 
-
     def parse_command_line(self) -> ap.Namespace:
         super().parse_command_line()
         args = self.parser.parse_args()
@@ -33,7 +32,7 @@ class Init(SupportBase):
     @staticmethod
     def change_prompt() -> None:
         """If the --all option is passed open all DAF's GUIs as well"""
-        sys.ps1 = 'DAF> '
+        sys.ps1 = "DAF> "
 
     def run_cmd(self, arguments: dict) -> None:
         self.change_prompt()

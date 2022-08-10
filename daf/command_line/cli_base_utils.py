@@ -5,7 +5,7 @@ import numpy as np
 from daf.core.main import DAF
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import (
-    calculate_pseudo_angle_from_motor_angles,
+        calculate_pseudo_angle_from_motor_angles,
 )
 
 
@@ -31,14 +31,14 @@ class CLIBase:
         idir = self.experiment_file_dict["IDir_print"]
         ndir = self.experiment_file_dict["NDir_print"]
         rdir = self.experiment_file_dict["RDir"]
-        mu_bound = self.experiment_file_dict["bound_Mu"]
-        eta_bound = self.experiment_file_dict["bound_Eta"]
-        chi_bound = self.experiment_file_dict["bound_Chi"]
-        phi_bound = self.experiment_file_dict["bound_Phi"]
-        nu_bound = self.experiment_file_dict["bound_Nu"]
-        del_bound = self.experiment_file_dict["bound_Del"]
+        mu_bound = self.experiment_file_dict["motors"]["mu"]["bounds"]
+        eta_bound = self.experiment_file_dict["motors"]["eta"]["bounds"]
+        chi_bound = self.experiment_file_dict["motors"]["chi"]["bounds"]
+        phi_bound = self.experiment_file_dict["motors"]["phi"]["bounds"]
+        nu_bound = self.experiment_file_dict["motors"]["nu"]["bounds"]
+        del_bound = self.experiment_file_dict["motors"]["del"]["bounds"]
         self.en = (
-            self.experiment_file_dict["PV_energy"]
+            self.experiment_file_dict["beamline_pvs"]["energy"]["value"]
             - self.experiment_file_dict["energy_offset"]
         )
 
@@ -104,24 +104,24 @@ class CLIBase:
     def calculate_hkl_from_angles(self) -> np.array:
         """Calculate current HKL position from diffractometer angles"""
         hkl = self.exp.calc_from_angs(
-            self.experiment_file_dict["Mu"],
-            self.experiment_file_dict["Eta"],
-            self.experiment_file_dict["Chi"],
-            self.experiment_file_dict["Phi"],
-            self.experiment_file_dict["Nu"],
-            self.experiment_file_dict["Del"],
+            self.experiment_file_dict["motors"]["mu"]["value"],
+            self.experiment_file_dict["motors"]["eta"]["value"],
+            self.experiment_file_dict["motors"]["chi"]["value"],
+            self.experiment_file_dict["motors"]["phi"]["value"],
+            self.experiment_file_dict["motors"]["nu"]["value"],
+            self.experiment_file_dict["motors"]["del"]["value"],
         )
         return hkl
 
     def get_pseudo_angles_from_motor_angles(self) -> dict:
         """Calculate pseudo-angles from diffractometer angles"""
         pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-            self.experiment_file_dict["Mu"],
-            self.experiment_file_dict["Eta"],
-            self.experiment_file_dict["Chi"],
-            self.experiment_file_dict["Phi"],
-            self.experiment_file_dict["Nu"],
-            self.experiment_file_dict["Del"],
+            self.experiment_file_dict["motors"]["mu"]["value"],
+            self.experiment_file_dict["motors"]["eta"]["value"],
+            self.experiment_file_dict["motors"]["chi"]["value"],
+            self.experiment_file_dict["motors"]["phi"]["value"],
+            self.experiment_file_dict["motors"]["nu"]["value"],
+            self.experiment_file_dict["motors"]["del"]["value"],
             self.exp.samp,
             self.calculate_hkl_from_angles(),
             self.exp.lam,
@@ -134,12 +134,12 @@ class CLIBase:
     def calculate_hkl(self, hkl: list) -> float:
         """Calculate the angles to a given HKL"""
         startvalue = [
-            self.experiment_file_dict["Mu"],
-            self.experiment_file_dict["Eta"],
-            self.experiment_file_dict["Chi"],
-            self.experiment_file_dict["Phi"],
-            self.experiment_file_dict["Nu"],
-            self.experiment_file_dict["Del"],
+            self.experiment_file_dict["motors"]["mu"]["value"],
+            self.experiment_file_dict["motors"]["eta"]["value"],
+            self.experiment_file_dict["motors"]["chi"]["value"],
+            self.experiment_file_dict["motors"]["phi"]["value"],
+            self.experiment_file_dict["motors"]["nu"]["value"],
+            self.experiment_file_dict["motors"]["del"]["value"],
         ]
         self.exp.set_hkl(hkl)
         self.exp(sv=startvalue)
@@ -169,8 +169,20 @@ class CLIBase:
         }
         return exp_dict
 
+    def write_motors_to_experiment_file(self, dict_to_write):
+        for key in self.experiment_file_dict["motors"].keys():
+            if (
+                self.experiment_file_dict["motors"][key]["mnemonic"] in dict_to_write.keys()
+                and dict_to_write[self.experiment_file_dict["motors"][key]["mnemonic"]]
+                is not None
+            ):
+                self.experiment_file_dict["motors"][key]["value"] = float(
+                    dict_to_write[self.experiment_file_dict["motors"][key]["mnemonic"]]
+                )
+
     def write_to_experiment_file(self, dict_to_write, is_str=False):
         """Write to the .Experiment file based on a inputted dict"""
+        self.write_motors_to_experiment_file(dict_to_write)
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):

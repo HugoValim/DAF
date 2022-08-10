@@ -54,8 +54,14 @@ class NewSample(SupportBase):
     @staticmethod
     def kill_other_guis() -> None:
         """If the --all option is passed open all DAF's GUIs as well"""
-        subprocess.Popen("ps axu | grep daf_gui.py | awk {'print $2'} | head -n -1 | xargs kill -9", shell=True)
-        subprocess.Popen("ps axu | grep live_view.py | awk {'print $2'} | head -n -1 | xargs kill -9", shell=True)
+        subprocess.Popen(
+            "ps axu | grep daf_gui.py | awk {'print $2'} | head -n -1 | xargs kill -9",
+            shell=True,
+        )
+        subprocess.Popen(
+            "ps axu | grep live_view.py | awk {'print $2'} | head -n -1 | xargs kill -9",
+            shell=True,
+        )
 
     def run_cmd(self, arguments: dict) -> None:
         self.create_and_initialize_new_sample_folder(arguments["folder_name"])

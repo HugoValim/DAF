@@ -27,9 +27,16 @@ def only_read(filepath=DEFAULT):
 
 if os.path.isfile(DEFAULT):
     dict_now = only_read()
-    MOTOR_PVS = {key: dict_now[key]["pv"] for key, value in dict_now.items() if key.startswith("motor_")}
-    BL_PVS = {key: dict_now[key]["pv"] for key, value in dict_now.items() if key.startswith("bl_")}
+    MOTOR_PVS = {
+        key: dict_now["motors"][key]["pv"]
+        for key, value in dict_now["motors"].items()
+    }
+    BL_PVS = {
+        key: dict_now["beamline_pvs"][key]["pv"]
+        for key, value in dict_now["beamline_pvs"].items()
+    }
     MOTORS = {i: epics.Motor(MOTOR_PVS[i]) for i in MOTOR_PVS.keys()}
+
 
 def sigint_handler_utilities(signum, frame):
     """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
@@ -61,11 +68,11 @@ def wait():
 
 def epics_get(dict_):
     for key in MOTORS:
-        dict_[key]["value"] = MOTORS[key].readback
-        dict_[key]["bounds"] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
+        dict_["motors"][key]["value"] = MOTORS[key].readback
+        dict_["motors"][key]["bounds"] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
 
     for key, value in BL_PVS.items():
-        dict_[key] = float(epics.caget(BL_PVS[key])) * 1000
+        dict_["beamline_pvs"][key]["value"] = float(epics.caget(BL_PVS[key])) * 1000
 
     return dict_
 
@@ -86,14 +93,13 @@ def epics_put(dict_):
     # Make sure we stop all motors.
     atexit.register(stop)
     for key in MOTORS:
-        MOTORS[key].low_limit = dict_[key]["bounds"][0]
-        MOTORS[key].high_limit = dict_[key]["bounds"][1]
-        MOTORS[key].move(dict_[key]["value"], ignore_limits=True, confirm_move=True)
+        MOTORS[key].low_limit = dict_["motors"][key]["bounds"][0]
+        MOTORS[key].high_limit = dict_["motors"][key]["bounds"][1]
+        MOTORS[key].move(dict_["motors"][key]["value"], ignore_limits=True, confirm_move=True)
     wait()
 
 
 def write(dict_, filepath=DEFAULT):
-    print(dict_)
     epics_put(dict_)
     with open(filepath, "w") as file:
         yaml.dump(dict_, file)

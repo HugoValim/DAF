@@ -73,14 +73,13 @@ class RelAngleMove(MoveBase):
         return args
 
     def write_angles(self, parsed_args_dict: dict) -> None:
-
-        mu_now = self.experiment_file_dict["Mu"]
-        eta_now = self.experiment_file_dict["Eta"]
-        chi_now = self.experiment_file_dict["Chi"]
-        phi_now = self.experiment_file_dict["Phi"]
-        nu_now = self.experiment_file_dict["Nu"]
-        del_now = self.experiment_file_dict["Del"]
-
+        """Write the angles in a relative way"""
+        mu_now = self.experiment_file_dict["motors"]["mu"]["value"]
+        eta_now = self.experiment_file_dict["motors"]["eta"]["value"]
+        chi_now = self.experiment_file_dict["motors"]["chi"]["value"]
+        phi_now = self.experiment_file_dict["motors"]["phi"]["value"]
+        nu_now = self.experiment_file_dict["motors"]["nu"]["value"]
+        del_now = self.experiment_file_dict["motors"]["del"]["value"]
         motor_dict = {
             "Mu": mu_now,
             "Eta": eta_now,
@@ -89,13 +88,13 @@ class RelAngleMove(MoveBase):
             "Nu": nu_now,
             "Del": del_now,
         }
-
+        motor_position_dict = {}
         for motor in parsed_args_dict.keys():
             if parsed_args_dict[motor] is not None:
-                self.experiment_file_dict[motor] = float(
+                motor_position_dict[motor] = float(
                     motor_dict[motor] + parsed_args_dict[motor]
                 )
-        du.write(self.experiment_file_dict)
+        self.write_to_experiment_file(motor_position_dict)
 
     def run_cmd(self, arguments) -> None:
         """Method to be defined be each subclass, this is the method

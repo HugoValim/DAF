@@ -29,21 +29,9 @@ class Where(QueryBase):
         args = self.parser.parse_args()
         return args
 
-    def calc_hkl(self, exp_file_dict: dict) -> list:
-        """Calculate the current HKL position based in the .Experiment file information"""
-        hkl_now = self.exp.calc_from_angs(
-            exp_file_dict["Mu"],
-            exp_file_dict["Eta"],
-            exp_file_dict["Chi"],
-            exp_file_dict["Phi"],
-            exp_file_dict["Nu"],
-            exp_file_dict["Del"],
-        )
-        return list(hkl_now)
-
-    def print_position(self, exp_file_dict: dict) -> None:
+    def print_position(self) -> None:
         """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
-        hkl_now = self.calc_hkl(exp_file_dict)
+        hkl_now = list(self.calculate_hkl_from_angles())
         print("")
         print(
             "HKL now =   ",
@@ -52,24 +40,76 @@ class Where(QueryBase):
             format_5_decimals(hkl_now[2]),
         )
         print("")
-        print("Alpha   =    {}".format(format_5_decimals(exp_file_dict["alpha"])))
-        print("Beta    =    {}".format(format_5_decimals(exp_file_dict["beta"])))
-        print("Psi     =    {}".format(format_5_decimals(exp_file_dict["psi"])))
-        print("Tau     =    {}".format(format_5_decimals(exp_file_dict["tau"])))
-        print("Qaz     =    {}".format(format_5_decimals(exp_file_dict["qaz"])))
-        print("Naz     =    {}".format(format_5_decimals(exp_file_dict["naz"])))
-        print("Omega   =    {}".format(format_5_decimals(exp_file_dict["omega"])))
+        print(
+            "Alpha   =    {}".format(
+                format_5_decimals(self.experiment_file_dict["alpha"])
+            )
+        )
+        print(
+            "Beta    =    {}".format(
+                format_5_decimals(self.experiment_file_dict["beta"])
+            )
+        )
+        print(
+            "Psi     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["psi"])
+            )
+        )
+        print(
+            "Tau     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["tau"])
+            )
+        )
+        print(
+            "Qaz     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["qaz"])
+            )
+        )
+        print(
+            "Naz     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["naz"])
+            )
+        )
+        print(
+            "Omega   =    {}".format(
+                format_5_decimals(self.experiment_file_dict["omega"])
+            )
+        )
         print("")
-        print("Del     =    {}".format(format_5_decimals(exp_file_dict["Del"])))
-        print("Eta     =    {}".format(format_5_decimals(exp_file_dict["Eta"])))
-        print("Chi     =    {}".format(format_5_decimals(exp_file_dict["Chi"])))
-        print("Phi     =    {}".format(format_5_decimals(exp_file_dict["Phi"])))
-        print("Nu      =    {}".format(format_5_decimals(exp_file_dict["Nu"])))
-        print("Mu      =    {}".format(format_5_decimals(exp_file_dict["Mu"])))
+        print(
+            "Del     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["motors"]["del"]["value"])
+            )
+        )
+        print(
+            "Eta     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["motors"]["eta"]["value"])
+            )
+        )
+        print(
+            "Chi     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["motors"]["chi"]["value"])
+            )
+        )
+        print(
+            "Phi     =    {}".format(
+                format_5_decimals(self.experiment_file_dict["motors"]["phi"]["value"])
+            )
+        )
+        print(
+            "Nu      =    {}".format(
+                format_5_decimals(self.experiment_file_dict["motors"]["nu"]["value"])
+            )
+        )
+        print(
+            "Mu      =    {}".format(
+                format_5_decimals(self.experiment_file_dict["motors"]["mu"]["value"])
+            )
+        )
         print("")
 
     def run_cmd(self, arguments: dict) -> None:
-        self.print_position(self.experiment_file_dict)
+        self.print_position()
 
 
 @daf_log

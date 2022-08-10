@@ -40,25 +40,59 @@ default = {
     "cons_omega": 0.0,
     "cons_qaz": 0.0,
     "cons_naz": 0.0,
-    "motor_mu_pv": {"pv": "SOL:S:m1", "mnemonic": "Mu", "value": 0, "bounds": [-20.0, 160.0]},
-    "motor_eta": {"pv": "SOL:S:m2", "mnemonic": "Eta", "value": 0, "bounds": [-20.0, 160.0]},
-    "motor_chi": {"pv": "SOL:S:m3", "mnemonic": "Chi", "value": 0, "bounds": [-5.0, 95.0]},
-    "motor_phi": {"pv": "SOL:S:m4", "mnemonic": "Phi", "value": 0, "bounds": [-400.0, 400.0]},
-    "motor_nu": {"pv": "SOL:S:m5", "mnemonic": "Nu", "value": 0, "bounds": [-20.0, 160.0]},
-    "motor_del": {"pv": "SOL:S:m6", "mnemonic": "Del", "value": 0, "bounds": [-20.0, 160.0]},
-    # "motor_sample_z_pv": {"pv": "SOL:S:m7", "mnemonic": "sz"},  # sz (Sample z - Sample Stage 1 and 2)
-    # "motor_sample_x_pv": {"pv": "SOL:S:m8", "mnemonic": "sx"},  # sx (Sample x - Sample Stage 2)
-    # "motor_sample_rx_pv": {"pv": "SOL:S:m9", "mnemonic": "srx"},  #  srx (Sample Rx - Sample Stage 2)
-    # "motor_sample_y_pv": {"pv": "SOL:S:m10", "mnemonic": "sy"},  #  sy (Sample y - Sample Stage 2)
-    # "motor_sample_ry_pv": {"pv": "SOL:S:m11", "mnemonic": "sry"},  # sry (Sample Ry - Sample Stage 2) 
-    # "motor_sample_x_s1_pv": {"pv": "SOL:S:m12", "mnemonic": "sx1"}, # sx1 (Sample x - Sample Stage 1) 
-    # "motor_sample_y_s1_pv": {"pv": "SOL:S:m13", "mnemonic": "sy1"}, # sy1 (Sample y - Sample Stage 1)
-    # "motor_diffractomer_ux_pv": {"pv": "SOL:S:m14", "mnemonic": "diffux"},  #  diffux (Diffractometer Ux)
-    # "motor_diffractomer_uy_pv": {"pv": "SOL:S:m15", "mnemonic": "diffuy"},  #  diffuy (Diffractometer Uy)
-    # "motor_diffractomer_rx_pv": {"pv": "SOL:S:m16", "mnemonic": "diffrx"},  #  diffrx (Diffractometer Rx)
-    # "motor_theta_analyzer_crystal_pv": {"pv": "SOL:S:m17", "mnemonic": "thca"},  #  thca (Theta Crystal An.)
-    # "motor_2theta_analyzer_crystal_pv": {"pv": "SOL:S:m18", "mnemonic": "tthca"},  #  tthca (2Theta Crystal An.)
-    "bl_energy_pv": {"pv": "SOL:S:m24", "mnemonic": "PV_energy"},  #  bl_energy_pv
+    "motors": {
+        "mu": {
+            "pv": "SOL:S:m1",
+            "mnemonic": "Mu",
+            "value": 0,
+            "bounds": [-20.0, 160.0],
+        },
+        "eta": {
+            "pv": "SOL:S:m2",
+            "mnemonic": "Eta",
+            "value": 0,
+            "bounds": [-20.0, 160.0],
+        },
+        "chi": {
+            "pv": "SOL:S:m3",
+            "mnemonic": "Chi",
+            "value": 0,
+            "bounds": [-5.0, 95.0],
+        },
+        "phi": {
+            "pv": "SOL:S:m4",
+            "mnemonic": "Phi",
+            "value": 0,
+            "bounds": [-400.0, 400.0],
+        },
+        "nu": {
+            "pv": "SOL:S:m5",
+            "mnemonic": "Nu",
+            "value": 0,
+            "bounds": [-20.0, 160.0],
+        },
+        "del": {
+            "pv": "SOL:S:m6",
+            "mnemonic": "Del",
+            "value": 0,
+            "bounds": [-20.0, 160.0],
+        },
+    },
+    # "sample_z_pv": {"pv": "SOL:S:m7", "mnemonic": "sz"},  # sz (Sample z - Sample Stage 1 and 2)
+    # "sample_x_pv": {"pv": "SOL:S:m8", "mnemonic": "sx"},  # sx (Sample x - Sample Stage 2)
+    # "sample_rx_pv": {"pv": "SOL:S:m9", "mnemonic": "srx"},  #  srx (Sample Rx - Sample Stage 2)
+    # "sample_y_pv": {"pv": "SOL:S:m10", "mnemonic": "sy"},  #  sy (Sample y - Sample Stage 2)
+    # "sample_ry_pv": {"pv": "SOL:S:m11", "mnemonic": "sry"},  # sry (Sample Ry - Sample Stage 2)
+    # "sample_x_s1_pv": {"pv": "SOL:S:m12", "mnemonic": "sx1"}, # sx1 (Sample x - Sample Stage 1)
+    # "sample_y_s1_pv": {"pv": "SOL:S:m13", "mnemonic": "sy1"}, # sy1 (Sample y - Sample Stage 1)
+    # "diffractomer_ux_pv": {"pv": "SOL:S:m14", "mnemonic": "diffux"},  #  diffux (Diffractometer Ux)
+    # "diffractomer_uy_pv": {"pv": "SOL:S:m15", "mnemonic": "diffuy"},  #  diffuy (Diffractometer Uy)
+    # "diffractomer_rx_pv": {"pv": "SOL:S:m16", "mnemonic": "diffrx"},  #  diffrx (Diffractometer Rx)
+    # "theta_analyzer_crystal_pv": {"pv": "SOL:S:m17", "mnemonic": "thca"},  #  thca (Theta Crystal An.)
+    # "2theta_analyzer_crystal_pv": {"pv": "SOL:S:m18", "mnemonic": "tthca"},  #  tthca (2Theta Crystal An.)
+    "beamline_pvs": {
+    "energy": {"pv": "SOL:S:m24", "mnemonic": "PV_energy", "value": 0},  #  bl_energy_pv
+    },
     "twotheta": 0.0,
     "theta": 0.0,
     "alpha": 0.0,
