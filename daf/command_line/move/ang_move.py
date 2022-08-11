@@ -12,7 +12,7 @@ class AngleMove(MoveBase):
 
     EPI = """
     Eg:
-        daf.amv --Del 30 --Eta 15
+        daf.amv --del 30 --eta 15
         daf.amv -d 30 -e 15
         daf.amv -d CEN
         daf.amv -d MAX -co roi1
@@ -28,44 +28,44 @@ class AngleMove(MoveBase):
         super().parse_command_line()
         self.parser.add_argument(
             "-m",
-            "--Mu",
+            "--mu",
             metavar="ang",
-            type=float,
+            type=str,
             help="sets Mu angle to a desired position",
         )
         self.parser.add_argument(
             "-e",
-            "--Eta",
+            "--eta",
             metavar="ang",
-            type=float,
+            type=str,
             help="sets Eta angle to a desired position",
         )
         self.parser.add_argument(
             "-c",
-            "--Chi",
+            "--chi",
             metavar="ang",
-            type=float,
+            type=str,
             help="sets Chi angle to a desired position",
         )
         self.parser.add_argument(
             "-p",
-            "--Phi",
+            "--phi",
             metavar="ang",
-            type=float,
+            type=str,
             help="sets Phi angle to a desired position",
         )
         self.parser.add_argument(
             "-n",
-            "--Nu",
+            "--nu",
             metavar="ang",
-            type=float,
+            type=str,
             help="sets Nu angle to a desired position",
         )
         self.parser.add_argument(
             "-d",
-            "--Del",
+            "--del",
             metavar="ang",
-            type=float,
+            type=str,
             help="sets Del angle to a desired position",
         )
         self.parser.add_argument(
@@ -79,7 +79,7 @@ class AngleMove(MoveBase):
         return args
 
     def write_angles(self, parsed_args_dict: dict) -> dict:
-        """Write the passed angle arguments"""
+        """Write the passed angle self.parsed_args_dict"""
         dict_ = self.experiment_file_dict["scan_stats"]
         if dict_:
             if parsed_args_dict["counter"] is not None:
@@ -102,21 +102,23 @@ class AngleMove(MoveBase):
             key: (stat_dict[value] if (value == "CEN" or value == "MAX") else value)
             for key, value in parsed_args_dict.items()
         }
+        print("*" * 500)
+        print(dict_parsed_with_counter_stats)
         return dict_parsed_with_counter_stats
 
-    def run_cmd(self, arguments) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        motor_dict = self.write_angles(arguments)
+        motor_dict = self.write_angles(self.parsed_args_dict)
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()
         motor_dict.update(pseudo_dict)  #  Concatenate both dictionaries
-        self.write_to_experiment_file(motor_dict)
+        self.write_to_experiment_file(motor_dict, is_motor_set_point=True)
 
 
 @daf_log
 def main() -> None:
     obj = AngleMove()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

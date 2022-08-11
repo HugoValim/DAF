@@ -33,7 +33,7 @@ class Bounds(ExperimentBase):
             metavar=("min", "max"),
             type=float,
             nargs=2,
-            help="Sets Mu bounds",
+            help="sets Mu bounds",
         )
         self.parser.add_argument(
             "-e",
@@ -41,7 +41,7 @@ class Bounds(ExperimentBase):
             metavar=("min", "max"),
             type=float,
             nargs=2,
-            help="Sets Eta bounds",
+            help="sets Eta bounds",
         )
         self.parser.add_argument(
             "-c",
@@ -49,7 +49,7 @@ class Bounds(ExperimentBase):
             metavar=("min", "max"),
             type=float,
             nargs=2,
-            help="Sets Chi bounds",
+            help="sets Chi bounds",
         )
         self.parser.add_argument(
             "-p",
@@ -57,7 +57,7 @@ class Bounds(ExperimentBase):
             metavar=("min", "max"),
             type=float,
             nargs=2,
-            help="Sets Phi bounds",
+            help="sets Phi bounds",
         )
         self.parser.add_argument(
             "-n",
@@ -65,7 +65,7 @@ class Bounds(ExperimentBase):
             metavar=("min", "max"),
             type=float,
             nargs=2,
-            help="Sets Nu bounds",
+            help="sets Nu bounds",
         )
         self.parser.add_argument(
             "-d",
@@ -73,13 +73,13 @@ class Bounds(ExperimentBase):
             metavar=("min", "max"),
             type=float,
             nargs=2,
-            help="Sets Del bounds",
+            help="sets Del bounds",
         )
         self.parser.add_argument(
-            "-l", "--list", action="store_true", help="List the current bounds"
+            "-l", "--list", action="store_true", help="list the current bounds"
         )
         self.parser.add_argument(
-            "-r", "--reset", action="store_true", help="Reset all bounds to default"
+            "-r", "--reset", action="store_true", help="reset all bounds to default"
         )
 
         args = self.parser.parse_args()
@@ -87,7 +87,7 @@ class Bounds(ExperimentBase):
 
     def reset_bounds_to_default(self) -> None:
         """Reset all motor bounds to default. It writes directly to the .Experiment file"""
-        self.write_to_experiment_file(self.DEFAULT_BOUNDS)
+        self.write_to_experiment_file(self.DEFAULT_BOUNDS, is_motor_bounds=True)
 
     def list_bounds(self) -> None:
         """Method to print the current bounds"""
@@ -123,7 +123,7 @@ class Bounds(ExperimentBase):
         that should be run when calling the cli interface"""
         self.check_if_bounds_bounds_should_be_written()
         if self.write_flag:
-            self.write_to_experiment_file(self.parsed_args_dict)
+            self.write_to_experiment_file(self.parsed_args_dict, is_motor_bounds=True)
         if self.parsed_args_dict["reset"]:
             self.reset_bounds_to_default()
         if self.parsed_args_dict["list"]:

@@ -186,20 +186,23 @@ class CLIBase:
 
     def write_motors_to_experiment_file(self, dict_to_write):
         for key in self.experiment_file_dict["motors"].keys():
-            if (
-                self.experiment_file_dict["motors"][key]["mnemonic"]
-                in dict_to_write.keys()
-                and dict_to_write[self.experiment_file_dict["motors"][key]["mnemonic"]]
-                is not None
-            ):
+            if key in dict_to_write.keys() and dict_to_write[key] is not None:
                 self.experiment_file_dict["motors"][key]["value"] = float(
-                    dict_to_write[self.experiment_file_dict["motors"][key]["mnemonic"]]
+                    dict_to_write[key]
                 )
 
-    def write_to_experiment_file(self, dict_to_write, is_str=False):
+    def write_to_experiment_file(
+        self,
+        dict_to_write,
+        is_str: bool = False,
+        is_motor_set_point: bool = False,
+        is_motor_bounds: bool = False,
+    ):
         """Write to the .Experiment file based on a inputted dict"""
-        self.write_motors_bounds_to_experiment_file(dict_to_write)
-        self.write_motors_to_experiment_file(dict_to_write)
+        if is_motor_set_point:
+            self.write_motors_to_experiment_file(dict_to_write)
+        if is_motor_bounds:
+            self.write_motors_bounds_to_experiment_file(dict_to_write)
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):
