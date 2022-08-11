@@ -179,30 +179,19 @@ class CLIBase:
         }
         return exp_dict
 
-    def write_motors_bounds_to_experiment_file(self, dict_to_write):
+    def write_motors_bounds_to_experiment_file(self, dict_to_write: dict) -> None:
         for key in self.experiment_file_dict["motors"].keys():
             if key in dict_to_write.keys() and dict_to_write[key] is not None:
                 self.experiment_file_dict["motors"][key]["bounds"] = dict_to_write[key]
 
-    def write_motors_to_experiment_file(self, dict_to_write):
+    def write_motors_to_experiment_file(self, dict_to_write: dict) -> None:
         for key in self.experiment_file_dict["motors"].keys():
             if key in dict_to_write.keys() and dict_to_write[key] is not None:
                 self.experiment_file_dict["motors"][key]["value"] = float(
                     dict_to_write[key]
                 )
 
-    def write_to_experiment_file(
-        self,
-        dict_to_write,
-        is_str: bool = False,
-        is_motor_set_point: bool = False,
-        is_motor_bounds: bool = False,
-    ):
-        """Write to the .Experiment file based on a inputted dict"""
-        if is_motor_set_point:
-            self.write_motors_to_experiment_file(dict_to_write)
-        if is_motor_bounds:
-            self.write_motors_bounds_to_experiment_file(dict_to_write)
+    def write_configuration_to_experiment_file(self, dict_to_write: dict, is_str: bool) -> None:
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):
@@ -213,10 +202,26 @@ class CLIBase:
                     self.experiment_file_dict[j] = str(k)
                 else:
                     self.experiment_file_dict[j] = float(k)
+
+    def write_to_experiment_file(
+        self,
+        dict_to_write,
+        is_str: bool = False,
+        is_motor_set_point: bool = False,
+        is_motor_bounds: bool = False,
+        is_configuration: bool = True,
+    ):
+        """Write to the .Experiment file based on a inputted dict"""
+        if is_motor_set_point:
+            self.write_motors_to_experiment_file(dict_to_write)
+        if is_motor_bounds:
+            self.write_motors_bounds_to_experiment_file(dict_to_write)
+        if is_configuration:
+            self.write_configuration_to_experiment_file(dict_to_write, is_str)
         self.io.write(self.experiment_file_dict)
 
     @abstractmethod
-    def run_cmd(self, arguments: dict):
+    def run_cmd(self):
         """
         Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface

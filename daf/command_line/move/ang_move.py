@@ -73,7 +73,7 @@ class AngleMove(MoveBase):
             "--counter",
             metavar="counter",
             type=str,
-            help="Choose the counter to be used",
+            help="choose the counter to be used when inputing CEN or MAX",
         )
         args = self.parser.parse_args()
         return args

@@ -12,7 +12,7 @@ class RelAngleMove(MoveBase):
 
     EPI = """
     Eg:
-        daf.ramv --Del 30 --Eta 15
+        daf.ramv --del 30 --eta 15
         daf.ramv -d 30 -e 15
         """
 
@@ -26,42 +26,42 @@ class RelAngleMove(MoveBase):
         super().parse_command_line()
         self.parser.add_argument(
             "-m",
-            "--Mu",
+            "--mu",
             metavar="ang",
             type=float,
             help="sets Mu angle to a desired position",
         )
         self.parser.add_argument(
             "-e",
-            "--Eta",
+            "--eta",
             metavar="ang",
             type=float,
             help="sets Eta angle to a desired position",
         )
         self.parser.add_argument(
             "-c",
-            "--Chi",
+            "--chi",
             metavar="ang",
             type=float,
             help="sets Chi angle to a desired position",
         )
         self.parser.add_argument(
             "-p",
-            "--Phi",
+            "--phi",
             metavar="ang",
             type=float,
             help="sets Phi angle to a desired position",
         )
         self.parser.add_argument(
             "-n",
-            "--Nu",
+            "--nu",
             metavar="ang",
             type=float,
             help="sets Nu angle to a desired position",
         )
         self.parser.add_argument(
             "-d",
-            "--Del",
+            "--del",
             metavar="ang",
             type=float,
             help="sets Del angle to a desired position",
@@ -70,7 +70,7 @@ class RelAngleMove(MoveBase):
         args = self.parser.parse_args()
         return args
 
-    def write_angles(self, parsed_args_dict: dict) -> dict:
+    def write_angles(self) -> dict:
         """Write the angles in a relative way"""
         mu_now = self.experiment_file_dict["motors"]["mu"]["value"]
         eta_now = self.experiment_file_dict["motors"]["eta"]["value"]
@@ -79,34 +79,34 @@ class RelAngleMove(MoveBase):
         nu_now = self.experiment_file_dict["motors"]["nu"]["value"]
         del_now = self.experiment_file_dict["motors"]["del"]["value"]
         motor_dict = {
-            "Mu": mu_now,
-            "Eta": eta_now,
-            "Chi": chi_now,
-            "Phi": phi_now,
-            "Nu": nu_now,
-            "Del": del_now,
+            "mu": mu_now,
+            "eta": eta_now,
+            "chi": chi_now,
+            "phi": phi_now,
+            "nu": nu_now,
+            "del": del_now,
         }
         motor_position_dict = {}
-        for motor in parsed_args_dict.keys():
-            if parsed_args_dict[motor] is not None:
+        for motor in self.parsed_args_dict.keys():
+            if self.parsed_args_dict[motor] is not None:
                 motor_position_dict[motor] = float(
-                    motor_dict[motor] + parsed_args_dict[motor]
+                    motor_dict[motor] + self.parsed_args_dict[motor]
                 )
         return motor_position_dict
 
-    def run_cmd(self, arguments) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        motor_dict = self.write_angles(arguments)
+        motor_dict = self.write_angles()
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()
         motor_dict.update(pseudo_dict)  #  Concatenate both dictionaries
-        self.write_to_experiment_file(motor_dict)
+        self.write_to_experiment_file(motor_dict, is_motor_set_point=True)
 
 
 @daf_log
 def main() -> None:
     obj = RelAngleMove()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":
