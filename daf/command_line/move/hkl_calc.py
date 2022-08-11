@@ -64,15 +64,15 @@ class HKLCalc(MoveBase):
         args = self.parser.parse_args()
         return args
 
-    def run_cmd(self, arguments) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        error = self.calculate_hkl(arguments["hkl-position"])
-        if not arguments["quiet"]:
+        error = self.calculate_hkl(self.parsed_args_dict["hkl-position"])
+        if not self.parsed_args_dict["quiet"]:
             self.exp.set_print_options(
-                marker=arguments["marker"],
-                column_marker=arguments["column_marker"],
-                space=arguments["size"],
+                marker=self.parsed_args_dict["marker"],
+                column_marker=self.parsed_args_dict["column_marker"],
+                space=self.parsed_args_dict["size"],
             )
             print(self.exp)
 
@@ -80,7 +80,7 @@ class HKLCalc(MoveBase):
 @daf_log
 def main() -> None:
     obj = HKLCalc()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

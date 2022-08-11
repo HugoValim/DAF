@@ -160,12 +160,12 @@ class CLIBase:
         """Get all angles and pseudo-angles based on a previous calculation, return a dicts"""
         angs = self.exp.export_angles()
         exp_dict = {
-            "Mu": angs[0],
-            "Eta": angs[1],
-            "Chi": angs[2],
-            "Phi": angs[3],
-            "Nu": angs[4],
-            "Del": angs[5],
+            "mu": angs[0],
+            "eta": angs[1],
+            "chi": angs[2],
+            "phi": angs[3],
+            "nu": angs[4],
+            "del": angs[5],
             "twotheta": angs[6],
             "theta": angs[7],
             "alpha": angs[8],

@@ -7,19 +7,23 @@ from unittest.mock import patch
 import numpy as np
 
 import daf.utils.dafutilities as du
-from daf.command_line.move.hkl_move import HKLMove
+from daf.command_line.move.hkl_move import HKLMove, main
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
 
 class TestDAF(unittest.TestCase):
-    predefined_dict = {
-        "Mu": 1.1971657231936314e-22,
-        "Eta": 11.402686406409414,
-        "Chi": 35.26439476525327,
-        "Phi": 44.999999194854674,
-        "Nu": 0.0,
-        "Del": 22.805372812818828,
+    predefined_motor_dict = {
+        "mu": 1.1971657231936314e-22,
+        "eta": 11.402686406409414,
+        "chi": 35.26439476525327,
+        "phi": 44.999999194854674,
+        "nu": 0.0,
+        "del": 22.805372812818828,
+        "hklnow": np.array([1.0, 1.0, 1.0]),
+    }
+
+    predefined_pseudo_dict ={
         "twotheta": 22.805372812818835,
         "theta": 11.402686406409417,
         "alpha": 6.554258723031806,
@@ -29,7 +33,6 @@ class TestDAF(unittest.TestCase):
         "psi": 90.00000458366236,
         "beta": 6.554258723031807,
         "omega": -0.0,
-        "hklnow": np.array([1.0, 1.0, 1.0]),
     }
 
     def setUp(self):
@@ -100,9 +103,9 @@ class TestDAF(unittest.TestCase):
         error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
         exp_dict = obj.get_angles_from_calculated_exp()
         # Do not need to compare the hkl value, only angles
-        iter_list = list(self.predefined_dict.keys())[:-1]
+        iter_list = list(self.predefined_motor_dict.keys())[:-1]
         for key in iter_list:
-            self.assertAlmostEqual(self.predefined_dict[key], exp_dict[key], 4)
+            self.assertAlmostEqual(self.predefined_motor_dict[key], exp_dict[key], 4)
 
     def test_GIVEN_cli_argument_WHEN_hkl_111_passed_THEN_check_if_it_was_written_correctly(
         self,
@@ -111,7 +114,45 @@ class TestDAF(unittest.TestCase):
         error = obj.calculate_hkl(obj.parsed_args_dict["hkl-position"])
         exp_dict = obj.get_angles_from_calculated_exp()
         obj.write_angles_if_small_error(error)
-        dict_now = du.read()
-        iter_list = list(self.predefined_dict.keys())[:-1]
+        io = du.DAFIO()
+        dict_now = io.read()
+        iter_list = list(self.predefined_motor_dict.keys())[:-1]
         for key in iter_list:
-            self.assertAlmostEqual(self.predefined_dict[key], dict_now[key], 2)
+            self.assertAlmostEqual(self.predefined_motor_dict[key], dict_now["motors"][key]["value"], 2)
+        for key in self.predefined_pseudo_dict.keys():
+            self.assertAlmostEqual(self.predefined_pseudo_dict[key], dict_now[key], 2)
+
+
+    def test_GIVEN_cli_argument_WHEN_inputing_1_1_1_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "1", "1", "1"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_2_0_0_quiet_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "2", "0", "0", "-q"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_printing_options_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "1",
+            "2",
+            "2",
+            '-m',
+            '*',
+            '-cm',
+            'I',
+            '-s',
+            '16'
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+

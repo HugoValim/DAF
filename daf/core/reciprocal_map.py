@@ -333,14 +333,15 @@ class ReciprocalMapWindow:
                 if cont:
                     popts = numpy.get_printoptions()
                     numpy.set_printoptions(precision=4, suppress=True)
-                    dict_args = du.read()
+                    io = du.DAFIO()
+                    dict_args = io.read()
                     startvalue = [
-                        float(dict_args["Mu"]),
-                        float(dict_args["Eta"]),
-                        float(dict_args["Chi"]),
-                        float(dict_args["Phi"]),
-                        float(dict_args["Nu"]),
-                        float(dict_args["Del"]),
+                        float(dict_args["motors"]["mu"]["value"]),
+                        float(dict_args["motors"]["eta"]["value"]),
+                        float(dict_args["motors"]["chi"]["value"]),
+                        float(dict_args["motors"]["phi"]["value"]),
+                        float(dict_args["motors"]["nu"]["value"]),
+                        float(dict_args["motors"]["del"]["value"]),
                     ]
 
                     hkl = d["hkl"][m][ind["ind"][0]]
@@ -365,12 +366,12 @@ class ReciprocalMapWindow:
                         *angles[:6], self.samp, self.hkl, self.lam, self.nref, self.U
                     )
                     exp_dict = {
-                        "Mu": angles[0],
-                        "Eta": angles[1],
-                        "Chi": angles[2],
-                        "Phi": angles[3],
-                        "Nu": angles[4],
-                        "Del": angles[5],
+                        "mu": angles[0],
+                        "eta": angles[1],
+                        "chi": angles[2],
+                        "phi": angles[3],
+                        "nu": angles[4],
+                        "del": angles[5],
                         "alpha": pseudo_angles_dict["alpha"],
                         "qaz": pseudo_angles_dict["qaz"],
                         "naz": pseudo_angles_dict["naz"],
@@ -389,12 +390,12 @@ class ReciprocalMapWindow:
                             # print("daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(lb(exp_dict['Mu']), lb(exp_dict['Eta']), lb(exp_dict['Chi']), lb(exp_dict['Phi']), lb(exp_dict['Nu']), lb(exp_dict['Del'])))
                             subprocess.Popen(
                                 "daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(
-                                    lb(exp_dict["Mu"]),
-                                    lb(exp_dict["Eta"]),
-                                    lb(exp_dict["Chi"]),
-                                    lb(exp_dict["Phi"]),
-                                    lb(exp_dict["Nu"]),
-                                    lb(exp_dict["Del"]),
+                                    lb(exp_dict["mu"]),
+                                    lb(exp_dict["eta"]),
+                                    lb(exp_dict["chi"]),
+                                    lb(exp_dict["phi"]),
+                                    lb(exp_dict["nu"]),
+                                    lb(exp_dict["del"]),
                                 ),
                                 shell=True,
                             )
