@@ -91,7 +91,11 @@ default = {
     # "theta_analyzer_crystal_pv": {"pv": "SOL:S:m17", "mnemonic": "thca"},  #  thca (Theta Crystal An.)
     # "2theta_analyzer_crystal_pv": {"pv": "SOL:S:m18", "mnemonic": "tthca"},  #  tthca (2Theta Crystal An.)
     "beamline_pvs": {
-    "energy": {"pv": "SOL:S:m24", "mnemonic": "PV_energy", "value": 0},  #  bl_energy_pv
+        "energy": {
+            "pv": "SOL:S:m24",
+            "mnemonic": "PV_energy",
+            "value": 0,
+        },  #  bl_energy_pv
     },
     "twotheta": 0.0,
     "theta": 0.0,

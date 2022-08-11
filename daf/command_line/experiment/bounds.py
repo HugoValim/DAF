@@ -12,12 +12,12 @@ class Bounds(ExperimentBase):
         """
 
     DEFAULT_BOUNDS = {
-        "bound_Mu": [-20.0, 160.0],
-        "bound_Eta": [-20.0, 160.0],
-        "bound_Chi": [-5.0, 95.0],
-        "bound_Phi": [-400.0, 400.0],
-        "bound_Nu": [-20.0, 160.0],
-        "bound_Del": [-20.0, 160.0],
+        "mu": [-20.0, 160.0],
+        "eta": [-20.0, 160.0],
+        "chi": [-5.0, 95.0],
+        "phi": [-400.0, 400.0],
+        "nu": [-20.0, 160.0],
+        "del": [-20.0, 160.0],
     }
 
     def __init__(self):
@@ -29,7 +29,7 @@ class Bounds(ExperimentBase):
         super().parse_command_line()
         self.parser.add_argument(
             "-m",
-            "--bound_Mu",
+            "--mu",
             metavar=("min", "max"),
             type=float,
             nargs=2,
@@ -37,7 +37,7 @@ class Bounds(ExperimentBase):
         )
         self.parser.add_argument(
             "-e",
-            "--bound_Eta",
+            "--eta",
             metavar=("min", "max"),
             type=float,
             nargs=2,
@@ -45,7 +45,7 @@ class Bounds(ExperimentBase):
         )
         self.parser.add_argument(
             "-c",
-            "--bound_Chi",
+            "--chi",
             metavar=("min", "max"),
             type=float,
             nargs=2,
@@ -53,7 +53,7 @@ class Bounds(ExperimentBase):
         )
         self.parser.add_argument(
             "-p",
-            "--bound_Phi",
+            "--phi",
             metavar=("min", "max"),
             type=float,
             nargs=2,
@@ -61,7 +61,7 @@ class Bounds(ExperimentBase):
         )
         self.parser.add_argument(
             "-n",
-            "--bound_Nu",
+            "--nu",
             metavar=("min", "max"),
             type=float,
             nargs=2,
@@ -69,17 +69,17 @@ class Bounds(ExperimentBase):
         )
         self.parser.add_argument(
             "-d",
-            "--bound_Del",
+            "--del",
             metavar=("min", "max"),
             type=float,
             nargs=2,
             help="Sets Del bounds",
         )
         self.parser.add_argument(
-            "-l", "--List", action="store_true", help="List the current bounds"
+            "-l", "--list", action="store_true", help="List the current bounds"
         )
         self.parser.add_argument(
-            "-r", "--Reset", action="store_true", help="Reset all bounds to default"
+            "-r", "--reset", action="store_true", help="Reset all bounds to default"
         )
 
         args = self.parser.parse_args()
@@ -92,28 +92,48 @@ class Bounds(ExperimentBase):
     def list_bounds(self) -> None:
         """Method to print the current bounds"""
         print("")
-        print("Mu    =    {}".format(dict_args["bound_Mu"]))
-        print("Eta   =    {}".format(dict_args["bound_Eta"]))
-        print("Chi   =    {}".format(dict_args["bound_Chi"]))
-        print("Phi   =    {}".format(dict_args["bound_Phi"]))
-        print("Nu    =    {}".format(dict_args["bound_Nu"]))
-        print("Del   =    {}".format(dict_args["bound_Del"]))
+        print(
+            "Mu    =    {}".format(self.experiment_file_dict["motors"]["mu"]["bounds"])
+        )
+        print(
+            "Eta   =    {}".format(self.experiment_file_dict["motors"]["eta"]["bounds"])
+        )
+        print(
+            "Chi   =    {}".format(self.experiment_file_dict["motors"]["chi"]["bounds"])
+        )
+        print(
+            "Phi   =    {}".format(self.experiment_file_dict["motors"]["phi"]["bounds"])
+        )
+        print(
+            "Nu    =    {}".format(self.experiment_file_dict["motors"]["nu"]["bounds"])
+        )
+        print(
+            "Del   =    {}".format(self.experiment_file_dict["motors"]["del"]["bounds"])
+        )
         print("")
 
-    def run_cmd(self, arguments: dict) -> None:
+    def check_if_bounds_bounds_should_be_written(self):
+        """method to tell whether or not new bounds should be written, saving useless I/Os"""
+        for value in self.parsed_args_dict.values():
+            if value != None:
+                self.write_flag = True
+
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        self.write_to_experiment_file(arguments)
-        if arguments["Reset"]:
+        self.check_if_bounds_bounds_should_be_written()
+        if self.write_flag:
+            self.write_to_experiment_file(self.parsed_args_dict)
+        if self.parsed_args_dict["reset"]:
             self.reset_bounds_to_default()
-        if arguments["List"]:
+        if self.parsed_args_dict["list"]:
             self.list_bounds()
 
 
 @daf_log
 def main() -> None:
     obj = Bounds()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

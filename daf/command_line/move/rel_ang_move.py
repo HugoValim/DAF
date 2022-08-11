@@ -3,9 +3,7 @@
 import argparse as ap
 import numpy as np
 
-from daf.utils.print_utils import format_5_decimals
 from daf.utils.log import daf_log
-from daf.utils import dafutilities as du
 from daf.command_line.move.move_utils import MoveBase
 
 
@@ -72,7 +70,7 @@ class RelAngleMove(MoveBase):
         args = self.parser.parse_args()
         return args
 
-    def write_angles(self, parsed_args_dict: dict) -> None:
+    def write_angles(self, parsed_args_dict: dict) -> dict:
         """Write the angles in a relative way"""
         mu_now = self.experiment_file_dict["motors"]["mu"]["value"]
         eta_now = self.experiment_file_dict["motors"]["eta"]["value"]
@@ -94,14 +92,15 @@ class RelAngleMove(MoveBase):
                 motor_position_dict[motor] = float(
                     motor_dict[motor] + parsed_args_dict[motor]
                 )
-        self.write_to_experiment_file(motor_position_dict)
+        return motor_position_dict
 
     def run_cmd(self, arguments) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        self.write_angles(arguments)
+        motor_dict = self.write_angles(arguments)
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()
-        self.write_to_experiment_file(pseudo_dict)
+        motor_dict.update(pseudo_dict)  #  Concatenate both dictionaries
+        self.write_to_experiment_file(motor_dict)
 
 
 @daf_log

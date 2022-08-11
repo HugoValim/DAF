@@ -5,17 +5,27 @@ import numpy as np
 from daf.core.main import DAF
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import (
-        calculate_pseudo_angle_from_motor_angles,
+    calculate_pseudo_angle_from_motor_angles,
 )
+
+
+class DevNull:
+    """Supress errors for the user"""
+
+    def write(self, msg):
+        pass
+
+
+# sys.stderr = DevNull()
 
 
 class CLIBase:
     def __init__(self):
+        self.io = du.DAFIO()
         self.experiment_file_dict = self.read_experiment_file()
 
-    @staticmethod
-    def read_experiment_file():
-        return du.read()
+    def read_experiment_file(self):
+        return self.io.read()
 
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(
@@ -169,10 +179,16 @@ class CLIBase:
         }
         return exp_dict
 
+    def write_motors_bounds_to_experiment_file(self, dict_to_write):
+        for key in self.experiment_file_dict["motors"].keys():
+            if key in dict_to_write.keys() and dict_to_write[key] is not None:
+                self.experiment_file_dict["motors"][key]["bounds"] = dict_to_write[key]
+
     def write_motors_to_experiment_file(self, dict_to_write):
         for key in self.experiment_file_dict["motors"].keys():
             if (
-                self.experiment_file_dict["motors"][key]["mnemonic"] in dict_to_write.keys()
+                self.experiment_file_dict["motors"][key]["mnemonic"]
+                in dict_to_write.keys()
                 and dict_to_write[self.experiment_file_dict["motors"][key]["mnemonic"]]
                 is not None
             ):
@@ -182,6 +198,7 @@ class CLIBase:
 
     def write_to_experiment_file(self, dict_to_write, is_str=False):
         """Write to the .Experiment file based on a inputted dict"""
+        self.write_motors_bounds_to_experiment_file(dict_to_write)
         self.write_motors_to_experiment_file(dict_to_write)
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
@@ -193,7 +210,7 @@ class CLIBase:
                     self.experiment_file_dict[j] = str(k)
                 else:
                     self.experiment_file_dict[j] = float(k)
-        du.write(self.experiment_file_dict)
+        self.io.write(self.experiment_file_dict)
 
     @abstractmethod
     def run_cmd(self, arguments: dict):

@@ -2,105 +2,85 @@
 """Library for reading and writing experiment files"""
 
 import atexit
-import sys
 import os
-from os import path
+
 import epics
 import yaml
-import time
-import numpy as np
-import signal
-import time
 
-import daf.utils.generate_daf_default as gf
-from daf.utils.daf_paths import HOME
 
 DEFAULT = ".Experiment"
 
 
-def only_read(filepath=DEFAULT):
-    """Just get the data from .Experiment file without any epics command"""
-    with open(filepath) as file:
-        data = yaml.safe_load(file)
-        return data
+class DAFIO:
+    def __init__(self, read=True):
+        if read:
+            self.build_epics_pvs()
 
+    def build_epics_pvs(self):
+        if os.path.isfile(DEFAULT):
+            dict_now = self.only_read()
+            self.MOTOR_PVS = {
+                key: dict_now["motors"][key]["pv"]
+                for key, value in dict_now["motors"].items()
+            }
+            self.BL_PVS = {
+                key: dict_now["beamline_pvs"][key]["pv"]
+                for key, value in dict_now["beamline_pvs"].items()
+            }
+            self.MOTORS = {
+                i: epics.Motor(self.MOTOR_PVS[i]) for i in self.MOTOR_PVS.keys()
+            }
 
-if os.path.isfile(DEFAULT):
-    dict_now = only_read()
-    MOTOR_PVS = {
-        key: dict_now["motors"][key]["pv"]
-        for key, value in dict_now["motors"].items()
-    }
-    BL_PVS = {
-        key: dict_now["beamline_pvs"][key]["pv"]
-        for key, value in dict_now["beamline_pvs"].items()
-    }
-    MOTORS = {i: epics.Motor(MOTOR_PVS[i]) for i in MOTOR_PVS.keys()}
+    @staticmethod
+    def only_read(filepath=DEFAULT):
+        """Just get the data from .Experiment file without any epics command"""
+        with open(filepath) as file:
+            data = yaml.safe_load(file)
+            return data
 
+    def wait(self):
+        for key in self.MOTORS:
+            while not self.MOTORS[key].done_moving:
+                pass
 
-def sigint_handler_utilities(signum, frame):
-    """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    dict_args = read()
-    write(dict_args)
-    print("\n")
-    exit(1)
+    def epics_get(self, dict_):
+        for key in self.MOTORS:
+            dict_["motors"][key]["value"] = self.MOTORS[key].readback
+            dict_["motors"][key]["bounds"] = [
+                self.MOTORS[key].low_limit,
+                self.MOTORS[key].high_limit,
+            ]
 
+        for key, value in self.BL_PVS.items():
+            dict_["beamline_pvs"][key]["value"] = (
+                float(epics.caget(self.BL_PVS[key])) * 1000
+            )
 
-signal.signal(signal.SIGINT, sigint_handler_utilities)
+        return dict_
 
+    def epics_put(self, dict_):
+        # Make sure we stop all motors.
+        atexit.register(self.stop)
+        for key in self.MOTORS:
+            self.MOTORS[key].low_limit = dict_["motors"][key]["bounds"][0]
+            self.MOTORS[key].high_limit = dict_["motors"][key]["bounds"][1]
+            self.MOTORS[key].move(
+                dict_["motors"][key]["value"], ignore_limits=True, confirm_move=True
+            )
+        self.wait()
 
-class DevNull:
-    """Supress errors for the user"""
+    def stop(self):
+        for key in self.MOTORS:
+            self.MOTORS[key].stop()
 
-    def write(self, msg):
-        pass
+    def read(self, filepath=DEFAULT):
+        with open(filepath) as file:
+            data = yaml.safe_load(file)
+            data_w_caget = self.epics_get(data)
+            return data_w_caget
 
-
-# sys.stderr = DevNull()
-
-
-def wait():
-    for key in MOTORS:
-        while not MOTORS[key].done_moving:
-            pass
-
-
-def epics_get(dict_):
-    for key in MOTORS:
-        dict_["motors"][key]["value"] = MOTORS[key].readback
-        dict_["motors"][key]["bounds"] = [MOTORS[key].low_limit, MOTORS[key].high_limit]
-
-    for key, value in BL_PVS.items():
-        dict_["beamline_pvs"][key]["value"] = float(epics.caget(BL_PVS[key])) * 1000
-
-    return dict_
-
-
-def read(filepath=DEFAULT):
-    with open(filepath) as file:
-        data = yaml.safe_load(file)
-        data_w_caget = epics_get(data)
-        return data_w_caget
-
-
-def stop():
-    for key in MOTORS:
-        MOTORS[key].stop()
-
-
-def epics_put(dict_):
-    # Make sure we stop all motors.
-    atexit.register(stop)
-    for key in MOTORS:
-        MOTORS[key].low_limit = dict_["motors"][key]["bounds"][0]
-        MOTORS[key].high_limit = dict_["motors"][key]["bounds"][1]
-        MOTORS[key].move(dict_["motors"][key]["value"], ignore_limits=True, confirm_move=True)
-    wait()
-
-
-def write(dict_, filepath=DEFAULT):
-    epics_put(dict_)
-    with open(filepath, "w") as file:
-        yaml.dump(dict_, file)
-        file.flush()
+    def write(self, dict_, filepath=DEFAULT):
+        self.epics_put(dict_)
+        with open(filepath, "w") as file:
+            yaml.dump(dict_, file)
+            file.flush()
