@@ -212,7 +212,6 @@ class CLIBase:
     def write_to_experiment_file(
         self,
         dict_to_write: dict,
-        is_str: bool = False,
         is_motor_set_point: bool = False,
         is_motor_bounds: bool = False,
     ):

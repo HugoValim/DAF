@@ -21,7 +21,8 @@ class OperationMode(ExperimentBase):
 
     EPI = """
         Eg:
-            daf.mode 215, will set Nu fix, Alpha=Beta, Eta=Del/2
+            daf.mode 215, this will set Nu fix, Alpha=Beta, Eta=Del/2
+            See daf.cons to set constraints
           """
 
     def __init__(self):
@@ -39,17 +40,17 @@ class OperationMode(ExperimentBase):
         args = self.parser.parse_args()
         return args
 
-    def run_cmd(self, arguments: dict) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        if arguments["Mode"]:
-            self.write_to_experiment_file(arguments, is_str=True)
+        self.update_experiment_file(self.parsed_args_dict, is_str=True)
+        self.write_to_experiment_file(self.experiment_file_dict)
 
 
 @daf_log
 def main() -> None:
     obj = OperationMode()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":
