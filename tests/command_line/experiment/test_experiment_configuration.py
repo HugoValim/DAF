@@ -319,9 +319,8 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-rl"]
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-m", "1"]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
         assert dict_now["simulated"] == False
-        

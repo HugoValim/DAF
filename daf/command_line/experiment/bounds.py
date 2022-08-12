@@ -112,20 +112,12 @@ class Bounds(ExperimentBase):
         )
         print("")
 
-    def check_if_bounds_bounds_should_be_written(self):
-        """method to tell whether or not new bounds should be written, saving useless I/Os"""
-        for value in self.parsed_args_dict.values():
-            if value != None:
-                self.write_flag = True
-
     def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        self.check_if_bounds_bounds_should_be_written()
-        if self.write_flag:
-            self.write_to_experiment_file(self.parsed_args_dict, is_motor_bounds=True)
         if self.parsed_args_dict["reset"]:
             self.reset_bounds_to_default()
+        self.write_to_experiment_file(self.parsed_args_dict, is_motor_bounds=True)
         if self.parsed_args_dict["list"]:
             self.list_bounds()
 

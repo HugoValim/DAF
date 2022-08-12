@@ -16,101 +16,102 @@ class ModeConstraints(ExperimentBase):
         super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
+        self.write_flag = False
 
     def parse_command_line(self):
         super().parse_command_line()
         self.parser.add_argument(
             "-m",
-            "--cons_Mu",
+            "--cons_mu",
             metavar="ang",
             type=float,
-            help="Constrain Mu, default: 0",
+            help="constrain Mu, default: 0",
         )
         self.parser.add_argument(
             "-e",
-            "--cons_Eta",
+            "--cons_eta",
             metavar="ang",
             type=float,
-            help="Constrain Eta, default: 0",
+            help="constrain Eta, default: 0",
         )
         self.parser.add_argument(
             "-c",
-            "--cons_Chi",
+            "--cons_chi",
             metavar="ang",
             type=float,
-            help="Constrain Chi, default: 0",
+            help="constrain Chi, default: 0",
         )
         self.parser.add_argument(
             "-p",
-            "--cons_Phi",
+            "--cons_phi",
             metavar="ang",
             type=float,
-            help="Constrain Phi, default: 0",
+            help="constrain Phi, default: 0",
         )
         self.parser.add_argument(
             "-n",
-            "--cons_Nu",
+            "--cons_nu",
             metavar="ang",
             type=float,
-            help="Constrain Nu, default: 0",
+            help="constrain Nu, default: 0",
         )
         self.parser.add_argument(
             "-d",
-            "--cons_Del",
+            "--cons_del",
             metavar="ang",
             type=float,
-            help="Constrain Del, default: 0",
+            help="constrain Del, default: 0",
         )
         self.parser.add_argument(
             "-a",
             "--cons_alpha",
             metavar="ang",
             type=float,
-            help="Constrain alpha, default: 0",
+            help="constrain alpha, default: 0",
         )
         self.parser.add_argument(
             "-b",
             "--cons_beta",
             metavar="ang",
             type=float,
-            help="Constrain beta, default: 0",
+            help="constrain beta, default: 0",
         )
         self.parser.add_argument(
             "-psi",
             "--cons_psi",
             metavar="ang",
             type=float,
-            help="Constrain psi, default: 0",
+            help="constrain psi, default: 0",
         )
         self.parser.add_argument(
             "-o",
             "--cons_omega",
             metavar="ang",
             type=float,
-            help="Constrain omega, default: 0",
+            help="constrain omega, default: 0",
         )
         self.parser.add_argument(
             "-q",
             "--cons_qaz",
             metavar="ang",
             type=float,
-            help="Constrain qaz, default: 0",
+            help="constrain qaz, default: 0",
         )
         self.parser.add_argument(
-            "-cnaz",
+            "-naz",
             "--cons_naz",
             metavar="ang",
             type=float,
-            help="Constrain naz, default: 0",
+            help="constrain naz, default: 0",
         )
         self.parser.add_argument(
             "-r",
-            "--Reset",
+            "--reset",
             action="store_true",
-            help="Reset all contrained angles to default (0)",
+            help="reset all contrained angles to default (0)",
         )
         self.parser.add_argument(
-            "-l", "--List", action="store_true", help="List constrained angles"
+            "-l", "--list", action="store_true", help="list constrained angles"
         )
         args = self.parser.parse_args()
         return args
@@ -118,12 +119,12 @@ class ModeConstraints(ExperimentBase):
     def reset_to_constraints_zero(self) -> None:
         """Reset all constraints to 0 (the default value), it writes directly to the .Experiment file"""
         dict_to_reset = {
-            "cons_Mu": 0,
-            "cons_Eta": 0,
-            "cons_Chi": 0,
-            "cons_Phi": 0,
-            "cons_Nu": 0,
-            "cons_Del": 0,
+            "cons_mu": 0,
+            "cons_eta": 0,
+            "cons_chi": 0,
+            "cons_phi": 0,
+            "cons_nu": 0,
+            "cons_del": 0,
             "cons_alpha": 0,
             "cons_beta": 0,
             "cons_psi": 0,
@@ -131,7 +132,8 @@ class ModeConstraints(ExperimentBase):
             "cons_qaz": 0,
             "cons_naz": 0,
         }
-        self.write_to_experiment_file(dict_to_reset)
+        for key in dict_to_reset:
+            self.experiment_file_dict[key] = dict_to_reset[key]
 
     def list_contraints(self) -> None:
         """Method to print the current constraints"""
@@ -143,28 +145,29 @@ class ModeConstraints(ExperimentBase):
         print("Naz   =    {}".format(self.experiment_file_dict["cons_naz"]))
         print("Omega =    {}".format(self.experiment_file_dict["cons_omega"]))
         print("")
-        print("Mu    =    {}".format(self.experiment_file_dict["cons_Mu"]))
-        print("Eta   =    {}".format(self.experiment_file_dict["cons_Eta"]))
-        print("Chi   =    {}".format(self.experiment_file_dict["cons_Chi"]))
-        print("Phi   =    {}".format(self.experiment_file_dict["cons_Phi"]))
-        print("Nu    =    {}".format(self.experiment_file_dict["cons_Nu"]))
-        print("Del   =    {}".format(self.experiment_file_dict["cons_Del"]))
+        print("Mu    =    {}".format(self.experiment_file_dict["cons_mu"]))
+        print("Eta   =    {}".format(self.experiment_file_dict["cons_eta"]))
+        print("Chi   =    {}".format(self.experiment_file_dict["cons_chi"]))
+        print("Phi   =    {}".format(self.experiment_file_dict["cons_phi"]))
+        print("Nu    =    {}".format(self.experiment_file_dict["cons_nu"]))
+        print("Del   =    {}".format(self.experiment_file_dict["cons_del"]))
         print("")
 
-    def run_cmd(self, arguments: dict) -> None:
+
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        self.write_to_experiment_file(arguments)
-        if arguments["Reset"]:
+        if self.parsed_args_dict["reset"]:
             self.reset_to_constraints_zero()
-        if arguments["List"]:
+        self.update_experiment_file(self.parsed_args_dict)
+        if self.parsed_args_dict["list"]:
             self.list_contraints()
-
+        self.write_to_experiment_file(self.parsed_args_dict)
 
 @daf_log
 def main() -> None:
     obj = ModeConstraints()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

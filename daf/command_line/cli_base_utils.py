@@ -91,12 +91,12 @@ class CLIBase:
         )
 
         exp.set_constraints(
-            Mu=self.experiment_file_dict["cons_Mu"],
-            Eta=self.experiment_file_dict["cons_Eta"],
-            Chi=self.experiment_file_dict["cons_Chi"],
-            Phi=self.experiment_file_dict["cons_Phi"],
-            Nu=self.experiment_file_dict["cons_Nu"],
-            Del=self.experiment_file_dict["cons_Del"],
+            Mu=self.experiment_file_dict["cons_mu"],
+            Eta=self.experiment_file_dict["cons_eta"],
+            Chi=self.experiment_file_dict["cons_chi"],
+            Phi=self.experiment_file_dict["cons_phi"],
+            Nu=self.experiment_file_dict["cons_nu"],
+            Del=self.experiment_file_dict["cons_del"],
             alpha=self.experiment_file_dict["cons_alpha"],
             beta=self.experiment_file_dict["cons_beta"],
             psi=self.experiment_file_dict["cons_psi"],
@@ -193,8 +193,8 @@ class CLIBase:
                     dict_to_write[key]
                 )
 
-    def write_configuration_to_experiment_file(self, dict_to_write: dict, is_str: bool) -> None:
-        """Write configurations not related to motors to the experiment file"""
+    def update_experiment_file(self, dict_to_write: dict, is_str: bool = False) -> None:
+        """Update self.experiment_file_dict based on user inputs"""
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):
@@ -208,21 +208,19 @@ class CLIBase:
                 else:
                     self.experiment_file_dict[j] = float(k)
 
+
     def write_to_experiment_file(
         self,
         dict_to_write: dict,
         is_str: bool = False,
         is_motor_set_point: bool = False,
         is_motor_bounds: bool = False,
-        is_configuration: bool = False,
     ):
         """Write to the .Experiment file based on a inputted dict"""
         if is_motor_set_point:
             self.write_motors_to_experiment_file(dict_to_write)
         if is_motor_bounds:
             self.write_motors_bounds_to_experiment_file(dict_to_write)
-        if is_configuration:
-            self.write_configuration_to_experiment_file(dict_to_write, is_str)
         self.io.write(self.experiment_file_dict)
 
     @abstractmethod

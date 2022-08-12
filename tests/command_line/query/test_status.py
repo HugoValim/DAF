@@ -95,7 +95,7 @@ class TestDAF(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             main()
 
-    def test_GIVEN_cli_argument_WHEN_inputing_bounds_THEN_all_for_problems(
+    def test_GIVEN_cli_argument_WHEN_inputing_bounds_THEN_test_for_problems(
         self,
     ):
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a"]

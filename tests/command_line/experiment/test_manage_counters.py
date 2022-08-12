@@ -121,7 +121,7 @@ class TestDAF(unittest.TestCase):
         param = "new_config"
         obj = self.make_obj([arg, param])
         assert obj.parsed_args_dict[full_arg] == param
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         full_file_path = obj.get_full_file_path(param)
         assert os.path.isfile(full_file_path)
 
@@ -133,7 +133,7 @@ class TestDAF(unittest.TestCase):
         param = ["test_add", "ringcurrent"]
         obj = self.make_obj([arg, param[0], param[1]])
         obj.create_new_configuration_file(param[0])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         obj.get_full_file_path(param[0])
         full_file_path = obj.get_full_file_path(param[0])
         data = obj.read_yaml(full_file_path)
@@ -148,7 +148,7 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, param[0], param[1]])
         obj.create_new_configuration_file(param[0])
         obj.add_counters_to_a_file(param[0], [param[1]])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         obj.get_full_file_path(param[0])
         full_file_path = obj.get_full_file_path(param[0])
         data = obj.read_yaml(full_file_path)
@@ -163,7 +163,7 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, param])
         assert obj.parsed_args_dict[full_arg] == [param]
         obj.create_new_configuration_file("file_to_remove")
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         full_file_path = obj.get_full_file_path(param)
         assert os.path.isfile(full_file_path) == False
 
@@ -176,8 +176,8 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, param])
         assert obj.parsed_args_dict[full_arg] == param
         obj.create_new_configuration_file(param)
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_args = du.read()
+        obj.run_cmd()
+        dict_args = obj.io.read()
         assert dict_args["default_counters"] == obj.YAML_PREFIX + param + obj.YAML_SUFIX
 
     def test_GIVEN_cli_argument_WHEN_inputing_main_counter_THEN_check_if_it_was_written_correctly(
@@ -188,8 +188,8 @@ class TestDAF(unittest.TestCase):
         param = "ringcurrent"
         obj = self.make_obj([arg, param])
         assert obj.parsed_args_dict[full_arg] == param
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_args = du.read()
+        obj.run_cmd()
+        dict_args = obj.io.read()
         assert dict_args["main_scan_counter"] == param
 
     def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_test_for_problems(

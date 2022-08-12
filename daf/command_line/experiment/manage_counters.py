@@ -194,50 +194,50 @@ class ManageCounters(ExperimentBase):
         full_file_path = self.get_full_file_path(file_name)
         os.remove(full_file_path)
 
-    def run_cmd(self, arguments: dict) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        if arguments["set_default"]:
-            self.set_default_counters(arguments["set_default"])
+        if self.parsed_args_dict["set_default"]:
+            self.set_default_counters(self.parsed_args_dict["set_default"])
 
-        if arguments["new"]:
-            self.create_new_configuration_file(arguments["new"])
+        if self.parsed_args_dict["new"]:
+            self.create_new_configuration_file(self.parsed_args_dict["new"])
 
-        if arguments["add_counter"]:
+        if self.parsed_args_dict["add_counter"]:
             self.add_counters_to_a_file(
-                arguments["add_counter"][0], arguments["add_counter"][1:]
+                self.parsed_args_dict["add_counter"][0], self.parsed_args_dict["add_counter"][1:]
             )
 
-        if arguments["remove_counter"]:
+        if self.parsed_args_dict["remove_counter"]:
             self.remove_counters_from_file(
-                arguments["remove_counter"][0], arguments["remove_counter"][1:]
+                self.parsed_args_dict["remove_counter"][0], self.parsed_args_dict["remove_counter"][1:]
             )
 
-        if arguments["main_counter"]:
-            self.set_main_counter(arguments["main_counter"])
+        if self.parsed_args_dict["main_counter"]:
+            self.set_main_counter(self.parsed_args_dict["main_counter"])
 
-        if arguments["remove"]:
-            for file in arguments["remove"]:
+        if self.parsed_args_dict["remove"]:
+            for file in self.parsed_args_dict["remove"]:
                 self.delete_configuration_file(file)
 
-        if arguments["list"]:
+        if self.parsed_args_dict["list"]:
             self.list_configuration_files()
 
-        if arguments["list_all_counters"]:
+        if self.parsed_args_dict["list_all_counters"]:
             self.list_all_counters()
 
-        if isinstance(arguments["list_counters"], list):
-            for file in arguments["list_counters"]:
+        if isinstance(self.parsed_args_dict["list_counters"], list):
+            for file in self.parsed_args_dict["list_counters"]:
                 self.list_counter_in_a_configuration_file(file)
 
         if self.write_flag:
-            du.write(self.experiment_file_dict)
+            self.write_to_experiment_file(self.experiment_file_dict)
 
 
 @daf_log
 def main() -> None:
     obj = ManageCounters()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":
