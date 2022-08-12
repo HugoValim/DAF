@@ -205,12 +205,14 @@ class ManageCounters(ExperimentBase):
 
         if self.parsed_args_dict["add_counter"]:
             self.add_counters_to_a_file(
-                self.parsed_args_dict["add_counter"][0], self.parsed_args_dict["add_counter"][1:]
+                self.parsed_args_dict["add_counter"][0],
+                self.parsed_args_dict["add_counter"][1:],
             )
 
         if self.parsed_args_dict["remove_counter"]:
             self.remove_counters_from_file(
-                self.parsed_args_dict["remove_counter"][0], self.parsed_args_dict["remove_counter"][1:]
+                self.parsed_args_dict["remove_counter"][0],
+                self.parsed_args_dict["remove_counter"][1:],
             )
 
         if self.parsed_args_dict["main_counter"]:

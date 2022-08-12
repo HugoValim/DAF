@@ -46,5 +46,3 @@ class TestDAF(unittest.TestCase):
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
         with patch.object(sys, "argv", testargs):
             main()
-
-

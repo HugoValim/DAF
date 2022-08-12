@@ -153,7 +153,6 @@ class ModeConstraints(ExperimentBase):
         print("Del   =    {}".format(self.experiment_file_dict["cons_del"]))
         print("")
 
-
     def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
@@ -163,6 +162,7 @@ class ModeConstraints(ExperimentBase):
         if self.parsed_args_dict["list"]:
             self.list_contraints()
         self.write_to_experiment_file(self.parsed_args_dict)
+
 
 @daf_log
 def main() -> None:

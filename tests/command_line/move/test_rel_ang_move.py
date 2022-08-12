@@ -90,7 +90,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-m", str(pos_to_move)])
         obj.run_cmd()
         dict_now = obj.io.read()
-        assert dict_now["motors"]["mu"]["value"] == dict_before["motors"]["mu"]["value"] + pos_to_move
+        assert (
+            dict_now["motors"]["mu"]["value"]
+            == dict_before["motors"]["mu"]["value"] + pos_to_move
+        )
 
     def test_GIVEN_cli_argument_WHEN_eta_is_moved_THEN_check_if_written(
         self,
@@ -101,7 +104,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", str(pos_to_move)])
         obj.run_cmd()
         dict_now = obj.io.read()
-        assert dict_now["motors"]["eta"]["value"] == dict_before["motors"]["eta"]["value"] + pos_to_move
+        assert (
+            dict_now["motors"]["eta"]["value"]
+            == dict_before["motors"]["eta"]["value"] + pos_to_move
+        )
 
     def test_GIVEN_cli_argument_WHEN_chi_is_moved_THEN_check_if_written(
         self,
@@ -112,7 +118,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-c", str(pos_to_move)])
         obj.run_cmd()
         dict_now = obj.io.read()
-        assert dict_now["motors"]["chi"]["value"] == dict_before["motors"]["chi"]["value"] + pos_to_move
+        assert (
+            dict_now["motors"]["chi"]["value"]
+            == dict_before["motors"]["chi"]["value"] + pos_to_move
+        )
 
     def test_GIVEN_cli_argument_WHEN_phi_is_moved_THEN_check_if_written(
         self,
@@ -123,7 +132,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-p", str(pos_to_move)])
         obj.run_cmd()
         dict_now = obj.io.read()
-        assert dict_now["motors"]["phi"]["value"] == dict_before["motors"]["phi"]["value"] + pos_to_move
+        assert (
+            dict_now["motors"]["phi"]["value"]
+            == dict_before["motors"]["phi"]["value"] + pos_to_move
+        )
 
     def test_GIVEN_cli_argument_WHEN_nu_is_moved_THEN_check_if_written(
         self,
@@ -134,7 +146,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-n", str(pos_to_move)])
         obj.run_cmd()
         dict_now = obj.io.read()
-        assert dict_now["motors"]["nu"]["value"] == dict_before["motors"]["nu"]["value"] + pos_to_move
+        assert (
+            dict_now["motors"]["nu"]["value"]
+            == dict_before["motors"]["nu"]["value"] + pos_to_move
+        )
 
     def test_GIVEN_cli_argument_WHEN_del_is_moved_THEN_check_if_written(
         self,
@@ -145,7 +160,10 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-d", str(pos_to_move)])
         obj.run_cmd()
         dict_now = obj.experiment_file_dict
-        assert dict_now["motors"]["del"]["value"] == dict_before["motors"]["del"]["value"] + pos_to_move
+        assert (
+            dict_now["motors"]["del"]["value"]
+            == dict_before["motors"]["del"]["value"] + pos_to_move
+        )
 
     def test_GIVEN_cli_argument_WHEN_any_motor_is_moved_THEN_check_pseudo_angles_write(
         self,
@@ -154,7 +172,7 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", str(pos_to_move)])
         obj.run_cmd()
         pseudo_dict = obj.get_pseudo_angles_from_motor_angles()
-        obj.write_to_experiment_file(pseudo_dict)
+        obj.run_cmd()
         dict_now = obj.io.read()
         del pseudo_dict["q_vector"]
         del pseudo_dict["q_vector_norm"]

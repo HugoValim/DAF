@@ -387,12 +387,23 @@ class TestDAF(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             main()
 
-
     def test_GIVEN_cli_argument_WHEN_inputing_reflection_1_THEN_test_for_problems(
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "1",
+            "0",
+            "0",
+            "0",
+            "5.28232",
+            "0",
+            "2",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
 
@@ -400,7 +411,19 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "0",
+            "1",
+            "0",
+            "0",
+            "5.28232",
+            "2",
+            "92",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
 
@@ -408,36 +431,118 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "0",
+            "0",
+            "1",
+            "0",
+            "5.28232",
+            "92",
+            "92",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
 
     def test_GIVEN_cli_argument_WHEN_inputing_c2_THEN_test_for_problems(
         self,
     ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "1",
+            "0",
+            "0",
+            "0",
+            "5.28232",
+            "0",
+            "2",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "0",
+            "0",
+            "1",
+            "0",
+            "5.28232",
+            "92",
+            "92",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-c2", "1", "2"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-c2",
+            "1",
+            "2",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
 
     def test_GIVEN_cli_argument_WHEN_inputing_c3_THEN_test_for_problems(
         self,
     ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "1",
+            "0",
+            "0",
+            "0",
+            "5.28232",
+            "0",
+            "2",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "0",
+            "1",
+            "0",
+            "0",
+            "5.28232",
+            "2",
+            "92",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "0",
+            "0",
+            "1",
+            "0",
+            "5.28232",
+            "92",
+            "92",
+            "0",
+            "10.5647",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-c3", "1", "2", "3"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-c3",
+            "1",
+            "2",
+            "3",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
-

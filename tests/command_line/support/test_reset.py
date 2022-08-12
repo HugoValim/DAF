@@ -45,7 +45,7 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_check_if_it_was_written_correctly(
         self,
     ):
-        dict_now = du.read()
+        dict_now = obj.io.read()
         dict_now["Mode"] = "2023"
         du.write(dict_now)
         arg = "-a"
@@ -53,8 +53,8 @@ class TestDAF(unittest.TestCase):
         param = []
         obj = self.make_obj([arg, *param])
         assert obj.experiment_file_dict["Mode"] == "2023"
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         assert dict_now["Mode"] == "2052"
 
     def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(

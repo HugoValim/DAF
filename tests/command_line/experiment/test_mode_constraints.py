@@ -236,7 +236,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 1
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-m", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-m",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -247,7 +251,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 2
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-e", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-e",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -258,7 +266,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 3
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-c", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-c",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -269,7 +281,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 4
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-p", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-p",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -280,7 +296,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 5
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-n", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-n",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -291,7 +311,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 6
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-d", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-d",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -302,7 +326,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 7
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-a",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -313,7 +341,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 8
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-b", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-b",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -324,7 +356,11 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 9
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-psi", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-psi",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -335,31 +371,41 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         val_to_cons = 10
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-o", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-o",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
         assert dict_now["cons_omega"] == val_to_cons
-
 
     def test_GIVEN_cli_argument_WHEN_inputing_cons_qaz_THEN_test_for_problems(
         self,
     ):
         obj = self.make_obj([])
         val_to_cons = 11
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-q", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-q",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
         assert dict_now["cons_qaz"] == val_to_cons
-
 
     def test_GIVEN_cli_argument_WHEN_inputing_cons_naz_THEN_test_for_problems(
         self,
     ):
         obj = self.make_obj([])
         val_to_cons = 12
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-naz", str(val_to_cons)]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-naz",
+            str(val_to_cons),
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -393,4 +439,3 @@ class TestDAF(unittest.TestCase):
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-l"]
         with patch.object(sys, "argv", testargs):
             main()
-    

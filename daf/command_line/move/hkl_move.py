@@ -68,7 +68,7 @@ class HKLMove(MoveBase):
             print("Can't find the HKL {}".format(args.Move))
             return
         exp_dict = self.get_angles_from_calculated_exp()
-        print(exp_dict)
+        self.update_experiment_file(exp_dict)
         self.write_to_experiment_file(exp_dict, is_motor_set_point=True)
 
     def run_cmd(self) -> None:

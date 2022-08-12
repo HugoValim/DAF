@@ -111,7 +111,7 @@ class AngleMove(MoveBase):
         that should be run when calling the cli interface"""
         motor_dict = self.write_angles(self.parsed_args_dict)
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()
-        motor_dict.update(pseudo_dict)  #  Concatenate both dictionaries
+        self.update_experiment_file(pseudo_dict)
         self.write_to_experiment_file(motor_dict, is_motor_set_point=True)
 
 

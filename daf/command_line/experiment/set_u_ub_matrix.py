@@ -387,11 +387,14 @@ class SetUUB(ExperimentBase):
             self.clear_all_stored_reflections()
         if self.parsed_args_dict["calc_from_2_reflections"] is not None:
             self.calculate_u_mat_from_2_reflections(
-                self.parsed_args_dict["calc_from_2_reflections"][0], self.parsed_args_dict["calc_from_2_reflections"][1]
+                self.parsed_args_dict["calc_from_2_reflections"][0],
+                self.parsed_args_dict["calc_from_2_reflections"][1],
             )
         if self.parsed_args_dict["calc_from_3_reflections"] is not None:
             self.calculate_u_mat_from_3_reflections(
-                self.parsed_args_dict["calc_from_3_reflections"][0], self.parsed_args_dict["calc_from_3_reflections"][1], self.parsed_args_dict["calc_from_3_reflections"][2]
+                self.parsed_args_dict["calc_from_3_reflections"][0],
+                self.parsed_args_dict["calc_from_3_reflections"][1],
+                self.parsed_args_dict["calc_from_3_reflections"][2],
             )
         if self.parsed_args_dict["fit"]:
             self.fit_u_matrix()

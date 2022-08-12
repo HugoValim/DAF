@@ -35,7 +35,7 @@ class TestDAF(unittest.TestCase):
     def setUp(self):
         data_sim = gdd.default
         data_sim["simulated"] = True
-        data_sim["PV_energy"] = 10000.0
+        data_sim["beamline_pvs"]["energy"]["value"] = 10000.0
         data_sim["scan_stats"] = {
             "mvs2_diode": {
                 "COM": 22.689189910888672,
@@ -241,7 +241,7 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj(["-e", str(pos_to_move)])
         obj.run_cmd()
         pseudo_dict = obj.get_pseudo_angles_from_motor_angles()
-        obj.write_to_experiment_file(pseudo_dict)
+        obj.run_cmd()
         dict_now = obj.io.read()
         del pseudo_dict["q_vector"]
         del pseudo_dict["q_vector_norm"]

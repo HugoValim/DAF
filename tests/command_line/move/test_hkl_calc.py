@@ -23,7 +23,7 @@ class TestDAF(unittest.TestCase):
         "hklnow": np.array([1.0, 1.0, 1.0]),
     }
 
-    predefined_pseudo_dict ={
+    predefined_pseudo_dict = {
         "twotheta": 22.805372812818835,
         "theta": 11.402686406409417,
         "alpha": 6.554258723031806,
@@ -117,7 +117,13 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_2_0_0_quiet_THEN_test_for_problems(
         self,
     ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "2", "0", "0", "-q"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "2",
+            "0",
+            "0",
+            "-q",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
 
@@ -129,12 +135,12 @@ class TestDAF(unittest.TestCase):
             "1",
             "2",
             "2",
-            '-m',
-            '*',
-            '-cm',
-            'I',
-            '-s',
-            '16'
+            "-m",
+            "*",
+            "-cm",
+            "I",
+            "-s",
+            "16",
         ]
         with patch.object(sys, "argv", testargs):
             main()

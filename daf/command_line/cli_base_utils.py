@@ -208,7 +208,6 @@ class CLIBase:
                 else:
                     self.experiment_file_dict[j] = float(k)
 
-
     def write_to_experiment_file(
         self,
         dict_to_write: dict,

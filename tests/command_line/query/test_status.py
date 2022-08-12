@@ -101,7 +101,3 @@ class TestDAF(unittest.TestCase):
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a"]
         with patch.object(sys, "argv", testargs):
             main()
-
-
-
-   

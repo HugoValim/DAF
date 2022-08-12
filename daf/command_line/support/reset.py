@@ -54,17 +54,17 @@ class Reset(SupportBase):
         self.soft_reset()
         os.system('rm -fr "$HOME/.daf/"')
 
-    def run_cmd(self, arguments: dict) -> None:
-        if arguments["all"]:
+    def run_cmd(self) -> None:
+        if self.parsed_args_dict["all"]:
             self.soft_reset()
-        if arguments["hard"]:
+        if self.parsed_args_dict["hard"]:
             self.hard_reset()
 
 
 @daf_log
 def main() -> None:
     obj = Reset()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

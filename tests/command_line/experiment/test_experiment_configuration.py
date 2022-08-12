@@ -7,13 +7,15 @@ from unittest.mock import patch
 import numpy as np
 
 import daf.utils.dafutilities as du
-from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration, main
+from daf.command_line.experiment.experiment_configuration import (
+    ExperimentConfiguration,
+    main,
+)
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
 
 class TestDAF(unittest.TestCase):
-
     def setUp(self):
         data_sim = gdd.default
         data_sim["simulated"] = True
@@ -256,7 +258,18 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-s", "meu_si", "-p", "2", "3", "4", "90", "90", "120"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-s",
+            "meu_si",
+            "-p",
+            "2",
+            "3",
+            "4",
+            "90",
+            "90",
+            "120",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -272,7 +285,17 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-i", "1", "1", "0", "-n", "0", "0", "1"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-i",
+            "1",
+            "1",
+            "0",
+            "-n",
+            "0",
+            "0",
+            "1",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
@@ -287,7 +310,13 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj([])
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "1", "0"]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-r",
+            "0",
+            "1",
+            "0",
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()

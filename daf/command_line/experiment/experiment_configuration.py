@@ -107,7 +107,9 @@ class ExperimentConfiguration(ExperimentBase):
 
     def set_energy(self, energy_to_set: float) -> float:
         """Sets the energy to the .Experiment file"""
-        offset = self.experiment_file_dict["beamline_pvs"]["energy"]["value"] - energy_to_set
+        offset = (
+            self.experiment_file_dict["beamline_pvs"]["energy"]["value"] - energy_to_set
+        )
         self.experiment_file_dict["energy_offset"] = offset
         return offset
 
@@ -198,7 +200,10 @@ class ExperimentConfiguration(ExperimentBase):
             self.set_energy(self.parsed_args_dict["energy"])
         if self.parsed_args_dict["rdir"]:
             self.set_rdir(self.parsed_args_dict["rdir"])
-        if self.parsed_args_dict["idir_print"] is not None and self.parsed_args_dict["ndir_print"] is not None:
+        if (
+            self.parsed_args_dict["idir_print"] is not None
+            and self.parsed_args_dict["ndir_print"] is not None
+        ):
             self.set_u_and_ub_based_in_idir_ndir(
                 self.parsed_args_dict["idir_print"], self.parsed_args_dict["ndir_print"]
             )
