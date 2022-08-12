@@ -203,6 +203,8 @@ class CLIBase:
                     self.experiment_file_dict[j] = k
                 elif is_str:
                     self.experiment_file_dict[j] = str(k)
+                elif isinstance(k, str) and not k.isnumeric():
+                    self.experiment_file_dict[j] = str(k)
                 else:
                     self.experiment_file_dict[j] = float(k)
 
@@ -212,7 +214,7 @@ class CLIBase:
         is_str: bool = False,
         is_motor_set_point: bool = False,
         is_motor_bounds: bool = False,
-        is_configuration: bool = True,
+        is_configuration: bool = False,
     ):
         """Write to the .Experiment file based on a inputted dict"""
         if is_motor_set_point:

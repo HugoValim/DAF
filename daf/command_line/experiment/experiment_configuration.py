@@ -28,69 +28,69 @@ class ExperimentConfiguration(ExperimentBase):
     def parse_command_line(self):
         super().parse_command_line()
         self.parser.add_argument(
-            "-m",
-            "--Material",
-            metavar="samp",
+            "-s",
+            "--sample",
+            metavar="sample",
             type=str,
-            help="Sets the material that is going to be used in the experiment",
+            help="sets the material that is going to be used in the experiment",
         )
         self.parser.add_argument(
             "-p",
-            "--Lattice_parameters",
+            "--lattice_parameters",
             metavar=("a", "b", "c", "alpha", "beta", "gamma "),
             type=float,
             nargs=6,
-            help="Sets lattice parameters, must be passed if defining a new material",
+            help="sets lattice parameters, must be passed if defining a new material",
         )
         self.parser.add_argument(
             "-i",
-            "--IDir_print",
+            "--idir_print",
             metavar=("x", "y", "z"),
             type=float,
             nargs=3,
-            help="Sets the reflection paralel to the incident beam",
+            help="sets the reflection paralel to the incident beam",
         )
         self.parser.add_argument(
             "-n",
-            "--NDir_print",
+            "--ndir_print",
             metavar=("x", "y", "z"),
             type=float,
             nargs=3,
-            help="Sets the reflection perpendicular to the incident beam",
+            help="sets the reflection perpendicular to the incident beam",
         )
         self.parser.add_argument(
             "-r",
-            "--RDir",
+            "--rdir",
             metavar=("x", "y", "z"),
             type=float,
             nargs=3,
-            help="Sets the reference vector",
+            help="sets the reference vector",
         )
         self.parser.add_argument(
-            "-s",
-            "--Sampleor",
+            "-so",
+            "--sample_orientation",
             metavar="or",
             type=str,
-            help="Sets the sample orientation at Phi axis",
+            help="sets the sample orientation at Phi axis",
         )
         self.parser.add_argument(
             "-e",
             "--energy",
             metavar="en",
             type=float,
-            help="Sets the energy of the experiment (eV), wavelength can also be given (angstrom)",
+            help="sets the energy of the experiment (eV), wavelength can also be given (angstrom)",
         )
         self.parser.add_argument(
             "-sim",
             "--simulated",
             action="store_true",
-            help="Use simulated somotors",
+            help="use simulated somotors",
         )
         self.parser.add_argument(
             "-rl",
             "--real",
             action="store_true",
-            help="Use real motors",
+            help="use real motors in scans, movimentations",
         )
 
         args = self.parser.parse_args()
@@ -107,11 +107,11 @@ class ExperimentConfiguration(ExperimentBase):
 
     def set_energy(self, energy_to_set: float) -> float:
         """Sets the energy to the .Experiment file"""
-        offset = self.experiment_file_dict["PV_energy"] - energy_to_set
+        offset = self.experiment_file_dict["beamline_pvs"]["energy"]["value"] - energy_to_set
         self.experiment_file_dict["energy_offset"] = offset
         return offset
 
-    def set_u_and_ub_based_in_idir_ndir(self, idir: np.array, ndir: np.array) -> tuple:
+    def set_u_and_ub_based_in_idir_ndir(self, idir: list, ndir: list) -> tuple:
         """
         Calculate U and UB from idir and ndirm using a standard diffractometer angles.
         This will be used as the main "idir" and "ndir" but works better setting the
@@ -124,6 +124,8 @@ class ExperimentConfiguration(ExperimentBase):
         angs2 = [0, 5, 90, 0, 0, 10]
         U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
 
+        self.experiment_file_dict["IDir_print"] = idir
+        self.experiment_file_dict["NDir_print"] = ndir
         self.experiment_file_dict["U_mat"] = U.tolist()
         self.experiment_file_dict["UB_mat"] = UB.tolist()
         return U, UB
@@ -175,6 +177,10 @@ class ExperimentConfiguration(ExperimentBase):
         """Sets RDir"""
         self.experiment_file_dict["RDir"] = rdir
 
+    def set_sample_or(self, sample_or: str) -> None:
+        """Sets sample orientation"""
+        self.experiment_file_dict["Sampleor"] = sample_or
+
     def set_simulated_motors(self):
         """Use simulated motors for all DAF functions"""
         self.experiment_file_dict["simulated"] = True
@@ -183,32 +189,34 @@ class ExperimentConfiguration(ExperimentBase):
         """Use real motors for all DAF functions"""
         self.experiment_file_dict["simulated"] = False
 
-    def run_cmd(self, arguments: dict) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        if arguments["Lattice_parameters"]:
-            self.set_lattice_parameters(arguments["Lattice_parameters"])
-        if arguments["energy"]:
-            self.set_energy(arguments["energy"])
-        if arguments["RDir"]:
-            self.set_rdir(arguments["RDir"])
-        if arguments["IDir_print"] is not None and arguments["NDir_print"] is not None:
+        if self.parsed_args_dict["lattice_parameters"]:
+            self.set_lattice_parameters(self.parsed_args_dict["lattice_parameters"])
+        if self.parsed_args_dict["energy"]:
+            self.set_energy(self.parsed_args_dict["energy"])
+        if self.parsed_args_dict["rdir"]:
+            self.set_rdir(self.parsed_args_dict["rdir"])
+        if self.parsed_args_dict["idir_print"] is not None and self.parsed_args_dict["ndir_print"] is not None:
             self.set_u_and_ub_based_in_idir_ndir(
-                arguments["IDir_print"], arguments["NDir_print"]
+                self.parsed_args_dict["idir_print"], self.parsed_args_dict["ndir_print"]
             )
-        if arguments["Material"]:
-            self.set_material(arguments["Material"])
-        if arguments["simulated"]:
+        if self.parsed_args_dict["sample"]:
+            self.set_material(self.parsed_args_dict["sample"])
+        if self.parsed_args_dict["sample_orientation"]:
+            self.set_sample_or(self.parsed_args_dict["sample_orientation"])
+        if self.parsed_args_dict["simulated"]:
             self.set_simulated_motors()
-        if arguments["real"]:
+        if self.parsed_args_dict["real"]:
             self.set_real_motors()
-        du.write(self.experiment_file_dict)
+        self.write_to_experiment_file(self.experiment_file_dict)
 
 
 @daf_log
 def main() -> None:
     obj = ExperimentConfiguration()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":
