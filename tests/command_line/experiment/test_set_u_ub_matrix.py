@@ -75,8 +75,8 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_Umatrix_THEN_check_parsed_args(
         self,
     ):
-        arg = "-U"
-        full_arg = "Umatrix"
+        arg = "-u"
+        full_arg = "u_matrix"
         param = ["1", "0", "0", "0", "1", "0", "0", "0", "1"]
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == [float(i) for i in param]
@@ -84,8 +84,8 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_UBmatrix_THEN_check_parsed_args(
         self,
     ):
-        arg = "-UB"
-        full_arg = "UBmatrix"
+        arg = "-ub"
+        full_arg = "ub_matrix"
         param = ["1", "0", "0", "0", "1", "0", "0", "0", "1"]
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == [float(i) for i in param]
@@ -94,7 +94,7 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         arg = "-c2"
-        full_arg = "Calc2"
+        full_arg = "calc_from_2_reflections"
         param = ["1", "2"]
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == [int(i) for i in param]
@@ -103,7 +103,7 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         arg = "-c3"
-        full_arg = "Calc3"
+        full_arg = "calc_from_3_reflections"
         param = ["1", "2", "3"]
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == [int(i) for i in param]
@@ -139,7 +139,7 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         arg = "-s"
-        full_arg = "Show"
+        full_arg = "show"
         param = []
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == True
@@ -148,7 +148,7 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         arg = "-p"
-        full_arg = "Params"
+        full_arg = "params"
         param = []
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == True
@@ -160,8 +160,8 @@ class TestDAF(unittest.TestCase):
         full_arg = "reflection"
         param = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         for i in range(len(obj.parsed_args_dict[full_arg])):
             assert dict_now["reflections"][0][i] == obj.parsed_args_dict[full_arg][i]
 
@@ -172,8 +172,8 @@ class TestDAF(unittest.TestCase):
         full_arg = "reflection"
         param = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         for i in range(len(obj.parsed_args_dict[full_arg])):
             assert dict_now["reflections"][0][i] == obj.parsed_args_dict[full_arg][i]
 
@@ -184,20 +184,20 @@ class TestDAF(unittest.TestCase):
         full_arg = "reflection_now"
         param = ["0", "1", "0"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         for i in range(len(obj.parsed_args_dict[full_arg])):
             assert dict_now["reflections"][0][i] == obj.parsed_args_dict[full_arg][i]
 
     def test_GIVEN_cli_argument_WHEN_inputing_Umatrix_THEN_check_if_it_was_written_correctly(
         self,
     ):
-        arg = "-U"
-        full_arg = "Umatrix"
+        arg = "-u"
+        full_arg = "u_matrix"
         param = ["1", "0", "0", "0", "1", "0", "0", "0", "1"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         input_mat = np.array(obj.parsed_args_dict[full_arg]).reshape(3, 3)
         for i in range(len(input_mat)):
             for j in range(len(input_mat[i])):
@@ -206,12 +206,12 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_UBmatrix_THEN_check_if_it_was_written_correctly(
         self,
     ):
-        arg = "-UB"
-        full_arg = "UBmatrix"
+        arg = "-ub"
+        full_arg = "ub_matrix"
         param = ["1", "0", "0", "1", "1", "1", "0", "0", "1"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         input_mat = np.array(obj.parsed_args_dict[full_arg]).reshape(3, 3)
         for i in range(len(input_mat)):
             for j in range(len(input_mat[i])):
@@ -224,18 +224,18 @@ class TestDAF(unittest.TestCase):
         full_arg = "reflection"
         param = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-c2"
-        full_arg = "Calc2"
+        full_arg = "calc_from_2_reflections"
         param = ["1", "2"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
         for i in range(len(self.CALCULATED_U)):
             for j in range(len(self.CALCULATED_U[i])):
                 self.assertAlmostEqual(
@@ -255,25 +255,25 @@ class TestDAF(unittest.TestCase):
         param = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-c3"
-        full_arg = "Calc3"
+        full_arg = "calc_from_3_reflections"
         param = ["1", "2", "3"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_now = du.read()
+        obj.run_cmd()
+        dict_now = obj.io.read()
 
         for i in range(len(self.CALCULATED_U)):
             for j in range(len(self.CALCULATED_U[i])):
@@ -298,26 +298,26 @@ class TestDAF(unittest.TestCase):
         param = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-cr"
         full_arg = "clear_reflections"
         param = ["1", "2"]
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
 
-        dict_now = du.read()
+        dict_now = obj.io.read()
         assert len(dict_now["reflections"]) == 1
 
     def test_GIVEN_cli_argument_WHEN_inputing_clear_all_THEN_check_if_it_was_written_correctly(
@@ -328,26 +328,26 @@ class TestDAF(unittest.TestCase):
         param = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-r"
         full_arg = "reflection"
         param = ["0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
         obj = self.make_obj([arg, *param])
         obj.en = 1  #  Set to the right energy
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         arg = "-ca"
         full_arg = "clear_all"
         param = []
         obj = self.make_obj([arg, *param])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
 
-        dict_now = du.read()
+        dict_now = obj.io.read()
         assert len(dict_now["reflections"]) == 0
 
     def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_test_for_problems(
@@ -376,3 +376,68 @@ class TestDAF(unittest.TestCase):
         ]
         with patch.object(sys, "argv", testargs):
             main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_clear_reflections_THEN_test_for_problems(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-cr",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+
+    def test_GIVEN_cli_argument_WHEN_inputing_reflection_1_THEN_test_for_problems(
+        self,
+    ):
+        obj = self.make_obj([])
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_reflection_2_THEN_test_for_problems(
+        self,
+    ):
+        obj = self.make_obj([])
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_reflection_3_THEN_test_for_problems(
+        self,
+    ):
+        obj = self.make_obj([])
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_c2_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-c2", "1", "2"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_c3_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-r", "0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+        with patch.object(sys, "argv", testargs):
+            main()
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-c3", "1", "2", "3"]
+        with patch.object(sys, "argv", testargs):
+            main()
+

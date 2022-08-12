@@ -48,39 +48,39 @@ class SetUUB(ExperimentBase):
             metavar=("H", "K", "L"),
             type=float,
             nargs=3,
-            help="Store the current motor position with the given HKL",
+            help="store the current motor position with the given HKL",
         )
         self.parser.add_argument(
-            "-U",
-            "--Umatrix",
+            "-u",
+            "--u_matrix",
             metavar=("a11", "a12", "a13", "a21", "a22", "a23", "a31", "a32", "a33"),
             type=float,
             nargs=9,
-            help="Sets U matrix",
+            help="sets U matrix",
         )
         self.parser.add_argument(
-            "-UB",
-            "--UBmatrix",
+            "-ub",
+            "--ub_matrix",
             metavar=("a11", "a12", "a13", "a21", "a22", "a23", "a31", "a32", "a33"),
             type=float,
             nargs=9,
-            help="Sets UB matrix",
+            help="sets UB matrix",
         )
         self.parser.add_argument(
             "-c2",
-            "--Calc2",
+            "--calc_from_2_reflections",
             metavar=("R1", "R2"),
             type=int,
             nargs=2,
-            help="Calculate UB for 2 reflections, user must give the reflections that will be used",
+            help="calculate UB for 2 reflections, user must give the reflections that will be used",
         )
         self.parser.add_argument(
             "-c3",
-            "--Calc3",
+            "--calc_from_3_reflections",
             metavar=("R1", "R2", "R3"),
             type=int,
             nargs=3,
-            help="Calculate UB for 3 reflections, user must give the reflections that will be used",
+            help="calculate UB for 3 reflections, user must give the reflections that will be used",
         )
         self.parser.add_argument(
             "-f", "--fit", action="store_true", help="fit reflections"
@@ -91,25 +91,25 @@ class SetUUB(ExperimentBase):
             metavar="index",
             nargs="*",
             type=int,
-            help="Clear reflections by index",
+            help="clear reflections by index",
         )
         self.parser.add_argument(
             "-ca",
             "--clear-all",
             action="store_true",
-            help="Clear all stored reflections",
+            help="clear all stored reflections",
         )
         self.parser.add_argument(
-            "-l", "--list", action="store_true", help="List stored reflections"
+            "-l", "--list", action="store_true", help="list stored reflections"
         )
         self.parser.add_argument(
-            "-s", "--Show", action="store_true", help="Show U and UB"
+            "-s", "--show", action="store_true", help="show U and UB"
         )
         self.parser.add_argument(
             "-p",
-            "--Params",
+            "--params",
             action="store_true",
-            help="Lattice parameters if 3 reflection calculation had been done",
+            help="lattice parameters if 3 reflection calculation had been done",
         )
 
         args = self.parser.parse_args()
@@ -152,12 +152,12 @@ class SetUUB(ExperimentBase):
         h = reflection[0]
         k = reflection[1]
         l = reflection[2]
-        mu = self.experiment_file_dict["Mu"]
-        eta = self.experiment_file_dict["Eta"]
-        chi = self.experiment_file_dict["Chi"]
-        phi = self.experiment_file_dict["Phi"]
-        nu = self.experiment_file_dict["Nu"]
-        delta = self.experiment_file_dict["Del"]
+        mu = self.experiment_file_dict["motors"]["mu"]["value"]
+        eta = self.experiment_file_dict["motors"]["eta"]["value"]
+        chi = self.experiment_file_dict["motors"]["chi"]["value"]
+        phi = self.experiment_file_dict["motors"]["phi"]["value"]
+        nu = self.experiment_file_dict["motors"]["nu"]["value"]
+        delta = self.experiment_file_dict["motors"]["del"]["value"]
         ref_now = [h, k, l, mu, eta, chi, phi, nu, delta, self.en]
         ref.append(ref_now)
         self.experiment_file_dict["reflections"] = ref
@@ -370,47 +370,47 @@ class SetUUB(ExperimentBase):
         # self.experiment_file_dict['UB_mat'] = UB.tolist()
         self.write_flag = True
 
-    def run_cmd(self, arguments: dict) -> None:
+    def run_cmd(self) -> None:
         """Method to be defined by each subclass, this is the method
         that should be run when calling the cli interface"""
-        if arguments["Umatrix"]:
-            self.set_u_matrix(arguments["Umatrix"])
-        if arguments["UBmatrix"]:
-            self.set_ub_matrix(arguments["UBmatrix"])
-        if arguments["reflection"] is not None:
-            self.store_reflections(arguments["reflection"])
-        if arguments["reflection_now"] is not None:
-            self.store_current_reflection(arguments["reflection_now"])
-        if arguments["clear_reflections"] is not None:
-            self.clear_stored_reflection(arguments["clear_reflections"])
-        if arguments["clear_all"]:
+        if self.parsed_args_dict["u_matrix"]:
+            self.set_u_matrix(self.parsed_args_dict["u_matrix"])
+        if self.parsed_args_dict["ub_matrix"]:
+            self.set_ub_matrix(self.parsed_args_dict["ub_matrix"])
+        if self.parsed_args_dict["reflection"] is not None:
+            self.store_reflections(self.parsed_args_dict["reflection"])
+        if self.parsed_args_dict["reflection_now"] is not None:
+            self.store_current_reflection(self.parsed_args_dict["reflection_now"])
+        if self.parsed_args_dict["clear_reflections"] is not None:
+            self.clear_stored_reflection(self.parsed_args_dict["clear_reflections"])
+        if self.parsed_args_dict["clear_all"]:
             self.clear_all_stored_reflections()
-        if arguments["Calc2"] is not None:
+        if self.parsed_args_dict["calc_from_2_reflections"] is not None:
             self.calculate_u_mat_from_2_reflections(
-                arguments["Calc2"][0], arguments["Calc2"][1]
+                self.parsed_args_dict["calc_from_2_reflections"][0], self.parsed_args_dict["calc_from_2_reflections"][1]
             )
-        if arguments["Calc3"] is not None:
+        if self.parsed_args_dict["calc_from_3_reflections"] is not None:
             self.calculate_u_mat_from_3_reflections(
-                arguments["Calc3"][0], arguments["Calc3"][1], arguments["Calc3"][2]
+                self.parsed_args_dict["calc_from_3_reflections"][0], self.parsed_args_dict["calc_from_3_reflections"][1], self.parsed_args_dict["calc_from_3_reflections"][2]
             )
-        if arguments["fit"]:
+        if self.parsed_args_dict["fit"]:
             self.fit_u_matrix()
-        if arguments["Show"]:
+        if self.parsed_args_dict["show"]:
             u_to_print, ub_to_print = self.build_u_and_ub_print()
             print("{} \n \n {} \n".format(u_to_print, ub_to_print))
-        if arguments["list"]:
+        if self.parsed_args_dict["list"]:
             fomatted_table = self.list_stored_reflections()
             print("{} \n".format(fomatted_table))
-        if arguments["Params"]:
+        if self.parsed_args_dict["params"]:
             self.print_calculated_lattice_parameters()
         if self.write_flag:
-            du.write(self.experiment_file_dict)
+            self.write_to_experiment_file(self.experiment_file_dict)
 
 
 @daf_log
 def main() -> None:
     obj = SetUUB()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":
