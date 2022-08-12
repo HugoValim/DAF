@@ -216,7 +216,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.roundfit = 5
         self.centshow = "{:^" + str(16 - 2) + "}"
 
-    def show(self, sh, ident=3, space=22):
+    def show(self, sh, ident=3, space=20):
 
         self.centshow = "{:^" + str(space - 2) + "}"
 

@@ -5,7 +5,7 @@ import pytest
 import unittest
 from unittest.mock import patch
 
-from daf.command_line.query.status import Status
+from daf.command_line.query.status import Status, main
 import daf.utils.generate_daf_default as gdd
 from daf.core.main import DAF
 
@@ -59,3 +59,49 @@ class TestDAF(unittest.TestCase):
     def test_experiment_obj(self):
         obj = self.make_obj(["--all"])
         assert isinstance(obj.exp, DAF)
+
+    def test_GIVEN_cli_argument_WHEN_inputing_mode_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-m"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_experiment_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-e"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_sample_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-s"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_umatrix_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-u"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_bounds_THEN_test_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-b"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_bounds_THEN_all_for_problems(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a"]
+        with patch.object(sys, "argv", testargs):
+            main()
+
+
+
+   

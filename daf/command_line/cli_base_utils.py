@@ -180,11 +180,13 @@ class CLIBase:
         return exp_dict
 
     def write_motors_bounds_to_experiment_file(self, dict_to_write: dict) -> None:
+        """Write motor bounds to the experiment file"""
         for key in self.experiment_file_dict["motors"].keys():
             if key in dict_to_write.keys() and dict_to_write[key] is not None:
                 self.experiment_file_dict["motors"][key]["bounds"] = dict_to_write[key]
 
     def write_motors_to_experiment_file(self, dict_to_write: dict) -> None:
+        """Write motor set point to the experiment file"""
         for key in self.experiment_file_dict["motors"].keys():
             if key in dict_to_write.keys() and dict_to_write[key] is not None:
                 self.experiment_file_dict["motors"][key]["value"] = float(
@@ -192,6 +194,7 @@ class CLIBase:
                 )
 
     def write_configuration_to_experiment_file(self, dict_to_write: dict, is_str: bool) -> None:
+        """Write configurations not related to motors to the experiment file"""
         for j, k in dict_to_write.items():
             if j in self.experiment_file_dict and k is not None:
                 if isinstance(k, np.ndarray):
@@ -205,7 +208,7 @@ class CLIBase:
 
     def write_to_experiment_file(
         self,
-        dict_to_write,
+        dict_to_write: dict,
         is_str: bool = False,
         is_motor_set_point: bool = False,
         is_motor_bounds: bool = False,
