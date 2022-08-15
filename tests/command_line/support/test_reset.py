@@ -45,14 +45,15 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_check_if_it_was_written_correctly(
         self,
     ):
+        obj = self.make_obj([])
+        obj.experiment_file_dict["Mode"] = "2023"
+        obj.write_to_experiment_file({})
         dict_now = obj.io.read()
-        dict_now["Mode"] = "2023"
-        du.write(dict_now)
+        assert obj.experiment_file_dict["Mode"] == "2023"
         arg = "-a"
         full_arg = "all"
         param = []
-        obj = self.make_obj([arg, *param])
-        assert obj.experiment_file_dict["Mode"] == "2023"
+        obj = self.make_obj([arg])
         obj.run_cmd()
         dict_now = obj.io.read()
         assert dict_now["Mode"] == "2052"
@@ -60,9 +61,13 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(
         self,
     ):
-        testargs = [
-            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-            "-a",
-        ]
+        obj = self.make_obj([])
+        obj.experiment_file_dict["Mode"] = "2023"
+        obj.write_to_experiment_file({})
+        dict_now = obj.io.read()
+        assert dict_now["Mode"] == "2023"
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a"]
         with patch.object(sys, "argv", testargs):
             main()
+        dict_now = obj.io.read()
+        assert dict_now["Mode"] == "2052"

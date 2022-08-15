@@ -108,14 +108,14 @@ class Where(QueryBase):
         )
         print("")
 
-    def run_cmd(self, arguments: dict) -> None:
+    def run_cmd(self) -> None:
         self.print_position()
 
 
 @daf_log
 def main() -> None:
     obj = Where()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

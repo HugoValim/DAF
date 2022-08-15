@@ -9,6 +9,7 @@ import subprocess
 
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
+from daf.utils import dafutilities as du
 import daf.utils.daf_paths as dp
 from daf.utils.log import daf_log
 
@@ -58,9 +59,9 @@ class Init(SupportBase):
         if simulated:
             data_sim = gdd.default
             data_sim["simulated"] = True
-            gdd.generate_file(data=data_sim, file_name=".Experiment")
+            gdd.generate_file(data=data_sim, file_name=du.DEFAULT)
         else:
-            gdd.generate_file(file_name=".Experiment")
+            gdd.generate_file(file_name=du.DEFAULT)
 
     def build_user_config(self) -> None:
         """Build the scan-utils configuration"""
@@ -90,16 +91,16 @@ class Init(SupportBase):
         """If the --all option is passed open all DAF's GUIs as well"""
         subprocess.Popen("daf.gui; daf.live", shell=True)
 
-    def run_cmd(self, arguments: dict) -> None:
-        self.build_current_file(arguments["simulated"])
-        if arguments["all"]:
+    def run_cmd(self) -> None:
+        self.build_current_file(self.parsed_args_dict["simulated"])
+        if self.parsed_args_dict["all"]:
             self.open_daf_guis()
 
 
 @daf_log
 def main() -> None:
     obj = Init()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

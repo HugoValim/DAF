@@ -50,10 +50,23 @@ class TestDAF(unittest.TestCase):
         os.remove(".Experiment")
         assert not os.path.isfile(".Experiment")
         obj = self.make_obj([])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         assert os.path.isfile(".Experiment")
 
-    def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_test_for_problems(
+    def test_GIVEN_cli_argument_WHEN_no_input_THEN_check_if_the_file_was_created_right(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init"
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+        assert os.path.isfile(du.DEFAULT)
+        io = du.DAFIO()
+        dict_now = io.read()
+        assert dict_now["simulated"] == False
+
+    def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_check_if_the_file_was_created_right(
         self,
     ):
         testargs = [
@@ -62,3 +75,7 @@ class TestDAF(unittest.TestCase):
         ]
         with patch.object(sys, "argv", testargs):
             main()
+        assert os.path.isfile(du.DEFAULT)
+        io = du.DAFIO()
+        dict_now = io.read()
+        assert dict_now["simulated"] == True

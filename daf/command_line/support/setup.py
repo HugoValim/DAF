@@ -98,7 +98,7 @@ class Setup(SupportBase):
         """Change to a new DAF setup"""
         full_file_path = os.path.join(dp.DAF_CONFIGS, setup_name)
         os.system("cat {} > {}".format(full_file_path, du.DEFAULT))
-        self.experiment_file_dict = du.read()
+        self.experiment_file_dict = self.io.read()
         self.experiment_file_dict["setup"] = setup_name
         self.write_flag = True
 
@@ -140,7 +140,7 @@ class Setup(SupportBase):
         setup_now = self.get_current_setup()
         if setup_name != "." and setup_name != setup_now:
             path_to_the_setup = os.path.join(dp.DAF_CONFIGS, setup_name)
-            dict_args = du.read(filepath=path_to_the_setup)
+            dict_args = self.io.read(filepath=path_to_the_setup)
             dict_args["setup_desc"] = description
             du.write(dict_args, filepath=path_to_the_setup)
         else:
@@ -155,38 +155,38 @@ class Setup(SupportBase):
             print(desc)
         else:
             path_to_the_setup = os.path.join(dp.DAF_CONFIGS, setup_name)
-            dict_args = du.read(filepath=path_to_the_setup)
+            dict_args = self.io.read(filepath=path_to_the_setup)
             desc = dict_args["setup_desc"]
             print(desc)
 
-    def run_cmd(self, arguments: dict) -> None:
-        if arguments["new"]:
-            self.create_new_setup(arguments["new"])
-        if arguments["checkout"]:
-            self.checkout_setup(arguments["checkout"])
-        if arguments["save"]:
+    def run_cmd(self) -> None:
+        if self.parsed_args_dict["new"]:
+            self.create_new_setup(self.parsed_args_dict["new"])
+        if self.parsed_args_dict["checkout"]:
+            self.checkout_setup(self.parsed_args_dict["checkout"])
+        if self.parsed_args_dict["save"]:
             self.save_setup()
-        if arguments["save_as"]:
-            self.save_as_setup(arguments["save_as"])
-        if arguments["description"]:
+        if self.parsed_args_dict["save_as"]:
+            self.save_as_setup(self.parsed_args_dict["save_as"])
+        if self.parsed_args_dict["description"]:
             self.update_setup_description(
-                arguments["description"][0], arguments["description"][1]
+                self.parsed_args_dict["description"][0], self.parsed_args_dict["description"][1]
             )
-        if arguments["remove"]:
-            for setup in arguments["remove"]:
+        if self.parsed_args_dict["remove"]:
+            for setup in self.parsed_args_dict["remove"]:
                 self.remove_setup(setup)
-        if arguments["list"]:
+        if self.parsed_args_dict["list"]:
             self.list_all_setups()
-        if arguments["info"]:
-            self.print_setup_description(arguments["info"])
+        if self.parsed_args_dict["info"]:
+            self.print_setup_description(self.parsed_args_dict["info"])
         if self.write_flag:
-            du.write(self.experiment_file_dict)
+            self.write_to_experiment_file(self.experiment_file_dict)
 
 
 @daf_log
 def main() -> None:
     obj = Setup()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

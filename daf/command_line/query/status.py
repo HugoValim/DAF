@@ -175,31 +175,31 @@ class Status(QueryBase):
         self.show_u_and_ub()
         self.show_bounds()
 
-    def run_cmd(self, arguments):
+    def run_cmd(self):
         """Method to print the user required information"""
-        if arguments.mode:
+        if self.parsed_args_dict["mode"]:
             self.show_mode()
 
-        if arguments.experiment:
+        if self.parsed_args_dict["experiment"]:
             self.show_expt()
 
-        if arguments.sample:
+        if self.parsed_args_dict["sample"]:
             self.show_sample()
 
-        if arguments.umatrix:
+        if self.parsed_args_dict["umatrix"]:
             self.show_u_and_ub()
 
-        if arguments.bounds:
+        if self.parsed_args_dict["bounds"]:
             self.show_bounds()
 
-        if arguments.all:
+        if self.parsed_args_dict["all"]:
             self.show_all()
 
 
 @daf_log
 def main() -> None:
     obj = Status()
-    obj.run_cmd(obj.parsed_args)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

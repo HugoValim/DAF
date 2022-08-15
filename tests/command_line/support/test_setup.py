@@ -110,7 +110,7 @@ class TestDAF(unittest.TestCase):
         param = ["my_awesome_setup"]
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == param[0]
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         full_file_path = os.path.join(dp.DAF_CONFIGS, param[0])
         assert os.path.isfile(full_file_path)
 
@@ -123,8 +123,8 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == param[0]
         obj.create_new_setup(param[0])
-        obj.run_cmd(obj.parsed_args_dict)
-        dict_args = du.read()
+        obj.run_cmd()
+        dict_args = obj.io.read()
         os.system("daf.expt -sim")
         assert dict_args["setup"] == param[0]
 
@@ -138,9 +138,9 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict[full_arg] == True
         obj.checkout_setup("default")
         obj.update_setup_description(".", "test desc")
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         path_to_the_setup = os.path.join(dp.DAF_CONFIGS, "default")
-        dict_args = du.read(filepath=path_to_the_setup)
+        dict_args = obj.io.read(filepath=path_to_the_setup)
         assert dict_args["setup_desc"] == "test desc"
 
     def test_GIVEN_cli_argument_WHEN_inputing_save_as_THEN_check_if_the_setup_was_saved(
@@ -152,9 +152,9 @@ class TestDAF(unittest.TestCase):
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == param[0]
         obj.update_setup_description(".", "test desc 2")
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         path_to_the_setup = os.path.join(dp.DAF_CONFIGS, param[0])
-        dict_args = du.read(filepath=path_to_the_setup)
+        dict_args = obj.io.read(filepath=path_to_the_setup)
         assert dict_args["setup_desc"] == "test desc 2"
 
     def test_GIVEN_cli_argument_WHEN_inputing_remove_THEN_check_if_the_setup_was_saved(
@@ -167,7 +167,7 @@ class TestDAF(unittest.TestCase):
         assert obj.parsed_args_dict[full_arg] == param
         obj.create_new_setup(param[0])
         obj.create_new_setup(param[1])
-        obj.run_cmd(obj.parsed_args_dict)
+        obj.run_cmd()
         full_file_path_1 = os.path.join(dp.DAF_CONFIGS, param[0])
         full_file_path_2 = os.path.join(dp.DAF_CONFIGS, param[1])
         assert not os.path.isfile(full_file_path_1)
@@ -205,3 +205,15 @@ class TestDAF(unittest.TestCase):
         ]
         with patch.object(sys, "argv", testargs):
             main()
+
+    def test_GIVEN_cli_argument_WHEN_inputing_new_THEN_test_for_problems(
+        self,
+    ):
+        obj = self.make_obj([])
+        setup_name = "pytest_setup"
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-n", setup_name]
+        with patch.object(sys, "argv", testargs):
+            main()
+        path_to_file = os.path.join(dp.DAF_CONFIGS, setup_name)
+        assert os.path.isfile(path_to_file)
+
