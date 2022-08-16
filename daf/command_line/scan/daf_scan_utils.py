@@ -35,7 +35,7 @@ class ScanBase(CLIBase):
         """Function to handle ctrl + c and avoid breaking daf's .Experiment file"""
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         self.experiment_file_dict["scan_running"] = False
-        du.write(self.experiment_file_dict)
+        self.write_to_experiment_file({})
         print("\n")
         exit(1)
 
@@ -147,26 +147,15 @@ class ScanBase(CLIBase):
             action="store_true",
         )
 
-    @staticmethod
-    def create_motor_map() -> dict:
+    def create_motor_map(self) -> dict:
         """Create a map for the motors based in the PV prefix"""
-        if du.PV_PREFIX == "EMA:B:PB18":
-            data = {
-                "mu": "huber_mu",
-                "eta": "huber_eta",
-                "chi": "huber_chi",
-                "phi": "huber_phi",
-                "nu": "huber_nu",
-                "del": "huber_del",
-            }
-        else:
-            data = {
-                "mu": "sol_m3",
-                "eta": "sol_m5",
-                "chi": "sol_m2",
-                "phi": "sol_m1",
-                "nu": "sol_m4",
-                "del": "sol_m6",
+        data = {
+                "mu": self.experiment_file_dict["motors"]["mu"]["scan_utils_mnemonic"],
+                "eta": self.experiment_file_dict["motors"]["eta"]["scan_utils_mnemonic"],
+                "chi": self.experiment_file_dict["motors"]["chi"]["scan_utils_mnemonic"],
+                "phi": self.experiment_file_dict["motors"]["phi"]["scan_utils_mnemonic"],
+                "nu": self.experiment_file_dict["motors"]["nu"]["scan_utils_mnemonic"],
+                "del": self.experiment_file_dict["motors"]["del"]["scan_utils_mnemonic"],
             }
 
         return data
@@ -214,12 +203,12 @@ class ScanBase(CLIBase):
 
     def get_current_motor_pos(self) -> dict:
         """Get the current motor pos and return a dict"""
-        mu_now = self.experiment_file_dict["Mu"]
-        eta_now = self.experiment_file_dict["Eta"]
-        chi_now = self.experiment_file_dict["Chi"]
-        phi_now = self.experiment_file_dict["Phi"]
-        nu_now = self.experiment_file_dict["Nu"]
-        del_now = self.experiment_file_dict["Del"]
+        mu_now = self.experiment_file_dict["motors"]["mu"]["value"]
+        eta_now = self.experiment_file_dict["motors"]["eta"]["value"]
+        chi_now = self.experiment_file_dict["motors"]["chi"]["value"]
+        phi_now = self.experiment_file_dict["motors"]["phi"]["value"]
+        nu_now = self.experiment_file_dict["motors"]["nu"]["value"]
+        del_now = self.experiment_file_dict["motors"]["del"]["value"]
         current_motor_pos = {
             "mu": mu_now,
             "eta": eta_now,

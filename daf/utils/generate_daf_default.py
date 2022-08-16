@@ -40,36 +40,42 @@ default = {
             "mnemonic": "Mu",
             "value": 0,
             "bounds": [-20.0, 160.0],
+            "scan_utils_mnemonic": "sol_m1"
         },
         "eta": {
             "pv": "SOL:S:m2",
             "mnemonic": "Eta",
             "value": 0,
             "bounds": [-20.0, 160.0],
+            "scan_utils_mnemonic": "sol_m2"
         },
         "chi": {
             "pv": "SOL:S:m3",
             "mnemonic": "Chi",
             "value": 0,
             "bounds": [-5.0, 95.0],
+            "scan_utils_mnemonic": "sol_m3"
         },
         "phi": {
             "pv": "SOL:S:m4",
             "mnemonic": "Phi",
             "value": 0,
             "bounds": [-400.0, 400.0],
+            "scan_utils_mnemonic": "sol_m4"
         },
         "nu": {
             "pv": "SOL:S:m5",
             "mnemonic": "Nu",
             "value": 0,
             "bounds": [-20.0, 160.0],
+            "scan_utils_mnemonic": "sol_m5"
         },
         "del": {
             "pv": "SOL:S:m6",
             "mnemonic": "Del",
             "value": 0,
             "bounds": [-20.0, 160.0],
+            "scan_utils_mnemonic": "sol_m6"
         },
     },
     # "sample_z_pv": {"pv": "SOL:S:m7", "mnemonic": "sz"},  # sz (Sample z - Sample Stage 1 and 2)

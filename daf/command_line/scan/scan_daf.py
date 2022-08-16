@@ -45,34 +45,35 @@ class DAFScan(ScanOperationCLI):
     def __init__(self, args, close_window=False):
         super().__init__(**args)
         self.close_window = close_window
+        self.io = du.DAFIO()
 
     def on_operation_begin(self):
         """Routine to be done before this scan operation."""
         counter_dict = dict(py4syn.counterDB.items())
         # print(counter_dict)
         counter_list = [i for i in counter_dict.keys()]
-        dict_args = du.read()
+        dict_args = self.io.read()
         dict_args["scan_running"] = True
         dict_args["scan_counters"] = counter_list
         dict_args["current_scan_file"] = self.unique_filename
         dict_args["main_scan_motor"] = self.xlabel
-        du.write(dict_args)
+        self.io.write(dict_args)
 
     def write_hkl(self):
         """Method to write HKL coordinates for each point as motor in the final hdf5 file"""
-        dict_args = du.read()
+        dict_args = self.io.read()
         mode = [int(i) for i in dict_args["Mode"]]
         U = np.array(dict_args["U_mat"])
         idir = dict_args["IDir_print"]
         ndir = dict_args["NDir_print"]
         rdir = dict_args["RDir"]
-        mu_bound = dict_args["bound_Mu"]
-        eta_bound = dict_args["bound_Eta"]
-        chi_bound = dict_args["bound_Chi"]
-        phi_bound = dict_args["bound_Phi"]
-        nu_bound = dict_args["bound_Nu"]
-        del_bound = dict_args["bound_Del"]
-        self.en = dict_args["PV_energy"] - dict_args["energy_offset"]
+        mu_bound = dict_args["motors"]["mu"]["bounds"]
+        eta_bound = dict_args["motors"]["eta"]["bounds"]
+        chi_bound = dict_args["motors"]["chi"]["bounds"]
+        phi_bound = dict_args["motors"]["phi"]["bounds"]
+        nu_bound = dict_args["motors"]["nu"]["bounds"]
+        del_bound = dict_args["motors"]["del"]["bounds"]
+        self.en = dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"]
 
         exp = DAF(*mode)
         if dict_args["Material"] in dict_args["user_samples"].keys():
@@ -107,12 +108,12 @@ class DAFScan(ScanOperationCLI):
         )
 
         exp.set_constraints(
-            Mu=dict_args["cons_Mu"],
-            Eta=dict_args["cons_Eta"],
-            Chi=dict_args["cons_Chi"],
-            Phi=dict_args["cons_Phi"],
-            Nu=dict_args["cons_Nu"],
-            Del=dict_args["cons_Del"],
+            Mu=dict_args["cons_mu"],
+            Eta=dict_args["cons_eta"],
+            Chi=dict_args["cons_chi"],
+            Phi=dict_args["cons_phi"],
+            Nu=dict_args["cons_nu"],
+            Del=dict_args["cons_del"],
             alpha=dict_args["cons_alpha"],
             beta=dict_args["cons_beta"],
             psi=dict_args["cons_psi"],
@@ -124,12 +125,12 @@ class DAFScan(ScanOperationCLI):
         exp.set_U(U)
         exp.build_xrd_experiment()
         exp.build_bounds()
-        mu = dict_args["Mu"]
-        eta = dict_args["Eta"]
-        chi = dict_args["Chi"]
-        phi = dict_args["Phi"]
-        nu = dict_args["Nu"]
-        delta = dict_args["Del"]
+        mu = dict_args["motors"]["mu"]["value"]
+        eta = dict_args["motors"]["eta"]["value"]
+        chi = dict_args["motors"]["chi"]["value"]
+        phi = dict_args["motors"]["phi"]["value"]
+        nu = dict_args["motors"]["nu"]["value"]
+        delta = dict_args["motors"]["del"]["value"]
         exp_points = {
             "mu": mu,
             "eta": eta,
@@ -138,23 +139,13 @@ class DAFScan(ScanOperationCLI):
             "nu": nu,
             "del": delta,
         }
-        if du.PV_PREFIX == "EMA:B:PB18":
-            data = {
-                "huber_mu": "mu",
-                "huber_eta": "eta",
-                "huber_chi": "chi",
-                "huber_phi": "phi",
-                "huber_nu": "nu",
-                "huber_del": "del",
-            }
-        else:
-            data = {
-                "sol_m3": "mu",
-                "sol_m5": "eta",
-                "sol_m2": "chi",
-                "sol_m1": "phi",
-                "sol_m4": "nu",
-                "sol_m6": "del",
+        data = {
+                dict_args["motors"]["mu"]["scan_utils_mnemonic"]: "mu",
+                dict_args["motors"]["eta"]["scan_utils_mnemonic"]: "eta",
+                dict_args["motors"]["chi"]["scan_utils_mnemonic"]: "chi",
+                dict_args["motors"]["phi"]["scan_utils_mnemonic"]: "phi",
+                dict_args["motors"]["nu"]["scan_utils_mnemonic"]: "nu",
+                dict_args["motors"]["del"]["scan_utils_mnemonic"]: "del",
             }
         dict_ = {}
         for motor in self.motor:
@@ -227,10 +218,10 @@ class DAFScan(ScanOperationCLI):
                 dict_[counter_name]["FWHM_at"] = float(scanModule.FWHM_AT)
                 dict_[counter_name]["COM"] = float(scanModule.COM)
 
-                dict_args = du.read()
+                dict_args = self.io.read()
                 dict_args["scan_stats"] = dict_
                 dict_args["scan_running"] = False
-                du.write(dict_args)
+                self.io.write(dict_args)
 
     def add_scan_attrs(self):
         with h5py.File(self.unique_filename, "a") as h5w:
@@ -239,7 +230,7 @@ class DAFScan(ScanOperationCLI):
 
             _instrument_path = "Scan/" + scan_idx + "/instrument/"
 
-            dict_args = du.read()
+            dict_args = self.io.read()
             default_counter = dict_args["main_scan_counter"]
 
             h5w["Scan/" + scan_idx + "/instrument/"].attrs["main_motor"] = self.motor[0]
