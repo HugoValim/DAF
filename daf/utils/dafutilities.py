@@ -26,10 +26,12 @@ class DAFIO:
             self.BL_PVS = {
                 key: dict_now["beamline_pvs"][key]["pv"]
                 for key, value in dict_now["beamline_pvs"].items()
-            }
-            self.MOTORS = {
-                i: epics.Motor(self.MOTOR_PVS[i]) for i in self.MOTOR_PVS.keys()
-            }
+            }   
+            self.motor_pv_list = [pv for pv in self.MOTOR_PVS.values()]
+            self.rbv_motor_pv_list = [pv + ".RBV" for pv in self.MOTOR_PVS.values()]
+            self.llm_motor_pv_list = [pv + ".LLM" for pv in self.MOTOR_PVS.values()]
+            self.hlm_motor_pv_list = [pv + ".HLM" for pv in self.MOTOR_PVS.values()]
+            self.bl_pv_list = [pv for pv in self.BL_PVS.values()]
 
     @staticmethod
     def only_read(filepath=DEFAULT):
@@ -39,39 +41,41 @@ class DAFIO:
             return data
 
     def wait(self):
-        for key in self.MOTORS:
-            while not self.MOTORS[key].done_moving:
+        for motor in self.motor_pv_list:
+            while epics.caget(motor + ".MOVN"):
                 pass
 
     def epics_get(self, dict_):
-        for key in self.MOTORS:
-            dict_["motors"][key]["value"] = self.MOTORS[key].readback
-            dict_["motors"][key]["bounds"] = [
-                self.MOTORS[key].low_limit,
-                self.MOTORS[key].high_limit,
-            ]
+        
+        updated_rbv_motor_pv_list = epics.caget_many(self.rbv_motor_pv_list)
+        updated_llm_motor_pv_list = epics.caget_many(self.llm_motor_pv_list)
+        updated_hlm_motor_pv_list = epics.caget_many(self.hlm_motor_pv_list)
+        updated_bl_pv_list = epics.caget_many(self.bl_pv_list)
 
+        motor_counter = 0
+        for key in self.MOTOR_PVS.keys():
+            dict_["motors"][key]["value"] = updated_rbv_motor_pv_list[motor_counter]
+            dict_["motors"][key]["bounds"] = [
+                updated_llm_motor_pv_list[motor_counter],
+                updated_hlm_motor_pv_list[motor_counter],
+            ]
+            motor_counter += 1
+
+        bl_counter = 0
         for key, value in self.BL_PVS.items():
-            dict_["beamline_pvs"][key]["value"] = (
-                float(epics.caget(self.BL_PVS[key])) * 1000
-            )
+            dict_["beamline_pvs"][key]["value"] = updated_bl_pv_list[bl_counter] * 1000
+            bl_counter += 1
 
         return dict_
 
     def epics_put(self, dict_):
-        # Make sure we stop all motors.
-        atexit.register(self.stop)
-        for key in self.MOTORS:
-            self.MOTORS[key].low_limit = dict_["motors"][key]["bounds"][0]
-            self.MOTORS[key].high_limit = dict_["motors"][key]["bounds"][1]
-            self.MOTORS[key].move(
-                dict_["motors"][key]["value"], ignore_limits=True, confirm_move=True
-            )
+        set_motor_pv_list = [dict_["motors"][key]["value"] for key in dict_["motors"].keys()]
+        epics.caput_many(self.motor_pv_list, set_motor_pv_list)
+        set_llm_motor_pv_list = [dict_["motors"][key]["bounds"][0] for key in dict_["motors"].keys()]
+        epics.caput_many(self.llm_motor_pv_list, set_llm_motor_pv_list)
+        set_hlm_motor_pv_list = [dict_["motors"][key]["bounds"][1] for key in dict_["motors"].keys()]
+        epics.caput_many(self.hlm_motor_pv_list, set_hlm_motor_pv_list)
         self.wait()
-
-    def stop(self):
-        for key in self.MOTORS:
-            self.MOTORS[key].stop()
 
     def read(self, filepath=DEFAULT):
         with open(filepath) as file:

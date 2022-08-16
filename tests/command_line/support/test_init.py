@@ -56,9 +56,7 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_no_input_THEN_check_if_the_file_was_created_right(
         self,
     ):
-        testargs = [
-            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init"
-        ]
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
         with patch.object(sys, "argv", testargs):
             main()
         assert os.path.isfile(du.DEFAULT)

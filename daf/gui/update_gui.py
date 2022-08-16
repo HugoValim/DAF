@@ -65,7 +65,8 @@ class Worker(QObject):
             idir=idir,
             ndir=ndir,
             rdir=rdir,
-            en=dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"],
+            en=dict_args["beamline_pvs"]["energy"]["value"]
+            - dict_args["energy_offset"],
             sampleor=dict_args["Sampleor"],
         )
         if dict_args["Material"] in dict_args["user_samples"].keys():

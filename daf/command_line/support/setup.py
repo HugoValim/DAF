@@ -170,7 +170,8 @@ class Setup(SupportBase):
             self.save_as_setup(self.parsed_args_dict["save_as"])
         if self.parsed_args_dict["description"]:
             self.update_setup_description(
-                self.parsed_args_dict["description"][0], self.parsed_args_dict["description"][1]
+                self.parsed_args_dict["description"][0],
+                self.parsed_args_dict["description"][1],
             )
         if self.parsed_args_dict["remove"]:
             for setup in self.parsed_args_dict["remove"]:

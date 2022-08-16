@@ -64,7 +64,9 @@ class NewSample(SupportBase):
         )
 
     def run_cmd(self) -> None:
-        self.create_and_initialize_new_sample_folder(self.parsed_args_dict["folder_name"])
+        self.create_and_initialize_new_sample_folder(
+            self.parsed_args_dict["folder_name"]
+        )
         if self.parsed_args_dict["kill"]:
             self.kill_other_guis()
 

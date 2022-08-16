@@ -16,6 +16,7 @@ def daf_log(func):
         with open(LOG_FILE_NAME, "a") as file_object:
             file_object.write(log_message + "\n")
         return ret
+
     return wrapper
 
 

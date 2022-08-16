@@ -52,7 +52,8 @@ class RMapWidget(FigureCanvasQTAgg):
             idir=idir,
             ndir=ndir,
             rdir=rdir,
-            en=dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"],
+            en=dict_args["beamline_pvs"]["energy"]["value"]
+            - dict_args["energy_offset"],
             sampleor=dict_args["Sampleor"],
         )
         exp.set_circle_constrain(

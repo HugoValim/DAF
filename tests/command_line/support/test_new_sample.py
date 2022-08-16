@@ -41,7 +41,10 @@ class TestDAF(unittest.TestCase):
         path_to_created_setup = "/home/hugo/pytest_folder"
         if os.path.isdir(path_to_created_setup):
             shutil.rmtree(path_to_created_setup)
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", path_to_created_setup]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            path_to_created_setup,
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         assert os.path.isdir(path_to_created_setup)

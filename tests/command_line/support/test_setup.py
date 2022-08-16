@@ -211,9 +211,12 @@ class TestDAF(unittest.TestCase):
     ):
         obj = self.make_obj([])
         setup_name = "pytest_setup"
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-n", setup_name]
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "-n",
+            setup_name,
+        ]
         with patch.object(sys, "argv", testargs):
             main()
         path_to_file = os.path.join(dp.DAF_CONFIGS, setup_name)
         assert os.path.isfile(path_to_file)
-

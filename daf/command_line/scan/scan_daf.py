@@ -73,7 +73,9 @@ class DAFScan(ScanOperationCLI):
         phi_bound = dict_args["motors"]["phi"]["bounds"]
         nu_bound = dict_args["motors"]["nu"]["bounds"]
         del_bound = dict_args["motors"]["del"]["bounds"]
-        self.en = dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"]
+        self.en = (
+            dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"]
+        )
 
         exp = DAF(*mode)
         if dict_args["Material"] in dict_args["user_samples"].keys():
@@ -140,13 +142,13 @@ class DAFScan(ScanOperationCLI):
             "del": delta,
         }
         data = {
-                dict_args["motors"]["mu"]["scan_utils_mnemonic"]: "mu",
-                dict_args["motors"]["eta"]["scan_utils_mnemonic"]: "eta",
-                dict_args["motors"]["chi"]["scan_utils_mnemonic"]: "chi",
-                dict_args["motors"]["phi"]["scan_utils_mnemonic"]: "phi",
-                dict_args["motors"]["nu"]["scan_utils_mnemonic"]: "nu",
-                dict_args["motors"]["del"]["scan_utils_mnemonic"]: "del",
-            }
+            dict_args["motors"]["mu"]["scan_utils_mnemonic"]: "mu",
+            dict_args["motors"]["eta"]["scan_utils_mnemonic"]: "eta",
+            dict_args["motors"]["chi"]["scan_utils_mnemonic"]: "chi",
+            dict_args["motors"]["phi"]["scan_utils_mnemonic"]: "phi",
+            dict_args["motors"]["nu"]["scan_utils_mnemonic"]: "nu",
+            dict_args["motors"]["del"]["scan_utils_mnemonic"]: "del",
+        }
         dict_ = {}
         for motor in self.motor:
             # Add statistic data as attributes

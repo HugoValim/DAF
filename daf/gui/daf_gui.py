@@ -59,7 +59,10 @@ class MyDisplay(Display):
         self.idir = [0, 1, 0]
         self.ndir = [0, 0, 1]
         self.rmap_widget(
-            self.io.read(), samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir
+            self.io.read(),
+            samples=self.current_rmap_samples,
+            idir=self.idir,
+            ndir=self.ndir,
         )
         self.delay = 5  # Some thing in GUI dont need to be updated every update call
         self.delay_counter = (

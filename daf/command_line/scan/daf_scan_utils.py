@@ -150,13 +150,13 @@ class ScanBase(CLIBase):
     def create_motor_map(self) -> dict:
         """Create a map for the motors based in the PV prefix"""
         data = {
-                "mu": self.experiment_file_dict["motors"]["mu"]["scan_utils_mnemonic"],
-                "eta": self.experiment_file_dict["motors"]["eta"]["scan_utils_mnemonic"],
-                "chi": self.experiment_file_dict["motors"]["chi"]["scan_utils_mnemonic"],
-                "phi": self.experiment_file_dict["motors"]["phi"]["scan_utils_mnemonic"],
-                "nu": self.experiment_file_dict["motors"]["nu"]["scan_utils_mnemonic"],
-                "del": self.experiment_file_dict["motors"]["del"]["scan_utils_mnemonic"],
-            }
+            "mu": self.experiment_file_dict["motors"]["mu"]["scan_utils_mnemonic"],
+            "eta": self.experiment_file_dict["motors"]["eta"]["scan_utils_mnemonic"],
+            "chi": self.experiment_file_dict["motors"]["chi"]["scan_utils_mnemonic"],
+            "phi": self.experiment_file_dict["motors"]["phi"]["scan_utils_mnemonic"],
+            "nu": self.experiment_file_dict["motors"]["nu"]["scan_utils_mnemonic"],
+            "del": self.experiment_file_dict["motors"]["del"]["scan_utils_mnemonic"],
+        }
 
         return data
 

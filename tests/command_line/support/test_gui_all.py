@@ -26,10 +26,10 @@ class TestDAF(unittest.TestCase):
 
     @staticmethod
     def check_if_process_is_running(process_name: str) -> bool:
-        '''
+        """
         Check if there is any running process that contains the given name processName.
-        '''
-        #Iterate over the all the running process
+        """
+        # Iterate over the all the running process
         for proc in psutil.process_iter():
             try:
                 # Check if process name contains the given name string.
@@ -37,7 +37,7 @@ class TestDAF(unittest.TestCase):
                     return True
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
-        return False;
+        return False
 
     @staticmethod
     def make_obj(command_line_args: list) -> GUIAll:
@@ -55,4 +55,3 @@ class TestDAF(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             main()
         assert self.check_if_process_is_running("daf_gui.py")
-
