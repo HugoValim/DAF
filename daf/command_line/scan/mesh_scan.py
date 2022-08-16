@@ -113,7 +113,7 @@ class MeshScan(ScanBase):
         )
         return scan_args
 
-    def run_cmd(self, arguments):
+    def run_cmd(self):
         """Method to print the user required information"""
         self.run_scan()
 
@@ -121,7 +121,7 @@ class MeshScan(ScanBase):
 @daf_log
 def main() -> None:
     obj = MeshScan()
-    obj.run_cmd(obj.parsed_args)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

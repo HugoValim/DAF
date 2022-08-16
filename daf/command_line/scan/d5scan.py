@@ -16,7 +16,7 @@ class D5Scan(ScanBase):
     def __init__(self):
         super().__init__(number_of_motors=5, scan_type="relative")
 
-    def run_cmd(self, arguments):
+    def run_cmd(self):
         """
         Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface
@@ -27,7 +27,7 @@ class D5Scan(ScanBase):
 @daf_log
 def main() -> None:
     obj = D5Scan()
-    obj.run_cmd(obj.parsed_args)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

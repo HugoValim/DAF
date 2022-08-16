@@ -34,11 +34,12 @@ from daf.utils import dafutilities as du
 
 
 class DAFTimeScan(ScanOperationCLI):
-    def __init__(self, args, close_window=False, delay=False, n_points_count=10000):
+    def __init__(self, args, close_window=False, delay=False, n_points_count=1000):
         self.close_window = close_window
         super().__init__(**args)
         self.delay = delay
         self.n_points_count = n_points_count
+        self.io = du.DAFIO()
 
     def configure_step_mode(self):
         """
@@ -152,12 +153,12 @@ class DAFTimeScan(ScanOperationCLI):
         counter_dict = dict(py4syn.counterDB.items())
         # print(counter_dict)
         counter_list = [i for i in counter_dict.keys()]
-        dict_args = du.read()
+        dict_args = self.io.read()
         dict_args["scan_running"] = True
         dict_args["scan_counters"] = counter_list
         dict_args["current_scan_file"] = self.unique_filename
         dict_args["main_scan_motor"] = self.xlabel
-        du.write(dict_args)
+        self.io.write(dict_args)
 
     def pos_scan_callback(self, **kwargs):
 

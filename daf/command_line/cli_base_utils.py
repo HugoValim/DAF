@@ -1,5 +1,7 @@
 from abc import abstractmethod
 import argparse as ap
+import sys
+
 import numpy as np
 
 from daf.core.main import DAF
@@ -16,13 +18,11 @@ class DevNull:
         pass
 
 
-# sys.stderr = DevNull()
-
-
 class CLIBase:
     def __init__(self):
         self.io = du.DAFIO()
         self.experiment_file_dict = self.read_experiment_file()
+        # sys.stderr = DevNull()
 
     def read_experiment_file(self):
         return self.io.read()

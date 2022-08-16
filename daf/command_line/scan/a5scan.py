@@ -17,7 +17,7 @@ class A5Scan(ScanBase):
     def __init__(self):
         super().__init__(number_of_motors=5, scan_type="absolute")
 
-    def run_cmd(self, arguments):
+    def run_cmd(self):
         """Method to print the user required information"""
         self.run_scan()
 
@@ -25,7 +25,7 @@ class A5Scan(ScanBase):
 @daf_log
 def main() -> None:
     obj = A5Scan()
-    obj.run_cmd(obj.parsed_args)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

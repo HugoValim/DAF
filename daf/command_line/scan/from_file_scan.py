@@ -86,7 +86,7 @@ class FromFileScan(ScanBase):
         )
         return scan_args
 
-    def run_cmd(self, arguments):
+    def run_cmd(self):
         """
         Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface
@@ -97,7 +97,7 @@ class FromFileScan(ScanBase):
 @daf_log
 def main() -> None:
     obj = FromFileScan()
-    obj.run_cmd(obj.parsed_args)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

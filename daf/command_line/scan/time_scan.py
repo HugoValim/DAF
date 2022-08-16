@@ -81,7 +81,7 @@ class TimeScan(CLIBase):
         scan = td.DAFTimeScan(scan_args, delay=self.parsed_args_dict["delay"])
         scan.run()
 
-    def run_cmd(self, arguments: dict):
+    def run_cmd(self):
         """
         Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface
@@ -92,7 +92,7 @@ class TimeScan(CLIBase):
 @daf_log
 def main() -> None:
     obj = TimeScan()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

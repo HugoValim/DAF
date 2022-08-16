@@ -77,18 +77,18 @@ class HKLScan(ScanBase):
         args = self.parser.parse_args()
         return args
 
-    def generate_data_for_scan(self, arguments: dict, motor_map: dict) -> np.array:
+    def generate_data_for_scan(self, motor_map: dict) -> np.array:
         """Generate the scan path for scans"""
         self.exp = self.build_exp()
         start_values = [i for i in self.get_current_motor_pos().values()]
         scan_points = self.exp.scan(
-            arguments["hkli"],
-            arguments["hklf"],
-            arguments["step"],
-            diflimit=arguments["max_diff"],
-            name=arguments["scan_name"],
+            self.parsed_args_dict["hkli"],
+            self.parsed_args_dict["hklf"],
+            self.parsed_args_dict["step"],
+            diflimit=self.parsed_args_dict["max_diff"],
+            name=self.parsed_args_dict["scan_name"],
             write=True,
-            sep=arguments["separator"],
+            sep=self.parsed_args_dict["separator"],
             startvalues=start_values,
         )
         mu_points = [
@@ -123,9 +123,7 @@ class HKLScan(ScanBase):
 
     def configure_scan(self):
         """Basically, a wrapper for configure_scan_inputs. It may differ from scan to scan"""
-        data_for_scan, ordered_motors = self.generate_data_for_scan(
-            self.parsed_args_dict, self.motor_map
-        )
+        data_for_scan, ordered_motors = self.generate_data_for_scan(self.motor_map)
         if self.parsed_args_dict["xlabel"] is not None:
             xlabel = self.motor_map[self.parsed_args_dict["xlabel"].lower()]
         else:
@@ -147,21 +145,21 @@ class HKLScan(ScanBase):
         pd.options.display.max_columns = 0
         print(self.exp)
 
-    def run_cmd(self, arguments):
+    def run_cmd(self) -> None:
         """
         Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface
         """
-        if arguments["verbose"]:
+        if self.parsed_args_dict["verbose"]:
             self.print_scan_data_frame()
-        if not arguments["calc"]:
+        if not self.parsed_args_dict["calc"]:
             self.run_scan()
 
 
 @daf_log
 def main() -> None:
     obj = HKLScan()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":
