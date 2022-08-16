@@ -99,6 +99,7 @@ class UpdateThread(threading.Thread):
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
+        self.io = du.DAFIO()
         self.started = False
         self.xlabel = None
         self.fwhm_pos = None
@@ -154,7 +155,7 @@ class MyDisplay(Display):
         self.option_menu.triggered.connect(self.style_sheet_handler)
 
     def default_theme(self):
-        dict_args = du.read()
+        dict_args = self.io.read()
         if dict_args["dark_mode"]:
             style = qdarkstyle.load_stylesheet_pyqt5()
             self.app.setStyleSheet(style)
@@ -168,7 +169,7 @@ class MyDisplay(Display):
                     action.setChecked(False)
 
     def style_sheet_handler(self):
-        dict_args = du.read()
+        dict_args = self.io.read()
         for action in self.option_menu.actions():
             if action.text() == "Dark Theme":
                 if action.isChecked():
@@ -262,7 +263,7 @@ class MyDisplay(Display):
         """Move the xlabel motor to the FWHM pos"""
         if self.xlabel is not None and self.fwhm_pos is not None:
             dict_ = self.translate_dict()
-            dict_args = du.read()
+            dict_args = self.io.read()
             dict_args[dict_[self.xlabel]] = float(self.fwhm_pos)
             du.write(dict_args)
 
@@ -270,7 +271,7 @@ class MyDisplay(Display):
         """Move the xlabel motor to the peak pos"""
         if self.xlabel is not None and self.peak_pos is not None:
             dict_ = self.translate_dict()
-            dict_args = du.read()
+            dict_args = self.io.read()
             dict_args[dict_[self.xlabel]] = float(self.peak_pos)
             du.write(dict_args)
 
@@ -281,7 +282,7 @@ class MyDisplay(Display):
         per scan.
         The GUI checks every 1 second to see if a new scan has started
         """
-        dict_args = du.read()
+        dict_args = self.io.read()
         if dict_args["scan_running"] and not self.started:
             self.plot_dict = {}
             self.xlabel = dict_args["main_scan_motor"]

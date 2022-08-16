@@ -24,12 +24,12 @@ class RMapWidget(FigureCanvasQTAgg):
         rdir = dict_args["RDir"]
         paradir = idirp
         normdir = ndirp
-        Mu_bound = dict_args["bound_Mu"]
-        Eta_bound = dict_args["bound_Eta"]
-        Chi_bound = dict_args["bound_Chi"]
-        Phi_bound = dict_args["bound_Phi"]
-        Nu_bound = dict_args["bound_Nu"]
-        Del_bound = dict_args["bound_Del"]
+        Mu_bound = dict_args["motors"]["mu"]["bounds"]
+        Eta_bound = dict_args["motors"]["eta"]["bounds"]
+        Chi_bound = dict_args["motors"]["chi"]["bounds"]
+        Phi_bound = dict_args["motors"]["phi"]["bounds"]
+        Nu_bound = dict_args["motors"]["nu"]["bounds"]
+        Del_bound = dict_args["motors"]["del"]["bounds"]
 
         exp = DAF(*mode)
         if dict_args["Material"] in dict_args["user_samples"].keys():
@@ -52,7 +52,7 @@ class RMapWidget(FigureCanvasQTAgg):
             idir=idir,
             ndir=ndir,
             rdir=rdir,
-            en=dict_args["PV_energy"] - dict_args["energy_offset"],
+            en=dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"],
             sampleor=dict_args["Sampleor"],
         )
         exp.set_circle_constrain(
@@ -65,12 +65,12 @@ class RMapWidget(FigureCanvasQTAgg):
         )
         exp.set_U(U)
         exp.set_constraints(
-            Mu=dict_args["cons_Mu"],
-            Eta=dict_args["cons_Eta"],
-            Chi=dict_args["cons_Chi"],
-            Phi=dict_args["cons_Phi"],
-            Nu=dict_args["cons_Nu"],
-            Del=dict_args["cons_Del"],
+            Mu=dict_args["cons_mu"],
+            Eta=dict_args["cons_eta"],
+            Chi=dict_args["cons_chi"],
+            Phi=dict_args["cons_phi"],
+            Nu=dict_args["cons_nu"],
+            Del=dict_args["cons_del"],
             alpha=dict_args["cons_alpha"],
             beta=dict_args["cons_beta"],
             psi=dict_args["cons_psi"],
@@ -105,12 +105,12 @@ class RMapWidget(FigureCanvasQTAgg):
             )
             exp.set_U(U)
             exp.set_constraints(
-                Mu=dict_args["cons_Mu"],
-                Eta=dict_args["cons_Eta"],
-                Chi=dict_args["cons_Chi"],
-                Phi=dict_args["cons_Phi"],
-                Nu=dict_args["cons_Nu"],
-                Del=dict_args["cons_Del"],
+                Mu=dict_args["cons_mu"],
+                Eta=dict_args["cons_eta"],
+                Chi=dict_args["cons_chi"],
+                Phi=dict_args["cons_phi"],
+                Nu=dict_args["cons_nu"],
+                Del=dict_args["cons_del"],
                 alpha=dict_args["cons_alpha"],
                 beta=dict_args["cons_beta"],
                 psi=dict_args["cons_psi"],

@@ -63,16 +63,16 @@ class NewSample(SupportBase):
             shell=True,
         )
 
-    def run_cmd(self, arguments: dict) -> None:
-        self.create_and_initialize_new_sample_folder(arguments["folder_name"])
-        if arguments["kill"]:
+    def run_cmd(self) -> None:
+        self.create_and_initialize_new_sample_folder(self.parsed_args_dict["folder_name"])
+        if self.parsed_args_dict["kill"]:
             self.kill_other_guis()
 
 
 @daf_log
 def main() -> None:
     obj = NewSample()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

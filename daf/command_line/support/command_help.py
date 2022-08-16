@@ -248,14 +248,14 @@ class CommandHelp(SupportBase):
         )
         print()
 
-    def run_cmd(self, arguments: dict) -> None:
+    def run_cmd(self) -> None:
         self.print_all_commands()
 
 
 @daf_log
 def main() -> None:
     obj = CommandHelp()
-    obj.run_cmd(obj.parsed_args_dict)
+    obj.run_cmd()
 
 
 if __name__ == "__main__":

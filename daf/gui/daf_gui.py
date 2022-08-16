@@ -31,6 +31,7 @@ import ub
 import bounds
 import goto_hkl
 import daf.utils.dafutilities as du
+import daf.utils.daf_paths as dp
 from update_gui import Worker
 from rmap_widget import RMapWidget
 
@@ -40,7 +41,7 @@ DEFAULT = ".Experiment"
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
-
+        self.io = du.DAFIO()
         self.app = QApplication.instance()
         self.set_main_screen_title()
         self.current_theme = None
@@ -58,7 +59,7 @@ class MyDisplay(Display):
         self.idir = [0, 1, 0]
         self.ndir = [0, 0, 1]
         self.rmap_widget(
-            du.read(), samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir
+            self.io.read(), samples=self.current_rmap_samples, idir=self.idir, ndir=self.ndir
         )
         self.delay = 5  # Some thing in GUI dont need to be updated every update call
         self.delay_counter = (
@@ -241,7 +242,7 @@ class MyDisplay(Display):
         )
 
     def default_theme(self):
-        dict_args = du.read()
+        dict_args = self.io.read()
         if dict_args["dark_mode"]:
             self.current_theme = "dark"
             style = qdarkstyle.load_stylesheet_pyqt5()
@@ -261,7 +262,7 @@ class MyDisplay(Display):
                     action.setChecked(False)
 
     def style_sheet_handler(self):
-        dict_args = du.read()
+        dict_args = self.io.read()
         for action in self.option_menu.actions():
             if action.text() == "Dark Theme":
                 if action.isChecked():
@@ -291,12 +292,12 @@ class MyDisplay(Display):
             return data
 
     def set_main_screen_title(self):
-        dict_ = du.read()
+        dict_ = self.io.read()
         # self.app.main_window.setWindowTitle('teste')
         self.ui.setWindowTitle("DAF GUI ({})".format(dict_["setup"]))
 
     def update_main_screen_title(self):
-        dict_ = du.read()
+        dict_ = self.io.read()
         self.app.main_window.setWindowTitle(
             "DAF GUI ({}) - PyDM".format(dict_["setup"])
         )
@@ -348,12 +349,11 @@ class MyDisplay(Display):
         self.goto_hkl_window.show()
 
     def refresh_pydm_motors(self):
-        data = du.PVS
         translate = QCoreApplication.translate
 
         # set del motor labels
-
-        del_channel = "ca://" + data["Del"]
+        data = self.io.read()
+        del_channel = "ca://" + data["motors"]["del"]["pv"]
         self.ui.PyDMLabel_del_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
@@ -372,7 +372,7 @@ class MyDisplay(Display):
 
         # set eta motor labels
 
-        del_channel = "ca://" + data["Eta"]
+        del_channel = "ca://" + data["motors"]["eta"]["pv"]
         self.ui.PyDMLabel_eta_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
@@ -391,7 +391,7 @@ class MyDisplay(Display):
 
         # set chi motor labels
 
-        del_channel = "ca://" + data["Chi"]
+        del_channel = "ca://" + data["motors"]["chi"]["pv"]
         self.ui.PyDMLabel_chi_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
@@ -410,7 +410,7 @@ class MyDisplay(Display):
 
         # set phi motor labels
 
-        del_channel = "ca://" + data["Phi"]
+        del_channel = "ca://" + data["motors"]["phi"]["pv"]
         self.ui.PyDMLabel_phi_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
@@ -429,7 +429,7 @@ class MyDisplay(Display):
 
         # set nu motor labels
 
-        del_channel = "ca://" + data["Nu"]
+        del_channel = "ca://" + data["motors"]["nu"]["pv"]
         self.ui.PyDMLabel_nu_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
@@ -448,7 +448,7 @@ class MyDisplay(Display):
 
         # set mu motor labels
 
-        del_channel = "ca://" + data["Mu"]
+        del_channel = "ca://" + data["motors"]["mu"]["pv"]
         self.ui.PyDMLabel_mu_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
@@ -624,7 +624,7 @@ class MyDisplay(Display):
             "TiN",
         ]
 
-        user_samples = du.read()["user_samples"]
+        user_samples = self.io.read()["user_samples"]
         for sample in user_samples.keys():
             items.append(sample)
         items.sort()
@@ -664,7 +664,7 @@ class MyDisplay(Display):
 
     def setup_scroll_area(self):
 
-        setups = os.listdir(du.HOME + "/.daf")
+        setups = os.listdir(dp.HOME + "/.daf")
         setups = [i for i in setups if not i.endswith(".py")]
         setups.sort()
 
@@ -676,14 +676,14 @@ class MyDisplay(Display):
 
     def on_list_widget_change(self):
 
-        setups = os.listdir(du.HOME + "/.daf")
+        setups = os.listdir(dp.HOME + "/.daf")
         setups = [i for i in setups if not i.endswith(".py")]
 
         item = self.ui.listWidget_setup.currentItem()
         value = item.text()
 
         if value in setups:
-            dict_ = du.read(du.HOME + "/.daf/" + value)
+            dict_ = self.io.read(dp.HOME + "/.daf/" + value)
             # self.ui.textEdit_setup.setText(bytes(dict_['setup_desc'], "uft-8").decode("unicode_escape"))
             self.ui.textEdit_setup.setText(dict_["setup_desc"])
 
@@ -705,7 +705,7 @@ class MyDisplay(Display):
         os.system('daf.setup -d {} "{}"'.format(value, mytext))
 
     def new_setup_dialog(self):
-        setups = os.listdir(du.HOME + "/.daf")
+        setups = os.listdir(dp.HOME + "/.daf")
         setups = [i for i in setups if not i.endswith(".py")]
 
         text, result = QtWidgets.QInputDialog.getText(
@@ -742,7 +742,7 @@ class MyDisplay(Display):
 
     def copy_setup(self):
 
-        setups = os.listdir(du.HOME + "/.daf")
+        setups = os.listdir(dp.HOME + "/.daf")
         setups = [i for i in setups if not i.endswith(".py")]
 
         text, result = QtWidgets.QInputDialog.getText(
@@ -781,7 +781,7 @@ class MyDisplay(Display):
 
     def set_scan_prop(self):
         """Set properties showed in scan tab in daf.gui"""
-        dict_ = du.read()
+        dict_ = self.io.read()
         self.main_counter = dict_["main_scan_counter"]
         self.ui.label_current_config.setText(dict_["default_counters"].split(".")[1])
         self.set_scan_path()
@@ -795,10 +795,10 @@ class MyDisplay(Display):
 
     def main_counter_cbox(self, defaut_file, main_counter):
         self.comboBox_main_counter.clear()
-        user_configs = os.listdir(du.HOME + "/.config/scan-utils")
+        user_configs = os.listdir(dp.HOME + "/.config/scan-utils")
         sys_configs = os.listdir("/etc/xdg/scan-utils")
         if defaut_file in user_configs:
-            path_to_use = du.HOME + "/.config/scan-utils/"
+            path_to_use = dp.HOME + "/.config/scan-utils/"
         elif defaut_file in sys_configs:
             path_to_use = "/etc/xdg/scan-utils/"
         with open(path_to_use + defaut_file) as file:
@@ -826,7 +826,7 @@ class MyDisplay(Display):
             self.comboBox_main_counter.setCurrentIndex(AllItems.index("None"))
 
     def change_main_counter(self):
-        dict_ = du.read()
+        dict_ = self.io.read()
         AllItems = [
             self.comboBox_main_counter.itemText(i)
             for i in range(self.comboBox_main_counter.count())
@@ -888,9 +888,9 @@ class MyDisplay(Display):
         self.fill_widget(self.ui.treeWidget_counters, full_output)
 
     def counters_scroll_area(self):
-        dict_ = du.read()
+        dict_ = self.io.read()
         """List all possible counter configs"""
-        user_configs = os.listdir(du.HOME + "/.config/scan-utils")
+        user_configs = os.listdir(dp.HOME + "/.config/scan-utils")
         sys_configs = os.listdir("/etc/xdg/scan-utils")
         all_configs = user_configs + sys_configs
         configs = [
@@ -912,7 +912,7 @@ class MyDisplay(Display):
         """Print the counters on a setup when selected"""
         prefix = "config."
         sufix = ".yml"
-        user_configs = os.listdir(du.HOME + "/.config/scan-utils")
+        user_configs = os.listdir(dp.HOME + "/.config/scan-utils")
         sys_configs = os.listdir("/etc/xdg/scan-utils")
         all_configs = user_configs + sys_configs
         configs = [
@@ -927,20 +927,20 @@ class MyDisplay(Display):
                 self.print_tree("/etc/xdg/scan-utils/" + prefix + value + sufix)
             except:
                 self.print_tree(
-                    du.HOME + "/.config/scan-utils/" + prefix + value + sufix
+                    dp.HOME + "/.config/scan-utils/" + prefix + value + sufix
                 )
 
     def set_counter(self):
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
         os.system("daf.mc -s {}".format(value))
-        dict_ = du.read()
+        dict_ = self.io.read()
         self.ui.label_current_config.setText(dict_["default_counters"].split(".")[1])
         self.main_counter_cbox(dict_["default_counters"], dict_["main_scan_counter"])
         self.main_counter_cbox_default(dict_["main_scan_counter"])
 
     def new_counter_file(self):
-        configs = os.listdir(du.HOME + "/.config/scan-utils")
+        configs = os.listdir(dp.HOME + "/.config/scan-utils")
         configs = [
             i.split(".")[1]
             for i in configs
@@ -973,7 +973,7 @@ class MyDisplay(Display):
 
     def add_counter(self):
         """Add a counter to a setup"""
-        dict_ = du.read()
+        dict_ = self.io.read()
         counter = self.ui.comboBox_counters.currentText()
         item = self.ui.listWidget_counters.currentItem()
         value = item.text()
@@ -1001,7 +1001,7 @@ class MyDisplay(Display):
         self.ui.comboBox_counters.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
     def remove_counter(self):
-        dict_ = du.read()
+        dict_ = self.io.read()
         getSelected = self.ui.treeWidget_counters.selectedItems()
         if getSelected:
             baseNode = getSelected[0]

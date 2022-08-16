@@ -8,14 +8,14 @@ def daf_log(func):
     """Function to be used as a decorator. It builds the log file"""
 
     def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
+        ret = func(*args, **kwargs)
         # Do the log
         log_message = sys.argv.pop(0).split("/")[-1]
         for i in sys.argv:
             log_message += " " + i
         with open(LOG_FILE_NAME, "a") as file_object:
             file_object.write(log_message + "\n")
-
+        return ret
     return wrapper
 
 

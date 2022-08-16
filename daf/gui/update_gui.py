@@ -16,6 +16,7 @@ DEFAULT = ".Experiment"
 class Worker(QObject):
     finished = pyqtSignal()
     update_labels = pyqtSignal()
+    io = du.DAFIO()
 
     def get_experiment_data(self, filepath=DEFAULT):
         with open(filepath) as file:
@@ -38,7 +39,7 @@ class Worker(QObject):
             self.data = data
 
     def update(self):
-        dict_args = du.read()
+        dict_args = self.io.read()
         U = np.array(dict_args["U_mat"])
         U_print = np.array(
             [
@@ -64,7 +65,7 @@ class Worker(QObject):
             idir=idir,
             ndir=ndir,
             rdir=rdir,
-            en=dict_args["PV_energy"] - dict_args["energy_offset"],
+            en=dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"],
             sampleor=dict_args["Sampleor"],
         )
         if dict_args["Material"] in dict_args["user_samples"].keys():
@@ -86,12 +87,12 @@ class Worker(QObject):
         # exp.set_material(dict_args['Material'], dict_args["lparam_a"], dict_args["lparam_b"], dict_args["lparam_c"], dict_args["lparam_alpha"], dict_args["lparam_beta"], dict_args["lparam_gama"])
         exp.set_U(U)
         exp.set_constraints(
-            Mu=dict_args["cons_Mu"],
-            Eta=dict_args["cons_Eta"],
-            Chi=dict_args["cons_Chi"],
-            Phi=dict_args["cons_Phi"],
-            Nu=dict_args["cons_Nu"],
-            Del=dict_args["cons_Del"],
+            Mu=dict_args["cons_mu"],
+            Eta=dict_args["cons_eta"],
+            Chi=dict_args["cons_chi"],
+            Phi=dict_args["cons_phi"],
+            Nu=dict_args["cons_nu"],
+            Del=dict_args["cons_del"],
             alpha=dict_args["cons_alpha"],
             beta=dict_args["cons_beta"],
             psi=dict_args["cons_psi"],
@@ -103,21 +104,21 @@ class Worker(QObject):
         exp.build_bounds()
 
         hklnow = exp.calc_from_angs(
-            dict_args["Mu"],
-            dict_args["Eta"],
-            dict_args["Chi"],
-            dict_args["Phi"],
-            dict_args["Nu"],
-            dict_args["Del"],
+            dict_args["motors"]["mu"]["value"],
+            dict_args["motors"]["eta"]["value"],
+            dict_args["motors"]["chi"]["value"],
+            dict_args["motors"]["phi"]["value"],
+            dict_args["motors"]["nu"]["value"],
+            dict_args["motors"]["del"]["value"],
         )
 
         pseudo_dict = calculate_pseudo_angle_from_motor_angles(
-            dict_args["Mu"],
-            dict_args["Eta"],
-            dict_args["Chi"],
-            dict_args["Phi"],
-            dict_args["Nu"],
-            dict_args["Del"],
+            dict_args["motors"]["mu"]["value"],
+            dict_args["motors"]["eta"]["value"],
+            dict_args["motors"]["chi"]["value"],
+            dict_args["motors"]["phi"]["value"],
+            dict_args["motors"]["nu"]["value"],
+            dict_args["motors"]["del"]["value"],
             exp.samp,
             hklnow,
             exp.lam,
@@ -130,12 +131,12 @@ class Worker(QObject):
         mode, mode_num, cons, exp_list, samp_info = exp.show(sh="gui")
 
         bounds = {
-            "mu": dict_args["bound_Mu"],
-            "eta": dict_args["bound_Eta"],
-            "chi": dict_args["bound_Chi"],
-            "phi": dict_args["bound_Phi"],
-            "nu": dict_args["bound_Nu"],
-            "del": dict_args["bound_Del"],
+            "mu": dict_args["motors"]["mu"]["bounds"],
+            "eta": dict_args["motors"]["eta"]["bounds"],
+            "chi": dict_args["motors"]["chi"]["bounds"],
+            "phi": dict_args["motors"]["phi"]["bounds"],
+            "nu": dict_args["motors"]["nu"]["bounds"],
+            "del": dict_args["motors"]["del"]["bounds"],
         }
 
         self.data_to_update = {
