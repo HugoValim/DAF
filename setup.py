@@ -58,6 +58,7 @@ setup(
             "daf.ramv = daf.command_line.move.rel_ang_move:main",
             "daf.status = daf.command_line.query.status:main",
             "daf.wh = daf.command_line.query.where:main",
+            "daf.spos = daf.command_line.query.sample_position:main",
             "daf.ascan = daf.command_line.scan.a1scan:main",
             "daf.a2scan = daf.command_line.scan.a2scan:main",
             "daf.a3scan = daf.command_line.scan.a3scan:main",

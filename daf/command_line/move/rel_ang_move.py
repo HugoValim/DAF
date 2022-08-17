@@ -24,49 +24,7 @@ class RelAngleMove(MoveBase):
 
     def parse_command_line(self):
         super().parse_command_line()
-        self.parser.add_argument(
-            "-m",
-            "--mu",
-            metavar="ang",
-            type=float,
-            help="sets Mu angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-e",
-            "--eta",
-            metavar="ang",
-            type=float,
-            help="sets Eta angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-c",
-            "--chi",
-            metavar="ang",
-            type=float,
-            help="sets Chi angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-p",
-            "--phi",
-            metavar="ang",
-            type=float,
-            help="sets Phi angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-n",
-            "--nu",
-            metavar="ang",
-            type=float,
-            help="sets Nu angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-d",
-            "--del",
-            metavar="ang",
-            type=float,
-            help="sets Del angle to a desired position",
-        )
-
+        self.motor_inputs()
         args = self.parser.parse_args()
         return args
 
@@ -90,7 +48,7 @@ class RelAngleMove(MoveBase):
         for motor in self.parsed_args_dict.keys():
             if self.parsed_args_dict[motor] is not None:
                 motor_position_dict[motor] = float(
-                    motor_dict[motor] + self.parsed_args_dict[motor]
+                    motor_dict[motor] + float(self.parsed_args_dict[motor])
                 )
         return motor_position_dict
 

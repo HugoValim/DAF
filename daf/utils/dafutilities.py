@@ -26,6 +26,7 @@ class DAFIO:
             self.BL_PVS = {
                 key: dict_now["beamline_pvs"][key]["pv"]
                 for key, value in dict_now["beamline_pvs"].items()
+                if dict_now["beamline_pvs"][key]["simulated"] == False
             }   
             self.motor_pv_list = [pv for pv in self.MOTOR_PVS.values()]
             self.rbv_motor_pv_list = [pv + ".RBV" for pv in self.MOTOR_PVS.values()]
@@ -43,6 +44,7 @@ class DAFIO:
     def wait(self):
         for motor in self.motor_pv_list:
             while epics.caget(motor + ".MOVN"):
+                print(epics.caget(motor + ".MOVN"))
                 pass
 
     def epics_get(self, dict_):

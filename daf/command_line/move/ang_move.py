@@ -26,48 +26,7 @@ class AngleMove(MoveBase):
 
     def parse_command_line(self):
         super().parse_command_line()
-        self.parser.add_argument(
-            "-m",
-            "--mu",
-            metavar="ang",
-            type=str,
-            help="sets Mu angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-e",
-            "--eta",
-            metavar="ang",
-            type=str,
-            help="sets Eta angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-c",
-            "--chi",
-            metavar="ang",
-            type=str,
-            help="sets Chi angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-p",
-            "--phi",
-            metavar="ang",
-            type=str,
-            help="sets Phi angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-n",
-            "--nu",
-            metavar="ang",
-            type=str,
-            help="sets Nu angle to a desired position",
-        )
-        self.parser.add_argument(
-            "-d",
-            "--del",
-            metavar="ang",
-            type=str,
-            help="sets Del angle to a desired position",
-        )
+        self.motor_inputs()
         self.parser.add_argument(
             "-co",
             "--counter",

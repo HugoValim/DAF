@@ -19,6 +19,8 @@ class DevNull:
 
 
 class CLIBase:
+    """Base class to be inherited by all command line classes"""
+
     def __init__(self):
         self.io = du.DAFIO()
         self.experiment_file_dict = self.read_experiment_file()

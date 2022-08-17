@@ -164,9 +164,10 @@ default = {
     },
     "beamline_pvs": {
         "energy": {
-            "pv": "SOL:S:m24",
+            "pv": "energy_sim",
             "mnemonic": "PV_energy",
-            "value": 0,
+            "value": 10000,
+            "simulated": True
         },  #  bl_energy_pv
     },
     "twotheta": 0.0,
