@@ -44,7 +44,6 @@ class DAFIO:
     def wait(self):
         for motor in self.motor_pv_list:
             while epics.caget(motor + ".MOVN"):
-                print(epics.caget(motor + ".MOVN"))
                 pass
 
     def epics_get(self, dict_):

@@ -90,6 +90,14 @@ class ScanBase(CLIBase):
             nargs=2,
             help="Start and end for Del",
         )
+        self.parser.add_argument(
+            "-sz",
+            "--sample_z",
+            metavar="ang",
+            type=float,
+            nargs=2,
+            help="Start and end for sample_z",
+        )
         self.common_cli_scan_arguments()
         args = self.parser.parse_args()
         return args
@@ -156,6 +164,7 @@ class ScanBase(CLIBase):
             "phi": self.experiment_file_dict["motors"]["phi"]["scan_utils_mnemonic"],
             "nu": self.experiment_file_dict["motors"]["nu"]["scan_utils_mnemonic"],
             "del": self.experiment_file_dict["motors"]["del"]["scan_utils_mnemonic"],
+            "sample_z": self.experiment_file_dict["motors"]["sample_z"]["scan_utils_mnemonic"],
         }
 
         return data
@@ -170,27 +179,34 @@ class ScanBase(CLIBase):
             "-p",
             "-n",
             "-d",
+            "-sz",
             "--mu",
             "--eta",
             "--chi",
             "--phi",
             "--nu",
             "--del",
+            "--sample_z"
+            
+
         ]
 
         simp_to_comp = {
-            "mu": "mu",
-            "eta": "eta",
-            "chi": "chi",
-            "phi": "phi",
-            "nu": "nu",
-            "del": "del",
             "m": "mu",
             "e": "eta",
             "c": "chi",
             "p": "phi",
             "n": "nu",
             "d": "del",
+            "sz": "sample_z",
+            "mu": "mu",
+            "eta": "eta",
+            "chi": "chi",
+            "phi": "phi",
+            "nu": "nu",
+            "del": "del",
+            "sample_z": "sample_z",
+
         }
 
         motor_order = [
