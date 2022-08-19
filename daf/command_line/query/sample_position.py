@@ -33,62 +33,90 @@ class SamplePos(QueryBase):
         print("")
         print(
             "sample_z     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_z"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_z"]["value"]
+                )
             )
         )
         print(
             "sample_x     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_x"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_x"]["value"]
+                )
             )
         )
         print(
             "sample_rx     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_rx"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_rx"]["value"]
+                )
             )
         )
         print(
             "sample_y     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_y"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_y"]["value"]
+                )
             )
         )
         print(
             "sample_ry     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_ry"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_ry"]["value"]
+                )
             )
         )
         print(
             "sample_x_s1      =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_x_s1"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_x_s1"]["value"]
+                )
             )
         )
         print(
             "sample_y_s1      =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["sample_y_s1"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["sample_y_s1"]["value"]
+                )
             )
         )
         print(
             "diffractomer_ux     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["diffractomer_ux"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["diffractomer_ux"]["value"]
+                )
             )
         )
         print(
             "diffractomer_uy     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["diffractomer_uy"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["diffractomer_uy"]["value"]
+                )
             )
         )
         print(
             "diffractomer_rx     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["diffractomer_rx"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["diffractomer_rx"]["value"]
+                )
             )
         )
         print(
             "theta_analyzer_crystal     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["theta_analyzer_crystal"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["theta_analyzer_crystal"][
+                        "value"
+                    ]
+                )
             )
         )
         print(
             "2theta_analyzer_crystal      =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["2theta_analyzer_crystal"]["value"])
+                format_5_decimals(
+                    self.experiment_file_dict["motors"]["2theta_analyzer_crystal"][
+                        "value"
+                    ]
+                )
             )
         )
         print("")

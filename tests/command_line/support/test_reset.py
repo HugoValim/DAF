@@ -8,12 +8,13 @@ from unittest.mock import patch
 import daf.utils.dafutilities as du
 from daf.command_line.support.reset import Reset, main
 import daf.utils.generate_daf_default as gdd
+from daf.command_line.support.init import Init
 
 
 class TestDAF(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        data_sim = gdd.default
+        data_sim = Init.build_current_file(Init, True)
         data_sim["simulated"] = True
         data_sim["PV_energy"] = 1
         gdd.generate_file(data=data_sim, file_name=".Experiment")

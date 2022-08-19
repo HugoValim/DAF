@@ -54,15 +54,29 @@ class Init(SupportBase):
         gdd.generate_file(file_path=dp.DAF_CONFIGS, file_name="default")
 
     @staticmethod
-    def build_current_file(simulated: bool) -> None:
-        """Create the .Experiment file in the current dir"""
+    def get_motors_and_beamline_pvs_info(simulated: bool):
+        """Get the right motors depending if it is simulated or not"""
         if simulated:
-            data_sim = gdd.default
-            data_sim["simulated"] = True
-            gdd.generate_file(data=data_sim, file_name=du.DEFAULT)
+            from daf.config.motors_sim_config import motors
+            from daf.config.beamline_pvs_sim import beamline_pvs
         else:
-            gdd.generate_file(file_name=du.DEFAULT)
+            from daf.config.motors_real_config import motors
+            from daf.config.beamline_pvs_real import beamline_pvs
+        return motors, beamline_pvs
 
+    def build_current_file(self, simulated: bool) -> None:
+        """Create the .Experiment file in the current dir"""
+        motors, beamline_pvs = self.get_motors_and_beamline_pvs_info(simulated)
+        base_data = gdd.default
+        base_data["motors"] = motors
+        base_data["beamline_pvs"] = beamline_pvs
+        return base_data
+
+    def write_to_disc(self):
+        """write file to disk"""
+        data = self.build_current_file()
+        gdd.generate_file(data=base_data, file_name=du.DEFAULT)
+        
     def build_user_config(self) -> None:
         """Build the scan-utils configuration"""
         os.system("mkdir -p {}".format(dp.SCAN_UTILS_USER_PATH))

@@ -9,11 +9,12 @@ import daf.utils.dafutilities as du
 import daf.utils.daf_paths as dp
 from daf.command_line.support.setup import Setup, main
 import daf.utils.generate_daf_default as gdd
+from daf.command_line.support.init import Init
 
 
 class TestDAF(unittest.TestCase):
     def setUp(self):
-        data_sim = gdd.default
+        data_sim = Init.build_current_file(Init, True)
         data_sim["simulated"] = True
         data_sim["PV_energy"] = 1
         gdd.generate_file(data=data_sim, file_name=".Experiment")

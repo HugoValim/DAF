@@ -27,7 +27,7 @@ class DAFIO:
                 key: dict_now["beamline_pvs"][key]["pv"]
                 for key, value in dict_now["beamline_pvs"].items()
                 if dict_now["beamline_pvs"][key]["simulated"] == False
-            }   
+            }
             self.motor_pv_list = [pv for pv in self.MOTOR_PVS.values()]
             self.rbv_motor_pv_list = [pv + ".RBV" for pv in self.MOTOR_PVS.values()]
             self.llm_motor_pv_list = [pv + ".LLM" for pv in self.MOTOR_PVS.values()]
@@ -47,7 +47,7 @@ class DAFIO:
                 pass
 
     def epics_get(self, dict_):
-        
+
         updated_rbv_motor_pv_list = epics.caget_many(self.rbv_motor_pv_list)
         updated_llm_motor_pv_list = epics.caget_many(self.llm_motor_pv_list)
         updated_hlm_motor_pv_list = epics.caget_many(self.hlm_motor_pv_list)
@@ -70,11 +70,17 @@ class DAFIO:
         return dict_
 
     def epics_put(self, dict_):
-        set_motor_pv_list = [dict_["motors"][key]["value"] for key in dict_["motors"].keys()]
+        set_motor_pv_list = [
+            dict_["motors"][key]["value"] for key in dict_["motors"].keys()
+        ]
         epics.caput_many(self.motor_pv_list, set_motor_pv_list)
-        set_llm_motor_pv_list = [dict_["motors"][key]["bounds"][0] for key in dict_["motors"].keys()]
+        set_llm_motor_pv_list = [
+            dict_["motors"][key]["bounds"][0] for key in dict_["motors"].keys()
+        ]
         epics.caput_many(self.llm_motor_pv_list, set_llm_motor_pv_list)
-        set_hlm_motor_pv_list = [dict_["motors"][key]["bounds"][1] for key in dict_["motors"].keys()]
+        set_hlm_motor_pv_list = [
+            dict_["motors"][key]["bounds"][1] for key in dict_["motors"].keys()
+        ]
         epics.caput_many(self.hlm_motor_pv_list, set_hlm_motor_pv_list)
         self.wait()
 

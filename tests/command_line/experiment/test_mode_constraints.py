@@ -9,6 +9,7 @@ import numpy as np
 import daf.utils.dafutilities as du
 from daf.command_line.experiment.mode_constraints import ModeConstraints, main
 import daf.utils.generate_daf_default as gdd
+from daf.command_line.support.init import Init
 from daf.core.main import DAF
 
 
@@ -21,7 +22,7 @@ class TestDAF(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        data_sim = gdd.default
+        data_sim = Init.build_current_file(Init, True)
         data_sim["simulated"] = True
         data_sim["PV_energy"] = 10000.0
         gdd.generate_file(data=data_sim, file_name=".Experiment")

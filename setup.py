@@ -10,9 +10,9 @@ def readme():
 
 
 setup(
-    name="daf_test",
+    name="dica",
     version="0.0.1",
-    description="A Module to control x-ray diffraction experiments that uses a 6-circle diffractometer",
+    description="Diffractomer Calculation",
     long_description=readme(),
     classifiers=[
         "Development Status :: 1 - Planning",

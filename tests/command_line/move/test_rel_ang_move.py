@@ -9,6 +9,7 @@ import numpy as np
 import daf.utils.dafutilities as du
 from daf.command_line.move.rel_ang_move import RelAngleMove, main
 import daf.utils.generate_daf_default as gdd
+from daf.command_line.support.init import Init
 from daf.core.main import DAF
 
 
@@ -33,7 +34,7 @@ class TestDAF(unittest.TestCase):
     }
 
     def setUp(self):
-        data_sim = gdd.default
+        data_sim = Init.build_current_file(Init, True)
         data_sim["simulated"] = True
         gdd.generate_file(data=data_sim, file_name=".Experiment")
 

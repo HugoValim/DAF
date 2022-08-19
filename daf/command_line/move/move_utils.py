@@ -8,7 +8,6 @@ import daf.utils.dafutilities as du
 
 
 class MoveBase(CLIBase):
-    
     def motor_inputs(self):
         """Get all possible motor inputs"""
         self.parser.add_argument(

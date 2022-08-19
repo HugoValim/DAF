@@ -252,18 +252,42 @@ class ScanBase(CLIBase):
             "phi": self.experiment_file_dict["motors"]["phi"]["scan_utils_mnemonic"],
             "nu": self.experiment_file_dict["motors"]["nu"]["scan_utils_mnemonic"],
             "del": self.experiment_file_dict["motors"]["del"]["scan_utils_mnemonic"],
-            "sample_z": self.experiment_file_dict["motors"]["sample_z"]["scan_utils_mnemonic"],
-            "sample_x": self.experiment_file_dict["motors"]["sample_x"]["scan_utils_mnemonic"],
-            "sample_rx": self.experiment_file_dict["motors"]["sample_rx"]["scan_utils_mnemonic"],
-            "sample_y": self.experiment_file_dict["motors"]["sample_y"]["scan_utils_mnemonic"],
-            "sample_ry": self.experiment_file_dict["motors"]["sample_ry"]["scan_utils_mnemonic"],
-            "sample_x_s1": self.experiment_file_dict["motors"]["sample_x_s1"]["scan_utils_mnemonic"],
-            "sample_y_s1": self.experiment_file_dict["motors"]["sample_y_s1"]["scan_utils_mnemonic"],
-            "diffractomer_ux": self.experiment_file_dict["motors"]["diffractomer_ux"]["scan_utils_mnemonic"],
-            "diffractomer_uy": self.experiment_file_dict["motors"]["diffractomer_uy"]["scan_utils_mnemonic"],
-            "diffractomer_rx": self.experiment_file_dict["motors"]["diffractomer_rx"]["scan_utils_mnemonic"],
-            "theta_analyzer_crystal": self.experiment_file_dict["motors"]["theta_analyzer_crystal"]["scan_utils_mnemonic"],
-            "2theta_analyzer_crystal": self.experiment_file_dict["motors"]["2theta_analyzer_crystal"]["scan_utils_mnemonic"],
+            "sample_z": self.experiment_file_dict["motors"]["sample_z"][
+                "scan_utils_mnemonic"
+            ],
+            "sample_x": self.experiment_file_dict["motors"]["sample_x"][
+                "scan_utils_mnemonic"
+            ],
+            "sample_rx": self.experiment_file_dict["motors"]["sample_rx"][
+                "scan_utils_mnemonic"
+            ],
+            "sample_y": self.experiment_file_dict["motors"]["sample_y"][
+                "scan_utils_mnemonic"
+            ],
+            "sample_ry": self.experiment_file_dict["motors"]["sample_ry"][
+                "scan_utils_mnemonic"
+            ],
+            "sample_x_s1": self.experiment_file_dict["motors"]["sample_x_s1"][
+                "scan_utils_mnemonic"
+            ],
+            "sample_y_s1": self.experiment_file_dict["motors"]["sample_y_s1"][
+                "scan_utils_mnemonic"
+            ],
+            "diffractomer_ux": self.experiment_file_dict["motors"]["diffractomer_ux"][
+                "scan_utils_mnemonic"
+            ],
+            "diffractomer_uy": self.experiment_file_dict["motors"]["diffractomer_uy"][
+                "scan_utils_mnemonic"
+            ],
+            "diffractomer_rx": self.experiment_file_dict["motors"]["diffractomer_rx"][
+                "scan_utils_mnemonic"
+            ],
+            "theta_analyzer_crystal": self.experiment_file_dict["motors"][
+                "theta_analyzer_crystal"
+            ]["scan_utils_mnemonic"],
+            "2theta_analyzer_crystal": self.experiment_file_dict["motors"][
+                "2theta_analyzer_crystal"
+            ]["scan_utils_mnemonic"],
         }
 
         return data
@@ -375,8 +399,12 @@ class ScanBase(CLIBase):
         diffux_now = self.experiment_file_dict["motors"]["diffractomer_ux"]["value"]
         diffuy_now = self.experiment_file_dict["motors"]["diffractomer_uy"]["value"]
         diffrx_now = self.experiment_file_dict["motors"]["diffractomer_rx"]["value"]
-        thca_now = self.experiment_file_dict["motors"]["theta_analyzer_crystal"]["value"]
-        tthca_now = self.experiment_file_dict["motors"]["2theta_analyzer_crystal"]["value"]
+        thca_now = self.experiment_file_dict["motors"]["theta_analyzer_crystal"][
+            "value"
+        ]
+        tthca_now = self.experiment_file_dict["motors"]["2theta_analyzer_crystal"][
+            "value"
+        ]
         current_motor_pos = {
             "mu": mu_now,
             "eta": eta_now,
