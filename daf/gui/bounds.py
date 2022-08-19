@@ -6,13 +6,14 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import QCoreApplication
 from qtpy.QtWidgets import QApplication
 
-import daf.utils.dafutilities as du
+from daf.utils.dafutilities import DAFIO
 
 
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
+        self.io = DAFIO()
         self.set_tab_order()
         self.set_channels()
         self.center()
@@ -58,13 +59,13 @@ class MyDisplay(Display):
 
     def set_channels(self):
 
-        data = du.PVS
+        data = self.io.read()["motors"]
 
         translate = QCoreApplication.translate
 
         # set mu motor labels
 
-        mu_channel = "ca://" + data["Mu"]
+        mu_channel = "ca://" + data["mu"]["pv"]
         self.ui.PyDMLabel_mu_desc.setProperty(
             "channel", translate("Form", mu_channel + ".DESC")
         )
@@ -77,7 +78,7 @@ class MyDisplay(Display):
 
         # set eta motor labels
 
-        eta_channel = "ca://" + data["Eta"]
+        eta_channel = "ca://" + data["eta"]["pv"]
         self.ui.PyDMLabel_eta_desc.setProperty(
             "channel", translate("Form", eta_channel + ".DESC")
         )
@@ -90,7 +91,7 @@ class MyDisplay(Display):
 
         # set chi motor labels
 
-        chi_channel = "ca://" + data["Chi"]
+        chi_channel = "ca://" + data["chi"]["pv"]
         self.ui.PyDMLabel_chi_desc.setProperty(
             "channel", translate("Form", chi_channel + ".DESC")
         )
@@ -103,7 +104,7 @@ class MyDisplay(Display):
 
         # set phi motor labels
 
-        phi_channel = "ca://" + data["Phi"]
+        phi_channel = "ca://" + data["phi"]["pv"]
         self.ui.PyDMLabel_phi_desc.setProperty(
             "channel", translate("Form", phi_channel + ".DESC")
         )
@@ -116,7 +117,7 @@ class MyDisplay(Display):
 
         # set nu motor labels
 
-        nu_channel = "ca://" + data["Nu"]
+        nu_channel = "ca://" + data["nu"]["pv"]
         self.ui.PyDMLabel_nu_desc.setProperty(
             "channel", translate("Form", nu_channel + ".DESC")
         )
@@ -129,7 +130,7 @@ class MyDisplay(Display):
 
         # set del motor labels
 
-        del_channel = "ca://" + data["Del"]
+        del_channel = "ca://" + data["del"]["pv"]
         self.ui.PyDMLabel_del_desc.setProperty(
             "channel", translate("Form", del_channel + ".DESC")
         )
