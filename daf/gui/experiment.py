@@ -7,19 +7,21 @@ from qtpy.QtWidgets import QApplication
 from PyQt5 import QtGui
 from PyQt5.QtGui import QIcon
 
-import daf.utils.dafutilities as du
+from daf.utils.dafutilities import DAFIO
 
 
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
+        self.io = DAFIO()
         self.set_labels()
         self.set_tab_order()
         self.build_icons()
         self.set_icons()
         self.center()
         self.make_connections()
+        
 
     def ui_filename(self):
         return "ui/experiment.ui"
@@ -78,7 +80,7 @@ class MyDisplay(Display):
 
     def get_experiment_file(self):
         """Get the data in DAF's .Exeriment file"""
-        dict_args = du.read()
+        dict_args = self.io.read()
         return dict_args
 
     def on_combobox_en_changed(self):
