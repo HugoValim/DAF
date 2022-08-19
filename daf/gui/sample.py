@@ -7,13 +7,14 @@ from qtpy.QtWidgets import QApplication
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import QIcon
 
-import daf.utils.dafutilities as du
+from daf.utils.dafutilities import DAFIO
 
 
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
+        self.io = DAFIO()
         self.set_combobox_options()
         self.set_comboBox_materials_default()
         self.build_icons()
@@ -67,11 +68,11 @@ class MyDisplay(Display):
         self.ui.checkBox_new_mat.stateChanged.connect(self.checkbox_state_changed)
         self.ui.pushButton_set.clicked.connect(self.set_sample)
         self.ui.pushButton_set.clicked.connect(self.set_combobox_options)
-        self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
+        # self.ui.pushButton_set.clicked.connect(self.set_comboBox_materials_default)
 
     def get_experiment_file(self):
         """Get the data in the experiment file"""
-        dict_args = du.read()
+        dict_args = self.io.read()
         return dict_args
 
     def materials(self):
@@ -215,5 +216,4 @@ class MyDisplay(Display):
             # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
         else:
             samp = self.ui.comboBox_materials.currentText()
-            subprocess.Popen("daf.expt -m {}".format(samp), shell=True)
-            # os.system("daf.expt -m {}".format(samp))
+            subprocess.Popen("daf.expt -s {}".format(samp), shell=True)
