@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QApplication
 from PyQt5 import QtGui
 from PyQt5.QtGui import QIcon
 
-import daf.utils.dafutilities as du
+from daf.utils.dafutilities import DAFIO
 
 DEFAULT = ".Experiment"
 
@@ -22,6 +22,7 @@ class MyDisplay(Display):
         self.highlight_table()
         self.default_labels()
         self.center()
+        self.io = DAFIO()
 
     #
     def ui_filename(self):
@@ -92,14 +93,14 @@ class MyDisplay(Display):
         """Update constraint label names"""
         cons_dict, set_cons_dict = self.setup_dicts()
         # Update constraint fields with the angles written in .Experement file
-        dict_args = du.read()
+        dict_args = self.io.read()
         dict_cons_angles = {
-            "chi": "cons_Chi",
-            "delta": "cons_Del",
-            "eta": "cons_Eta",
-            "mu": "cons_Mu",
-            "nu": "cons_Nu",
-            "phi": "cons_Phi",
+            "chi": "cons_chi",
+            "delta": "cons_del",
+            "eta": "cons_eta",
+            "mu": "cons_mu",
+            "nu": "cons_nu",
+            "phi": "cons_phi",
             "alpha": "cons_alpha",
             "beta": "cons_beta",
             "naz": "cons_naz",
@@ -223,8 +224,6 @@ class MyDisplay(Display):
                     i[0].split(" ")[0].lower()
                 )  # get only the angle name in lower case
                 fix_in = i[1]
-                if ang in ["mu", "eta", "chi", "phi", "nu", "del"]:
-                    ang = ang.capitalize()
                 arg = "--cons_" + str(ang) + " " + str(fix_in) + " "
                 daf_cons_args += arg
         p = subprocess.Popen(
