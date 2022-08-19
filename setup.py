@@ -10,7 +10,7 @@ def readme():
 
 
 setup(
-    name="dica",
+    name="daf",
     version="0.0.1",
     description="Diffractomer Calculation",
     long_description=readme(),
