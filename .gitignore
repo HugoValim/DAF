@@ -14,5 +14,8 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+
+# DAF stuff
 Log
 *.Experiment
+default
