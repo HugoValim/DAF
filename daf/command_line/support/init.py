@@ -72,10 +72,10 @@ class Init(SupportBase):
         base_data["beamline_pvs"] = beamline_pvs
         return base_data
 
-    def write_to_disc(self):
+    def write_to_disc(self, simulated: bool):
         """write file to disk"""
-        data = self.build_current_file()
-        gdd.generate_file(data=base_data, file_name=du.DEFAULT)
+        data = self.build_current_file(simulated)
+        gdd.generate_file(data=data, file_name=du.DEFAULT)
         
     def build_user_config(self) -> None:
         """Build the scan-utils configuration"""
@@ -106,7 +106,7 @@ class Init(SupportBase):
         subprocess.Popen("daf.gui; daf.live", shell=True)
 
     def run_cmd(self) -> None:
-        self.build_current_file(self.parsed_args_dict["simulated"])
+        self.write_to_disc(self.parsed_args_dict["simulated"])
         if self.parsed_args_dict["all"]:
             self.open_daf_guis()
 
