@@ -16,14 +16,14 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QTimer
 import numpy as np
 
-import daf.utils.dafutilities as du
+from daf.utils.dafutilities import DAFIO
 
 
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
-
         self.app = QApplication.instance()
+        self.io = DAFIO()
         self.loop()
         self.update_reflections()
         self.link_table_2_menu()
@@ -106,7 +106,7 @@ class MyDisplay(Display):
 
     def get_experiment_file(self):
         """Get data from the .Experiment file"""
-        dict_args = du.read()
+        dict_args = self.io.read()
         return dict_args
 
     def format_decimals(self, x):
@@ -276,7 +276,7 @@ class MyDisplay(Display):
     #     self.label_gamma.setText(self.format_decimals(data['lparam_gama']))
 
     # def set_new_sample(self):
-    #     dict_args = du.read()
+    #     dict_args = self.io.read()
     #     samples = dict_args['user_samples']
     #     text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New sample name')
     #     a = dict_args['lparam_a']
@@ -338,7 +338,7 @@ class MyDisplay(Display):
         u_22 = self.ui.lineEdit_u_22.text()
 
         subprocess.Popen(
-            "daf.ub -U {} {} {} {} {} {} {} {} {}".format(
+            "daf.ub -u {} {} {} {} {} {} {} {} {}".format(
                 u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22
             ),
             shell=True,
@@ -374,7 +374,7 @@ class MyDisplay(Display):
 
         # print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
         subprocess.Popen(
-            "daf.ub -UB {} {} {} {} {} {} {} {} {}".format(
+            "daf.ub -ub {} {} {} {} {} {} {} {} {}".format(
                 ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22
             ),
             shell=True,
