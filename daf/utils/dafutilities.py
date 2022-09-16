@@ -3,6 +3,7 @@
 
 import atexit
 import os
+import time
 
 import epics
 import yaml
@@ -32,6 +33,7 @@ class DAFIO:
             self.rbv_motor_pv_list = [pv + ".RBV" for pv in self.MOTOR_PVS.values()]
             self.llm_motor_pv_list = [pv + ".LLM" for pv in self.MOTOR_PVS.values()]
             self.hlm_motor_pv_list = [pv + ".HLM" for pv in self.MOTOR_PVS.values()]
+            self.stop_motor_pv_list = [pv + ".STOP" for pv in self.MOTOR_PVS.values()]
             self.bl_pv_list = [pv for pv in self.BL_PVS.values()]
 
     @staticmethod
@@ -41,10 +43,17 @@ class DAFIO:
             data = yaml.safe_load(file)
             return data
 
+    def stop(self):
+        epics.caput_many(self.stop_motor_pv_list, [1 for i in self.stop_motor_pv_list])
+
     def wait(self):
+        atexit.register(self.stop)
         for motor in self.motor_pv_list:
-            while epics.caget(motor + ".MOVN"):
-                pass
+            while True:
+                is_moving = epics.caget(motor + ".MOVN")
+                if not is_moving:
+                    break
+                time.sleep(0.1)
 
     def epics_get(self, dict_):
 
