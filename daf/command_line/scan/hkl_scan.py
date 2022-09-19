@@ -80,7 +80,9 @@ class HKLScan(ScanBase):
     def generate_data_for_scan(self, motor_map: dict) -> np.array:
         """Generate the scan path for scans"""
         self.exp = self.build_exp()
-        start_values = [i for i in self.get_current_motor_pos().values()]
+        number_of_diffractometer_motors = 6
+        all_motors_start_values = [i for i in self.get_current_motor_pos().values()]
+        diffractometer_motor_start_values = all_motors_start_values[:number_of_diffractometer_motors]
         scan_points = self.exp.scan(
             self.parsed_args_dict["hkli"],
             self.parsed_args_dict["hklf"],
@@ -89,7 +91,7 @@ class HKLScan(ScanBase):
             name=self.parsed_args_dict["scan_name"],
             write=True,
             sep=self.parsed_args_dict["separator"],
-            startvalues=start_values,
+            startvalues=diffractometer_motor_start_values,
         )
         mu_points = [
             float(i) for i in scan_points["Mu"]
