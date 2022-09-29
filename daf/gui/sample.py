@@ -206,14 +206,12 @@ class MyDisplay(Display):
             beta = self.ui.lineEdit_beta.text()
             gamma = self.ui.lineEdit_gamma.text()
 
-            # print("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
             subprocess.Popen(
-                "daf.expt -m {} -p {} {} {} {} {} {}".format(
+                "daf.expt -s {} -p {} {} {} {} {} {}".format(
                     samp, a, b, c, alpha, beta, gamma
                 ),
                 shell=True,
             )
-            # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(samp, a, b, c, alpha, beta, gamma))
         else:
             samp = self.ui.comboBox_materials.currentText()
             subprocess.Popen("daf.expt -s {}".format(samp), shell=True)
