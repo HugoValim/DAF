@@ -1,1 +1,1 @@
-../bin/dafstatus.py
+../daf/command_line/query/status.py

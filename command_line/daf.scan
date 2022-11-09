@@ -1,1 +1,1 @@
-../bin/dafscan.py
+../daf/command_line/scan/hkl_scan.py

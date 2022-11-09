@@ -1,1 +1,1 @@
-../bin/daf_manage_counter.py
+../daf/command_line/experiment/manage_counters.py

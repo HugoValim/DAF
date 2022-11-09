@@ -1,1 +1,1 @@
-../bin/daftimescan.py
+../daf/command_line/scan/time_scan.py
