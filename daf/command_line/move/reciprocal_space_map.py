@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
 from daf.command_line.move.move_utils import MoveBase
 
@@ -133,7 +133,7 @@ class ReciprocalSpace(MoveBase):
         ax.figure.show()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = ReciprocalSpace()
     obj.run_cmd(obj.parsed_args_dict)

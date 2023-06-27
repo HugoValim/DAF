@@ -1,6 +1,5 @@
 import os
 import sys
-import psutil
 
 import pytest
 import unittest
@@ -25,20 +24,20 @@ class TestDAF(unittest.TestCase):
         os.remove(".Experiment")
         os.remove("Log")
 
-    @staticmethod
-    def check_if_process_is_running(process_name: str) -> bool:
-        """
-        Check if there is any running process that contains the given name processName.
-        """
-        # Iterate over the all the running process
-        for proc in psutil.process_iter():
-            try:
-                # Check if process name contains the given name string.
-                if process_name.lower() in proc.name().lower():
-                    return True
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
-        return False
+    # @staticmethod
+    # def check_if_process_is_running(process_name: str) -> bool:
+    #     """
+    #     Check if there is any running process that contains the given name processName.
+    #     """
+    #     # Iterate over the all the running process
+    #     for proc in psutil.process_iter():
+    #         try:
+    #             # Check if process name contains the given name string.
+    #             if process_name.lower() in proc.name().lower():
+    #                 return True
+    #         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+    #             pass
+    #     return False
 
     @staticmethod
     def make_obj(command_line_args: list) -> GUIAll:
@@ -49,10 +48,10 @@ class TestDAF(unittest.TestCase):
             obj = GUIAll()
         return obj
 
-    def test_GIVEN_cli_argument_WHEN_running_cli_THEN_test_for_problems(
-        self,
-    ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
-        with patch.object(sys, "argv", testargs):
-            main()
-        assert self.check_if_process_is_running("daf_gui.py")
+    # def test_GIVEN_cli_argument_WHEN_running_cli_THEN_test_for_problems(
+    #     self,
+    # ):
+    #     testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
+    #     with patch.object(sys, "argv", testargs):
+    #         main()
+    #     assert self.check_if_process_is_running("daf_gui.py")

@@ -2,6 +2,8 @@ import numpy as np
 from numpy import linalg as la
 import xrayutilities as xu
 
+from daf.core.math_utils import vector_angle
+
 
 def calculate_rotation_matrix_from_diffractometer_angles(
     mu, eta, chi, phi, nu, del_
@@ -133,7 +135,7 @@ def calculate_pseudo_angle_from_motor_angles(
 
     taupseudo = np.rad2deg(np.arccos(np.round(Qhat.dot(nchat), 5)))
 
-    alphain = np.rad2deg(np.arcsin(-xu.math.vector.VecDot(nz, [0, 1, 0])))
+    alphain = np.rad2deg(np.arcsin(-np.dot(nz, [0, 1, 0])))
 
     qaz = np.rad2deg(np.arctan2(np.tan(np.deg2rad(Del)), np.sin(np.deg2rad(Nu))))
 
@@ -162,7 +164,7 @@ def calculate_pseudo_angle_from_motor_angles(
         nphihattmp = nphitmp / la.norm(nphitmp)
 
         nztmp = Z.dot(nphihattmp)
-        alphatmp = np.rad2deg(np.arcsin(-xu.math.vector.VecDot(nztmp, [0, 1, 0])))
+        alphatmp = np.rad2deg(np.arcsin(-np.dot(nztmp, [0, 1, 0])))
         tautemp = np.rad2deg(np.arccos(Qhat.dot(newref)))
 
         arg2 = np.round(

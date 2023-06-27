@@ -9,9 +9,9 @@ import subprocess
 
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
-import daf.utils.daf_paths as dp
+from daf.utils.daf_paths import DAFPaths as dp
 import daf.utils.dafutilities as du
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 
 
 class Setup(SupportBase):
@@ -184,7 +184,7 @@ class Setup(SupportBase):
             self.write_to_experiment_file(self.experiment_file_dict)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = Setup()
     obj.run_cmd()

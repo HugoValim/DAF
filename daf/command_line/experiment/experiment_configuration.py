@@ -4,7 +4,7 @@ import argparse as ap
 import numpy as np
 
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.experiment.experiment_utils import ExperimentBase
 from daf.utils import dafutilities as du
 
@@ -218,7 +218,7 @@ class ExperimentConfiguration(ExperimentBase):
         self.write_to_experiment_file(self.experiment_file_dict)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = ExperimentConfiguration()
     obj.run_cmd()

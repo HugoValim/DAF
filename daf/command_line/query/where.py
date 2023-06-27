@@ -4,7 +4,7 @@
 import argparse as ap
 
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.query.query_utils import QueryBase
 
 
@@ -31,48 +31,49 @@ class Where(QueryBase):
 
     def print_position(self) -> None:
         """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
-        hkl_now = list(self.calculate_hkl_from_angles())
+        self.hkl_now = list(self.calculate_hkl_from_angles())
+        self.pseudo_dict_to_update = self.get_pseudo_angles_from_motor_angles()
         print("")
         print(
             "HKL now =   ",
-            format_5_decimals(hkl_now[0]),
-            format_5_decimals(hkl_now[1]),
-            format_5_decimals(hkl_now[2]),
+            format_5_decimals(self.hkl_now[0]),
+            format_5_decimals(self.hkl_now[1]),
+            format_5_decimals(self.hkl_now[2]),
         )
         print("")
         print(
             "Alpha   =    {}".format(
-                format_5_decimals(self.experiment_file_dict["alpha"])
+                format_5_decimals(self.pseudo_dict_to_update["alpha"])
             )
         )
         print(
             "Beta    =    {}".format(
-                format_5_decimals(self.experiment_file_dict["beta"])
+                format_5_decimals(self.pseudo_dict_to_update["beta"])
             )
         )
         print(
             "Psi     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["psi"])
+                format_5_decimals(self.pseudo_dict_to_update["psi"])
             )
         )
         print(
             "Tau     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["tau"])
+                format_5_decimals(self.pseudo_dict_to_update["tau"])
             )
         )
         print(
             "Qaz     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["qaz"])
+                format_5_decimals(self.pseudo_dict_to_update["qaz"])
             )
         )
         print(
             "Naz     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["naz"])
+                format_5_decimals(self.pseudo_dict_to_update["naz"])
             )
         )
         print(
             "Omega   =    {}".format(
-                format_5_decimals(self.experiment_file_dict["omega"])
+                format_5_decimals(self.pseudo_dict_to_update["omega"])
             )
         )
         print("")
@@ -108,11 +109,19 @@ class Where(QueryBase):
         )
         print("")
 
+    def update_pseudo_angles_and_hkl(self):
+        """Write calculated pseudo-angles and HKL to disk"""
+        float_hkl = [float(i) for i in self.hkl_now]
+        self.pseudo_dict_to_update["hklnow"] = float_hkl
+        self.update_experiment_file(self.pseudo_dict_to_update)
+        self.write_to_experiment_file(self.experiment_file_dict)
+
     def run_cmd(self) -> None:
         self.print_position()
+        self.update_pseudo_angles_and_hkl()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = Where()
     obj.run_cmd()

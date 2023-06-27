@@ -1,11 +1,13 @@
-import subprocess
 from os import path
+import subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QFileDialog
 from PyQt5.QtGui import QIcon
 
 import pandas as pd
+
+from daf.gui.utils import center_screen, Icons
 
 
 class MyWindow(QWidget):
@@ -14,26 +16,11 @@ class MyWindow(QWidget):
         self.initUI()
         self.make_connections()
 
-    def center(self):
-        frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(
-            QtGui.QApplication.desktop().cursor().pos()
-        )
-        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
-        frameGm.moveCenter(centerPoint)
-        self.move(frameGm.topLeft())
-
     def initUI(self):
         # self.setGeometry(200, 200, 300, 300)
         self.setWindowTitle("HKL Scan")
-        self.build_icons()
         self.build_layout()
-        self.center()
-
-    def build_icons(self):
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
-        self.folder_icon = path.join(pixmap_path, "folder-open.svg")
-        self.check_icon = path.join(pixmap_path, "check.svg")
+        center_screen(self)
 
     def build_layout(self):
         font_bold = QtGui.QFont()
@@ -54,7 +41,7 @@ class MyWindow(QWidget):
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.pushButton_open_file = QtWidgets.QPushButton(self.frame)
         self.pushButton_open_file.setIconSize(QtCore.QSize(20, 20))
-        self.pushButton_open_file.setIcon(QIcon(self.folder_icon))
+        self.pushButton_open_file.setIcon(QIcon(Icons.folder))
         self.horizontalLayout_4.addWidget(self.pushButton_open_file)
         self.lineEdit_file_name = QtWidgets.QLineEdit(self.frame)
         self.horizontalLayout_4.addWidget(self.lineEdit_file_name)
@@ -198,7 +185,7 @@ class MyWindow(QWidget):
         self.pushButton_start = QtWidgets.QPushButton(self.frame)
         self.pushButton_start.setText("Start")
         self.pushButton_start.setIconSize(QtCore.QSize(20, 20))
-        self.pushButton_start.setIcon(QIcon(self.check_icon))
+        self.pushButton_start.setIcon(QIcon(Icons.check))
         self.horizontalLayout_start.addWidget(self.pushButton_start)
         spacerItem_3 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
@@ -245,11 +232,12 @@ class MyWindow(QWidget):
 
     def build_scan_cmd(self):
         if self.lineEdit_file_name.text():
-            cmd = "daf.rfscan "
+            cmd = "daf.ffscan "
             file = self.lineEdit_file_name.text() + " "
             time = self.lineEdit_time.text() + " "
-            xlabel = "-x " + self.comboBox_xlabel.currentText()
-            cmd += file + time + xlabel
+            # xlabel = "-x " + self.comboBox_xlabel.currentText()
+            # cmd += file + time + xlabel
+            cmd += file + time
         else:
             cmd = "daf.scan "
             hi = self.lineEdit_hi.text() + " "
@@ -260,8 +248,9 @@ class MyWindow(QWidget):
             lf = self.lineEdit_lf.text() + " "
             steps = self.lineEdit_steps.text() + " "
             time = self.lineEdit_time.text() + " "
-            xlabel = "-x " + self.comboBox_xlabel.currentText() + " "
-            cmd += hi + ki + li + hf + kf + lf + steps + time + xlabel
+            # xlabel = "-x " + self.comboBox_xlabel.currentText() + " "
+            # cmd += hi + ki + li + hf + kf + lf + steps + time + xlabel
+            cmd += hi + ki + li + hf + kf + lf + steps + time
             if self.lineEdit_csv.text():
                 cmd += "-n " + self.lineEdit_csv.text() + " "
             if self.checkBox_csv.isChecked():

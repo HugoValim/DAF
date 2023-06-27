@@ -5,27 +5,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QIcon
 
+from daf.gui.utils import center_screen, Icons
+
 
 class MyWindow(QWidget):
     def __init__(self, n_motors, scan_type):
         super(MyWindow, self).__init__()
         self.n_motors = n_motors
         self.scan_type = scan_type
-        self.build_icons()
         self.initUI()
-
-    def center(self):
-        frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(
-            QtGui.QApplication.desktop().cursor().pos()
-        )
-        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
-        frameGm.moveCenter(centerPoint)
-        self.move(frameGm.topLeft())
-
-    def build_icons(self):
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
-        self.check_icon = path.join(pixmap_path, "check.svg")
 
     def initUI(self):
         # self.setGeometry(200, 200, 300, 300)
@@ -55,7 +43,7 @@ class MyWindow(QWidget):
         self.build_motor_layout()
         self.build_time_step()
         self.build_scan_button()
-        self.center()
+        center_screen(self)
 
     def build_motor_layout(self):
         self.motor_layout = []
@@ -182,7 +170,7 @@ class MyWindow(QWidget):
         self.pushButton_start = QtWidgets.QPushButton(self.frame)
         self.pushButton_start.setText("Start")
         self.pushButton_start.setIconSize(QtCore.QSize(20, 20))
-        self.pushButton_start.setIcon(QIcon(self.check_icon))
+        self.pushButton_start.setIcon(QIcon(Icons.check))
         self.horizontalLayout_start.addWidget(self.pushButton_start)
         spacerItem_3 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum

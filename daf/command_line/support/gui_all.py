@@ -10,7 +10,7 @@ import subprocess
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 import daf.utils.daf_paths as dp
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 
 
 class GUIAll(SupportBase):
@@ -32,14 +32,15 @@ class GUIAll(SupportBase):
     @staticmethod
     def open_daf_guis() -> int:
         """If the --all option is passed open all DAF's GUIs as well"""
-        proc = subprocess.Popen("daf.gui; daf.live", shell=True)
-        return proc.pid
+        proc1 = subprocess.Popen("daf.gui", shell=True)
+        proc2 = subprocess.Popen("daf.live", shell=True)
+        return
 
     def run_cmd(self) -> None:
         self.open_daf_guis()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = GUIAll()
     obj.run_cmd()

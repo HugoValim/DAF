@@ -7,7 +7,7 @@ import argparse as ap
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 import daf.utils.daf_paths as dp
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 
 
 class Reset(SupportBase):
@@ -15,7 +15,7 @@ class Reset(SupportBase):
     DESC = """Reset experiment to default"""
     EPI = """
     Eg:
-        daf.reset -a
+        daf.reset
         """
 
     def __init__(self):
@@ -26,15 +26,15 @@ class Reset(SupportBase):
     def parse_command_line(self) -> ap.Namespace:
         super().parse_command_line()
         self.parser.add_argument(
-            "-a",
-            "--all",
+            "-g",
+            "--global",
             action="store_true",
-            help="Sets all inputs of the experiment to default",
+            help="Force to reset the global file",
         )
         self.parser.add_argument(
             "--hard",
             action="store_true",
-            help="If used deletes all setups before reseting them",
+            help="if used, deletes all previous configuration",
         )
 
         args = self.parser.parse_args()
@@ -42,26 +42,26 @@ class Reset(SupportBase):
 
     def soft_reset(self) -> None:
         """Reset only the current experiment file to default"""
-        if self.experiment_file_dict["simulated"]:
-            data_sim = gdd.default
-            data_sim["simulated"] = True
-            gdd.generate_file(data=data_sim, file_name=".Experiment")
-        else:
-            gdd.generate_file(file_name=".Experiment")
+        data = self.build_current_file(
+            self.experiment_file_dict["simulated"],
+            self.experiment_file_dict["kafka_topic"],
+            self.experiment_file_dict["scan_db"],
+        )
+        self.write_to_disc(
+            data, fetch_motors=False, is_global=self.parsed_args_dict["global"]
+        )
 
     def hard_reset(self) -> None:
         """Also remove all configuration files user home"""
-        self.soft_reset()
         os.system('rm -fr "$HOME/.daf/"')
 
     def run_cmd(self) -> None:
-        if self.parsed_args_dict["all"]:
-            self.soft_reset()
+        self.soft_reset()
         if self.parsed_args_dict["hard"]:
             self.hard_reset()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = Reset()
     obj.run_cmd()

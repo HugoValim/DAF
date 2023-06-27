@@ -8,6 +8,7 @@ from unittest.mock import patch
 import daf.utils.dafutilities as du
 from daf.command_line.support.init import Init, main
 import daf.utils.generate_daf_default as gdd
+from daf.utils.daf_paths import DAFPaths as dp
 
 
 class TestDAF(unittest.TestCase):
@@ -49,31 +50,47 @@ class TestDAF(unittest.TestCase):
     ):
         os.remove(".Experiment")
         assert not os.path.isfile(".Experiment")
-        obj = self.make_obj([])
+        obj = self.make_obj(["--local"])
         obj.run_cmd()
         assert os.path.isfile(".Experiment")
 
-    def test_GIVEN_cli_argument_WHEN_no_input_THEN_check_if_the_file_was_created_right(
-        self,
-    ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
-        with patch.object(sys, "argv", testargs):
-            main()
-        assert os.path.isfile(du.DEFAULT)
-        io = du.DAFIO()
-        dict_now = io.read()
-        assert dict_now["simulated"] == False
-
-    def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_check_if_the_file_was_created_right(
+    def test_GIVEN_cli_argument_WHEN_inputting_local_THEN_check_if_the_file_was_created_right(
         self,
     ):
         testargs = [
             "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-            "-s",
+            "--local",
+            "--simulated",
         ]
         with patch.object(sys, "argv", testargs):
             main()
-        assert os.path.isfile(du.DEFAULT)
+        assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
+        io = du.DAFIO()
+        dict_now = io.read()
+        assert dict_now["simulated"] == True
+
+    def test_GIVEN_cli_argument_WHEN_no_input_THEN_check_if_the_file_was_created_right(
+        self,
+    ):
+        testargs = [
+            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+            "--local",
+            "--simulated",
+        ]
+        with patch.object(sys, "argv", testargs):
+            main()
+        assert os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT)
+        io = du.DAFIO()
+        dict_now = io.read()
+        assert dict_now["simulated"] == True
+
+    def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_check_if_the_file_was_created_right(
+        self,
+    ):
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-s", "-l"]
+        with patch.object(sys, "argv", testargs):
+            main()
+        assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
         io = du.DAFIO()
         dict_now = io.read()
         assert dict_now["simulated"] == True

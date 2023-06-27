@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.experiment.experiment_utils import ExperimentBase
 
 
@@ -47,7 +47,7 @@ class OperationMode(ExperimentBase):
         self.write_to_experiment_file(self.experiment_file_dict)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = OperationMode()
     obj.run_cmd()
