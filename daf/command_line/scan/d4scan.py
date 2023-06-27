@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
 
@@ -24,7 +24,7 @@ class D4Scan(ScanBase):
         self.run_scan()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = D4Scan()
     obj.run_cmd()

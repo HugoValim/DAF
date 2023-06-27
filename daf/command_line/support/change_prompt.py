@@ -10,7 +10,7 @@ import subprocess
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 import daf.utils.daf_paths as dp
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 
 
 class Init(SupportBase):
@@ -38,7 +38,7 @@ class Init(SupportBase):
         self.change_prompt()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = Init()
     obj.run_cmd(obj.parsed_args_dict)

@@ -10,6 +10,8 @@ from daf.core.matrix_utils import (
     calculate_pseudo_angle_from_motor_angles,
 )
 
+from daf.core.math_utils import vector_angle, vec_norm
+
 
 class ReciprocalMapWindow:
     def two_theta_max(self):
@@ -92,8 +94,6 @@ class ReciprocalMapWindow:
 
         ttmin = None
         exp = xu.HXRD(idir, ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor)
-        exp_real = self.hrxrd
-
         mat = self.samp
         pi = np.pi
         EPSILON = 1e-7
@@ -120,8 +120,7 @@ class ReciprocalMapWindow:
                 # from .mpl_helper import SqrtAllowNegScale
                 return True, plt
             except ImportError:  # print(d['qvec'][m][ind['ind'][0]])
-                if config.VERBOSITY >= config.INFO_LOW:
-                    print("%s: Warning: plot functionality not available" % funcname)
+                print("%s: Warning: plot functionality not available" % funcname)
                 return False, None
 
         def get_peaks(mat, exp, ttmax):
@@ -148,28 +147,19 @@ class ReciprocalMapWindow:
             # calculate maximal Bragg indices
             hma = int(
                 math.ceil(
-                    xu.math.vector.VecNorm(mat.a1)
-                    * exp.k0
-                    / pi
-                    * math.sin(math.radians(ttmax / 2.0))
+                    vec_norm(mat.a1) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0))
                 )
             )
             hmi = -hma
             kma = int(
                 math.ceil(
-                    xu.math.vector.VecNorm(mat.a2)
-                    * exp.k0
-                    / pi
-                    * math.sin(math.radians(ttmax / 2.0))
+                    vec_norm(mat.a2) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0))
                 )
             )
             kmi = -kma
             lma = int(
                 math.ceil(
-                    xu.math.vector.VecNorm(mat.a3)
-                    * exp.k0
-                    / pi
-                    * math.sin(math.radians(ttmax / 2.0))
+                    vec_norm(mat.a3) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0))
                 )
             )
             lmi = -lma
@@ -183,7 +173,7 @@ class ReciprocalMapWindow:
             )
 
             q = mat.Q(hkl)
-            qnorm = xu.math.vector.VecNorm(q)
+            qnorm = vec_norm(q)
             m = qnorm < qmax
 
             data = numpy.zeros(
@@ -262,7 +252,7 @@ class ReciprocalMapWindow:
             plt.vlines(0, -2 * k0, 2 * k0, color="0.5", lw=0.5)
 
         # generate mask for plotting
-        m = numpy.zeros_like(d, dtype=numpy.bool)
+        m = numpy.zeros_like(d, dtype=bool)
         for i, (q, r) in enumerate(zip(d["qvec"], d["r"])):
             if abs(q[0]) < maxqout * k0 and r > EPSILON:
                 m[i] = True
@@ -357,9 +347,9 @@ class ReciprocalMapWindow:
                         float(ang[0][-1]),
                     ]
 
-                    text = "{}\nhkl: {}\nangles: {}".format(
-                        mat.name, str(d["hkl"][m][ind["ind"][0]]), str(angles)
-                    )
+                    # text = "{}\nhkl: {}\nangles: {}".format(
+                    #     mat.name, str(d["hkl"][m][ind["ind"][0]]), str(angles)
+                    # )
                     numpy.set_printoptions(**popts)
 
                     pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(

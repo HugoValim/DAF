@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.cli_base_utils import CLIBase
 from daf.command_line.scan.daf_scan_utils import ScanBase
 
@@ -18,7 +18,7 @@ class FromFileScan(ScanBase):
         """
 
     def __init__(self):
-        super().__init__(scan_type="hkl")
+        super().__init__(scan_type="list_scan")
         self.exp = self.build_exp()
 
     def parse_command_line(self):
@@ -32,7 +32,7 @@ class FromFileScan(ScanBase):
         args = self.parser.parse_args()
         return args
 
-    def generate_data_for_scan(self, full_file_path: str, motor_map: dict) -> np.array:
+    def generate_data_for_scan(self, full_file_path: str) -> np.array:
         """Generate the scan path for scans"""
         scan_points = pd.read_csv(full_file_path)
         mu_points = [
@@ -55,36 +55,33 @@ class FromFileScan(ScanBase):
         ]  # Get only the points related to del
 
         data_for_scan = {
-            motor_map["mu"]: mu_points,
-            motor_map["eta"]: eta_points,
-            motor_map["chi"]: chi_points,
-            motor_map["phi"]: phi_points,
-            motor_map["nu"]: nu_points,
-            motor_map["del"]: del_points,
+            "mu": [mu_points],
+            "eta": [eta_points],
+            "chi": [chi_points],
+            "phi": [phi_points],
+            "nu": [nu_points],
+            "del": [del_points],
         }
         ordered_motors = [i for i in data_for_scan.keys()]
 
         return data_for_scan, ordered_motors
 
-    def configure_scan(self):
+    def configure_scan_input(self):
         """Basically, a wrapper for configure_scan_inputs. It may differ from scan to scan"""
         data_for_scan, ordered_motors = self.generate_data_for_scan(
-            self.parsed_args_dict["file_name"], self.motor_map
+            self.parsed_args_dict["file_name"]
         )
-        if self.parsed_args_dict["xlabel"] is not None:
-            xlabel = self.motor_map[self.parsed_args_dict["xlabel"].lower()]
-        else:
-            xlabel = "points"
-        scan_args = self.config_scan_inputs(
-            self.parsed_args_dict,
-            self.motor_map,
-            self.number_of_motors,
-            self.scan_type,
-            data_for_scan,
-            ordered_motors,
-            xlabel,
-        )
-        return scan_args
+        inputed_motors = [i for i in data_for_scan.keys()]
+        return {
+            "scan_data": data_for_scan,
+            "inputed_motors": inputed_motors,
+            "motors_data_dict": self.experiment_file_dict["motors"],
+            "counters": self.get_counters(),
+            "scan_type": self.scan_type,
+            "steps": None,
+            "acquisition_time": self.parsed_args_dict["time"],
+            "output": self.parsed_args_dict["output"],
+        }
 
     def run_cmd(self):
         """
@@ -94,7 +91,7 @@ class FromFileScan(ScanBase):
         self.run_scan()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = FromFileScan()
     obj.run_cmd()

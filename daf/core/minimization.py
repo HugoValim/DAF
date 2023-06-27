@@ -9,6 +9,7 @@ from daf.core.matrix_utils import (
     calculate_rotation_matrix_from_diffractometer_angles,
     calculate_pseudo_angle_from_motor_angles,
 )
+from daf.core.math_utils import vector_angle
 
 
 class MinimizationProc(UBMatrix):
@@ -97,7 +98,7 @@ class MinimizationProc(UBMatrix):
             self.Q_lab = self.hrxrd.Transform(self.Q_material)
 
         self.dhkl = self.samp.planeDistance(self.hkl)
-        tilt = xu.math.vector.VecAngle(self.hkl, self.samp.Q(self.ndir), deg=True)
+        tilt = vector_angle(self.hkl, self.samp.Q(self.ndir), deg=True)
 
         if "sv" in kwargs.keys():
             self.start = kwargs["sv"]

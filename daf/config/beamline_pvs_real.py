@@ -4,5 +4,6 @@ beamline_pvs = {
         "mnemonic": "PV_energy",
         "value": 0,
         "simulated": False,
-    },  #  bl_energy_pv
+        "up": 1,
+    },  # bl_energy_pv
 }

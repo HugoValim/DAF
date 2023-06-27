@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse as ap
-import numpy as np
-
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.move.move_utils import MoveBase
 
 
@@ -42,23 +39,29 @@ class AngleMove(MoveBase):
         dict_ = self.experiment_file_dict["scan_stats"]
         if dict_:
             if parsed_args_dict["counter"] is not None:
-                CEN = dict_[parsed_args_dict["counter"]]["FWHM_at"]
-                MAX = dict_[parsed_args_dict["counter"]]["peak_at"]
-                stat_dict = {"CEN": CEN, "MAX": MAX}
+                FWHM = dict_["fwhm"][parsed_args_dict["counter"]]
+                CEN = dict_["com"][parsed_args_dict["counter"]]
+                MAX = dict_["max"][parsed_args_dict["counter"]][0]
+                MIN = dict_["min"][parsed_args_dict["counter"]][0]
+
             elif self.experiment_file_dict["main_scan_counter"]:
-                CEN = dict_[self.experiment_file_dict["main_scan_counter"]]["FWHM_at"]
-                MAX = dict_[self.experiment_file_dict["main_scan_counter"]]["peak_at"]
-                stat_dict = {"CEN": CEN, "MAX": MAX}
+                FWHM = dict_["fwhm"][self.experiment_file_dict["main_scan_counter"]]
+                CEN = dict_["com"][self.experiment_file_dict["main_scan_counter"]]
+                MAX = dict_["max"][self.experiment_file_dict["main_scan_counter"]][0]
+                MIN = dict_["min"][self.experiment_file_dict["main_scan_counter"]][0]
             else:
                 values_view = dict_.keys()
                 value_iterator = iter(values_view)
                 first_key = next(value_iterator)
-                CEN = dict_[first_key]["FWHM_at"]
-                MAX = dict_[first_key]["peak_at"]
-                stat_dict = {"CEN": CEN, "MAX": MAX}
-
+                FWHM = dict_["fwhm"][first_key]
+                CEN = dict_["com"][first_key]
+                MAX = dict_["max"][first_key][0]
+                MIN = dict_["min"][first_key][0]
+            stat_dict = {"FWHM": FWHM, "CEN": CEN, "MAX": MAX, "MIN": MIN}
         dict_parsed_with_counter_stats = {
-            key: (stat_dict[value] if (value == "CEN" or value == "MAX") else value)
+            key: (
+                stat_dict[value] if (value in ["FWHM", "CEN", "MAX", "MIN"]) else value
+            )
             for key, value in parsed_args_dict.items()
         }
         return dict_parsed_with_counter_stats
@@ -67,12 +70,13 @@ class AngleMove(MoveBase):
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
         motor_dict = self.write_angles(self.parsed_args_dict)
+        self.write_to_experiment_file(motor_dict, is_motor_set_point=True, write=False)
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()
         self.update_experiment_file(pseudo_dict)
         self.write_to_experiment_file(motor_dict, is_motor_set_point=True)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = AngleMove()
     obj.run_cmd()

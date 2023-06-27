@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 import daf.utils.dafutilities as du
-import daf.utils.daf_paths as dp
+from daf.utils.daf_paths import DAFPaths as dp
 from daf.command_line.support.setup import Setup, main
 import daf.utils.generate_daf_default as gdd
 from daf.command_line.support.init import Init
@@ -137,10 +137,10 @@ class TestDAF(unittest.TestCase):
         param = []
         obj = self.make_obj([arg, *param])
         assert obj.parsed_args_dict[full_arg] == True
-        obj.checkout_setup("default")
+        obj.checkout_setup(dp.DEFAULT_FILE_NAME)
         obj.update_setup_description(".", "test desc")
         obj.run_cmd()
-        path_to_the_setup = os.path.join(dp.DAF_CONFIGS, "default")
+        path_to_the_setup = os.path.join(dp.GLOBAL_EXPERIMENT_DEFAULT)
         dict_args = obj.io.read(filepath=path_to_the_setup)
         assert dict_args["setup_desc"] == "test desc"
 

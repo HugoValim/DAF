@@ -6,7 +6,7 @@ import yaml
 
 from daf.utils.print_utils import TablePrinter
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
 from daf.utils import daf_paths as dp
 from daf.command_line.experiment.experiment_utils import ExperimentBase
@@ -410,7 +410,7 @@ class SetUUB(ExperimentBase):
             self.write_to_experiment_file(self.experiment_file_dict)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = SetUUB()
     obj.run_cmd()

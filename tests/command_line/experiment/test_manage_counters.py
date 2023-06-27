@@ -10,7 +10,7 @@ import daf.utils.dafutilities as du
 from daf.command_line.experiment.manage_counters import ManageCounters, main
 import daf.utils.generate_daf_default as gdd
 from daf.command_line.support.init import Init
-from daf.utils import daf_paths as dp
+from daf.utils.daf_paths import DAFPaths as dp
 from daf.core.main import DAF
 
 

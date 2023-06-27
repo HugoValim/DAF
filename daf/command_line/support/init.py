@@ -10,8 +10,9 @@ import subprocess
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 from daf.utils import dafutilities as du
-import daf.utils.daf_paths as dp
-from daf.utils.log import daf_log
+from daf.utils.daf_paths import DAFPaths as dp
+from daf.utils.decorators import cli_decorator
+from daf.utils.build_container import run_container
 
 
 class Init(SupportBase):
@@ -22,7 +23,7 @@ class Init(SupportBase):
        daf.init -a
         """
     DEFAULT_COUNTERS = [
-        "ringcurrent",
+        "ring_current",
     ]
 
     def __init__(self):
@@ -31,6 +32,7 @@ class Init(SupportBase):
         self.initialize_experiment_file()
         self.build_user_config()
         self.build_daf_base_config()
+        self.io = du.DAFIO(read=False)
 
     def parse_command_line(self) -> ap.Namespace:
         super().parse_command_line()
@@ -38,10 +40,31 @@ class Init(SupportBase):
             "-s",
             "--simulated",
             action="store_true",
-            help="Initiate DAF in simulated mode",
+            help="initiate DAF in simulated mode",
         )
         self.parser.add_argument(
-            "-a", "--all", action="store_true", help="Initiate all DAF GUIs as well"
+            "-a", "--all", action="store_true", help="initiate all DAF GUIs as well"
+        )
+        self.parser.add_argument(
+            "-g",
+            "--global",
+            action="store_true",
+            help="only initialize the global configuration",
+        )
+        self.parser.add_argument(
+            "-k",
+            "--kafka-topic",
+            metavar="topic",
+            type=str,
+            help="kafka topic to be used in scans",
+        )
+        self.parser.add_argument(
+            "-db",
+            "--scan-db",
+            metavar="topic",
+            # default="temp",
+            type=str,
+            help="db name to be used in scans",
         )
 
         args = self.parser.parse_args()
@@ -51,46 +74,15 @@ class Init(SupportBase):
     def initialize_experiment_file() -> None:
         """Build the .daf dir in the user home, also add the DAF default experiment file to it"""
         os.system('mkdir -p "{}"'.format(dp.DAF_CONFIGS))
-        gdd.generate_file(file_path=dp.DAF_CONFIGS, file_name="default")
 
-    @staticmethod
-    def get_motors_and_beamline_pvs_info(simulated: bool):
-        """Get the right motors depending if it is simulated or not"""
-        if simulated:
-            from daf.config.motors_sim_config import motors
-            from daf.config.beamline_pvs_sim import beamline_pvs
-        else:
-            from daf.config.motors_real_config import motors
-            from daf.config.beamline_pvs_real import beamline_pvs
-        return motors, beamline_pvs
-
-    def build_current_file(self, simulated: bool) -> None:
-        """Create the .Experiment file in the current dir"""
-        motors, beamline_pvs = self.get_motors_and_beamline_pvs_info(simulated)
-        base_data = gdd.default
-        base_data["motors"] = motors
-        base_data["beamline_pvs"] = beamline_pvs
-        return base_data
-
-    def write_to_disc(self, simulated: bool):
-        """write file to disk"""
-        data = self.build_current_file(simulated)
-        gdd.generate_file(data=data, file_name=du.DEFAULT)
-        
     def build_user_config(self) -> None:
         """Build the scan-utils configuration"""
-        os.system("mkdir -p {}".format(dp.SCAN_UTILS_USER_PATH))
+        os.system("mkdir -p {}".format(dp.SCAN_CONFIGS))
         gdd.generate_file(
             data=self.DEFAULT_COUNTERS,
-            file_path=dp.SCAN_UTILS_USER_PATH,
+            file_path=dp.SCAN_CONFIGS,
             file_name="config.daf_default.yml",
         )
-
-    @staticmethod
-    def write_yaml(dict_, file_path=None) -> None:
-        """Method to write to a yaml file"""
-        with open(file_path, "w") as file:
-            yaml.dump(dict_, file)
 
     def build_daf_base_config(self):
         """Build the counter configuration file in the user's home configuration dir"""
@@ -100,18 +92,27 @@ class Init(SupportBase):
         )
         self.write_yaml(daf_default, scan_utils_daf_default_path)
 
+    def build_global_experiment_file(self):
+        """Build the global configuration file if it is not built yet"""        
+        if not os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
+            data = self.build_current_file(self.parsed_args_dict["simulated"])
+            self.write_to_disc(data, is_global=True, fetch_motors=False)
+
     @staticmethod
     def open_daf_guis() -> None:
         """If the --all option is passed open all DAF's GUIs as well"""
         subprocess.Popen("daf.gui; daf.live", shell=True)
 
     def run_cmd(self) -> None:
-        self.write_to_disc(self.parsed_args_dict["simulated"])
+        if self.parsed_args_dict["simulated"]:
+            run_container()
+        data = self.build_current_file(self.parsed_args_dict["simulated"])
+        self.write_to_disc(data, is_global=self.parsed_args_dict["global"])
         if self.parsed_args_dict["all"]:
             self.open_daf_guis()
+        self.build_global_experiment_file()
 
-
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = Init()
     obj.run_cmd()

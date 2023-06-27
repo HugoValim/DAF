@@ -4,7 +4,7 @@
 import argparse as ap
 
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.query.query_utils import QueryBase
 
 
@@ -125,7 +125,7 @@ class SamplePos(QueryBase):
         self.print_position()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = SamplePos()
     obj.run_cmd()

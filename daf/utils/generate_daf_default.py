@@ -5,6 +5,7 @@ from os import path
 import numpy as np
 import yaml
 
+from daf.utils.general_configs import VERSION
 
 default = {
     "Mode": "2052",
@@ -73,6 +74,9 @@ default = {
     "main_scan_counter": None,  # Defines the counter main counter to use in daf.live
     "main_scan_motor": "",  # Defines the xlabel motor for daf.live
     "simulated": False,  # Defines in DAF will use simulated motors or not
+    "kafka_topic": "EMA_bluesky",  # Defines topic used in scans
+    "scan_db": "temp",  # Defines DB used in scans
+    "version": VERSION,
 }
 
 

@@ -10,7 +10,7 @@ import subprocess
 from daf.command_line.support.support_utils import SupportBase
 import daf.utils.generate_daf_default as gdd
 import daf.utils.daf_paths as dp
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 
 
 class NewSample(SupportBase):
@@ -49,7 +49,7 @@ class NewSample(SupportBase):
         os.mkdir(folder_name)
         os.chmod(folder_name, 0o777)
         os.chdir(folder_name)
-        subprocess.Popen("daf.init -a", shell=True)
+        subprocess.Popen("daf.init --all --local", shell=True)
 
     @staticmethod
     def kill_other_guis() -> None:
@@ -71,7 +71,7 @@ class NewSample(SupportBase):
             self.kill_other_guis()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = NewSample()
     obj.run_cmd()

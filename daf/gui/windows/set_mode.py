@@ -2,80 +2,66 @@ from os import path
 import subprocess
 
 from pydm import Display
-from qtpy.QtWidgets import QApplication
-from PyQt5 import QtGui
+from qtpy.QtWidgets import QApplication, QWidget
+from PyQt5 import QtGui, uic
 from PyQt5.QtGui import QIcon
 
 from daf.utils.dafutilities import DAFIO
+from daf.gui.utils import format_5_dec, Icons, center_screen
 
-DEFAULT = ".Experiment"
 
-
-class MyDisplay(Display):
-    def __init__(self, parent=None, args=None, macros=None):
-        super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
+class MyDisplay(QWidget):
+    def __init__(self, update_dict: dict):
+        super().__init__()
         self.app = QApplication.instance()
-        self.build_icons()
+        uic.loadUi(self.ui_filepath(), self)
         self.set_icons()
         self.make_connections()
         # self.init_labels()
         self.highlight_table()
         self.default_labels()
-        self.center()
-        self.io = DAFIO()
+        center_screen(self)
+        self.update_dict = update_dict
 
-    #
     def ui_filename(self):
-        return "ui/set_mode.ui"
+        return "set_mode.ui"
 
     def ui_filepath(self):
-        return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
-
-    def center(self):
-        frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(
-            QtGui.QApplication.desktop().cursor().pos()
-        )
-        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
-        frameGm.moveCenter(centerPoint)
-        self.move(frameGm.topLeft())
-
-    def build_icons(self):
-        """Build used icons"""
-        pixmap_path = path.join(path.dirname(path.realpath(__file__)), "ui/icons")
-        self.check_icon = path.join(pixmap_path, "check.svg")
+        full_path = path.join(path.dirname(path.realpath(__file__)), "../ui/")
+        full_image_path = path.join(full_path, self.ui_filename())
+        return full_image_path
 
     def set_icons(self):
         """Set used icons"""
-        self.mode_input_button.setIcon(QIcon(self.check_icon))
+        self.mode_input_button.setIcon(QIcon(Icons.check))
 
     def make_connections(self):
         """Make the needed connections"""
-        self.ui.mode_input.textChanged.connect(self.highlight_table)
-        self.ui.mode_input.textChanged.connect(self.get_cons)
-        self.ui.mode_input.textChanged.connect(self.update_labels)
-        self.ui.mode_input_button.clicked.connect(self.set_mode)
-        self.ui.lineEdit_set_cons1.textChanged.connect(self.get_cons)
-        self.ui.lineEdit_set_cons2.textChanged.connect(self.get_cons)
-        self.ui.lineEdit_set_cons3.textChanged.connect(self.get_cons)
+        self.mode_input.textChanged.connect(self.highlight_table)
+        self.mode_input.textChanged.connect(self.get_cons)
+        self.mode_input.textChanged.connect(self.update_labels)
+        self.mode_input_button.clicked.connect(self.set_mode)
+        self.lineEdit_set_cons1.textChanged.connect(self.get_cons)
+        self.lineEdit_set_cons2.textChanged.connect(self.get_cons)
+        self.lineEdit_set_cons3.textChanged.connect(self.get_cons)
 
     def init_labels(self):
         """Initialize labels disabled"""
-        self.ui.label_set_cons1.setEnabled(False)
-        self.ui.label_set_cons2.setEnabled(False)
-        self.ui.label_set_cons3.setEnabled(False)
+        self.label_set_cons1.setEnabled(False)
+        self.label_set_cons2.setEnabled(False)
+        self.label_set_cons3.setEnabled(False)
 
     def setup_dicts(self):
         """Make cons and set_cons dict"""
         cons_dict = {
-            "1": self.ui.label_set_cons1,
-            "2": self.ui.label_set_cons2,
-            "3": self.ui.label_set_cons3,
+            "1": self.label_set_cons1,
+            "2": self.label_set_cons2,
+            "3": self.label_set_cons3,
         }
         set_cons_dict = {
-            "1": self.ui.lineEdit_set_cons1,
-            "2": self.ui.lineEdit_set_cons2,
-            "3": self.ui.lineEdit_set_cons3,
+            "1": self.lineEdit_set_cons1,
+            "2": self.lineEdit_set_cons2,
+            "3": self.lineEdit_set_cons3,
         }
         return cons_dict, set_cons_dict
 
@@ -93,7 +79,7 @@ class MyDisplay(Display):
         """Update constraint label names"""
         cons_dict, set_cons_dict = self.setup_dicts()
         # Update constraint fields with the angles written in .Experement file
-        dict_args = self.io.read()
+        dict_args = self.update_dict["default"]
         dict_cons_angles = {
             "chi": "cons_chi",
             "delta": "cons_del",
@@ -124,41 +110,41 @@ class MyDisplay(Display):
     def highlight_table(self):
         """Logic to highlight the table"""
         table_dict = {
-            "00": self.ui.label_mode00,
-            "10": self.ui.label_mode10,
-            "20": self.ui.label_mode20,
-            "30": self.ui.label_mode30,
-            "40": self.ui.label_mode40,
-            "50": self.ui.label_mode50,
-            "60": self.ui.label_mode60,
-            "01": self.ui.label_mode01,
-            "11": self.ui.label_mode11,
-            "21": self.ui.label_mode21,
-            "31": self.ui.label_mode31,
-            "41": self.ui.label_mode41,
-            "51": self.ui.label_mode51,
-            "61": self.ui.label_mode61,
-            "02": self.ui.label_mode02,
-            "12": self.ui.label_mode12,
-            "22": self.ui.label_mode22,
-            "32": self.ui.label_mode32,
-            "42": self.ui.label_mode42,
-            "52": self.ui.label_mode52,
-            "62": self.ui.label_mode62,
-            "03": self.ui.label_mode03,
-            "13": self.ui.label_mode13,
-            "23": self.ui.label_mode23,
-            "33": self.ui.label_mode33,
-            "43": self.ui.label_mode43,
-            "53": self.ui.label_mode53,
-            "63": self.ui.label_mode63,
-            "04": self.ui.label_mode04,
-            "14": self.ui.label_mode14,
-            "24": self.ui.label_mode24,
-            "34": self.ui.label_mode34,
-            "44": self.ui.label_mode44,
-            "54": self.ui.label_mode54,
-            "64": self.ui.label_mode64,
+            "00": self.label_mode00,
+            "10": self.label_mode10,
+            "20": self.label_mode20,
+            "30": self.label_mode30,
+            "40": self.label_mode40,
+            "50": self.label_mode50,
+            "60": self.label_mode60,
+            "01": self.label_mode01,
+            "11": self.label_mode11,
+            "21": self.label_mode21,
+            "31": self.label_mode31,
+            "41": self.label_mode41,
+            "51": self.label_mode51,
+            "61": self.label_mode61,
+            "02": self.label_mode02,
+            "12": self.label_mode12,
+            "22": self.label_mode22,
+            "32": self.label_mode32,
+            "42": self.label_mode42,
+            "52": self.label_mode52,
+            "62": self.label_mode62,
+            "03": self.label_mode03,
+            "13": self.label_mode13,
+            "23": self.label_mode23,
+            "33": self.label_mode33,
+            "43": self.label_mode43,
+            "53": self.label_mode53,
+            "63": self.label_mode63,
+            "04": self.label_mode04,
+            "14": self.label_mode14,
+            "24": self.label_mode24,
+            "34": self.label_mode34,
+            "44": self.label_mode44,
+            "54": self.label_mode54,
+            "64": self.label_mode64,
         }
 
         column = 0
@@ -174,8 +160,8 @@ class MyDisplay(Display):
                                                 font-size: 14px;
                                             """
             )
-            if len(str(self.ui.mode_input.text())) >= column + 1:
-                if key == str(self.ui.mode_input.text())[column] + str(column):
+            if len(str(self.mode_input.text())) >= column + 1:
+                if key == str(self.mode_input.text())[column] + str(column):
                     table_dict[key].setStyleSheet(
                         """
                                                         
@@ -227,7 +213,7 @@ class MyDisplay(Display):
                 arg = "--cons_" + str(ang) + " " + str(fix_in) + " "
                 daf_cons_args += arg
         p = subprocess.Popen(
-            "daf.mode {} ".format(str(self.ui.mode_input.text())), shell=True
+            "daf.mode {} ".format(str(self.mode_input.text())), shell=True
         )
         p.wait()  # Wait for the first command, otherwise it'll not execute the second one
         subprocess.Popen("daf.cons {} ".format(daf_cons_args), shell=True)

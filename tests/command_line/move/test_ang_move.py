@@ -1,19 +1,14 @@
-import os
 import sys
 
 import pytest
-import unittest
-from unittest.mock import patch
 import numpy as np
+import epics
 
-import daf.utils.dafutilities as du
-from daf.command_line.move.ang_move import AngleMove, main
-import daf.utils.generate_daf_default as gdd
-from daf.command_line.support.init import Init
-from daf.core.main import DAF
+from daf.command_line.move.ang_move import AngleMove
 
 
-class TestDAF(unittest.TestCase):
+@pytest.fixture
+def motor_dict():
     predefined_dict = {
         "mu": 1.1971657231936314e-22,
         "eta": 11.402686406409414,
@@ -32,246 +27,281 @@ class TestDAF(unittest.TestCase):
         "omega": -0.0,
         "hklnow": np.array([1.0, 1.0, 1.0]),
     }
+    return predefined_dict
 
-    def setUp(self):
-        data_sim = Init.build_current_file(Init, True)
-        data_sim["simulated"] = True
-        data_sim["beamline_pvs"]["energy"]["value"] = 10000.0
-        data_sim["scan_stats"] = {
-            "mvs2_diode": {
-                "COM": 22.689189910888672,
-                "FWHM": 0.519565342590736,
-                "FWHM_at": 21.922770471720945,
-                "peak": 1.23,
-                "peak_at": 10.8543,
-            },
-            "ringcurrent": {
-                "COM": 22.709991455078125,
-                "FWHM": 1.3860237677915095,
-                "FWHM_at": 20.983173898742514,
-                "peak": 82.21752166748047,
-                "peak_at": 21.809999465942383,
-            },
-        }
-        data_sim["main_scan_counter"] = "ringcurrent"
-        gdd.generate_file(data=data_sim, file_name=".Experiment")
 
-    def tearDown(self):
-        os.system("rm .Experiment")
-
-    @staticmethod
-    def make_obj(command_line_args: list) -> AngleMove:
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
-        for arg in command_line_args:
-            testargs.append(arg)
-        with patch.object(sys, "argv", testargs):
-            obj = AngleMove()
-        return obj
-
-    def test_GIVEN_cli_argument_WHEN_mu_is_30_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-m", "30"])
-        assert float(obj.parsed_args_dict["mu"]) == 30
-
-    def test_GIVEN_cli_argument_WHEN_eta_is_10_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-e", "10"])
-        assert float(obj.parsed_args_dict["eta"]) == 10
-
-    def test_GIVEN_cli_argument_WHEN_chi_is_15_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-c", "15"])
-        assert float(obj.parsed_args_dict["chi"]) == 15
-
-    def test_GIVEN_cli_argument_WHEN_phi_is_20_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-p", "20"])
-        assert float(obj.parsed_args_dict["phi"]) == 20
-
-    def test_GIVEN_cli_argument_WHEN_nu_is_25_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-n", "25"])
-        assert float(obj.parsed_args_dict["nu"]) == 25
-
-    def test_GIVEN_cli_argument_WHEN_del_is_30_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-d", "33"])
-        assert float(obj.parsed_args_dict["del"]) == 33
-
-    def test_GIVEN_cli_argument_WHEN_del_is_MAX_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-d", "MAX"])
-        assert obj.parsed_args_dict["del"] == "MAX"
-
-    def test_GIVEN_cli_argument_WHEN_del_is_CEN_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-d", "CEN"])
-        assert obj.parsed_args_dict["del"] == "CEN"
-
-    def test_GIVEN_cli_argument_WHEN_counter_is_passed_THEN_check_parsed_args(self):
-        obj = self.make_obj(["-co", "pilatus_roi_1"])
-        assert obj.parsed_args_dict["counter"] == "pilatus_roi_1"
-
-    def test_GIVEN_cli_argument_WHEN_several_arguments_are_passed_THEN_check_parsed_args(
-        self,
-    ):
-        obj = self.make_obj(
-            ["-co", "pilatus_roi_1", "-d", "CEN", "-n", "25", "-e", "10"]
-        )
-        assert obj.parsed_args_dict["counter"] == "pilatus_roi_1"
-        assert obj.parsed_args_dict["del"] == "CEN"
-        assert float(obj.parsed_args_dict["nu"]) == 25
-        assert float(obj.parsed_args_dict["eta"]) == 10
-
-    def test_GIVEN_cli_argument_WHEN_mu_is_moved_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = 1
-        obj = self.make_obj(["-m", str(pos_to_move)])
+@pytest.fixture(params=["-5", "5"])
+def run_command_line(monkeypatch, request):
+    command_line_arguments = []
+    marker = request.node.get_closest_marker("fixt_data")
+    inptued_args = list(marker.args)
+    command_line_arguments.append(inptued_args.pop(0))
+    for motor in inptued_args:
+        command_line_arguments.append(motor)
+        command_line_arguments.append(request.param)
+    with monkeypatch.context() as m:
+        m.setattr(sys, "argv", command_line_arguments)
+        obj = AngleMove()
         obj.run_cmd()
-        dict_now = obj.io.read()
-        assert dict_now["motors"]["mu"]["value"] == pos_to_move
+        return obj, request.param
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = 2
-        obj = self.make_obj(["-e", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        assert dict_now["motors"]["eta"]["value"] == pos_to_move
 
-    def test_GIVEN_cli_argument_WHEN_chi_is_moved_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = 3
-        obj = self.make_obj(["-c", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        assert dict_now["motors"]["chi"]["value"] == pos_to_move
+@pytest.mark.fixt_data("daf.amv", "--mu")
+def test_move_mu(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["mu"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["mu"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_phi_is_moved_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = 4
-        obj = self.make_obj(["-p", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        assert dict_now["motors"]["phi"]["value"] == pos_to_move
 
-    def test_GIVEN_cli_argument_WHEN_nu_is_moved_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = 5
-        obj = self.make_obj(["-n", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        assert dict_now["motors"]["nu"]["value"] == pos_to_move
+@pytest.mark.fixt_data("daf.amv", "--eta")
+def test_move_eta(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["eta"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["eta"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_del_is_moved_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = 6
-        obj = self.make_obj(["-d", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        assert dict_now["motors"]["del"]["value"] == pos_to_move
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = "CEN"
-        obj = self.make_obj(["-e", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        self.assertAlmostEqual(
-            dict_now["motors"]["eta"]["value"], 20.983173898742514, 2
-        )
+@pytest.mark.fixt_data("daf.amv", "--chi")
+def test_move_chi(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["chi"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["chi"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = "MAX"
-        obj = self.make_obj(["-e", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        self.assertAlmostEqual(
-            dict_now["motors"]["eta"]["value"], 21.809999465942383, 2
-        )
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_passing_the_counter_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = "CEN"
-        obj = self.make_obj(["-e", str(pos_to_move), "-co", "mvs2_diode"])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        self.assertAlmostEqual(
-            dict_now["motors"]["eta"]["value"], 21.922770471720945, 2
-        )
+@pytest.mark.fixt_data("daf.amv", "--phi")
+def test_move_phi(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["phi"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["phi"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_MAX_passing_the_counter_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = "MAX"
-        obj = self.make_obj(["-e", str(pos_to_move), "-co", "mvs2_diode"])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        self.assertAlmostEqual(dict_now["motors"]["eta"]["value"], 10.8543, 2)
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_without_main_counter_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = "CEN"
-        obj = self.make_obj(["-e", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        dict_now["main_scan_counter"] = ""
-        self.assertAlmostEqual(
-            dict_now["motors"]["eta"]["value"], 20.983173898742514, 2
-        )
+@pytest.mark.fixt_data("daf.amv", "--nu")
+def test_move_nu(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["nu"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["nu"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_MAX_without_main_counter_THEN_check_if_written(
-        self,
-    ):
-        pos_to_move = "MAX"
-        obj = self.make_obj(["-e", str(pos_to_move)])
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        dict_now["main_scan_counter"] = ""
-        self.assertAlmostEqual(
-            dict_now["motors"]["eta"]["value"], 21.809999465942383, 2
-        )
 
-    def test_GIVEN_cli_argument_WHEN_any_motor_is_moved_THEN_check_pseudo_angles_write(
-        self,
-    ):
-        pos_to_move = 10
-        obj = self.make_obj(["-e", str(pos_to_move)])
-        obj.run_cmd()
-        pseudo_dict = obj.get_pseudo_angles_from_motor_angles()
-        obj.run_cmd()
-        dict_now = obj.io.read()
-        del pseudo_dict["q_vector"]
-        del pseudo_dict["q_vector_norm"]
-        for key, value in pseudo_dict.items():
-            self.assertAlmostEqual(dict_now[key], pseudo_dict[key], 5)
+@pytest.mark.fixt_data("daf.amv", "--del")
+def test_move_del(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["del"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["del"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_inputing_eta_THEN_test_for_problems(
-        self,
-    ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-e", "5"]
-        with patch.object(sys, "argv", testargs):
-            main()
 
-    def test_GIVEN_cli_argument_WHEN_inputing_del_THEN_test_for_problems(
-        self,
-    ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-d", "10"]
-        with patch.object(sys, "argv", testargs):
-            main()
+@pytest.mark.fixt_data("daf.amv", "--sample_z")
+def test_move_sample_z(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_z"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_z"]["pv"]) == float(param)
 
-    def test_GIVEN_cli_argument_WHEN_inputing_eta_del_THEN_test_for_problems(
-        self,
-    ):
-        testargs = [
-            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-            "-e",
-            "5",
-            "-d",
-            "10",
-        ]
-        with patch.object(sys, "argv", testargs):
-            main()
+
+@pytest.mark.fixt_data("daf.amv", "--sample_x")
+def test_move_sample_x(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_x"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_x"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--sample_rx")
+def test_move_sample_rx(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_rx"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_rx"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--sample_y")
+def test_move_sample_y(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_y"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_y"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--sample_ry")
+def test_move_sample_ry(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_ry"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_ry"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--sample_x_s1")
+def test_move_sample_x_s1(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_x_s1"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_x_s1"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--sample_y_s1")
+def test_move_sample_y_s1(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["sample_y_s1"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["sample_y_s1"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--diffractomer_ux")
+def test_move_diffractomer_ux(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["diffractomer_ux"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["diffractomer_ux"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--diffractomer_uy")
+def test_move_diffractomer_uy(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["diffractomer_uy"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["diffractomer_uy"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--diffractomer_rx")
+def test_move_diffractomer_rx(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["diffractomer_rx"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["diffractomer_rx"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--theta_analyzer_crystal")
+def test_move_theta_analyzer_crystal(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["theta_analyzer_crystal"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["theta_analyzer_crystal"]["pv"]) == float(
+        param
+    )
+
+
+@pytest.mark.fixt_data("daf.amv", "--2theta_analyzer_crystal")
+def test_move_2theta_analyzer_crystal(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["2theta_analyzer_crystal"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["2theta_analyzer_crystal"]["pv"]) == float(
+        param
+    )
+
+
+# def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_THEN_check_if_written(
+#     ,
+# ):
+#     pos_to_move = "CEN"
+#     obj = .make_obj(["-e", str(pos_to_move)])
+#     obj.run_cmd()
+#     dict_now = obj.io.read()
+#     .assertAlmostEqual(
+#         dict_now["motors"]["eta"]["value"], 20.983173898742514, 2
+#     )
+
+# def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_THEN_check_if_written(
+#     ,
+# ):
+#     pos_to_move = "MAX"
+#     obj = .make_obj(["-e", str(pos_to_move)])
+#     obj.run_cmd()
+#     dict_now = obj.io.read()
+#     .assertAlmostEqual(
+#         dict_now["motors"]["eta"]["value"], 21.809999465942383, 2
+#     )
+
+# def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_passing_the_counter_THEN_check_if_written(
+#     ,
+# ):
+#     pos_to_move = "CEN"
+#     obj = .make_obj(["-e", str(pos_to_move), "-co", "mvs2_diode"])
+#     obj.run_cmd()
+#     dict_now = obj.io.read()
+#     .assertAlmostEqual(
+#         dict_now["motors"]["eta"]["value"], 21.922770471720945, 2
+#     )
+
+# def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_MAX_passing_the_counter_THEN_check_if_written(
+#     ,
+# ):
+#     pos_to_move = "MAX"
+#     obj = .make_obj(["-e", str(pos_to_move), "-co", "mvs2_diode"])
+#     obj.run_cmd()
+#     dict_now = obj.io.read()
+#     .assertAlmostEqual(dict_now["motors"]["eta"]["value"], 10.8543, 2)
+
+# def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_CEN_without_main_counter_THEN_check_if_written(
+#     ,
+# ):
+#     pos_to_move = "CEN"
+#     obj = .make_obj(["-e", str(pos_to_move)])
+#     obj.run_cmd()
+#     dict_now = obj.io.read()
+#     dict_now["main_scan_counter"] = ""
+#     .assertAlmostEqual(
+#         dict_now["motors"]["eta"]["value"], 20.983173898742514, 2
+#     )
+
+# def test_GIVEN_cli_argument_WHEN_eta_is_moved_to_MAX_without_main_counter_THEN_check_if_written(
+#     ,
+# ):
+#     pos_to_move = "MAX"
+#     obj = .make_obj(["-e", str(pos_to_move)])
+#     obj.run_cmd()
+#     dict_now = obj.io.read()
+#     dict_now["main_scan_counter"] = ""
+#     .assertAlmostEqual(import argparse as ap
+
+
+@pytest.mark.fixt_data("daf.amv", "--mu", "--eta", "--chi")
+def test_move_mu_eta_chi(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["mu"]["value"] == float(param)
+    assert dict_now["motors"]["eta"]["value"] == float(param)
+    assert dict_now["motors"]["chi"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["mu"]["pv"]) == float(param)
+    assert epics.caget(dict_now["motors"]["eta"]["pv"]) == float(param)
+    assert epics.caget(dict_now["motors"]["chi"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--mu", "--eta", "--chi", "--phi")
+def test_move_mu_eta_chi_phi(run_command_line):
+    obj, param = run_command_line
+    dict_now = obj.io.read()
+    assert dict_now["motors"]["mu"]["value"] == float(param)
+    assert dict_now["motors"]["eta"]["value"] == float(param)
+    assert dict_now["motors"]["chi"]["value"] == float(param)
+    assert dict_now["motors"]["phi"]["value"] == float(param)
+    assert epics.caget(dict_now["motors"]["mu"]["pv"]) == float(param)
+    assert epics.caget(dict_now["motors"]["eta"]["pv"]) == float(param)
+    assert epics.caget(dict_now["motors"]["chi"]["pv"]) == float(param)
+    assert epics.caget(dict_now["motors"]["phi"]["pv"]) == float(param)
+
+
+@pytest.mark.fixt_data("daf.amv", "--eta", "--del")
+def test_if_pseudo_angles_are_written_correctly_eta_del(run_command_line):
+    obj, param = run_command_line
+    pseudo_dict = obj.get_pseudo_angles_from_motor_angles()
+    dict_now = obj.read_experiment_file()
+    del pseudo_dict["q_vector"]
+    del pseudo_dict["q_vector_norm"]
+    for key, value in pseudo_dict.items():
+        assert dict_now[key] == pytest.approx(pseudo_dict[key])
+
+
+@pytest.mark.fixt_data("daf.amv", "--chi", "--phi")
+def test_if_pseudo_angles_are_written_correctly_chi_phi(run_command_line):
+    obj, param = run_command_line
+    pseudo_dict = obj.get_pseudo_angles_from_motor_angles()
+    dict_now = obj.read_experiment_file()
+    del pseudo_dict["q_vector"]
+    del pseudo_dict["q_vector_norm"]
+    for key, value in pseudo_dict.items():
+        assert dict_now[key] == pytest.approx(pseudo_dict[key])

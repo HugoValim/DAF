@@ -3,10 +3,17 @@ matplotlib
 numpy
 pandas
 PyYAML
-scipy==1.4.1
+scipy
 tqdm
 xrayutilities
 pyepics
-pydm
-pyqt5
+# pydm
+# pyqt5
 qdarkstyle
+docker
+kafka-python
+msgpack
+apstools
+bluesky
+ophyd
+lnls-ophyd

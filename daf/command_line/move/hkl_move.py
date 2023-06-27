@@ -4,7 +4,7 @@ import argparse as ap
 import numpy as np
 
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
 from daf.command_line.move.move_utils import MoveBase
 
@@ -85,7 +85,7 @@ class HKLMove(MoveBase):
         self.write_angles_if_small_error(error)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = HKLMove()
     obj.run_cmd()

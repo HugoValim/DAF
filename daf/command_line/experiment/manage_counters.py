@@ -7,10 +7,11 @@ import argparse as ap
 import numpy as np
 import yaml
 
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
-from daf.utils import daf_paths as dp
+from daf.utils.daf_paths import DAFPaths as dp
 from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.config.counters_config import counters_config
 
 
 class ManageCounters(ExperimentBase):
@@ -21,7 +22,7 @@ class ManageCounters(ExperimentBase):
        daf.mc -n new_config
        daf.mc -lc new_config
        daf.mc -r my_setup1 my_setup2 my_setup3
-       daf.mc -rc new_config counter1 
+       daf.mc -rc new_config counter1
         """
     YAML_PREFIX = "config."
     YAML_SUFIX = ".yml"
@@ -104,24 +105,13 @@ class ManageCounters(ExperimentBase):
     def get_full_file_path(self, file_name: str) -> str:
         """Get full file path of a config file and return it"""
         yaml_file_name = self.YAML_PREFIX + file_name + self.YAML_SUFIX
-        user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
-        sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
-        if yaml_file_name in sys_configs:
-            path_to_use = dp.SCAN_UTILS_SYS_PATH
-        else:
-            path_to_use = dp.SCAN_UTILS_USER_PATH
-        full_file_path = path.join(path_to_use, yaml_file_name)
+        full_file_path = path.join(dp.SCAN_CONFIGS, yaml_file_name)
         return full_file_path
 
     @staticmethod
     def list_configuration_files() -> None:
         """List all configuration files, both user and system configuration."""
-        user_configs = os.listdir(dp.SCAN_UTILS_USER_PATH)
-        sys_configs = os.listdir(dp.SCAN_UTILS_SYS_PATH)
-        all_configs = user_configs + sys_configs
-        configs = [
-            i for i in all_configs if len(i.split(".")) == 3 and i.endswith(".yml")
-        ]
+        configs = os.listdir(dp.SCAN_CONFIGS)
         configs.sort()
         for i in configs:
             print(i.split(".")[1])
@@ -129,10 +119,7 @@ class ManageCounters(ExperimentBase):
     @staticmethod
     def list_all_counters() -> None:
         """List all available counters for the current beamline"""
-        with open(dp.DEFAULT_SCAN_UTILS_CONFIG) as conf:
-            config_data = yaml.safe_load(conf)
-        counters = config_data["counters"].keys()
-        for i in counters:
+        for i in counters_config.keys():
             print(i)
 
     def set_default_counters(self, default_counter: str) -> None:
@@ -145,7 +132,7 @@ class ManageCounters(ExperimentBase):
     def create_new_configuration_file(self, file_name: str) -> None:
         """Create a new empty configuration counter file, counters should be added in advance."""
         yaml_file_name = self.YAML_PREFIX + file_name + self.YAML_SUFIX
-        full_file_path = path.join(dp.SCAN_UTILS_USER_PATH, yaml_file_name)
+        full_file_path = path.join(dp.SCAN_CONFIGS, yaml_file_name)
         self.write_yaml([], full_file_path)
 
     def list_counter_in_a_configuration_file(self, file_name: str) -> None:
@@ -159,18 +146,11 @@ class ManageCounters(ExperimentBase):
     def add_counters_to_a_file(self, file_name: str, counters: list) -> None:
         """Add counters to a config file"""
         full_file_path = self.get_full_file_path(file_name)
-        data = self.read_yaml(full_file_path)
-        if isinstance(data, list):
-            for counter in counters:
-                if counter not in data:
-                    data.append(counter)
-            self.write_yaml(data, full_file_path)
-        else:
-            list_ = []
-            for counter in counters:
-                if counter not in list_:
-                    list_.append(counter)
-            self.write_yaml(list_, full_file_path)
+        list_ = self.read_yaml(full_file_path)
+        for counter in counters:
+            if counter not in list_:
+                list_.append(counter)
+        self.write_yaml(list_, full_file_path)
 
     def remove_counters_from_file(self, file_name: str, counters: list) -> None:
         """Remove counters from a configuragtion file"""
@@ -236,7 +216,7 @@ class ManageCounters(ExperimentBase):
             self.write_to_experiment_file(self.experiment_file_dict)
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = ManageCounters()
     obj.run_cmd()

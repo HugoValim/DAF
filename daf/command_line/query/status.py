@@ -5,7 +5,7 @@ import numpy as np
 
 from daf.utils.print_utils import TablePrinter
 from daf.utils.print_utils import format_5_decimals
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
 from daf.command_line.query.query_utils import QueryBase
 
 
@@ -196,7 +196,7 @@ class Status(QueryBase):
             self.show_all()
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
     obj = Status()
     obj.run_cmd()

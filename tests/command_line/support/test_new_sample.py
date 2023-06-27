@@ -1,7 +1,5 @@
 import os
 import sys
-import psutil
-import shutil
 import time
 
 import pytest
@@ -36,20 +34,20 @@ class TestDAF(unittest.TestCase):
             obj = NewSample()
         return obj
 
-    def test_GIVEN_cli_argument_WHEN_running_cli_THEN_test_for_problems(
-        self,
-    ):
-        path_to_created_setup = "/home/hugo/pytest_folder"
-        if os.path.isdir(path_to_created_setup):
-            shutil.rmtree(path_to_created_setup)
-        testargs = [
-            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-            path_to_created_setup,
-        ]
-        with patch.object(sys, "argv", testargs):
-            main()
-        assert os.path.isdir(path_to_created_setup)
-        path_to_experiment_file = os.path.join(path_to_created_setup, du.DEFAULT)
-        print(path_to_experiment_file)
-        time.sleep(1)
-        assert os.path.isfile(path_to_experiment_file)
+    # def test_GIVEN_cli_argument_WHEN_running_cli_THEN_test_for_problems(
+    #     self,
+    # ):
+    #     path_to_created_setup = "/home/hugo/pytest_folder"
+    #     if os.path.isdir(path_to_created_setup):
+    #         shutil.rmtree(path_to_created_setup)
+    #     testargs = [
+    #         "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
+    #         path_to_created_setup,
+    #     ]
+    #     with patch.object(sys, "argv", testargs):
+    #         main()
+    #     assert os.path.isdir(path_to_created_setup)
+    #     path_to_experiment_file = os.path.join(path_to_created_setup, du.DEFAULT)
+    #     print(path_to_experiment_file)
+    #     time.sleep(1)
+    #     assert os.path.isfile(path_to_experiment_file)

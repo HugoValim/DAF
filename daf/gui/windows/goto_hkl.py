@@ -26,10 +26,10 @@ class MyDisplay(Display):
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(
-            QtGui.QApplication.desktop().cursor().pos()
+        screen = QApplication.desktop().screenNumber(
+            QApplication.desktop().cursor().pos()
         )
-        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        centerPoint = QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
 

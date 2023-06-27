@@ -1,390 +1,244 @@
-#!/usr/bin/env python3
-
-import sys
 import os
-import subprocess
-import signal
+import functools
+from dataclasses import dataclass
 
-# import scan_daf as sd
-import pandas as pd
-import yaml
-import argparse as ap
-import h5py
-from PyQt5.QtWidgets import QApplication, QDesktopWidget
-from datetime import datetime
-import time
+from kafka import KafkaProducer
+import msgpack
 
-import numpy as np
+from apstools.callbacks import NXWriter
+import apstools.utils as au
 
-# Py4Syn imports
-import py4syn
-from py4syn.utils import scan as scanModule
-from py4syn.utils.scan import (
-    setFileWriter,
-    getFileWriter,
-    getOutput,
-    createUniqueFileName,
-)
+import databroker
+from bluesky import RunEngine
 
-# scan-utils imports
-from scan_utils.hdf5_writer import HDF5Writer
-from scan_utils import cleanup, die
-from scan_utils import Configuration, processUserField, get_counters_in_config
-from scan_utils.scan_pyqtgraph_plot import PlotScan
-from scan_utils.scan_hdf_plot import PlotHDFScan
-from scan_utils import PlotType
-from scan_utils import WriteType
-from scan_utils import DefaultParser
-from scan_utils.scan import ScanOperationCLI
+from bluesky.plans import count, scan, rel_scan, list_scan, grid_scan
+from ophyd import EpicsMotor, EpicsSignalRO
+from lnls_ophyd.area_detectors.pilatus_300k import Pilatus, Pilatus6ROIs
+from bluesky.callbacks.best_effort import BestEffortCallback
+from bluesky.utils import ProgressBarManager
 
 from daf.utils import dafutilities as du
-from daf.core.main import DAF
+from daf.utils.utils import create_unique_file_name
+from .signal_handler import DAFSigIntHandler
 
 
-class DAFScan(ScanOperationCLI):
-    def __init__(self, args, close_window=False):
-        super().__init__(**args)
-        self.close_window = close_window
-        self.io = du.DAFIO()
+@dataclass
+class DAFScanInputs:
+    scan_data: dict = None
+    inputed_motors: tuple = ()
+    motors_data_dict: dict = None
+    counters: tuple = ()
+    main_counter: str = None
+    scan_type: str = None
+    steps: int = None
+    acquisition_time: float = None
+    delay_time: float = None
+    output: str = None
+    kafka_topic: str = None
+    scan_db: str = None
 
-    def on_operation_begin(self):
-        """Routine to be done before this scan operation."""
-        counter_dict = dict(py4syn.counterDB.items())
-        # print(counter_dict)
-        counter_list = [i for i in counter_dict.keys()]
-        dict_args = self.io.read()
-        dict_args["scan_running"] = True
-        dict_args["scan_counters"] = counter_list
-        dict_args["current_scan_file"] = self.unique_filename
-        dict_args["main_scan_motor"] = self.xlabel
-        self.io.write(dict_args)
 
-    def write_hkl(self):
-        """Method to write HKL coordinates for each point as motor in the final hdf5 file"""
-        dict_args = self.io.read()
-        mode = [int(i) for i in dict_args["Mode"]]
-        U = np.array(dict_args["U_mat"])
-        idir = dict_args["IDir_print"]
-        ndir = dict_args["NDir_print"]
-        rdir = dict_args["RDir"]
-        mu_bound = dict_args["motors"]["mu"]["bounds"]
-        eta_bound = dict_args["motors"]["eta"]["bounds"]
-        chi_bound = dict_args["motors"]["chi"]["bounds"]
-        phi_bound = dict_args["motors"]["phi"]["bounds"]
-        nu_bound = dict_args["motors"]["nu"]["bounds"]
-        del_bound = dict_args["motors"]["del"]["bounds"]
-        self.en = (
-            dict_args["beamline_pvs"]["energy"]["value"] - dict_args["energy_offset"]
+class DAFScan:
+
+    PLANS_MAP = {
+        "absolute": scan,
+        "relative": rel_scan,
+        "list_scan": list_scan,
+        "grid_scan": grid_scan,
+        "count": None,
+    }
+
+    COUNTERS_MAP = {
+        "EpicsSignalRO": EpicsSignalRO,
+        "pilatus300k": Pilatus,
+        "pilatus6ROIs": Pilatus6ROIs,
+    }
+
+    def __init__(self, daf_scan_inputs: DAFScanInputs) -> None:
+        self.scan_data = daf_scan_inputs.scan_data
+        self.motors = daf_scan_inputs.inputed_motors
+        self.motors_data_dict = daf_scan_inputs.motors_data_dict
+        self.counters = daf_scan_inputs.counters
+        self.main_counter = (
+            daf_scan_inputs.main_counter
+            if daf_scan_inputs.main_counter in self.counters
+            else None
+        )
+        self.scan_type = daf_scan_inputs.scan_type
+        self.steps = daf_scan_inputs.steps
+        self.acquisition_time = daf_scan_inputs.acquisition_time
+        self.delay_time = daf_scan_inputs.delay_time
+        self.output = create_unique_file_name(daf_scan_inputs.output)
+        self.kafka_topic = daf_scan_inputs.kafka_topic
+        self.scan_db = daf_scan_inputs.scan_db
+        self.PLANS_MAP["count"] = functools.partial(
+            count, num=int(1e6), delay=self.acquisition_time
+        )  # gambiarra pro count
+        self.configure_run_engine()
+        self.producer = KafkaProducer()
+
+    def configure_run_engine(self):
+        """Instantiate RunEngine and subscribe the needed callbacks"""
+        self.RE = RunEngine(context_managers=[DAFSigIntHandler])
+        # self.RE.waiting_hook = ProgressBarManager()
+        self.instantiate_callbacks()
+        self.subscribe_callbacks()
+
+    def configure_metadata(self) -> dict:
+        """Configure base metada for scans"""
+        md = {}
+        path, file = os.path.split(self.output)
+        md["file_name"] = file
+        md["file_path"] = path
+        if self.motors:
+            md["main_motor"] = self.motors[0]
+        if self.main_counter is not None:
+            md["main_counter"] = self.main_counter
+        return md
+
+    def instantiate_callbacks(self):
+        """Instantiate all callbacks and store then in a dict"""
+        self.callbacks = {}
+        self.callbacks["bec"] = BestEffortCallback()
+        # self.callbacks["nexus"] = self.nexus_callback()
+        self.callbacks["kafka"] = self.kafka_callback
+        self.callbacks["db"] = self.config_databroker()
+        # self.callbacks["debug"] = self.debug_callback
+
+    def subscribe_callbacks(self):
+        """Subscribe all callbacks to the RunEngine"""
+        self.callback_tokens = {}
+        for callback_name, callback in self.callbacks.items():
+            self.callback_tokens[callback_name] = self.RE.subscribe(callback)
+
+    def config_databroker(self):
+        """Databroker to write"""
+        self.db = databroker.Broker.named(self.scan_db)
+        return self.db.insert
+
+    def debug_callback(self, name: str, doc: dict):
+        """Callback for debug only, too much verbose"""
+        print(name, doc)
+
+    def nexus_callback(self):
+        """Callback to write NeXus files right after the plan is executed"""
+        nxwriter = NXWriter()
+        nxwriter.file_name = self.output
+        nxwriter.warn_on_missing_content = False
+        return nxwriter.receiver
+
+    def nexus_export(self, scan_hash: str):
+        nxwriter = NXWriter()
+        nxwriter.file_name = self.output
+        nxwriter.warn_on_missing_content = False
+        au.replay(self.db[scan_hash], nxwriter.receiver)
+
+    def kafka_callback(self, name: str, doc: dict):
+        """Callback to stream Bluesky Documents via Kafka"""
+        self.producer = KafkaProducer(value_serializer=msgpack.dumps)
+        self.producer.send(self.kafka_topic, (name, doc))
+
+    def configure_scan(self):
+        """Build motors, counters and the plan"""
+        self.build_ophyd_motors()
+        self.build_counters()
+        bluesky_plan_args = self.build_scan_args()
+        return self.get_plan(bluesky_plan_args)
+
+    def build_ophyd_motors(self):
+        """Build ophyd motors used in the scan"""
+        self.ophyd_motors = {}
+        for motor in self.motors:
+            self.ophyd_motors[motor] = EpicsMotor(
+                self.motors_data_dict[motor]["pv"], name=motor
+            )
+            self.ophyd_motors[motor].wait_for_connection(timeout=10)
+
+    def build_counters(self):
+        """Build counters used in the scan based in the configuration file"""
+        self.ophyd_counters = {}
+        for counter, counter_info in self.counters.items():
+            if counter_info["type"] == "AD":
+                path_to_write = os.path.dirname(self.output)
+                self.ophyd_counters[counter] = self.COUNTERS_MAP[counter_info["class"]](
+                    counter_info["pv"],
+                    name=counter,
+                    write_path=path_to_write,
+                    read_attrs=["hdf5"],
+                )
+                self.ophyd_counters[counter].cam.acquire_period.put(
+                    self.acquisition_time
+                )
+                self.ophyd_counters[counter].cam.acquire_time.put(self.acquisition_time)
+                self.ophyd_counters[counter].cam.num_images.put(1)
+                continue
+            self.ophyd_counters[counter] = self.COUNTERS_MAP[counter_info["class"]](
+                counter_info["pv"], name=counter
+            )
+
+    def build_scan_args(self):
+        """Build the points and motors inputed to the plan. This method can be overriden by the calling class"""
+        movables = []
+        for motor_name, ophyd_motor in self.ophyd_motors.items():
+            movables.append(ophyd_motor)
+            for i in self.scan_data[motor_name]:
+                movables.append(i)
+        if self.steps is not None:
+            movables.append(self.steps)
+        return movables
+
+    def get_plan(self, bluesky_plan_args: list):
+        """Get the plan that's going to be used based in the scan_type argument"""
+        return self.PLANS_MAP[self.scan_type](
+            [*self.ophyd_counters.values()], *bluesky_plan_args
         )
 
-        exp = DAF(*mode)
-        if dict_args["Material"] in dict_args["user_samples"].keys():
-            exp.set_material(
-                dict_args["Material"], *dict_args["user_samples"][dict_args["Material"]]
-            )
+    @staticmethod
+    def convert_to_float_if_not_none(val: "float or tuple"):
+        """Method to convert from numpy data to python standard data. otherwise it will broke the .yml file"""
+        if isinstance(val, tuple):
+            result = []
+            for item in val:
+                if item is not None:
+                    result.append(float(item))
+            return result
         else:
-            exp.set_material(
-                dict_args["Material"],
-                dict_args["lparam_a"],
-                dict_args["lparam_b"],
-                dict_args["lparam_c"],
-                dict_args["lparam_alpha"],
-                dict_args["lparam_beta"],
-                dict_args["lparam_gama"],
-            )
+            if val is not None:
+                return float(val)
 
-        exp.set_exp_conditions(
-            idir=idir,
-            ndir=ndir,
-            rdir=rdir,
-            en=self.en,
-            sampleor=dict_args["Sampleor"],
-        )
-        exp.set_circle_constrain(
-            Mu=mu_bound,
-            Eta=eta_bound,
-            Chi=chi_bound,
-            Phi=phi_bound,
-            Nu=nu_bound,
-            Del=del_bound,
-        )
+    def write_stats(self):
+        self.io = du.DAFIO(read=False)
+        self.experiment_file_dict = self.io.read()
+        stats = ("com", "cen", "max", "min", "fwhm")
+        stat_dict = {}
+        # print(self.callbacks["bec"].peaks)
+        for key in stats:
+            stat_dict[key] = {}
+            for counter_name, stats in self.callbacks["bec"].peaks[key].items():
+                stat_dict[key][counter_name] = self.convert_to_float_if_not_none(stats)
+        # for counter, counter_info in self.counters.items():
+        #     if counter_info["type"] == "AD":
+        #         continue
+        #     stat_dict[counter] = {}
+        #     stat_dict[counter]["peak"] = self.convert_to_float_if_not_none(
+        #         self.callbacks["bec"].peaks["max"][counter][1]
+        #     )
+        #     stat_dict[counter]["peak_at"] = self.convert_to_float_if_not_none(
+        #         self.callbacks["bec"].peaks["max"][counter][0]
+        #     )
+        #     stat_dict[counter]["FWHM"] = self.convert_to_float_if_not_none(
+        #         self.callbacks["bec"].peaks["fwhm"][counter]
+        #     )
+        #     # stat_dict[counter]["FWHM_at"] = self.callbacks["bec"].peaks["fwhm"][counter][0]
+        #     stat_dict[counter]["COM"] = self.convert_to_float_if_not_none(
+        #         self.callbacks["bec"].peaks["com"][counter]
+        #     )
+        self.experiment_file_dict["scan_stats"] = stat_dict
+        self.io.write(self.experiment_file_dict)
 
-        exp.set_constraints(
-            Mu=dict_args["cons_mu"],
-            Eta=dict_args["cons_eta"],
-            Chi=dict_args["cons_chi"],
-            Phi=dict_args["cons_phi"],
-            Nu=dict_args["cons_nu"],
-            Del=dict_args["cons_del"],
-            alpha=dict_args["cons_alpha"],
-            beta=dict_args["cons_beta"],
-            psi=dict_args["cons_psi"],
-            omega=dict_args["cons_omega"],
-            qaz=dict_args["cons_qaz"],
-            naz=dict_args["cons_naz"],
-        )
-
-        exp.set_U(U)
-        exp.build_xrd_experiment()
-        exp.build_bounds()
-        mu = dict_args["motors"]["mu"]["value"]
-        eta = dict_args["motors"]["eta"]["value"]
-        chi = dict_args["motors"]["chi"]["value"]
-        phi = dict_args["motors"]["phi"]["value"]
-        nu = dict_args["motors"]["nu"]["value"]
-        delta = dict_args["motors"]["del"]["value"]
-        exp_points = {
-            "mu": mu,
-            "eta": eta,
-            "chi": chi,
-            "phi": phi,
-            "nu": nu,
-            "del": delta,
-        }
-        data = {
-            dict_args["motors"]["mu"]["scan_utils_mnemonic"]: "mu",
-            dict_args["motors"]["eta"]["scan_utils_mnemonic"]: "eta",
-            dict_args["motors"]["chi"]["scan_utils_mnemonic"]: "chi",
-            dict_args["motors"]["phi"]["scan_utils_mnemonic"]: "phi",
-            dict_args["motors"]["nu"]["scan_utils_mnemonic"]: "nu",
-            dict_args["motors"]["del"]["scan_utils_mnemonic"]: "del",
-        }
-        dict_ = {}
-        for motor in self.motor:
-            # Add statistic data as attributes
-            with h5py.File(self.unique_filename, "a") as h5w:
-                scan_idx = list(h5w["Scan"].keys())
-                scan_idx = scan_idx[-1]
-                _motors_name = "Scan/" + scan_idx + "/instrument/" + motor + "/data"
-                if motor in data.keys():
-                    dict_[data[motor]] = h5w[_motors_name][:]
-                    npoints = len(h5w[_motors_name][:])
-                    del data[motor]
-        for motor in data.keys():
-            dict_[data[motor]] = [exp_points[data[motor]] for i in range(npoints)]
-        hkl_dict = {"H": [], "K": [], "L": []}
-        for i in range(npoints):
-            hklnow = exp.calc_from_angs(
-                dict_["mu"][i],
-                dict_["eta"][i],
-                dict_["chi"][i],
-                dict_["phi"][i],
-                dict_["nu"][i],
-                dict_["del"][i],
-            )
-            hkl_dict["H"].append(hklnow[0])
-            hkl_dict["K"].append(hklnow[1])
-            hkl_dict["L"].append(hklnow[2])
-        with h5py.File(self.unique_filename, "a") as h5w:
-            _motors_path = "Scan/" + scan_idx + "/instrument/"
-            h5w[_motors_path].create_group("H")
-            h5w[_motors_path].create_group("K")
-            h5w[_motors_path].create_group("L")
-            h5w[_motors_path + "/H"].create_dataset(
-                "data", data=np.array(hkl_dict["H"])
-            )
-            h5w[_motors_path + "/K"].create_dataset(
-                "data", data=np.array(hkl_dict["K"])
-            )
-            h5w[_motors_path + "/L"].create_dataset(
-                "data", data=np.array(hkl_dict["L"])
-            )
-
-    def write_stat(self):
-        """Method to write scan stats to the .Experiment file, so it can be used in scripts"""
-        dict_ = {}
-        for counter_name, counter in py4syn.counterDB.items():
-            # Add statistic data as attributes
-            with h5py.File(self.unique_filename, "a") as h5w:
-                scan_idx = list(h5w["Scan"].keys())
-                scan_idx = scan_idx[-1]
-
-                _dataset_name = "Scan/" + scan_idx + "/instrument/" + counter_name
-                _xlabel_points = (
-                    "Scan/" + scan_idx + "/instrument/" + self.xlabel + "/data"
-                )
-                try:
-                    y = h5w[_dataset_name][counter_name][:]
-                except:
-                    continue
-                if self.xlabel == "points":
-                    x = [i for i in range(len(y))]
-                else:
-                    x = h5w[_xlabel_points][:]
-
-                scanModule.fitData(x[: len(y)], y)
-                dict_[counter_name] = {}
-                dict_[counter_name]["peak"] = float(scanModule.PEAK)
-                dict_[counter_name]["peak_at"] = float(scanModule.PEAK_AT)
-                dict_[counter_name]["FWHM"] = float(scanModule.FWHM)
-                dict_[counter_name]["FWHM_at"] = float(scanModule.FWHM_AT)
-                dict_[counter_name]["COM"] = float(scanModule.COM)
-
-                dict_args = self.io.read()
-                dict_args["scan_stats"] = dict_
-                dict_args["scan_running"] = False
-                self.io.write(dict_args)
-
-    def add_scan_attrs(self):
-        with h5py.File(self.unique_filename, "a") as h5w:
-            scan_idx = list(h5w["Scan"].keys())
-            scan_idx = scan_idx[-1]
-
-            _instrument_path = "Scan/" + scan_idx + "/instrument/"
-
-            dict_args = self.io.read()
-            default_counter = dict_args["main_scan_counter"]
-
-            h5w["Scan/" + scan_idx + "/instrument/"].attrs["main_motor"] = self.motor[0]
-            if default_counter in self.counters_name:
-                h5w["Scan/" + scan_idx + "/instrument/"].attrs[
-                    "main_counter"
-                ] = default_counter
-            else:
-                h5w["Scan/" + scan_idx + "/instrument/"].attrs[
-                    "main_counter"
-                ] = self.counters_name[0]
-
-    def pos_scan_callback(self, **kwargs):
-
-        print("pos_scan_callback")
-
-        import py4syn
-        import h5py
-
-        self.n_trys = 0
-
-        def open_fileH5(detector_file):
-            try:
-                while self.n_trys < 10:
-                    return h5py.File(detector_file, "r")
-            except:
-                time.sleep(0.5)
-                self.n_trys += 1
-                return open_fileH5(detector_file)
-
-        for counter_name, counter in py4syn.counterDB.items():
-            # Remove dataset aux to 2d scan.
-            with h5py.File(self.unique_filename, "a") as h5w:
-                scan_idx = list(h5w["Scan"].keys())
-                scan_idx = scan_idx[-1]
-                _dataset_name = (
-                    "Scan/"
-                    + scan_idx
-                    + "/instrument/"
-                    + counter_name
-                    + "/"
-                    + counter_name
-                )
-                _dataset_name_aux = _dataset_name + "_aux"
-                try:
-                    if len(h5w[_dataset_name_aux].shape) == 1:
-                        del h5w[_dataset_name_aux]
-                    else:
-                        del h5w[_dataset_name]
-                        h5w[_dataset_name] = h5w[_dataset_name_aux]
-                        del h5w[_dataset_name_aux]
-                except:
-                    pass
-
-                h5w.flush()
-
-            if counter["autowrite"] and counter["write"]:
-                filename = (
-                    counter["device"].getFileName()
-                    + "_"
-                    + format(counter["device"].getRepeatNumber(), "03")
-                )
-                filepath = counter["device"].getFilePath()
-
-                detector_file = filepath + filename + ".hdf5"
-
-                print("Time before open: ", datetime.now())
-                print(detector_file)
-                h5r = open_fileH5(detector_file)
-                print("Time after open: ", datetime.now())
-
-                if h5r is None:
-                    print("PROBLEM")
-                    continue
-
-                with h5py.File(self.unique_filename, "a") as h5w:
-                    for group in h5r.keys():
-                        for ds in h5r[group].keys():
-                            if "link" in counter.keys():
-                                if counter["link"] == "Copy":
-                                    ds_arr = h5r[group][ds]["data"]
-                                    scan_idx = list(h5w["Scan"].keys())
-                                    scan_idx = scan_idx[-1]
-                                    _dataset_data = (
-                                        "Scan/"
-                                        + scan_idx
-                                        + "/instrument/"
-                                        + counter_name
-                                        + "/data"
-                                    )
-
-                                    del h5w[_dataset_data]
-                                    print("Time before Compression: ", datetime.now())
-                                    h5w.create_dataset(
-                                        _dataset_data,
-                                        data=ds_arr,
-                                        shape=ds_arr.shape,
-                                        compression="gzip",
-                                        compression_opts=2,
-                                    )
-                                    print("Time after Compression: ", datetime.now())
-                print("done")
-
-    def on_operation_end(self):
-        """Routine to be done after this scan operation."""
-        if self.plot_type == PlotType.pyqtgraph:
-            self.pyqtgraph_plot.operation_ends()
-        if self.plot_type == PlotType.hdf:
-            self.hdf_plot.operation_ends()
-        if bool(self.reset):
-            print("[scan-utils] Reseting devices positions.")
-            self.reset_motors()
-        self.write_stat()
-        self.write_hkl()
-        self.add_scan_attrs()
-        # Close scan window
-        if self.close_window:
-            self.app.quit()
-        # self.scan_status = False
-        # display_monitor = 0
-        # monitor = QDesktopWidget().screenGeometry(display_monitor)
-        # print(monitor)
-        # self.pyqtgraph_plot.move(monitor.left(), monitor.top())
-        # self.pyqtgraph_plot.showFullScreen()
-
-    def _run(self):
-        self.on_operation_begin()
-
-        for i in range(self.repeat):
-            self.repetition = i
-            self.on_scan_begin()
-
-            if self.plotter is not None:
-                next(self.axes)
-
-            scanModule.scan(*self.scan_args)
-
-            self.on_scan_end()
-
-            # except KeyboardInterrupt:
-            #     print('oioi')
-            # self.fit_values()
-
-        # if self.optimum:
-        #     self.goto_optimum()
-
-        cleanup()
-        self.on_operation_end()
-        if self.plotter is not None and self.wait_plotter:
-            self.plotter.plot_process.join()
-        # if self.postscan_cmd is not None:
-        #     try:
-        #         subprocess.run(self.postscan_cmd, shell=True)
-        #     except (OSError, RuntimeError) as exception:
-        #         die(exception)
+    def run(self):
+        """Run the scan and export to a NeXus file"""
+        md = self.configure_metadata()
+        scan_hash = self.RE(self.configure_scan(), **md)
+        self.nexus_export(scan_hash)
+        self.write_stats()

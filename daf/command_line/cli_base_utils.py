@@ -23,11 +23,12 @@ class CLIBase:
 
     def __init__(self):
         self.io = du.DAFIO()
-        self.experiment_file_dict = self.read_experiment_file()
+        self.read_experiment_file()
         # sys.stderr = DevNull()
 
     def read_experiment_file(self):
-        return self.io.read()
+        self.experiment_file_dict = self.io.read()
+        return self.experiment_file_dict
 
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(
@@ -215,13 +216,15 @@ class CLIBase:
         dict_to_write: dict,
         is_motor_set_point: bool = False,
         is_motor_bounds: bool = False,
+        write=True,
     ):
         """Write to the .Experiment file based on a inputted dict"""
         if is_motor_set_point:
             self.write_motors_to_experiment_file(dict_to_write)
         if is_motor_bounds:
             self.write_motors_bounds_to_experiment_file(dict_to_write)
-        self.io.write(self.experiment_file_dict)
+        if write:
+            self.io.write(self.experiment_file_dict)
 
     @abstractmethod
     def run_cmd(self):

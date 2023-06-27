@@ -3,14 +3,18 @@
 import subprocess
 from os import path
 
-from daf.utils.log import daf_log
+from daf.utils.decorators import cli_decorator
+from daf.utils.generate_daf_default import default
+from daf.utils.dafutilities import DAFIO
 
 
-@daf_log
+@cli_decorator
 def main() -> None:
-    path_to_bin = path.join(path.dirname(path.realpath(__file__)), "../live_view.py")
+    data = DAFIO.only_read()
+    kafka_topic = data["kafka_topic"]
+    print(kafka_topic)
     proc = subprocess.Popen(
-        "pydm --hide-nav-bar {}".format(path_to_bin),
+        "kbl {}".format(kafka_topic),
         # stdout=subprocess.PIPE,
         # stderr=subprocess.PIPE,
         # stdin=subprocess.PIPE,
