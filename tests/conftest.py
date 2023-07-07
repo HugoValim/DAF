@@ -58,6 +58,22 @@ def init_daf(tmp_path_factory):
     os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
 @pytest.fixture(autouse=True, scope="module")
+def set_energy_10():
+
+    energy = 10000
+    def build_args():
+        return ["daf.expt", "--energy", str(energy)]
+
+
+    mp = pytest.MonkeyPatch()
+    with mp.context() as m:
+        m.setattr(sys, "argv", build_args())
+        obj = ExperimentConfiguration()
+        obj.run_cmd()
+        yield obj
+
+
+@pytest.fixture(autouse=True, scope="module")
 def set_energy():
 
     energy = 1

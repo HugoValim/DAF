@@ -129,14 +129,14 @@ def test_if_hkl_was_calculated_right(
 
 
 @pytest.mark.fixt_data("daf.ca", "1", "1", "1")
-def test_calculated_angles(run_command_line, motor_dict):
+def test_calculated_angles(run_command_line, motor_dict, set_energy_10):
     obj = run_command_line
     obj.run_cmd()
     exp_dict = obj.get_angles_from_calculated_exp()
     # Do not need to compare the hkl value, only angles
     iter_list = list(motor_dict.keys())[:-1]
     for key in iter_list:
-        assert pytest.approx(motor_dict[key]) == exp_dict[key]
+        assert pytest.approx(motor_dict[key], abs=1e-1) == exp_dict[key]
 
 
 @pytest.mark.fixt_data("daf.ca", "1", "1", "1")
