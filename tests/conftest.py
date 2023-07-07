@@ -5,6 +5,7 @@ import pytest
 import epics
 
 from daf.command_line.support.init import Init, main
+from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
 from daf.config.motors_sim_config import PV_PREFIX
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.utils.build_container import run_container
@@ -55,3 +56,20 @@ def init_daf(tmp_path_factory):
         obj.run_cmd()
         yield obj
     os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+
+@pytest.fixture(autouse=True, scope="session")
+def set_energy():
+
+    energy = 1
+    def build_args():
+        return ["daf.expt", "--energy", str(energy)]
+
+
+    mp = pytest.MonkeyPatch()
+    with mp.context() as m:
+        m.setattr(sys, "argv", build_args())
+        obj = ExperimentConfiguration()
+        obj.run_cmd()
+        yield obj
+    # os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+

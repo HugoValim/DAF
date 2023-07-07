@@ -8,57 +8,9 @@ from tqdm import tqdm
 from daf.utils.print_utils import TablePrinter
 from daf.core.reciprocal_map import ReciprocalMapWindow
 from daf.core.minimization import MinimizationProc
-
+from daf.core.utils import MODE_COLUMNS
 
 class DAF(MinimizationProc, ReciprocalMapWindow):
-
-    COLUMNS = {
-        1: {
-            0: "--",
-            1: "del_fix",
-            2: "nu_fix",
-            3: "qaz_fix",
-            4: "naz_fix",
-            5: "zone",
-            6: "--",
-        },
-        2: {
-            0: "--",
-            1: "alpha = beta",
-            2: "alpha fix",
-            3: "beta fix",
-            4: "psi_fix",
-            5: "--",
-            6: "--",
-        },
-        3: {
-            0: "omega fix",
-            1: "eta_fix",
-            2: "mu_fix",
-            3: "chi_fix",
-            4: "phi_fix",
-            5: "eta = delta/2",
-            6: "mu = nu/2",
-        },
-        4: {
-            0: "--",
-            1: "eta_fix",
-            2: "mu_fix",
-            3: "chi_fix",
-            4: "phi_fix",
-            5: "--",
-            6: "--",
-        },
-        5: {
-            0: "--",
-            1: "eta_fix",
-            2: "mu_fix",
-            3: "chi_fix",
-            4: "phi_fix",
-            5: "--",
-            6: "--",
-        },
-    }
 
     def __init__(self, *args):
 
@@ -104,11 +56,11 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             self.col5 = 0
 
         return (
-            self.COLUMNS[1][self.col1],
-            self.COLUMNS[2][self.col2],
-            self.COLUMNS[3][self.col3],
-            self.COLUMNS[4][self.col4],
-            self.COLUMNS[5][self.col5],
+            MODE_COLUMNS[1][self.col1],
+            MODE_COLUMNS[2][self.col2],
+            MODE_COLUMNS[3][self.col3],
+            MODE_COLUMNS[4][self.col4],
+            MODE_COLUMNS[5][self.col5],
         )
 
     def handle_constraints(self):
