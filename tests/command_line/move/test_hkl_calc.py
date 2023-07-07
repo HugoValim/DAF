@@ -4,8 +4,24 @@ import pytest
 import numpy as np
 
 from daf.command_line.move.hkl_calc import HKLCalc, main
+from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
 from daf.core.main import DAF
 
+
+@pytest.fixture
+def set_energy_10():
+
+    energy = 10000
+    def build_args():
+        return ["daf.expt", "--energy", str(energy)]
+
+
+    mp = pytest.MonkeyPatch()
+    with mp.context() as m:
+        m.setattr(sys, "argv", build_args())
+        obj = ExperimentConfiguration()
+        obj.run_cmd()
+        yield obj
 
 @pytest.fixture
 def motor_dict():
@@ -130,6 +146,7 @@ def test_if_hkl_was_calculated_right(
 
 @pytest.mark.fixt_data("daf.ca", "1", "1", "1")
 def test_calculated_angles(run_command_line, motor_dict, set_energy_10):
+    en = set_energy_10
     obj = run_command_line
     obj.run_cmd()
     exp_dict = obj.get_angles_from_calculated_exp()

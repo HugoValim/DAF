@@ -6,6 +6,7 @@ import epics
 
 from daf.command_line.support.init import Init, main
 from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+from daf.command_line.support.reset import Reset
 from daf.config.motors_sim_config import PV_PREFIX
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.utils.build_container import run_container
@@ -41,7 +42,7 @@ def set_motors_velo_and_acc():
     )  # Return all to position 0
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def init_daf(tmp_path_factory):
     dir = tmp_path_factory.mktemp("daf")
     os.chdir(dir)
@@ -57,36 +58,38 @@ def init_daf(tmp_path_factory):
         yield obj
     os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
-@pytest.fixture(autouse=True, scope="module")
-def set_energy_10():
-
-    energy = 10000
-    def build_args():
-        return ["daf.expt", "--energy", str(energy)]
 
 
-    mp = pytest.MonkeyPatch()
-    with mp.context() as m:
-        m.setattr(sys, "argv", build_args())
-        obj = ExperimentConfiguration()
-        obj.run_cmd()
-        yield obj
+# @pytest.fixture(autouse=True, scope="module")
+# def reset():
+
+#     energy = 1
+#     def build_args():
+#         return ["daf.reset"]
 
 
-@pytest.fixture(autouse=True, scope="module")
-def set_energy():
+#     mp = pytest.MonkeyPatch()
+#     with mp.context() as m:
+#         m.setattr(sys, "argv", build_args())
+#         obj = Reset()
+#         obj.run_cmd()
+#         yield obj
 
-    energy = 1
-    def build_args():
-        return ["daf.expt", "--energy", str(energy)]
+
+# @pytest.fixture(autouse=True, scope="module")
+# def set_energy():
+
+#     energy = 1
+#     def build_args():
+#         return ["daf.expt", "--energy", str(energy)]
 
 
-    mp = pytest.MonkeyPatch()
-    with mp.context() as m:
-        m.setattr(sys, "argv", build_args())
-        obj = ExperimentConfiguration()
-        obj.run_cmd()
-        yield obj
+#     mp = pytest.MonkeyPatch()
+#     with mp.context() as m:
+#         m.setattr(sys, "argv", build_args())
+#         obj = ExperimentConfiguration()
+#         obj.run_cmd()
+#         yield obj
 
 @pytest.fixture(autouse=True, scope="module")
 def set_sample():

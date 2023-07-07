@@ -33,12 +33,6 @@ class TestDAF(unittest.TestCase):
             obj = Reset()
         return obj
 
-    def test_GIVEN_cli_argument_WHEN_inputing_all_option_THEN_check_parsed_args(
-        self,
-    ):
-        obj = self.make_obj(["--all"])
-        assert obj.parsed_args_dict["all"] == True
-
     def test_GIVEN_cli_argument_WHEN_inputing_hard_option_THEN_check_parsed_args(self):
         obj = self.make_obj(["--hard"])
         assert obj.parsed_args_dict["hard"] == True
@@ -51,10 +45,7 @@ class TestDAF(unittest.TestCase):
         obj.write_to_experiment_file({})
         dict_now = obj.io.read()
         assert obj.experiment_file_dict["Mode"] == "2023"
-        arg = "-a"
-        full_arg = "all"
-        param = []
-        obj = self.make_obj([arg])
+        obj = self.make_obj([])
         obj.run_cmd()
         dict_now = obj.io.read()
         assert dict_now["Mode"] == "2052"
@@ -67,7 +58,7 @@ class TestDAF(unittest.TestCase):
         obj.write_to_experiment_file({})
         dict_now = obj.io.read()
         assert dict_now["Mode"] == "2023"
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a"]
+        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()

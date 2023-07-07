@@ -5,7 +5,7 @@ import numpy as np
 import epics
 
 from daf.command_line.experiment.set_u_ub_matrix import SetUUB, main
-
+from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
 
 CALCULATED_U =[
         [0.99939, -0.03488, 0.00122],
@@ -31,6 +31,22 @@ CALCULATED_LATTICE_PARAMETERS = {
 FIRST_REFLECTION = ["1", "0", "0", "0", "5.28232", "0", "2", "0", "10.5647"]
 SECOND_REFLECTION = ["0", "1", "0", "0", "5.28232", "2", "92", "0", "10.5647"]
 THIRD_REFLECTION = ["0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
+
+
+@pytest.fixture(autouse=True, scope="module")
+def set_energy():
+
+    energy = 1
+    def build_args():
+        return ["daf.expt", "--energy", str(energy)]
+
+
+    mp = pytest.MonkeyPatch()
+    with mp.context() as m:
+        m.setattr(sys, "argv", build_args())
+        obj = ExperimentConfiguration()
+        obj.run_cmd()
+        yield obj
 
 
 @pytest.fixture
@@ -107,7 +123,7 @@ def test_set_ub_args(run_command_line):
     assert dict_now["UB_mat"] == param
 
 @pytest.mark.fixt_data("daf.ub", "-c2", *["1", "2"])
-def test_calc_from_2_ref_args(run_command_line):
+def test_calc_from_2_ref_args(run_command_line, set_energy):
     obj= run_command_line
     dict_now = obj.io.read()
     for i in range(len(CALCULATED_U)):
