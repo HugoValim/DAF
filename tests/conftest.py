@@ -56,7 +56,8 @@ def init_daf(tmp_path_factory):
         obj = Init()
         obj.run_cmd()
         yield obj
-    os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
 
 

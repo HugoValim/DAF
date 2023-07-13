@@ -1,96 +1,73 @@
-import os
 import sys
+import os
 
 import pytest
-import unittest
-from unittest.mock import patch
 
-import daf.utils.dafutilities as du
 from daf.command_line.support.init import Init, main
-import daf.utils.generate_daf_default as gdd
 from daf.utils.daf_paths import DAFPaths as dp
+from daf.utils import dafutilities as du
 
+@pytest.fixture
+def remove_local_config():
+    if os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.LOCAL_EXPERIMENT_DEFAULT)
 
-class TestDAF(unittest.TestCase):
-    def setUp(self):
-        data_sim = Init.build_current_file(Init, True)
-        data_sim["simulated"] = True
-        data_sim["PV_energy"] = 1
-        gdd.generate_file(data=data_sim, file_name=".Experiment")
+@pytest.fixture
+def remove_global_config():
+    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
-    def tearDown(self):
-        os.system("rm .Experiment")
+@pytest.fixture()
+def run_main(monkeypatch, request):
+    command_line_arguments = []
+    marker = request.node.get_closest_marker("fixt_data")
+    inptued_args = list(marker.args)
+    command_line_arguments.append(inptued_args.pop(0))
+    for args in inptued_args:
+        command_line_arguments.append(args)
+    with monkeypatch.context() as m:
+        m.setattr(sys, "argv", command_line_arguments)
+        main()
 
-    @staticmethod
-    def make_obj(command_line_args: list) -> Init:
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init"]
-        for arg in command_line_args:
-            testargs.append(arg)
-        with patch.object(sys, "argv", testargs):
-            obj = Init()
+@pytest.fixture()
+def run_command_line(remove_local_config, remove_global_config, monkeypatch, request):
+    command_line_arguments = []
+    marker = request.node.get_closest_marker("fixt_data")
+    inptued_args = list(marker.args)
+    command_line_arguments.append(inptued_args.pop(0))
+    for args in inptued_args:
+        command_line_arguments.append(args)
+    with monkeypatch.context() as m:
+        m.setattr(sys, "argv", command_line_arguments)
+        obj = Init()
+        obj.run_cmd()
         return obj
 
-    def test_GIVEN_cli_argument_WHEN_passing_simulated_option_THEN_check_parsed_args(
-        self,
-    ):
-        obj = self.make_obj(["--simulated"])
-        assert obj.parsed_args_dict["simulated"] == True
+@pytest.mark.fixt_data("daf.init", "-s")
+def test_simulated_input(run_command_line):
+    obj = run_command_line
+    assert obj.parsed_args_dict["simulated"] == True
+    print(os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT))
+    assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
 
-    def test_GIVEN_cli_argument_WHEN_passing_all_option_THEN_check_parsed_args(self):
-        obj = self.make_obj(["--all"])
-        assert obj.parsed_args_dict["all"] == True
+@pytest.mark.fixt_data("daf.init", "-a", "-s")
+def test_all_input(run_command_line):
+    obj = run_command_line
+    assert obj.parsed_args_dict["all"] == True
+    assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
 
-    def test_GIVEN_cli_argument_WHEN_passing_all_options_THEN_check_parsed_args(self):
-        obj = self.make_obj(["--all", "--simulated"])
-        assert obj.parsed_args_dict["simulated"] == True
-        assert obj.parsed_args_dict["all"] == True
+@pytest.mark.fixt_data("daf.init", "-g", "-s")
+def test_global_input(run_command_line):
+    obj = run_command_line
+    assert obj.parsed_args_dict["global"] == True
+    assert os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
-    def test_GIVEN_cli_argument_WHEN_inputing_raw_command_THEN_check_if_the_file_was_created(
-        self,
-    ):
-        os.remove(".Experiment")
-        assert not os.path.isfile(".Experiment")
-        obj = self.make_obj(["--local"])
-        obj.run_cmd()
-        assert os.path.isfile(".Experiment")
-
-    def test_GIVEN_cli_argument_WHEN_inputting_local_THEN_check_if_the_file_was_created_right(
-        self,
-    ):
-        testargs = [
-            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-            "--local",
-            "--simulated",
-        ]
-        with patch.object(sys, "argv", testargs):
-            main()
-        assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
-        io = du.DAFIO()
-        dict_now = io.read()
-        assert dict_now["simulated"] == True
-
-    def test_GIVEN_cli_argument_WHEN_no_input_THEN_check_if_the_file_was_created_right(
-        self,
-    ):
-        testargs = [
-            "/home/hugo/work/SOL/tmp/daf/command_line/daf.init",
-            "--local",
-            "--simulated",
-        ]
-        with patch.object(sys, "argv", testargs):
-            main()
-        assert os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT)
-        io = du.DAFIO()
-        dict_now = io.read()
-        assert dict_now["simulated"] == True
-
-    def test_GIVEN_cli_argument_WHEN_inputing_simulated_THEN_check_if_the_file_was_created_right(
-        self,
-    ):
-        testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-s", "-l"]
-        with patch.object(sys, "argv", testargs):
-            main()
-        assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
-        io = du.DAFIO()
-        dict_now = io.read()
-        assert dict_now["simulated"] == True
+@pytest.mark.fixt_data("daf.init", "-k", "test_topic", "-db", "test_db", "-s")
+def test_bluesky_configs_input(run_command_line):
+    obj = run_command_line
+    io = du.DAFIO(read=False)
+    file_data = io.only_read()
+    assert obj.parsed_args_dict["kafka_topic"] == "test_topic"
+    assert obj.parsed_args_dict["scan_db"] == "test_db"
+    assert file_data["kafka_topic"] == "test_topic"
+    assert file_data["scan_db"] == "test_db"
