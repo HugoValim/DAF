@@ -47,7 +47,6 @@ def run_command_line(remove_local_config, remove_global_config, monkeypatch, req
 def test_simulated_input(run_command_line):
     obj = run_command_line
     assert obj.parsed_args_dict["simulated"] == True
-    print(os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT))
     assert os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT)
 
 @pytest.mark.fixt_data("daf.init", "-a", "-s")
