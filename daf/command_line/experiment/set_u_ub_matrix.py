@@ -116,24 +116,16 @@ class SetUUB(ExperimentBase):
         return args
 
     def set_u_matrix(self, u_list: list) -> None:
-        """Set U matrix based in the user input"""
+        """Set U matrix from a flat 9-element list."""
         U = np.array(u_list).reshape(3, 3)
         self.exp.set_U(U)
         UB = self.exp.calcUB()
-        self.experiment_file_dict[
-            "U_mat"
-        ] = (
-            U.tolist()
-        )  # yaml doesn't handle numpy arrays well, so using python's list is a better choice
-        self.experiment_file_dict[
-            "UB_mat"
-        ] = (
-            UB.tolist()
-        )  # yaml doesn't handle numpy arrays well, so using python's list is a better choice
+        self.experiment_file_dict["U_mat"] = U.tolist()
+        self.experiment_file_dict["UB_mat"] = UB.tolist()
         self.write_flag = True
 
     def set_ub_matrix(self, ub_list: list) -> None:
-        """Set UB matrix based in the user input"""
+        """Set UB matrix from a flat 9-element list."""
         UB = np.array(ub_list).reshape(3, 3)
         self.experiment_file_dict["UB_mat"] = UB.tolist()
         self.write_flag = True
@@ -176,130 +168,63 @@ class SetUUB(ExperimentBase):
         self.experiment_file_dict["reflections"] = []
         self.write_flag = True
 
+    def _build_matrix_dict(self, matrix: np.ndarray, label: str) -> list:
+        """Build a dict row for TablePrinter from a 3x3 matrix."""
+        fmt = "{:^11}"
+        rows = []
+        for i in range(3):
+            ident = f"{label} = " if i == 1 else ""
+            rows.append({
+                "ident": ident,
+                "col1": fmt.format(format_5_decimals(matrix[i][0])),
+                "col2": fmt.format(format_5_decimals(matrix[i][1])),
+                "col3": (fmt + "|").format(format_5_decimals(matrix[i][2])),
+            })
+        return rows
+
     def build_u_and_ub_print(self) -> tuple:
-        """Build a pretty print to U and UB matrix, return their strings to be printed"""
+        """Build formatted strings for U and UB matrices."""
         U = np.array(self.experiment_file_dict["U_mat"])
         UB = np.array(self.experiment_file_dict["UB_mat"])
-        center1 = "|{:^11}"
-        center2 = "{:^11}"
-        center3 = "{:^11}|"
-        fmt1 = [
-            ("", "ident", 9),
-            ("", "col1", 12),
-            ("", "col2", 12),
-            ("", "col3", 12),
-        ]
+        fmt = [("", "ident", 9), ("", "col1", 12), ("", "col2", 12), ("", "col3", 12)]
 
-        dict_u_mat = [
-            {
-                "ident": "",
-                "col1": center1.format(format_5_decimals(U[0][0])),
-                "col2": center2.format(format_5_decimals(U[0][1])),
-                "col3": center3.format(format_5_decimals(U[0][2])),
-            },
-            {
-                "ident": "U    =   ",
-                "col1": center1.format(format_5_decimals(U[1][0])),
-                "col2": center2.format(format_5_decimals(U[1][1])),
-                "col3": center3.format(format_5_decimals(U[1][2])),
-            },
-            {
-                "ident": "",
-                "col1": center1.format(format_5_decimals(U[2][0])),
-                "col2": center2.format(format_5_decimals(U[2][1])),
-                "col3": center3.format(format_5_decimals(U[2][2])),
-            },
-        ]
-
-        dict_ub_mat = [
-            {
-                "ident": "",
-                "col1": center1.format(format_5_decimals(UB[0][0])),
-                "col2": center2.format(format_5_decimals(UB[0][1])),
-                "col3": center3.format(format_5_decimals(UB[0][2])),
-            },
-            {
-                "ident": "UB   = ",
-                "col1": center1.format(format_5_decimals(UB[1][0])),
-                "col2": center2.format(format_5_decimals(UB[1][1])),
-                "col3": center3.format(format_5_decimals(UB[1][2])),
-            },
-            {
-                "ident": "",
-                "col1": center1.format(format_5_decimals(UB[2][0])),
-                "col2": center2.format(format_5_decimals(UB[2][1])),
-                "col3": center3.format(format_5_decimals(UB[2][2])),
-            },
-        ]
-
-        u_to_print = TablePrinter(fmt1, ul="")(dict_u_mat)
-        ub_to_print = TablePrinter(fmt1, ul="")(dict_ub_mat)
-
+        u_to_print = TablePrinter(fmt, ul="")(self._build_matrix_dict(U, "U"))
+        ub_to_print = TablePrinter(fmt, ul="")(self._build_matrix_dict(UB, "UB"))
         return u_to_print, ub_to_print
 
     def list_stored_reflections(self) -> str:
-        """List all stored reflections, return the formatted table to print"""
+        """List all stored reflections as a formatted table."""
         refs = self.experiment_file_dict["reflections"]
         center = "{:^11}"
         space = 10
-        fmt = [
-            ("", "col1", space),
-            ("", "col2", space),
-            ("", "col3", space),
-            ("", "col4", space),
-            ("", "col5", space),
-            ("", "col6", space),
-            ("", "col7", space),
-            ("", "col8", space),
-            ("", "col9", space),
-            ("", "col10", space),
-            ("", "col11", space),
-        ]
-        data = [
-            {
-                "col1": center.format("Index"),
-                "col2": center.format("H"),
-                "col3": center.format("K"),
-                "col4": center.format("L"),
-                "col5": center.format("Mu"),
-                "col6": center.format("Eta"),
-                "col7": center.format("Chi"),
-                "col8": center.format("Phi"),
-                "col9": center.format("Nu"),
-                "col10": center.format("Del"),
-                "col11": center.format("Energy"),
-            }
-        ]
+        headers = ("Index", "H", "K", "L", "Mu", "Eta", "Chi", "Phi", "Nu", "Del", "Energy")
+        fmt = [("", f"col{i+1}", space) for i in range(11)]
 
-        for i in range(len(refs)):
-            dict_ = {
-                "col1": center.format(str(i + 1)),
-                "col2": center.format(str(refs[i][0])),
-                "col3": center.format(str(refs[i][1])),
-                "col4": center.format(str(refs[i][2])),
-                "col5": center.format(str(refs[i][3])),
-                "col6": center.format(str(refs[i][4])),
-                "col7": center.format(str(refs[i][5])),
-                "col8": center.format(str(refs[i][6])),
-                "col9": center.format(str(refs[i][7])),
-                "col10": center.format(str(refs[i][8])),
-                "col11": center.format(str(refs[i][9])),
-            }
-            data.append(dict_)
+        data = [{"col1": center.format(headers[0]),
+                 "col2": center.format(headers[1]),
+                 "col3": center.format(headers[2]),
+                 "col4": center.format(headers[3]),
+                 "col5": center.format(headers[4]),
+                 "col6": center.format(headers[5]),
+                 "col7": center.format(headers[6]),
+                 "col8": center.format(headers[7]),
+                 "col9": center.format(headers[8]),
+                 "col10": center.format(headers[9]),
+                 "col11": center.format(headers[10])}]
 
-        formatted_list = TablePrinter(fmt, ul="")(data)
-        return formatted_list
+        for i, ref in enumerate(refs):
+            row = {"col1": center.format(str(i + 1))}
+            for j in range(10):
+                row[f"col{j+2}"] = center.format(str(ref[j]))
+            data.append(row)
+
+        return TablePrinter(fmt, ul="")(data)
 
     def print_calculated_lattice_parameters(self):
         """Print the LP calculated when doing a calculation from 3 reflections"""
-        print("")
-        print("a    =    {}".format(self.experiment_file_dict["lparam_a"]))
-        print("b    =    {}".format(self.experiment_file_dict["lparam_b"]))
-        print("c    =    {}".format(self.experiment_file_dict["lparam_c"]))
-        print("alpha    =    {}".format(self.experiment_file_dict["lparam_alpha"]))
-        print("beta    =    {}".format(self.experiment_file_dict["lparam_beta"]))
-        print("gamma    =    {}".format(self.experiment_file_dict["lparam_gama"]))
-        print("")
+        lp = self.experiment_file_dict
+        for key in ("a", "b", "c", "alpha", "beta", "gama"):
+            print(f"{key:5} = {lp[f'lparam_{key}']}")
 
     def calculate_u_mat_from_2_reflections(
         self, idx_reflection_1: int, idx_reflection_2: int
@@ -346,17 +271,12 @@ class SetUUB(ExperimentBase):
         U, UB, calculated_lattice_parameters = self.exp.calc_U_3HKL(
             hkl1, angs1, hkl2, angs2, hkl3, angs3
         )
-        float_lp = [
-            float(i) for i in calculated_lattice_parameters
-        ]  # Problems when saving numpy64floats, better to use python's float
+        float_lp = [float(i) for i in calculated_lattice_parameters]
         self.experiment_file_dict["U_mat"] = U.tolist()
         self.experiment_file_dict["UB_mat"] = UB.tolist()
-        self.experiment_file_dict["lparam_a"] = float_lp[0]
-        self.experiment_file_dict["lparam_b"] = float_lp[1]
-        self.experiment_file_dict["lparam_c"] = float_lp[2]
-        self.experiment_file_dict["lparam_alpha"] = float_lp[3]
-        self.experiment_file_dict["lparam_beta"] = float_lp[4]
-        self.experiment_file_dict["lparam_gama"] = float_lp[5]
+        lp_keys = ("lparam_a", "lparam_b", "lparam_c", "lparam_alpha", "lparam_beta", "lparam_gama")
+        for key, val in zip(lp_keys, float_lp):
+            self.experiment_file_dict[key] = val
         self.write_flag = True
 
     def fit_u_matrix(self) -> None:
