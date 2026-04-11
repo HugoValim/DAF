@@ -9,6 +9,17 @@ from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_
 
 
 # --------------------------------------------------------------------
+# Numerical tolerance constants
+# --------------------------------------------------------------------
+
+_SMALL_NORMALIZE = 1e-4  # Threshold for vector normalization in calc_U_2HKL
+_SMALL_BOUND = 1e-10  # Threshold for rounding error correction in bound()
+_OPTIMIZE_TOL = 1e-10  # Optimization tolerance for SLSQP
+_OPTIMIZE_EPS = 1e-6  # Step size for SLSQP
+_FIT_SIGMA = 1e-2  # Initial sigma guess for UB matrix fitting
+
+
+# --------------------------------------------------------------------
 # Quaternion and rotation matrix helpers (pure math, stateless)
 # --------------------------------------------------------------------
 
@@ -123,11 +134,10 @@ class UBMatrix:
         t2p = np.cross(t3p, t1p)
         # print(t2p)
         # ...and nornmalise and check that the reflections used are appropriate
-        SMALL = 1e-4  # Taken from Vlieg's code
 
         def normalise(m):
             d = LA.norm(m)
-            if d < SMALL:
+            if d < _SMALL_NORMALIZE:
 
                 raise DiffcalcException(
                     "Invalid UB reference data. Please check that the specified "
@@ -201,8 +211,7 @@ class UBMatrix:
         moves x between -1 and 1. Used to correct for rounding errors which may
         have moved the sin or cosine of a value outside this range.
         """
-        SMALL = 1e-10
-        if abs(x) > (1 + SMALL):
+        if abs(x) > (1 + _SMALL_BOUND):
             raise AssertionError(
                 "The value (%f) was unexpectedly too far outside -1 or 1 to "
                 "safely bound. Please report this." % x
@@ -266,7 +275,7 @@ class UBMatrix:
             start = list(_init_u123_from_matrix(init_u))
             lower = [0, 0, 0]
             upper = [1, 1, 1]
-            sigma = [1e-2, 1e-2, 1e-2]
+            sigma = [_FIT_SIGMA, _FIT_SIGMA, _FIT_SIGMA]
         except AttributeError:
             raise DiffcalcException(
                 "UB matrix not initialised. Cannot run UB matrix fitting procedure."
@@ -281,8 +290,8 @@ class UBMatrix:
             start,
             args=(uc, ref_data),
             method="SLSQP",
-            tol=1e-10,
-            options={"disp": False, "maxiter": 10000, "eps": 1e-6, "ftol": 1e-10},
+            tol=_OPTIMIZE_TOL,
+            options={"disp": False, "maxiter": 10000, "eps": _OPTIMIZE_EPS, "ftol": _OPTIMIZE_TOL},
         )
         # bounds=bounds)
         vals = res.x

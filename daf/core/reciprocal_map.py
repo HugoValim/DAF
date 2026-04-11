@@ -33,7 +33,8 @@ def _get_matplotlib_pyplot(funcname="XU"):
 # Peak computation (pure functions)
 # --------------------------------------------------------------------
 
-_EPSILON = 1e-7
+_EPSILON = 1e-7  # Threshold for filtering peaks by strength
+_ANGLE_TOO_SMALL_THRESHOLD = 1e-4  # Threshold for checking if calculated angle is valid
 
 
 def _compute_bragg_indices(mat, exp, ttmax):
@@ -342,7 +343,7 @@ class ReciprocalMapWindow:
                 self.set_print_options(marker="", column_marker="", space=14)
                 lb = lambda x: "{:.5f}".format(float(x))
                 if move:
-                    if angles[6] < 1e-4:
+                    if angles[6] < _ANGLE_TOO_SMALL_THRESHOLD:
                         print(self.__str__())
                         subprocess.Popen(
                             "daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(
@@ -358,7 +359,7 @@ class ReciprocalMapWindow:
                     else:
                         print("Can't find the reflection {}".format(hkl))
                 else:
-                    if angles[6] < 1e-4:
+                    if angles[6] < _ANGLE_TOO_SMALL_THRESHOLD:
                         print(self.__str__())
                     else:
                         print("Can't find the reflection {}".format(hkl))

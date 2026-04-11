@@ -22,6 +22,11 @@ _MOTOR_PSEUDO_MAP = {
     "Del": 5,
 }
 
+# Tolerance for numerical computations
+_ANGLE_OFFSET = 1e-6  # Small offset added to motor angles for numerical stability
+_DEFAULT_MAX_ERROR = 1e-5  # Default max error threshold for Q2AngFit
+_CHUTE_ANGLES = (45, 45, 45, 45, 45, 45)  # Motor angle offsets for retry sequence
+
 
 def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
     """Compute all pseudo angles from motor angles, returning a dict."""
@@ -43,15 +48,15 @@ class MinimizationProc(UBMatrix):
         # Direct motor angle constraints
         if pseudo_angle in _MOTOR_PSEUDO_MAP:
             idx = _MOTOR_PSEUDO_MAP[pseudo_angle]
-            return angles[idx] + 1e-6 - fix_angle
+            return angles[idx] + _ANGLE_OFFSET - fix_angle
 
         # Pseudo angles that require full computation
-        Mu = angles[0] + 1e-6
-        Eta = angles[1] + 1e-6
-        Chi = angles[2] + 1e-6
-        Phi = angles[3] + 1e-6
-        Nu = angles[4] + 1e-6
-        Del = angles[5] + 1e-6
+        Mu = angles[0] + _ANGLE_OFFSET
+        Eta = angles[1] + _ANGLE_OFFSET
+        Chi = angles[2] + _ANGLE_OFFSET
+        Phi = angles[3] + _ANGLE_OFFSET
+        Nu = angles[4] + _ANGLE_OFFSET
+        Del = angles[5] + _ANGLE_OFFSET
 
         computed = _compute_pseudo_angles(
             Mu, Eta, Chi, Phi, Nu, Del, self.samp, self.hkl, self.lam, self.nref, self.U
@@ -74,7 +79,7 @@ class MinimizationProc(UBMatrix):
         elif pseudo_angle == "aeqb":
             return computed["beta"] - computed["alpha"]
 
-    def motor_angles(self, *args, qvec=False, max_err=1e-5, **kwargs):
+    def motor_angles(self, *args, qvec=False, max_err=_DEFAULT_MAX_ERROR, **kwargs):
 
         self.isscan = False
 
@@ -94,7 +99,7 @@ class MinimizationProc(UBMatrix):
         else:
             self.start = [0, 0, 0, 0, 0, 0]
 
-        self.chute1 = [45, 45, 45, 45, 45, 45]
+        self.chute1 = list(_CHUTE_ANGLES)
 
         # Build constraint list from pseudo_constraints_w_value_list
         if len(self.pseudo_constraints_w_value_list) != 0:
