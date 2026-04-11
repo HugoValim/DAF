@@ -35,7 +35,7 @@ def log_macro(dargs):
         log += " " + i
     os.system("echo {} >> Log".format(log))
     if dargs["macro_flag"] == "True":
-        os.system("echo {} >> {}".format(log, dict_args["macro_file"]))
+        os.system("echo {} >> {}".format(log, dargs["macro_file"]))
 
 
 def check_version():

@@ -35,7 +35,6 @@ class Icons:
     check: path = path.join(pixmap_path, "check.svg")
     add: path = path.join(pixmap_path, "add.svg")
     ban: path = path.join(pixmap_path, "ban.svg")
-    check: path = path.join(pixmap_path, "check.svg")
     pen: path = path.join(pixmap_path, "pen.svg")
     refresh: path = path.join(pixmap_path, "cached1.svg")
     folder: path = path.join(pixmap_path, "folder-open.svg")
