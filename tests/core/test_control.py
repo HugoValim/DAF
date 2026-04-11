@@ -12,9 +12,9 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_operation_modes_WHEN_mode_is_correct_THEN_it_is_right_setted(self):
         for test_mode in self.MODES_TO_TEST:
             exp = DAF(*test_mode)
-            mode = exp.mode
-            for mode, setted_mode in zip(test_mode, mode):
-                assert mode == setted_mode
+            assert exp.col1 == test_mode[0]
+            assert exp.col2 == test_mode[1]
+            assert exp.col3 == test_mode[2]
 
     def test_GIVEN_operation_modes_WHEN_mode_is_correct_THEN_check_if_setup_is_correct(
         self,
@@ -37,10 +37,10 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         expected = (
-            ["Nu", "Eta", "Phi", "x"],
-            ["Nu", "x", "x"],
+            ["Nu", "Eta", "Phi"],
+            ["Nu"],
             ["Eta", "Mu", "Chi"],
-            ["Eta", "Chi", "x"],
+            ["Eta", "Chi"],
         )
 
         count = 0
