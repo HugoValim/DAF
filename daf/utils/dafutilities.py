@@ -125,7 +125,7 @@ class DAFIO:
                 )
             else:
                 dict_["beamline_pvs"][key]["value"] = 1
-                bl_counter += 1
+            bl_counter += 1
         return dict_
 
     def epics_put(self, dict_):
@@ -174,7 +174,7 @@ class DAFIO:
 
         for bl_pv in dict_["beamline_pvs"].keys():
             if not dict_["beamline_pvs"][bl_pv]["up"]:
-                dict_["beamline_pvs"]["value"] = 0
+                dict_["beamline_pvs"][bl_pv]["value"] = 0
 
     def write(self, dict_, filepath=DEFAULT):
         """Write data to experiment file and also move motors if needed"""
