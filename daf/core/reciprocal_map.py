@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reciprocal space mapping and visualization for diffraction experiments."""
 
+import logging
 import subprocess
 import math
 import numpy as np
@@ -9,6 +10,8 @@ import xrayutilities as xu
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import calculate_pseudo_angle_from_motor_angles
 from daf.core.math_utils import vec_norm
+
+logger = logging.getLogger(__name__)
 
 
 # --------------------------------------------------------------------
@@ -25,7 +28,7 @@ def _get_matplotlib_pyplot(funcname="XU"):
         from matplotlib import pyplot as plt
         return True, plt
     except ImportError:
-        print(f"{funcname}: Warning: plot functionality not available")
+        logger.warning("%s: Warning: plot functionality not available", funcname)
         return False, None
 
 
@@ -174,7 +177,7 @@ class ReciprocalMapWindow:
         """
         plot, plt = _get_matplotlib_pyplot("XU.materials")
         if not plot:
-            print("matplotlib needed for show_reciprocal_space_plane")
+            logger.error("matplotlib needed for show_reciprocal_space_plane")
             return
 
         exp = xu.HXRD(idir, ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor)
@@ -342,7 +345,7 @@ class ReciprocalMapWindow:
                 lb = lambda x: "{:.5f}".format(float(x))
                 if move:
                     if angles[6] < _ANGLE_TOO_SMALL_THRESHOLD:
-                        print(self.__str__())
+                        logger.info(self.__str__())
                         subprocess.Popen(
                             ["daf.amv", "-m", lb(exp_dict["mu"]), "-e", lb(exp_dict["eta"]),
                              "-c", lb(exp_dict["chi"]), "-p", lb(exp_dict["phi"]),
@@ -350,12 +353,12 @@ class ReciprocalMapWindow:
                             shell=False,
                         )
                     else:
-                        print("Can't find the reflection {}".format(hkl))
+                        logger.warning("Can't find the reflection %s", hkl)
                 else:
                     if angles[6] < _ANGLE_TOO_SMALL_THRESHOLD:
-                        print(self.__str__())
+                        logger.info(self.__str__())
                     else:
-                        print("Can't find the reflection {}".format(hkl))
+                        logger.warning("Can't find the reflection %s", hkl)
 
         fig.canvas.mpl_connect("motion_notify_event", hover)
         fig.canvas.mpl_connect("button_press_event", click)

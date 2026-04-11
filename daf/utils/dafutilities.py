@@ -2,6 +2,7 @@
 """Library for reading and writing experiment files"""
 
 import atexit
+import logging
 import os
 import time
 
@@ -9,6 +10,8 @@ import epics
 import yaml
 
 from daf.utils.daf_paths import DAFPaths as dp
+
+logger = logging.getLogger(__name__)
 
 DEFAULT = dp.check_for_local_config()
 TIMEOUT = 2  # .2s timeout for caputs and cagets
@@ -28,7 +31,7 @@ def fetch_pvs_and_check_for_connection():
     for key in data["motors"].keys():
         val = epics.caget(data["motors"][key]["pv"], timeout=2)
         if val is None:
-            print("Cannot connect to {}, PV: {}".format(key, data["motors"][key]["pv"]))
+            logger.warning("Cannot connect to %s, PV: %s", key, data["motors"][key]["pv"])
             data["motors"][key]["up"] = 0
     return data
 

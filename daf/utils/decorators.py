@@ -1,8 +1,11 @@
+import logging
 import os
 import sys
 
 from daf import __version__
 from daf.utils import dafutilities as du
+
+logger = logging.getLogger(__name__)
 
 LOG_FILE_NAME = "Log"
 
@@ -53,8 +56,8 @@ def check_version():
         reset_flag = True
 
     if reset_flag:
-        print("Your configuration file version is older than 1.0.0")
-        print(
+        logger.warning("Your configuration file version is older than 1.0.0")
+        logger.warning(
             "Your .Experiment file will be removed, please run daf.init to generate an up-to-date file"
         )
         if os.path.isfile(du.DEFAULT):
