@@ -21,8 +21,8 @@ def cli_decorator(func: callable):
 
 def daf_log():
     """Function to be used as a decorator. It builds the log file"""
-    log_message = sys.argv.pop(0).split("/")[-1]
-    for i in sys.argv:
+    log_message = sys.argv[0].split("/")[-1] if sys.argv else ""
+    for i in sys.argv[1:]:
         log_message += " " + i
     with open(LOG_FILE_NAME, "a") as file_object:
         file_object.write(log_message + "\n")
@@ -30,12 +30,14 @@ def daf_log():
 
 def log_macro(dargs):
     """Function to generate the log and macro files"""
-    log = sys.argv.pop(0).split("command_line/")[1]
-    for i in sys.argv:
+    log = sys.argv[0].split("command_line/")[1] if sys.argv else ""
+    for i in sys.argv[1:]:
         log += " " + i
-    os.system("echo {} >> Log".format(log))
+    with open(LOG_FILE_NAME, "a") as f:
+        f.write(log + "\n")
     if dargs["macro_flag"] == "True":
-        os.system("echo {} >> {}".format(log, dargs["macro_file"]))
+        with open(dargs["macro_file"], "a") as f:
+            f.write(log + "\n")
 
 
 def check_version():
