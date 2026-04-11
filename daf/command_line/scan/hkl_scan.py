@@ -77,13 +77,14 @@ class HKLScan(ScanBase):
         args = self.parser.parse_args()
         return args
 
+    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+
     def generate_data_for_scan(self) -> np.array:
         """Generate the scan path for scans"""
-        diffractometer_motor_names = ["mu", "eta", "chi", "phi", "nu", "del"]
         self.exp = self.build_exp()
         diffractometer_motor_start_values = [
             self.experiment_file_dict["motors"][i]["value"]
-            for i in diffractometer_motor_names
+            for i in self._MOTOR_NAMES
         ]
         scan_points = self.exp.scan(
             self.parsed_args_dict["hkli"],
@@ -95,34 +96,12 @@ class HKLScan(ScanBase):
             sep=self.parsed_args_dict["separator"],
             startvalues=diffractometer_motor_start_values,
         )
-        mu_points = [
-            float(i) for i in scan_points["Mu"]
-        ]  # Get only the points related to mu
-        eta_points = [
-            float(i) for i in scan_points["Eta"]
-        ]  # Get only the points related to eta
-        chi_points = [
-            float(i) for i in scan_points["Chi"]
-        ]  # Get only the points related to chi
-        phi_points = [
-            float(i) for i in scan_points["Phi"]
-        ]  # Get only the points related to phi
-        nu_points = [
-            float(i) for i in scan_points["Nu"]
-        ]  # Get only the points related to nu
-        del_points = [
-            float(i) for i in scan_points["Del"]
-        ]  # Get only the points related to del
         # Must be stored in list of list because the way the build_scan_args is structured
         data_for_scan = {
-            "mu": [mu_points],
-            "eta": [eta_points],
-            "chi": [chi_points],
-            "phi": [phi_points],
-            "nu": [nu_points],
-            "del": [del_points],
+            motor: [[float(i) for i in scan_points[motor.capitalize()]]]
+            for motor in self._MOTOR_NAMES
         }
-        ordered_motors = [i for i in data_for_scan.keys()]
+        ordered_motors = list(data_for_scan.keys())
 
         return data_for_scan, ordered_motors
 

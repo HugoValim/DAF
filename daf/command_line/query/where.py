@@ -17,6 +17,9 @@ class Where(QueryBase):
         daf.wh
             """
 
+    _PSEUDO_NAMES = ("alpha", "beta", "psi", "tau", "qaz", "naz", "omega")
+    _MOTOR_NAMES = ("del", "eta", "chi", "phi", "nu", "mu")
+
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -41,72 +44,13 @@ class Where(QueryBase):
             format_5_decimals(self.hkl_now[2]),
         )
         print("")
-        print(
-            "Alpha   =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["alpha"])
-            )
-        )
-        print(
-            "Beta    =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["beta"])
-            )
-        )
-        print(
-            "Psi     =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["psi"])
-            )
-        )
-        print(
-            "Tau     =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["tau"])
-            )
-        )
-        print(
-            "Qaz     =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["qaz"])
-            )
-        )
-        print(
-            "Naz     =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["naz"])
-            )
-        )
-        print(
-            "Omega   =    {}".format(
-                format_5_decimals(self.pseudo_dict_to_update["omega"])
-            )
-        )
+        for name in self._PSEUDO_NAMES:
+            val = format_5_decimals(self.pseudo_dict_to_update[name])
+            print(f"{name.capitalize():5}   =    {val}")
         print("")
-        print(
-            "Del     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["del"]["value"])
-            )
-        )
-        print(
-            "Eta     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["eta"]["value"])
-            )
-        )
-        print(
-            "Chi     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["chi"]["value"])
-            )
-        )
-        print(
-            "Phi     =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["phi"]["value"])
-            )
-        )
-        print(
-            "Nu      =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["nu"]["value"])
-            )
-        )
-        print(
-            "Mu      =    {}".format(
-                format_5_decimals(self.experiment_file_dict["motors"]["mu"]["value"])
-            )
-        )
+        for name in self._MOTOR_NAMES:
+            val = format_5_decimals(self.experiment_file_dict["motors"][name]["value"])
+            print(f"{name.capitalize():4}     =    {val}")
         print("")
 
     def update_pseudo_angles_and_hkl(self):

@@ -17,6 +17,8 @@ class FromFileScan(ScanBase):
 
         """
 
+    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+
     def __init__(self):
         super().__init__(scan_type="list_scan")
         self.exp = self.build_exp()
@@ -35,34 +37,11 @@ class FromFileScan(ScanBase):
     def generate_data_for_scan(self, full_file_path: str) -> np.array:
         """Generate the scan path for scans"""
         scan_points = pd.read_csv(full_file_path)
-        mu_points = [
-            float(i) for i in scan_points["Mu"]
-        ]  # Get only the points related to mu
-        eta_points = [
-            float(i) for i in scan_points["Eta"]
-        ]  # Get only the points related to eta
-        chi_points = [
-            float(i) for i in scan_points["Chi"]
-        ]  # Get only the points related to chi
-        phi_points = [
-            float(i) for i in scan_points["Phi"]
-        ]  # Get only the points related to phi
-        nu_points = [
-            float(i) for i in scan_points["Nu"]
-        ]  # Get only the points related to nu
-        del_points = [
-            float(i) for i in scan_points["Del"]
-        ]  # Get only the points related to del
-
         data_for_scan = {
-            "mu": [mu_points],
-            "eta": [eta_points],
-            "chi": [chi_points],
-            "phi": [phi_points],
-            "nu": [nu_points],
-            "del": [del_points],
+            motor: [[float(i) for i in scan_points[motor.capitalize()]]]
+            for motor in self._MOTOR_NAMES
         }
-        ordered_motors = [i for i in data_for_scan.keys()]
+        ordered_motors = list(data_for_scan.keys())
 
         return data_for_scan, ordered_motors
 

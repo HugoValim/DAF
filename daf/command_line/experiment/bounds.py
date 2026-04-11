@@ -89,27 +89,14 @@ class Bounds(ExperimentBase):
         """Reset all motor bounds to default. It writes directly to the .Experiment file"""
         self.write_to_experiment_file(self.DEFAULT_BOUNDS, is_motor_bounds=True)
 
+    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+
     def list_bounds(self) -> None:
         """Method to print the current bounds"""
         print("")
-        print(
-            "Mu    =    {}".format(self.experiment_file_dict["motors"]["mu"]["bounds"])
-        )
-        print(
-            "Eta   =    {}".format(self.experiment_file_dict["motors"]["eta"]["bounds"])
-        )
-        print(
-            "Chi   =    {}".format(self.experiment_file_dict["motors"]["chi"]["bounds"])
-        )
-        print(
-            "Phi   =    {}".format(self.experiment_file_dict["motors"]["phi"]["bounds"])
-        )
-        print(
-            "Nu    =    {}".format(self.experiment_file_dict["motors"]["nu"]["bounds"])
-        )
-        print(
-            "Del   =    {}".format(self.experiment_file_dict["motors"]["del"]["bounds"])
-        )
+        for motor in self._MOTOR_NAMES:
+            bounds = self.experiment_file_dict["motors"][motor]["bounds"]
+            print(f"{motor.capitalize():4} =    {bounds}")
         print("")
 
     def run_cmd(self) -> None:

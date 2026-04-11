@@ -17,6 +17,12 @@ class SamplePos(QueryBase):
         daf.spos
             """
 
+    _SAMPLE_MOTORS = (
+        "sample_z", "sample_x", "sample_rx", "sample_y", "sample_ry",
+        "sample_x_s1", "sample_y_s1", "diffractomer_ux", "diffractomer_uy",
+        "diffractomer_rx", "theta_analyzer_crystal", "2theta_analyzer_crystal",
+    )
+
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -31,94 +37,11 @@ class SamplePos(QueryBase):
     def print_position(self) -> None:
         """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
         print("")
-        print(
-            "sample_z     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_z"]["value"]
-                )
+        for motor in self._SAMPLE_MOTORS:
+            val = format_5_decimals(
+                self.experiment_file_dict["motors"][motor]["value"]
             )
-        )
-        print(
-            "sample_x     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_x"]["value"]
-                )
-            )
-        )
-        print(
-            "sample_rx     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_rx"]["value"]
-                )
-            )
-        )
-        print(
-            "sample_y     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_y"]["value"]
-                )
-            )
-        )
-        print(
-            "sample_ry     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_ry"]["value"]
-                )
-            )
-        )
-        print(
-            "sample_x_s1      =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_x_s1"]["value"]
-                )
-            )
-        )
-        print(
-            "sample_y_s1      =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["sample_y_s1"]["value"]
-                )
-            )
-        )
-        print(
-            "diffractomer_ux     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["diffractomer_ux"]["value"]
-                )
-            )
-        )
-        print(
-            "diffractomer_uy     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["diffractomer_uy"]["value"]
-                )
-            )
-        )
-        print(
-            "diffractomer_rx     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["diffractomer_rx"]["value"]
-                )
-            )
-        )
-        print(
-            "theta_analyzer_crystal     =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["theta_analyzer_crystal"][
-                        "value"
-                    ]
-                )
-            )
-        )
-        print(
-            "2theta_analyzer_crystal      =    {}".format(
-                format_5_decimals(
-                    self.experiment_file_dict["motors"]["2theta_analyzer_crystal"][
-                        "value"
-                    ]
-                )
-            )
-        )
+            print(f"{motor:26} =    {val}")
         print("")
 
     def run_cmd(self) -> None:
