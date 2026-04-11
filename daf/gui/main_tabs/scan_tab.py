@@ -190,13 +190,13 @@ class ScanTab(QWidget):
     def set_counter(self):
         item = self.listWidget_files.currentItem()
         value = item.text()
-        os.system("daf.mc -s {}".format(value))
+        subprocess.Popen(["daf.mc", "-s", value], shell=False)
         self.label_current_config.setText(value)
 
     def set_main_counter(self):
         counter = self.listWidget_counters.currentItem().text()
         self.label_main_counter.setText(counter)
-        os.system("daf.mc -m {}".format(counter))
+        subprocess.Popen(["daf.mc", "-m", counter], shell=False)
 
     def new_counter_file(self):
         configs = self.list_config_files()
@@ -219,10 +219,10 @@ class ScanTab(QWidget):
                 )
 
                 if ret == QtWidgets.QMessageBox.Ok:
-                    os.system("daf.mc -n {}".format(text))
+                    subprocess.Popen(["daf.mc", "-n", text], shell=False)
 
             else:
-                os.system("daf.mc -n {}".format(text))
+                subprocess.Popen(["daf.mc", "-n", text], shell=False)
         self.counters_scroll_area()
 
     def add_counter_manager(self):
@@ -237,13 +237,13 @@ class ScanTab(QWidget):
         """Add a counter to a setup"""
         file = self.listWidget_files.currentItem().text()
         counter = self.combo_box.currentText()
-        os.system("daf.mc -a {} {}".format(file, counter))
+        subprocess.Popen(["daf.mc", "-a", file, counter], shell=False)
         self.on_counters_list_widget_change()
 
     def remove_counter_file(self):
         item = self.listWidget_files.currentItem()
         value = item.text()
-        os.system("daf.mc -r {}".format(value))
+        subprocess.Popen(["daf.mc", "-r", value], shell=False)
         self.counters_scroll_area()
 
     def remove_counter(self):
@@ -252,8 +252,8 @@ class ScanTab(QWidget):
             item = self.listWidget_files.currentItem()
             value = item.text()
             counter = get_selected.text()
-            os.system("daf.mc -rc {} {}".format(value, counter))
+            subprocess.Popen(["daf.mc", "-rc", value, counter], shell=False)
             self.on_counters_list_widget_change()
 
     def open_live_view(self):
-        subprocess.Popen("daf.live")
+        subprocess.Popen(["daf.live"], shell=False)

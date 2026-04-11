@@ -54,8 +54,7 @@ class MyDisplay(Display):
         K = self.ui.K_set.text()
         L = self.ui.L_set.text()
 
-        # os.system("daf.mv {} {} {} -q".format(H, K, L))
-        subprocess.Popen("daf.mv {} {} {}".format(H, K, L), shell=True)
+        subprocess.Popen(["daf.mv", H, K, L], shell=False)
 
         self.H_set.setText("")
         self.K_set.setText("")

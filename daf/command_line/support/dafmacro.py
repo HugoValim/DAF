@@ -35,8 +35,9 @@ dict_args = du.read()
 du.log_macro(dict_args)
 
 if args.Initialize:
-    os.system("echo '#!/usr/bin/env bash' > {}".format(args.name))
-    os.system("chmod 755 {}".format(args.name))
+    with open(args.name, "w") as f:
+        f.write("#!/usr/bin/env bash\n")
+    os.chmod(args.name, 0o755)
     dict_args["macro_flag"] = "True"
     dict_args["macro_file"] = args.name
     du.write(dict_args)
@@ -47,4 +48,5 @@ if args.Stop:
     du.write(dict_args)
 
 if args.Execute:
-    os.system("./{}".format(args.Execute))
+    import subprocess
+    subprocess.run(["./" + args.Execute], shell=False)

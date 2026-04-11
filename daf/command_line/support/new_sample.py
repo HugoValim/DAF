@@ -49,18 +49,13 @@ class NewSample(SupportBase):
         os.mkdir(folder_name)
         os.chmod(folder_name, 0o777)
         os.chdir(folder_name)
-        subprocess.Popen("daf.init --all --local", shell=True)
+        subprocess.Popen(["daf.init", "--all", "--local"], shell=False)
 
     @staticmethod
     def kill_other_guis() -> None:
         """If the --all option is passed open all DAF's GUIs as well"""
         subprocess.Popen(
-            "ps axu | grep daf_gui.py | awk {'print $2'} | head -n -1 | xargs kill -9",
-            shell=True,
-        )
-        subprocess.Popen(
-            "ps axu | grep live_view.py | awk {'print $2'} | head -n -1 | xargs kill -9",
-            shell=True,
+            ["ps", "axo", "comm="], shell=False,
         )
 
     def run_cmd(self) -> None:

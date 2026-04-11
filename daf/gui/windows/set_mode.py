@@ -163,17 +163,17 @@ class MyDisplay(QWidget):
 
     def set_mode(self):
         """Set the mode and the constraints"""
-        daf_cons_args = ""
+        daf_cons_args = []
         for i in self.cons_table:
             if not "=" in i[0]:
                 ang = (
                     i[0].split(" ")[0].lower()
                 )  # get only the angle name in lower case
                 fix_in = i[1]
-                arg = "--cons_" + str(ang) + " " + str(fix_in) + " "
-                daf_cons_args += arg
+                daf_cons_args.extend(["--cons_" + str(ang), str(fix_in)])
         p = subprocess.Popen(
-            "daf.mode {} ".format(str(self.mode_input.text())), shell=True
+            ["daf.mode", str(self.mode_input.text())], shell=False
         )
         p.wait()  # Wait for the first command, otherwise it'll not execute the second one
-        subprocess.Popen("daf.cons {} ".format(daf_cons_args), shell=True)
+        if daf_cons_args:
+            subprocess.Popen(["daf.cons"] + daf_cons_args, shell=False)

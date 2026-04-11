@@ -119,9 +119,9 @@ class MyDisplay(QWidget):
             samp = self.lineEdit_samp_name.text()
             params = [getattr(self, f"lineEdit_{p}").text() for p in self._LATTICE_PARAMS]
             subprocess.Popen(
-                "daf.expt -s {} -p {}".format(samp, " ".join(params)),
-                shell=True,
+                ["daf.expt", "-s", samp, "-p"] + params,
+                shell=False,
             )
         else:
             samp = self.comboBox_materials.currentText()
-            subprocess.Popen("daf.expt -s {}".format(samp), shell=True)
+            subprocess.Popen(["daf.expt", "-s", samp], shell=False)

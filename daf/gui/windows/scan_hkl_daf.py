@@ -176,9 +176,8 @@ class MyWindow(QWidget):
         if self.lineEdit_file_name.text():
             file = self.lineEdit_file_name.text()
             time = self.lineEdit_time.text()
-            return f"daf.ffscan {file} {time}"
-        cmd = "daf.scan "
-        cmd += " ".join([
+            return ["daf.ffscan", file, time]
+        cmd = ["daf.scan",
             self.lineEdit_hi.text(),
             self.lineEdit_ki.text(),
             self.lineEdit_li.text(),
@@ -187,14 +186,13 @@ class MyWindow(QWidget):
             self.lineEdit_lf.text(),
             self.lineEdit_steps.text(),
             self.lineEdit_time.text(),
-        ])
+        ]
         if self.lineEdit_csv.text():
-            cmd += f" -n {self.lineEdit_csv.text()}"
+            cmd.extend(["-n", self.lineEdit_csv.text()])
         if self.checkBox_csv.isChecked():
-            cmd += " -c"
+            cmd.append("-c")
         return cmd
 
     def do_scan(self):
         scan_cmd = self.build_scan_cmd()
-        print(scan_cmd)
-        subprocess.Popen(scan_cmd, shell=True)
+        subprocess.Popen(scan_cmd, shell=False)

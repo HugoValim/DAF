@@ -173,10 +173,9 @@ class MyDisplay(QWidget):
         )
         if result:
             hkl_now = text.split(",")
-            # print("daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]))
             p = subprocess.Popen(
-                "daf.ub -rn {} {} {}".format(hkl_now[0], hkl_now[1], hkl_now[2]),
-                shell=True,
+                ["daf.ub", "-rn", hkl_now[0], hkl_now[1], hkl_now[2]],
+                shell=False,
             )
             p.wait()
             self.update_reflections()
@@ -199,8 +198,7 @@ class MyDisplay(QWidget):
                 QtWidgets.QMessageBox.Ok,
             )
         else:
-            # os.system("daf.ub -c2 {} {}".format(inp[0], inp[1]))
-            subprocess.Popen("daf.ub -c2 {} {}".format(inp[0], inp[1]), shell=True)
+            subprocess.Popen(["daf.ub", "-c2", inp[0], inp[1]], shell=False)
 
     def calc_from_3_ref(self):
         """Do the calculation with 3 selected reflections"""
@@ -220,9 +218,8 @@ class MyDisplay(QWidget):
                 QtWidgets.QMessageBox.Ok,
             )
         else:
-            # os.system("daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]))
             subprocess.Popen(
-                "daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]), shell=True
+                ["daf.ub", "-c3", inp[0], inp[1], inp[2]], shell=False
             )
 
     def set_u_to_i(self):
@@ -248,8 +245,8 @@ class MyDisplay(QWidget):
             for r in range(3) for c in range(3)
         ]
         subprocess.Popen(
-            "daf.ub -u " + " ".join(values),
-            shell=True,
+            ["daf.ub", "-u"] + values,
+            shell=False,
         )
         self.update_ub_labels()  # U changes → UB changes too
 
@@ -269,6 +266,6 @@ class MyDisplay(QWidget):
             for r in range(3) for c in range(3)
         ]
         subprocess.Popen(
-            "daf.ub -ub " + " ".join(values),
-            shell=True,
+            ["daf.ub", "-ub"] + values,
+            shell=False,
         )

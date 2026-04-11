@@ -32,8 +32,8 @@ class GUIAll(SupportBase):
     @staticmethod
     def open_daf_guis() -> int:
         """If the --all option is passed open all DAF's GUIs as well"""
-        proc1 = subprocess.Popen("daf.gui", shell=True)
-        proc2 = subprocess.Popen("daf.live", shell=True)
+        proc1 = subprocess.Popen(["daf.gui"], shell=False)
+        proc2 = subprocess.Popen(["daf.live"], shell=False)
         return
 
     def run_cmd(self) -> None:

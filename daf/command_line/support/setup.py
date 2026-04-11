@@ -97,7 +97,9 @@ class Setup(SupportBase):
     def checkout_setup(self, setup_name: str) -> None:
         """Change to a new DAF setup"""
         full_file_path = os.path.join(dp.DAF_CONFIGS, setup_name)
-        os.system("cat {} > {}".format(full_file_path, du.DEFAULT))
+        with open(full_file_path, "r") as src:
+            with open(du.DEFAULT, "w") as dst:
+                dst.write(src.read())
         self.experiment_file_dict = self.io.read()
         self.experiment_file_dict["setup"] = setup_name
         self.write_flag = True
@@ -105,11 +107,10 @@ class Setup(SupportBase):
     def list_all_setups(self) -> None:
         """List all the setups that a user has"""
         setup_now = self.get_current_setup()
-        os.system(
-            "ls -A1 --ignore=*.yml $HOME/.daf/ | sed 's/^/   /' | sed '/   {}$/c >  {}' ".format(
-                setup_now, setup_now
-            )
-        )
+        setups = [f for f in os.listdir(dp.DAF_CONFIGS) if not f.endswith(".yml")]
+        for s in setups:
+            prefix = ">" if s == setup_now else " "
+            print(f"   {prefix} {s}")
 
     def save_setup(self) -> None:
         """Save the current setup"""

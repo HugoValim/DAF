@@ -344,15 +344,10 @@ class ReciprocalMapWindow:
                     if angles[6] < _ANGLE_TOO_SMALL_THRESHOLD:
                         print(self.__str__())
                         subprocess.Popen(
-                            "daf.amv -m {} -e {} -c {} -p {} -n {} -d {}".format(
-                                lb(exp_dict["mu"]),
-                                lb(exp_dict["eta"]),
-                                lb(exp_dict["chi"]),
-                                lb(exp_dict["phi"]),
-                                lb(exp_dict["nu"]),
-                                lb(exp_dict["del"]),
-                            ),
-                            shell=True,
+                            ["daf.amv", "-m", lb(exp_dict["mu"]), "-e", lb(exp_dict["eta"]),
+                             "-c", lb(exp_dict["chi"]), "-p", lb(exp_dict["phi"]),
+                             "-n", lb(exp_dict["nu"]), "-d", lb(exp_dict["del"])],
+                            shell=False,
                         )
                     else:
                         print("Can't find the reflection {}".format(hkl))

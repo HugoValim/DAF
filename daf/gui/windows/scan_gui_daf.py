@@ -170,22 +170,20 @@ class MyWindow(QWidget):
         self.pushButton_start.clicked.connect(self.do_scan)
 
     def build_scan_cmd(self):
-        cmd = "daf." + self.title + " "
+        cmd = ["daf." + self.title]
 
         for line in self.motor_layout:
             for motor, checkbox in line["checkboxes"].items():
                 if checkbox.isChecked():
-                    cmd += "--" + motor.split("_")[0] + " "
+                    cmd.append("--" + motor.split("_")[0])
             for key, line_edit in line["line_edits"].items():
-                cmd += line_edit.text() + " "
+                cmd.append(line_edit.text())
 
-        cmd += self.line_edit_step.text() + " "
-        cmd += self.line_edit_time.text() + " "
+        cmd.append(self.line_edit_step.text())
+        cmd.append(self.line_edit_time.text())
 
         return cmd
 
     def do_scan(self):
         scan_cmd = self.build_scan_cmd()
-        print(scan_cmd)
-        subprocess.Popen(scan_cmd, shell=True)
-        # os.system(scan_cmd)
+        subprocess.Popen(scan_cmd, shell=False)

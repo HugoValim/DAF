@@ -14,11 +14,8 @@ def main() -> None:
     kafka_topic = data["kafka_topic"]
     print(kafka_topic)
     proc = subprocess.Popen(
-        "kbl {}".format(kafka_topic),
-        # stdout=subprocess.PIPE,
-        # stderr=subprocess.PIPE,
-        # stdin=subprocess.PIPE,
-        shell=True,
+        ["kbl", kafka_topic],
+        shell=False,
     )
     return proc
 

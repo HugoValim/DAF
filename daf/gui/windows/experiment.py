@@ -103,16 +103,19 @@ class MyDisplay(QWidget):
             energy = self.lineEdit_e_wl.text()
         elif str(self.comboBox_e_wl.currentText()).lower() == "wl":
             energy = xu.lam2en(float(self.lineEdit_e_wl.text()))
-        subprocess.Popen("daf.expt -e {}".format(energy), shell=True)
+        subprocess.Popen(["daf.expt", "-e", str(energy)], shell=False)
 
     def set_idir(self):
         """Sets experiment idir vector"""
-        subprocess.Popen("daf.expt -i {}".format(self._build_vector_arg("i")), shell=True)
+        vector_args = self._build_vector_arg("i").split()
+        subprocess.Popen(["daf.expt", "-i"] + vector_args, shell=False)
 
     def set_ndir(self):
         """Sets experiment ndir vector"""
-        subprocess.Popen("daf.expt -n {}".format(self._build_vector_arg("n")), shell=True)
+        vector_args = self._build_vector_arg("n").split()
+        subprocess.Popen(["daf.expt", "-n"] + vector_args, shell=False)
 
     def set_rdir(self):
         """Sets experiment rdir vector"""
-        subprocess.Popen("daf.expt -r {}".format(self._build_vector_arg("r")), shell=True)
+        vector_args = self._build_vector_arg("r").split()
+        subprocess.Popen(["daf.expt", "-r"] + vector_args, shell=False)
