@@ -107,66 +107,41 @@ class MyDisplay(QWidget):
         if self.refs != refs:
             self.update_reflections()
 
+    def _build_reflection_row(self, row_idx: int, ref: list) -> QCheckBox:
+        """Insert a single reflection row into the table. Returns the checkbox."""
+        centered = Qt.AlignHCenter | Qt.AlignVCenter
+        values = [str(row_idx)] + [str(ref[i]) for i in range(10)]
+        values[-1] = format_5_dec(ref[9])
+        for col, val in enumerate(values):
+            item = QTableWidgetItem(val)
+            item.setTextAlignment(centered)
+            self.tableWidget.setItem(row_idx, col, item)
+        cb = QCheckBox()
+        cb.setCheckState(QtCore.Qt.Unchecked)
+        widget = QWidget()
+        layoutH = QHBoxLayout(widget)
+        layoutH.addWidget(cb)
+        layoutH.setAlignment(QtCore.Qt.AlignCenter)
+        layoutH.setContentsMargins(10, 0, 0, 0)
+        self.tableWidget.setCellWidget(row_idx, 11, cb)
+        return cb
+
     def update_reflections(self):
-        """Update table"""
+        """Update reflections table from experiment file."""
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
         data = self.get_experiment_file()
         refs = data["reflections"]
         self.refs = refs
-        row = 0
         self.table_checkboxes = {}
-        for i in range(len(refs)):
-            idx = str(i + 1)
-            idx_for_table = QTableWidgetItem(idx)
-            idx_for_table.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            h = QTableWidgetItem(str(refs[i][0]))
-            h.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            k = QTableWidgetItem(str(refs[i][1]))
-            k.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            l = QTableWidgetItem(str(refs[i][2]))
-            l.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            mu = QTableWidgetItem(str(refs[i][3]))
-            mu.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            eta = QTableWidgetItem(str(refs[i][4]))
-            eta.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            chi = QTableWidgetItem(str(refs[i][5]))
-            chi.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            phi = QTableWidgetItem(str(refs[i][6]))
-            phi.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            nu = QTableWidgetItem(str(refs[i][7]))
-            nu.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            delta = QTableWidgetItem(str(refs[i][8]))
-            delta.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            en = QTableWidgetItem(format_5_dec(refs[i][9]))
-            en.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-
+        for row in range(len(refs)):
             self.tableWidget.insertRow(row)
-            self.tableWidget.setItem(row, 0, idx_for_table)
-            self.tableWidget.setItem(row, 1, h)
-            self.tableWidget.setItem(row, 2, k)
-            self.tableWidget.setItem(row, 3, l)
-            self.tableWidget.setItem(row, 4, mu)
-            self.tableWidget.setItem(row, 5, eta)
-            self.tableWidget.setItem(row, 6, chi)
-            self.tableWidget.setItem(row, 7, phi)
-            self.tableWidget.setItem(row, 8, nu)
-            self.tableWidget.setItem(row, 9, delta)
-            self.tableWidget.setItem(row, 10, en)
-            widget = QWidget(parent=self.tableWidget)
-            self.table_checkboxes[idx] = QCheckBox()
-            self.table_checkboxes[idx].setCheckState(QtCore.Qt.Unchecked)
-            layoutH = QHBoxLayout(widget)
-            layoutH.addWidget(self.table_checkboxes[idx])
-            layoutH.setAlignment(QtCore.Qt.AlignCenter)
-            layoutH.setContentsMargins(10, 0, 0, 0)
-            self.tableWidget.setCellWidget(row, 11, widget)
-            self.tableWidget.setCellWidget(row, 11, self.table_checkboxes[idx])
-            row += 1
-
-        for i in range(self.tableWidget.columnCount()):
+            idx = str(row + 1)
+            cb = self._build_reflection_row(row, refs[row])
+            self.table_checkboxes[idx] = cb
+        for col in range(self.tableWidget.columnCount()):
             header = self.tableWidget.horizontalHeader()
-            header.setResizeMode(i, QHeaderView.Stretch)
+            header.setResizeMode(col, QHeaderView.Stretch)
 
     def link_table_2_menu(self):
         """Link the table widget to the menu options"""
@@ -250,119 +225,50 @@ class MyDisplay(QWidget):
                 "daf.ub -c3 {} {} {}".format(inp[0], inp[1], inp[2]), shell=True
             )
 
-        # self.update_samp_parameters()
-
-    # def update_samp_parameters(self):
-    #     """"""
-    #     data = self.get_experiment_file()
-    #     self.label_a.setText(self.format_decimals(data['lparam_a']))
-    #     self.label_b.setText(self.format_decimals(data['lparam_b']))
-    #     self.label_c.setText(self.format_decimals(data['lparam_c']))
-    #     self.label_alpha.setText(self.format_decimals(data['lparam_alpha']))
-    #     self.label_beta.setText(self.format_decimals(data['lparam_beta']))
-    #     self.label_gamma.setText(self.format_decimals(data['lparam_gama']))
-
-    # def set_new_sample(self):
-    #     dict_args = self.io.read()
-    #     samples = dict_args['user_samples']
-    #     text, result = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'New sample name')
-    #     a = dict_args['lparam_a']
-    #     b = dict_args['lparam_b']
-    #     c = dict_args['lparam_c']
-    #     alpha = dict_args['lparam_alpha']
-    #     beta = dict_args['lparam_beta']
-    #     gamma = dict_args['lparam_gama']
-    #     if result:
-    #         if text in samples.keys():
-    #             msgbox = QtWidgets.QMessageBox()
-    #             msgbox_text = 'This samples name {} already exists, \ndo you want to overwrite it?'.format(text)
-    #             ret = msgbox.question(self, 'Warning', msgbox_text, QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
-
-    #             if ret == QtWidgets.QMessageBox.Ok:
-    #                 # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
-    #                 subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
-
-    #         else:
-    #             # os.system("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma))
-    #             subprocess.Popen("daf.expt -m {} -p {} {} {} {} {} {}".format(text, a, b, c, alpha, beta, gamma), shell = True)
-
     def set_u_to_i(self):
-        """Set the U lineEdits values to identity matrix"""
-        self.lineEdit_u_00.setText(self.format_decimals(1))
-        self.lineEdit_u_01.setText(self.format_decimals(0))
-        self.lineEdit_u_02.setText(self.format_decimals(0))
-        self.lineEdit_u_10.setText(self.format_decimals(0))
-        self.lineEdit_u_11.setText(self.format_decimals(1))
-        self.lineEdit_u_12.setText(self.format_decimals(0))
-        self.lineEdit_u_20.setText(self.format_decimals(0))
-        self.lineEdit_u_21.setText(self.format_decimals(0))
-        self.lineEdit_u_22.setText(self.format_decimals(1))
+        """Set the U lineEdits values to the 3x3 identity matrix."""
+        identity = ((1, 0, 0), (0, 1, 0), (0, 0, 1))
+        for r, row in enumerate(identity):
+            for c, val in enumerate(row):
+                getattr(self, f"lineEdit_u_{r}{c}").setText(self.format_decimals(val))
 
     def update_u_labels(self):
-        """Set the U lineEdits values based on the .Experiment file"""
-        data = self.get_experiment_file()
-        U = np.array(data["U_mat"])
-        self.lineEdit_u_00.setText(self.format_decimals(str(U[0][0])))
-        self.lineEdit_u_01.setText(self.format_decimals(str(U[0][1])))
-        self.lineEdit_u_02.setText(self.format_decimals(str(U[0][2])))
-        self.lineEdit_u_10.setText(self.format_decimals(str(U[1][0])))
-        self.lineEdit_u_11.setText(self.format_decimals(str(U[1][1])))
-        self.lineEdit_u_12.setText(self.format_decimals(str(U[1][2])))
-        self.lineEdit_u_20.setText(self.format_decimals(str(U[2][0])))
-        self.lineEdit_u_21.setText(self.format_decimals(str(U[2][1])))
-        self.lineEdit_u_22.setText(self.format_decimals(str(U[2][2])))
+        """Set the U lineEdits values from the experiment file."""
+        U = np.array(self.get_experiment_file()["U_mat"])
+        for r in range(3):
+            for c in range(3):
+                getattr(self, f"lineEdit_u_{r}{c}").setText(
+                    self.format_decimals(str(U[r][c]))
+                )
 
     def set_u_matrix(self):
-        """Set the U matrix based on the values in the lineEdits"""
-        u_00 = self.lineEdit_u_00.text()
-        u_01 = self.lineEdit_u_01.text()
-        u_02 = self.lineEdit_u_02.text()
-        u_10 = self.lineEdit_u_10.text()
-        u_11 = self.lineEdit_u_11.text()
-        u_12 = self.lineEdit_u_12.text()
-        u_20 = self.lineEdit_u_20.text()
-        u_21 = self.lineEdit_u_21.text()
-        u_22 = self.lineEdit_u_22.text()
-
+        """Set the U matrix from lineEdit values."""
+        values = [
+            getattr(self, f"lineEdit_u_{r}{c}").text()
+            for r in range(3) for c in range(3)
+        ]
         subprocess.Popen(
-            "daf.ub -u {} {} {} {} {} {} {} {} {}".format(
-                u_00, u_01, u_02, u_10, u_11, u_12, u_20, u_21, u_22
-            ),
+            "daf.ub -u " + " ".join(values),
             shell=True,
         )
-        # Whenever U changes UB changes as well, since UB depend from U
-        self.update_ub_labels()
+        self.update_ub_labels()  # U changes → UB changes too
 
     def update_ub_labels(self):
-        """Set the UB lineEdits values based on the .Experiment file"""
-        data = self.get_experiment_file()
-        UB = np.array(data["UB_mat"])
-        self.lineEdit_ub_00.setText(self.format_decimals(str(UB[0][0])))
-        self.lineEdit_ub_01.setText(self.format_decimals(str(UB[0][1])))
-        self.lineEdit_ub_02.setText(self.format_decimals(str(UB[0][2])))
-        self.lineEdit_ub_10.setText(self.format_decimals(str(UB[1][0])))
-        self.lineEdit_ub_11.setText(self.format_decimals(str(UB[1][1])))
-        self.lineEdit_ub_12.setText(self.format_decimals(str(UB[1][2])))
-        self.lineEdit_ub_20.setText(self.format_decimals(str(UB[2][0])))
-        self.lineEdit_ub_21.setText(self.format_decimals(str(UB[2][1])))
-        self.lineEdit_ub_22.setText(self.format_decimals(str(UB[2][2])))
+        """Set the UB lineEdits values from the experiment file."""
+        UB = np.array(self.get_experiment_file()["UB_mat"])
+        for r in range(3):
+            for c in range(3):
+                getattr(self, f"lineEdit_ub_{r}{c}").setText(
+                    self.format_decimals(str(UB[r][c]))
+                )
 
     def set_ub_matrix(self):
-        """Set the UB matrix based on the values in the lineEdits"""
-        ub_00 = self.lineEdit_ub_00.text()
-        ub_01 = self.lineEdit_ub_01.text()
-        ub_02 = self.lineEdit_ub_02.text()
-        ub_10 = self.lineEdit_ub_10.text()
-        ub_11 = self.lineEdit_ub_11.text()
-        ub_12 = self.lineEdit_ub_12.text()
-        ub_20 = self.lineEdit_ub_20.text()
-        ub_21 = self.lineEdit_ub_21.text()
-        ub_22 = self.lineEdit_ub_22.text()
-
-        # print("daf.ub -UB {} {} {} {} {} {} {} {} {}".format(ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22))
+        """Set the UB matrix from lineEdit values."""
+        values = [
+            getattr(self, f"lineEdit_ub_{r}{c}").text()
+            for r in range(3) for c in range(3)
+        ]
         subprocess.Popen(
-            "daf.ub -ub {} {} {} {} {} {} {} {} {}".format(
-                ub_00, ub_01, ub_02, ub_10, ub_11, ub_12, ub_20, ub_21, ub_22
-            ),
+            "daf.ub -ub " + " ".join(values),
             shell=True,
         )
