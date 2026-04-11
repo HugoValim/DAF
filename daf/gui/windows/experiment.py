@@ -9,6 +9,10 @@ import xrayutilities as xu
 
 
 class MyDisplay(QWidget):
+
+    _VECTOR_PREFIXES = ("i", "n", "r")
+    _VECTOR_NAMES = {"i": "idir", "n": "ndir", "r": "rdir"}
+
     def __init__(self, update_dict: dict):
         super().__init__()
         self.app = QApplication.instance()
@@ -30,18 +34,16 @@ class MyDisplay(QWidget):
 
     def set_icons(self):
         """Set used icons"""
-        self.pushButton_energy.setIcon(QIcon(Icons.check))
-        self.pushButton_idir.setIcon(QIcon(Icons.check))
-        self.pushButton_ndir.setIcon(QIcon(Icons.check))
-        self.pushButton_rdir.setIcon(QIcon(Icons.check))
+        for prefix in self._VECTOR_PREFIXES:
+            btn = getattr(self, f"pushButton_{prefix}dir")
+            btn.setIcon(QIcon(Icons.check))
 
     def set_tab_order(self):
-        """Set the corret other when clicking tab"""
+        """Set the correct order when clicking tab"""
         self.setTabOrder(self.lineEdit_e_wl, self.comboBox_e_wl)
         self.setTabOrder(self.comboBox_e_wl, self.pushButton_energy)
         self.setTabOrder(self.pushButton_energy, self.lineEdit_i_1)
         self.setTabOrder(self.lineEdit_i_1, self.lineEdit_i_2)
-        self.setTabOrder(self.lineEdit_i_2, self.lineEdit_i_3)
         self.setTabOrder(self.lineEdit_i_2, self.lineEdit_i_3)
         self.setTabOrder(self.lineEdit_i_3, self.pushButton_idir)
         self.setTabOrder(self.pushButton_idir, self.lineEdit_n_1)
@@ -58,9 +60,9 @@ class MyDisplay(QWidget):
         """Make the needed connections"""
         self.comboBox_e_wl.currentTextChanged.connect(self.on_combobox_en_changed)
         self.pushButton_energy.clicked.connect(self.set_energy)
-        self.pushButton_idir.clicked.connect(self.set_idir)
-        self.pushButton_ndir.clicked.connect(self.set_ndir)
-        self.pushButton_rdir.clicked.connect(self.set_rdir)
+        for prefix in self._VECTOR_PREFIXES:
+            btn = getattr(self, f"pushButton_{prefix}dir")
+            btn.clicked.connect(getattr(self, f"set_{prefix}dir"))
 
     def on_combobox_en_changed(self):
         """Switch the energy lineEdit between energy and wave length based in the QComboBox"""
@@ -82,20 +84,18 @@ class MyDisplay(QWidget):
             wl = xu.en2lam(en)
             self.lineEdit_e_wl.setText(str(format_5_dec(wl)))
 
-        idir = dict_args["IDir"]
-        self.lineEdit_i_1.setText(str(idir[0]))
-        self.lineEdit_i_2.setText(str(idir[1]))
-        self.lineEdit_i_3.setText(str(idir[2]))
+        for prefix, name in self._VECTOR_NAMES.items():
+            vector = dict_args[name]
+            for i, val in enumerate(vector, 1):
+                le = getattr(self, f"lineEdit_{prefix}_{i}")
+                le.setText(str(val))
 
-        ndir = dict_args["NDir"]
-        self.lineEdit_n_1.setText(str(ndir[0]))
-        self.lineEdit_n_2.setText(str(ndir[1]))
-        self.lineEdit_n_3.setText(str(ndir[2]))
-
-        rdir = dict_args["RDir"]
-        self.lineEdit_r_1.setText(str(rdir[0]))
-        self.lineEdit_r_2.setText(str(rdir[1]))
-        self.lineEdit_r_3.setText(str(rdir[2]))
+    def _build_vector_arg(self, prefix: str) -> str:
+        """Build a vector argument string from line edits."""
+        return " ".join(
+            getattr(self, f"lineEdit_{prefix}_{i}").text()
+            for i in range(1, 4)
+        )
 
     def set_energy(self):
         """Sets experiment energy/wl"""
@@ -107,33 +107,12 @@ class MyDisplay(QWidget):
 
     def set_idir(self):
         """Sets experiment idir vector"""
-        idir = (
-            self.lineEdit_i_1.text()
-            + " "
-            + self.lineEdit_i_2.text()
-            + " "
-            + self.lineEdit_i_3.text()
-        )
-        subprocess.Popen("daf.expt -i {}".format(idir), shell=True)
+        subprocess.Popen("daf.expt -i {}".format(self._build_vector_arg("i")), shell=True)
 
     def set_ndir(self):
         """Sets experiment ndir vector"""
-        ndir = (
-            self.lineEdit_n_1.text()
-            + " "
-            + self.lineEdit_n_2.text()
-            + " "
-            + self.lineEdit_n_3.text()
-        )
-        subprocess.Popen("daf.expt -n {}".format(ndir), shell=True)
+        subprocess.Popen("daf.expt -n {}".format(self._build_vector_arg("n")), shell=True)
 
     def set_rdir(self):
         """Sets experiment rdir vector"""
-        rdir = (
-            self.lineEdit_r_1.text()
-            + " "
-            + self.lineEdit_r_2.text()
-            + " "
-            + self.lineEdit_r_3.text()
-        )
-        subprocess.Popen("daf.expt -r {}".format(rdir), shell=True)
+        subprocess.Popen("daf.expt -r {}".format(self._build_vector_arg("r")), shell=True)

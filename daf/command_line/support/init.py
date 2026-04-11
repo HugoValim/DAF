@@ -21,9 +21,10 @@ class Init(SupportBase):
     Eg:
        daf.init -s
        daf.init -a
+       daf.init -s -k <kafka_topic>
         """
     DEFAULT_COUNTERS = [
-        "ring_current",
+        "eta_counter",
     ]
 
     def __init__(self):
@@ -106,7 +107,7 @@ class Init(SupportBase):
     def run_cmd(self) -> None:
         if self.parsed_args_dict["simulated"]:
             run_container()
-        data = self.build_current_file(self.parsed_args_dict["simulated"])
+        data = self.build_current_file(self.parsed_args_dict["simulated"], self.parsed_args_dict["kafka_topic"], self.parsed_args_dict["scan_db"])
         self.write_to_disc(data, is_global=self.parsed_args_dict["global"])
         if self.parsed_args_dict["all"]:
             self.open_daf_guis()
