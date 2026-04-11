@@ -56,7 +56,40 @@ def init_daf(tmp_path_factory):
         obj = Init()
         obj.run_cmd()
         yield obj
-    os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+
+@pytest.fixture
+def init_daf_function(tmp_path_factory):
+    dir = tmp_path_factory.mktemp("daf")
+    os.chdir(dir)
+
+    def build_args():
+        return ["daf.init", "--simulated"]
+
+    mp = pytest.MonkeyPatch()
+    with mp.context() as m:
+        m.setattr(sys, "argv", build_args())
+        obj = Init()
+        yield obj
+    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+
+@pytest.fixture
+def init_daf_function_global(tmp_path_factory):
+    dir = tmp_path_factory.mktemp("daf")
+    os.chdir(dir)
+
+    def build_args():
+        return ["daf.init", "--simulated", "-g"]
+
+    mp = pytest.MonkeyPatch()
+    with mp.context() as m:
+        m.setattr(sys, "argv", build_args())
+        obj = Init()
+        yield obj
+    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
 
 
