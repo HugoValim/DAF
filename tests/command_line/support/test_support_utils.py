@@ -8,7 +8,6 @@ import os
 
 
 class TestSupportBase(unittest.TestCase):
-
     def test_write_yaml_creates_file(self):
         """Test that write_yaml creates a YAML file"""
         from daf.command_line.support.support_utils import SupportBase
@@ -23,6 +22,7 @@ class TestSupportBase(unittest.TestCase):
 
             # Verify content
             import yaml
+
             with open(filepath) as f:
                 loaded = yaml.safe_load(f)
 
@@ -38,13 +38,14 @@ class TestSupportBase(unittest.TestCase):
             test_dict = {
                 "motors": {
                     "mu": {"pv": "test:mu", "value": 0},
-                    "eta": {"pv": "test:eta", "value": 0}
+                    "eta": {"pv": "test:eta", "value": 0},
                 }
             }
 
             SupportBase.write_yaml(test_dict, filepath)
 
             import yaml
+
             with open(filepath) as f:
                 loaded = yaml.safe_load(f)
 
@@ -54,7 +55,11 @@ class TestSupportBase(unittest.TestCase):
         """Test get_motors_beamline_pvs_counters_info with simulated=True"""
         from daf.command_line.support.support_utils import SupportBase
 
-        motors, beamline_pvs, counters = SupportBase.get_motors_beamline_pvs_counters_info(simulated=True)
+        (
+            motors,
+            beamline_pvs,
+            counters,
+        ) = SupportBase.get_motors_beamline_pvs_counters_info(simulated=True)
 
         self.assertIsInstance(motors, dict)
         self.assertIsInstance(beamline_pvs, dict)
@@ -64,7 +69,11 @@ class TestSupportBase(unittest.TestCase):
         """Test get_motors_beamline_pvs_counters_info with simulated=False"""
         from daf.command_line.support.support_utils import SupportBase
 
-        motors, beamline_pvs, counters = SupportBase.get_motors_beamline_pvs_counters_info(simulated=False)
+        (
+            motors,
+            beamline_pvs,
+            counters,
+        ) = SupportBase.get_motors_beamline_pvs_counters_info(simulated=False)
 
         self.assertIsInstance(motors, dict)
         self.assertIsInstance(beamline_pvs, dict)
@@ -72,7 +81,7 @@ class TestSupportBase(unittest.TestCase):
 
     def test_build_current_file_returns_dict(self):
         """Test build_current_file returns a dictionary"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
@@ -82,7 +91,7 @@ class TestSupportBase(unittest.TestCase):
 
     def test_build_current_file_sets_simulated_flag(self):
         """Test build_current_file sets simulated flag"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
@@ -97,7 +106,7 @@ class TestSupportBase(unittest.TestCase):
 
     def test_build_current_file_contains_motors(self):
         """Test build_current_file includes motors data"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
@@ -108,7 +117,7 @@ class TestSupportBase(unittest.TestCase):
 
     def test_build_current_file_contains_beamline_pvs(self):
         """Test build_current_file includes beamline_pvs data"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
@@ -119,7 +128,7 @@ class TestSupportBase(unittest.TestCase):
 
     def test_build_current_file_contains_counters(self):
         """Test build_current_file includes counters config"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
@@ -129,17 +138,19 @@ class TestSupportBase(unittest.TestCase):
 
     def test_build_current_file_with_kafka_topic(self):
         """Test build_current_file accepts kafka_topic parameter"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
-            result = support.build_current_file(simulated=True, kafka_topic="test_topic")
+            result = support.build_current_file(
+                simulated=True, kafka_topic="test_topic"
+            )
 
             self.assertEqual(result["kafka_topic"], "test_topic")
 
     def test_build_current_file_with_scan_db(self):
         """Test build_current_file accepts scan_db parameter"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
             from daf.command_line.support.support_utils import SupportBase
 
             support = SupportBase.__new__(SupportBase)
@@ -149,11 +160,10 @@ class TestSupportBase(unittest.TestCase):
 
 
 class TestWriteToDisc(unittest.TestCase):
-
     def test_write_to_disc_local(self):
         """Test write_to_disc writes to local directory"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
-            with patch('daf.command_line.support.support_utils.du') as mock_du:
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
+            with patch("daf.command_line.support.support_utils.du") as mock_du:
                 mock_du.fetch_pvs_and_check_for_connection.return_value = {}
 
                 with tempfile.TemporaryDirectory() as tmpdir:
@@ -175,11 +185,11 @@ class TestWriteToDisc(unittest.TestCase):
 
     def test_write_to_disc_global(self):
         """Test write_to_disc writes to global config directory"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
-            with patch('daf.command_line.support.support_utils.du') as mock_du:
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
+            with patch("daf.command_line.support.support_utils.du") as mock_du:
                 mock_du.fetch_pvs_and_check_for_connection.return_value = {}
 
-                with patch('daf.command_line.support.support_utils.dp') as mock_dp:
+                with patch("daf.command_line.support.support_utils.dp") as mock_dp:
                     with tempfile.TemporaryDirectory() as tmpdir:
                         mock_dp.DAF_CONFIGS = tmpdir
                         mock_dp.DEFAULT_FILE_NAME = ".Experiment"
@@ -196,5 +206,5 @@ class TestWriteToDisc(unittest.TestCase):
                         self.assertTrue(os.path.exists(expected_path))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

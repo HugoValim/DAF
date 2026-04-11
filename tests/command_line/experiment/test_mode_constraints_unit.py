@@ -7,26 +7,25 @@ import sys
 
 
 class TestModeConstraints(unittest.TestCase):
-
     def test_mode_constraints_desc_defined(self):
         """Test that ModeConstraints has DESC attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.mode_constraints import ModeConstraints
 
-            self.assertTrue(hasattr(ModeConstraints, 'DESC'))
+            self.assertTrue(hasattr(ModeConstraints, "DESC"))
             self.assertIsInstance(ModeConstraints.DESC, str)
 
     def test_mode_constraints_epi_defined(self):
         """Test that ModeConstraints has EPI attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.mode_constraints import ModeConstraints
 
-            self.assertTrue(hasattr(ModeConstraints, 'EPI'))
+            self.assertTrue(hasattr(ModeConstraints, "EPI"))
 
     def test_mode_constraints_write_flag_initialized(self):
         """Test that write_flag is initialized to False"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            with patch.object(sys, 'argv', ['daf.cons']):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            with patch.object(sys, "argv", ["daf.cons"]):
                 from daf.command_line.experiment.mode_constraints import ModeConstraints
 
                 mode = ModeConstraints()
@@ -34,7 +33,7 @@ class TestModeConstraints(unittest.TestCase):
 
     def test_reset_to_constraints_zero(self):
         """Test reset_to_constraints_zero method"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.mode_constraints import ModeConstraints
 
             mode = ModeConstraints.__new__(ModeConstraints)
@@ -71,10 +70,9 @@ class TestModeConstraints(unittest.TestCase):
 
 
 class TestListConstraints(unittest.TestCase):
-
     def test_list_constraints_outputs_content(self):
         """Test that list_constraints prints constraints"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.mode_constraints import ModeConstraints
 
             mode = ModeConstraints.__new__(ModeConstraints)
@@ -116,5 +114,5 @@ class TestListConstraints(unittest.TestCase):
             self.assertIn("Del", output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

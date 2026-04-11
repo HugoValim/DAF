@@ -7,7 +7,6 @@ import sys
 
 
 class TestShellColors(unittest.TestCase):
-
     def test_shell_colors_defined(self):
         """Test that ShellColors class has expected color attributes"""
         from daf.command_line.support.command_help import ShellColors
@@ -27,25 +26,24 @@ class TestShellColors(unittest.TestCase):
         from daf.command_line.support.command_help import ShellColors
 
         for attr in dir(ShellColors):
-            if not attr.startswith('_'):
+            if not attr.startswith("_"):
                 value = getattr(ShellColors, attr)
                 self.assertIsInstance(value, str)
 
 
 class TestCommandHelp(unittest.TestCase):
-
     def test_command_help_desc_defined(self):
         """Test that CommandHelp has DESC attribute"""
         from daf.command_line.support.command_help import CommandHelp
 
-        self.assertTrue(hasattr(CommandHelp, 'DESC'))
+        self.assertTrue(hasattr(CommandHelp, "DESC"))
         self.assertIsInstance(CommandHelp.DESC, str)
 
     def test_command_help_epi_defined(self):
         """Test that CommandHelp has EPI attribute"""
         from daf.command_line.support.command_help import CommandHelp
 
-        self.assertTrue(hasattr(CommandHelp, 'EPI'))
+        self.assertTrue(hasattr(CommandHelp, "EPI"))
         self.assertIsInstance(CommandHelp.EPI, str)
 
     def test_print_all_commands_exists(self):
@@ -120,11 +118,10 @@ class TestCommandHelp(unittest.TestCase):
 
 
 class TestCommandHelpWithMocks(unittest.TestCase):
-
     def test_command_help_instantiation(self):
         """Test that CommandHelp can be instantiated with mocked DAFIO"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
-            with patch.object(sys, 'argv', ['daf.help']):
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
+            with patch.object(sys, "argv", ["daf.help"]):
                 from daf.command_line.support.command_help import CommandHelp
 
                 # Should not raise
@@ -133,9 +130,11 @@ class TestCommandHelpWithMocks(unittest.TestCase):
 
     def test_run_cmd_calls_print_all_commands(self):
         """Test that run_cmd calls print_all_commands"""
-        with patch('daf.command_line.support.support_utils.DAFIO'):
-            with patch.object(sys, 'argv', ['daf.help']):
-                with patch('daf.command_line.support.command_help.CommandHelp.print_all_commands') as mock_print:
+        with patch("daf.command_line.support.support_utils.du.DAFIO"):
+            with patch.object(sys, "argv", ["daf.help"]):
+                with patch(
+                    "daf.command_line.support.command_help.CommandHelp.print_all_commands"
+                ) as mock_print:
                     from daf.command_line.support.command_help import CommandHelp
 
                     help_cmd = CommandHelp()
@@ -144,5 +143,5 @@ class TestCommandHelpWithMocks(unittest.TestCase):
                     mock_print.assert_called_once()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

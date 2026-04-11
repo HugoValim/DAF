@@ -8,26 +8,31 @@ import numpy as np
 
 
 class TestExperimentConfiguration(unittest.TestCase):
-
     def test_experiment_configuration_desc_defined(self):
         """Test that ExperimentConfiguration has DESC attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
-            self.assertTrue(hasattr(ExperimentConfiguration, 'DESC'))
+            self.assertTrue(hasattr(ExperimentConfiguration, "DESC"))
             self.assertIsInstance(ExperimentConfiguration.DESC, str)
 
     def test_experiment_configuration_epi_defined(self):
         """Test that ExperimentConfiguration has EPI attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
-            self.assertTrue(hasattr(ExperimentConfiguration, 'EPI'))
+            self.assertTrue(hasattr(ExperimentConfiguration, "EPI"))
 
     def test_set_lattice_parameters(self):
         """Test setting lattice parameters"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
             exp.experiment_file_dict = {}
@@ -44,15 +49,13 @@ class TestExperimentConfiguration(unittest.TestCase):
 
     def test_set_energy(self):
         """Test setting energy"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
-            exp.experiment_file_dict = {
-                "beamline_pvs": {
-                    "energy": {"value": 10000}
-                }
-            }
+            exp.experiment_file_dict = {"beamline_pvs": {"energy": {"value": 10000}}}
 
             offset = exp.set_energy(8000)
 
@@ -61,15 +64,13 @@ class TestExperimentConfiguration(unittest.TestCase):
 
     def test_set_energy_above_pv_value(self):
         """Test setting energy above PV value"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
-            exp.experiment_file_dict = {
-                "beamline_pvs": {
-                    "energy": {"value": 8000}
-                }
-            }
+            exp.experiment_file_dict = {"beamline_pvs": {"energy": {"value": 8000}}}
 
             offset = exp.set_energy(10000)
 
@@ -78,8 +79,10 @@ class TestExperimentConfiguration(unittest.TestCase):
 
     def test_set_rdir(self):
         """Test setting reference direction"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
             exp.experiment_file_dict = {}
@@ -87,12 +90,16 @@ class TestExperimentConfiguration(unittest.TestCase):
             rdir = np.array([1.0, 0.0, 0.0])
             exp.set_rdir(rdir)
 
-            np.testing.assert_array_equal(exp.experiment_file_dict["RDir"], [1.0, 0.0, 0.0])
+            np.testing.assert_array_equal(
+                exp.experiment_file_dict["RDir"], [1.0, 0.0, 0.0]
+            )
 
     def test_set_sample_or(self):
         """Test setting sample orientation"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
             exp.experiment_file_dict = {}
@@ -103,8 +110,10 @@ class TestExperimentConfiguration(unittest.TestCase):
 
     def test_set_simulated_motors(self):
         """Test setting simulated motors flag"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
             exp.experiment_file_dict = {"simulated": False}
@@ -115,8 +124,10 @@ class TestExperimentConfiguration(unittest.TestCase):
 
     def test_set_real_motors(self):
         """Test setting real motors flag"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
-            from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
+            from daf.command_line.experiment.experiment_configuration import (
+                ExperimentConfiguration,
+            )
 
             exp = ExperimentConfiguration.__new__(ExperimentConfiguration)
             exp.experiment_file_dict = {"simulated": True}
@@ -127,7 +138,6 @@ class TestExperimentConfiguration(unittest.TestCase):
 
 
 class TestExperimentBase(unittest.TestCase):
-
     def test_experiment_base_imports(self):
         """Test that ExperimentBase can be imported"""
         from daf.command_line.experiment.experiment_utils import ExperimentBase
@@ -142,5 +152,5 @@ class TestExperimentBase(unittest.TestCase):
         self.assertTrue(issubclass(ExperimentBase, CLIBase))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

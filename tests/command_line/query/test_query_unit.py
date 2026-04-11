@@ -9,7 +9,6 @@ from contextlib import redirect_stdout
 
 
 class TestQueryBase(unittest.TestCase):
-
     def test_query_base_inherits_from_cli_base(self):
         """Test that QueryBase inherits from CLIBase"""
         from daf.command_line.query.query_utils import QueryBase
@@ -19,25 +18,24 @@ class TestQueryBase(unittest.TestCase):
 
 
 class TestWhere(unittest.TestCase):
-
     def test_where_desc_defined(self):
         """Test that Where has DESC attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.where import Where
 
-            self.assertTrue(hasattr(Where, 'DESC'))
+            self.assertTrue(hasattr(Where, "DESC"))
             self.assertIsInstance(Where.DESC, str)
 
     def test_where_epi_defined(self):
         """Test that Where has EPI attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.where import Where
 
-            self.assertTrue(hasattr(Where, 'EPI'))
+            self.assertTrue(hasattr(Where, "EPI"))
 
     def test_update_pseudo_angles_and_hkl(self):
         """Test update_pseudo_angles_and_hkl method"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.where import Where
 
             where = Where.__new__(Where)
@@ -54,25 +52,24 @@ class TestWhere(unittest.TestCase):
 
 
 class TestStatus(unittest.TestCase):
-
     def test_status_desc_defined(self):
         """Test that Status has DESC attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
-            self.assertTrue(hasattr(Status, 'DESC'))
+            self.assertTrue(hasattr(Status, "DESC"))
             self.assertIsInstance(Status.DESC, str)
 
     def test_status_epi_defined(self):
         """Test that Status has EPI attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
-            self.assertTrue(hasattr(Status, 'EPI'))
+            self.assertTrue(hasattr(Status, "EPI"))
 
     def test_show_bounds_outputs_content(self):
         """Test that show_bounds prints bounds"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
             status = Status.__new__(Status)
@@ -101,21 +98,13 @@ class TestStatus(unittest.TestCase):
 
     def test_show_u_and_ub_creates_tables(self):
         """Test that show_u_and_ub creates table output"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
             status = Status.__new__(Status)
             status.experiment_file_dict = {
-                "U_mat": [
-                    [1.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0],
-                    [0.0, 0.0, 1.0]
-                ],
-                "UB_mat": [
-                    [1.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0],
-                    [0.0, 0.0, 1.0]
-                ]
+                "U_mat": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+                "UB_mat": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
             }
 
             f = io.StringIO()
@@ -128,36 +117,36 @@ class TestStatus(unittest.TestCase):
 
     def test_show_mode_method_exists(self):
         """Test that show_mode method exists"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
             status = Status.__new__(Status)
-            self.assertTrue(hasattr(status, 'show_mode'))
+            self.assertTrue(hasattr(status, "show_mode"))
 
     def test_show_expt_method_exists(self):
         """Test that show_expt method exists"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
             status = Status.__new__(Status)
-            self.assertTrue(hasattr(status, 'show_expt'))
+            self.assertTrue(hasattr(status, "show_expt"))
 
     def test_show_sample_method_exists(self):
         """Test that show_sample method exists"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
             status = Status.__new__(Status)
-            self.assertTrue(hasattr(status, 'show_sample'))
+            self.assertTrue(hasattr(status, "show_sample"))
 
     def test_show_all_method_exists(self):
         """Test that show_all method exists"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.status import Status
 
             status = Status.__new__(Status)
-            self.assertTrue(hasattr(status, 'show_all'))
+            self.assertTrue(hasattr(status, "show_all"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

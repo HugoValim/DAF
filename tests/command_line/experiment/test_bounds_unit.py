@@ -7,13 +7,12 @@ import sys
 
 
 class TestBounds(unittest.TestCase):
-
     def test_bounds_desc_defined(self):
         """Test that Bounds has DESC attribute"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.bounds import Bounds
 
-            self.assertTrue(hasattr(Bounds, 'DESC'))
+            self.assertTrue(hasattr(Bounds, "DESC"))
             self.assertIsInstance(Bounds.DESC, str)
 
     def test_bounds_default_bounds(self):
@@ -65,7 +64,7 @@ class TestBounds(unittest.TestCase):
 
     def test_reset_bounds_to_default(self):
         """Test reset_bounds_to_default method"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.bounds import Bounds
 
             bounds = Bounds.__new__(Bounds)
@@ -86,14 +85,13 @@ class TestBounds(unittest.TestCase):
             # Check that write_to_experiment_file was called with DEFAULT_BOUNDS
             bounds.write_to_experiment_file.assert_called_once()
             call_args = bounds.write_to_experiment_file.call_args
-            self.assertEqual(call_args[1]['is_motor_bounds'], True)
+            self.assertEqual(call_args[1]["is_motor_bounds"], True)
 
 
 class TestBoundsListBounds(unittest.TestCase):
-
     def test_list_bounds_outputs_content(self):
         """Test that list_bounds prints bounds"""
-        with patch('daf.command_line.cli_base_utils.DAFIO'):
+        with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.experiment.bounds import Bounds
 
             bounds = Bounds.__new__(Bounds)
@@ -125,5 +123,5 @@ class TestBoundsListBounds(unittest.TestCase):
             self.assertIn("Del", output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
