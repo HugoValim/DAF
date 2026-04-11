@@ -37,6 +37,20 @@ class CLIBase:
             epilog=self.EPI,
         )
 
+    def _get_motor_bounds(self) -> dict:
+        """Extract motor bounds from experiment file as a dict."""
+        motor_names = ("mu", "eta", "chi", "phi", "nu", "del")
+        return {m: self.experiment_file_dict["motors"][m]["bounds"] for m in motor_names}
+
+    def _get_constraints_dict(self) -> dict:
+        """Extract constraints from experiment file as a dict."""
+        cons_keys = (
+            "cons_mu", "cons_eta", "cons_chi", "cons_phi",
+            "cons_nu", "cons_del", "cons_alpha", "cons_beta",
+            "cons_psi", "cons_omega", "cons_qaz", "cons_naz",
+        )
+        return {k: self.experiment_file_dict[k] for k in cons_keys}
+
     def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
         mode = [int(i) for i in self.experiment_file_dict["Mode"]]
@@ -44,31 +58,22 @@ class CLIBase:
         idir = self.experiment_file_dict["IDir_print"]
         ndir = self.experiment_file_dict["NDir_print"]
         rdir = self.experiment_file_dict["RDir"]
-        mu_bound = self.experiment_file_dict["motors"]["mu"]["bounds"]
-        eta_bound = self.experiment_file_dict["motors"]["eta"]["bounds"]
-        chi_bound = self.experiment_file_dict["motors"]["chi"]["bounds"]
-        phi_bound = self.experiment_file_dict["motors"]["phi"]["bounds"]
-        nu_bound = self.experiment_file_dict["motors"]["nu"]["bounds"]
-        del_bound = self.experiment_file_dict["motors"]["del"]["bounds"]
+        bounds_dict = self._get_motor_bounds()
         self.en = (
             self.experiment_file_dict["beamline_pvs"]["energy"]["value"]
             - self.experiment_file_dict["energy_offset"]
         )
 
         exp = DAF(*mode)
-        if (
-            self.experiment_file_dict["Material"]
-            in self.experiment_file_dict["user_samples"].keys()
-        ):
+        material = self.experiment_file_dict["Material"]
+        if material in self.experiment_file_dict["user_samples"]:
             exp.set_material(
-                self.experiment_file_dict["Material"],
-                *self.experiment_file_dict["user_samples"][
-                    self.experiment_file_dict["Material"]
-                ]
+                material,
+                *self.experiment_file_dict["user_samples"][material]
             )
         else:
             exp.set_material(
-                self.experiment_file_dict["Material"],
+                material,
                 self.experiment_file_dict["lparam_a"],
                 self.experiment_file_dict["lparam_b"],
                 self.experiment_file_dict["lparam_c"],
@@ -84,29 +89,8 @@ class CLIBase:
             en=self.en,
             sampleor=self.experiment_file_dict["Sampleor"],
         )
-        exp.set_circle_constrain(
-            Mu=mu_bound,
-            Eta=eta_bound,
-            Chi=chi_bound,
-            Phi=phi_bound,
-            Nu=nu_bound,
-            Del=del_bound,
-        )
-
-        exp.set_constraints(
-            Mu=self.experiment_file_dict["cons_mu"],
-            Eta=self.experiment_file_dict["cons_eta"],
-            Chi=self.experiment_file_dict["cons_chi"],
-            Phi=self.experiment_file_dict["cons_phi"],
-            Nu=self.experiment_file_dict["cons_nu"],
-            Del=self.experiment_file_dict["cons_del"],
-            alpha=self.experiment_file_dict["cons_alpha"],
-            beta=self.experiment_file_dict["cons_beta"],
-            psi=self.experiment_file_dict["cons_psi"],
-            omega=self.experiment_file_dict["cons_omega"],
-            qaz=self.experiment_file_dict["cons_qaz"],
-            naz=self.experiment_file_dict["cons_naz"],
-        )
+        exp.set_circle_constrain(**bounds_dict)
+        exp.set_constraints(**self._get_constraints_dict())
 
         exp.set_U(U)
         exp.build_xrd_experiment()

@@ -281,22 +281,22 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
                 ),
             )
 
+    MOTOR_BOUNDS_MAP = {
+        "Mu": "Mu_bound",
+        "Eta": "Eta_bound",
+        "Chi": "Chi_bound",
+        "Phi": "Phi_bound",
+        "Nu": "Nu_bound",
+        "Del": "Del_bound",
+    }
+
     def set_constraints(self, *args, setineq=None, **kwargs):
         """Set constraints values to motor and pseudo angle constraints."""
         self.pseudo_constraints_w_value_list = list()
 
-        if "Mu" in kwargs and "Mu" in self.fixed_motor_list:
-            self.Mu_bound = kwargs["Mu"]
-        if "Eta" in kwargs and "Eta" in self.fixed_motor_list:
-            self.Eta_bound = kwargs["Eta"]
-        if "Chi" in kwargs and "Chi" in self.fixed_motor_list:
-            self.Chi_bound = kwargs["Chi"]
-        if "Phi" in kwargs and "Phi" in self.fixed_motor_list:
-            self.Phi_bound = kwargs["Phi"]
-        if "Nu" in kwargs and "Nu" in self.fixed_motor_list:
-            self.Nu_bound = kwargs["Nu"]
-        if "Del" in kwargs and "Del" in self.fixed_motor_list:
-            self.Del_bound = kwargs["Del"]
+        for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
+            if motor in kwargs and motor in self.fixed_motor_list:
+                setattr(self, bound_attr, kwargs[motor])
 
         for name in ("qaz", "naz", "alpha", "beta", "psi", "omega"):
             if name in kwargs and name in self.pseudo_angle_constraints:
@@ -306,30 +306,16 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             if name in self.pseudo_angle_constraints:
                 self.pseudo_constraints_w_value_list.append((name, "--"))
 
-        self.motor_bounds_list = (
-            self.Mu_bound,
-            self.Eta_bound,
-            self.Chi_bound,
-            self.Phi_bound,
-            self.Nu_bound,
-            self.Del_bound,
+        self.motor_bounds_list = tuple(
+            getattr(self, attr) for attr in self.MOTOR_BOUNDS_MAP.values()
         )
         return self.motor_bounds_list, self.pseudo_constraints_w_value_list
 
     def set_circle_constrain(self, **kwargs):
         """Deprecated, check and remove"""
-        if "Mu" in kwargs and "Mu" not in self.fixed_motor_list:
-            self.Mu_bound = kwargs["Mu"]
-        if "Eta" in kwargs and "Eta" not in self.fixed_motor_list:
-            self.Eta_bound = kwargs["Eta"]
-        if "Chi" in kwargs and "Chi" not in self.fixed_motor_list:
-            self.Chi_bound = kwargs["Chi"]
-        if "Phi" in kwargs and "Phi" not in self.fixed_motor_list:
-            self.Phi_bound = kwargs["Phi"]
-        if "Nu" in kwargs and "Nu" not in self.fixed_motor_list:
-            self.Nu_bound = kwargs["Nu"]
-        if "Del" in kwargs and "Del" not in self.fixed_motor_list:
-            self.Del_bound = kwargs["Del"]
+        for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
+            if motor in kwargs and motor not in self.fixed_motor_list:
+                setattr(self, bound_attr, kwargs[motor])
 
     def set_exp_conditions(
         self, idir=(0, 0, 1), ndir=(1, 1, 0), rdir=(0, 0, 1), sampleor="x+", en=8000
