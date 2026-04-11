@@ -112,6 +112,8 @@ class DAFScan:
 
     def config_databroker(self):
         """Databroker to write"""
+        if self.scan_db is None:
+            self.scan_db = "temp"
         self.db = databroker.Broker.named(self.scan_db)
         return self.db.insert
 
