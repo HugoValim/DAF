@@ -13,6 +13,11 @@ from daf.gui.utils import format_5_dec, Icons, Counter
 
 
 class PositionTab(QWidget, Counter):
+
+    _MOTOR_NAMES = ("del", "eta", "chi", "phi", "nu", "mu")
+    _HKL_LABELS = ("H", "K", "L")
+    _PSEUDO_LABELS = ("alpha", "beta", "psi", "tau", "qaz", "naz", "omega")
+
     def __init__(self, dafio):
         super().__init__()
         uic.loadUi(self.ui_filepath(), self)
@@ -75,37 +80,18 @@ class PositionTab(QWidget, Counter):
 
     def refresh_pydm_motors(self, data: dict) -> None:
         """Refresh PyDM motor channels for all six motors."""
-        motors = ("del", "eta", "chi", "phi", "nu", "mu")
-        for motor in motors:
+        for motor in self._MOTOR_NAMES:
             pv = data["motors"][motor]["pv"]
             self._configure_motor_channel(motor, pv)
 
     def update_hkl(self):
         """Update HKL pos labels"""
-        self.H_val.setText(str(format_5_dec(self.update_dict["hkl"][0])))
-        self.K_val.setText(str(format_5_dec(self.update_dict["hkl"][1])))
-        self.L_val.setText(str(format_5_dec(self.update_dict["hkl"][2])))
+        for label, val in zip(self._HKL_LABELS, self.update_dict["hkl"]):
+            getattr(self, f"{label}_val").setText(str(format_5_dec(val)))
 
     def update_cons(self):
         """Update pseudo-angle pos labels"""
-        self.label_alpha.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["alpha"]))
-        )
-        self.label_beta.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["beta"]))
-        )
-        self.label_psi.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["psi"]))
-        )
-        self.label_tau.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["tau"]))
-        )
-        self.label_qaz.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["qaz"]))
-        )
-        self.label_naz.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["naz"]))
-        )
-        self.label_omega.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["omega"]))
-        )
+        for label in self._PSEUDO_LABELS:
+            getattr(self, f"label_{label}").setText(
+                str(format_5_dec(self.update_dict["pseudo_dict"][label]))
+            )

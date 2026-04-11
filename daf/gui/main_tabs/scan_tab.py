@@ -21,6 +21,10 @@ class ScanTab(QWidget):
     config_file_prefix = "config."
     config_file_sufix = ".yml"
 
+    _ASCAN_BUTTONS = [(i, f"pushButton_a{i}scan") for i in range(1, 7)]
+    _DSCAN_BUTTONS = [(i, f"pushButton_d{i}scan") for i in range(1, 7)]
+    _MESH_BUTTONS = [(2, "pushButton_m2scan")]
+
     def __init__(self, dafio):
         super().__init__()
         uic.loadUi(self.ui_filepath(), self)
@@ -56,21 +60,18 @@ class ScanTab(QWidget):
             self.counters_menu_builder
         )
 
-        # Scans
-        self.pushButton_ascan.clicked.connect(lambda: self.open_scan_window(1, "abs"))
-        self.pushButton_a2scan.clicked.connect(lambda: self.open_scan_window(2, "abs"))
-        self.pushButton_a3scan.clicked.connect(lambda: self.open_scan_window(3, "abs"))
-        self.pushButton_a4scan.clicked.connect(lambda: self.open_scan_window(4, "abs"))
-        self.pushButton_a5scan.clicked.connect(lambda: self.open_scan_window(5, "abs"))
-        self.pushButton_a6scan.clicked.connect(lambda: self.open_scan_window(6, "abs"))
+        # Scans - absolute
+        for n, btn_name in self._ASCAN_BUTTONS:
+            getattr(self, btn_name).clicked.connect(lambda _, n=n: self.open_scan_window(n, "abs"))
 
-        self.pushButton_dscan.clicked.connect(lambda: self.open_scan_window(1, "rel"))
-        self.pushButton_d2scan.clicked.connect(lambda: self.open_scan_window(2, "rel"))
-        self.pushButton_d3scan.clicked.connect(lambda: self.open_scan_window(3, "rel"))
-        self.pushButton_d4scan.clicked.connect(lambda: self.open_scan_window(4, "rel"))
-        self.pushButton_d5scan.clicked.connect(lambda: self.open_scan_window(5, "rel"))
-        self.pushButton_d6scan.clicked.connect(lambda: self.open_scan_window(6, "rel"))
-        self.pushButton_m2scan.clicked.connect(lambda: self.open_scan_window(2, "mesh"))
+        # Scans - relative
+        for n, btn_name in self._DSCAN_BUTTONS:
+            getattr(self, btn_name).clicked.connect(lambda _, n=n: self.open_scan_window(n, "rel"))
+
+        # Scans - mesh
+        for n, btn_name in self._MESH_BUTTONS:
+            getattr(self, btn_name).clicked.connect(lambda _, n=n: self.open_scan_window(n, "mesh"))
+
         self.pushButton_hklscan.clicked.connect(lambda: self.open_hkl_scan_window())
 
         self.live_view_launcher.clicked.connect(self.open_live_view)
