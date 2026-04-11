@@ -51,6 +51,11 @@ class CLIBase:
         )
         return {k: self.experiment_file_dict[k] for k in cons_keys}
 
+    def _get_motor_values(self) -> dict:
+        """Extract current motor values from experiment file as a dict."""
+        motor_names = ("mu", "eta", "chi", "phi", "nu", "del")
+        return {m: self.experiment_file_dict["motors"][m]["value"] for m in motor_names}
+
     def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
         mode = [int(i) for i in self.experiment_file_dict["Mode"]]
@@ -100,25 +105,27 @@ class CLIBase:
 
     def calculate_hkl_from_angles(self) -> np.array:
         """Calculate current HKL position from diffractometer angles"""
+        motor_vals = self._get_motor_values()
         hkl = self.exp.calc_from_angs(
-            self.experiment_file_dict["motors"]["mu"]["value"],
-            self.experiment_file_dict["motors"]["eta"]["value"],
-            self.experiment_file_dict["motors"]["chi"]["value"],
-            self.experiment_file_dict["motors"]["phi"]["value"],
-            self.experiment_file_dict["motors"]["nu"]["value"],
-            self.experiment_file_dict["motors"]["del"]["value"],
+            motor_vals["mu"],
+            motor_vals["eta"],
+            motor_vals["chi"],
+            motor_vals["phi"],
+            motor_vals["nu"],
+            motor_vals["del"],
         )
         return hkl
 
     def get_pseudo_angles_from_motor_angles(self) -> dict:
         """Calculate pseudo-angles from diffractometer angles"""
+        motor_vals = self._get_motor_values()
         pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-            self.experiment_file_dict["motors"]["mu"]["value"],
-            self.experiment_file_dict["motors"]["eta"]["value"],
-            self.experiment_file_dict["motors"]["chi"]["value"],
-            self.experiment_file_dict["motors"]["phi"]["value"],
-            self.experiment_file_dict["motors"]["nu"]["value"],
-            self.experiment_file_dict["motors"]["del"]["value"],
+            motor_vals["mu"],
+            motor_vals["eta"],
+            motor_vals["chi"],
+            motor_vals["phi"],
+            motor_vals["nu"],
+            motor_vals["del"],
             self.exp.samp,
             self.calculate_hkl_from_angles(),
             self.exp.lam,
@@ -130,14 +137,8 @@ class CLIBase:
 
     def calculate_hkl(self, hkl: list) -> float:
         """Calculate the angles to a given HKL"""
-        startvalue = [
-            self.experiment_file_dict["motors"]["mu"]["value"],
-            self.experiment_file_dict["motors"]["eta"]["value"],
-            self.experiment_file_dict["motors"]["chi"]["value"],
-            self.experiment_file_dict["motors"]["phi"]["value"],
-            self.experiment_file_dict["motors"]["nu"]["value"],
-            self.experiment_file_dict["motors"]["del"]["value"],
-        ]
+        motor_vals = self._get_motor_values()
+        startvalue = [motor_vals[m] for m in ("mu", "eta", "chi", "phi", "nu", "del")]
         self.exp.set_hkl(hkl)
         self.exp(sv=startvalue)
         error = self.exp.qerror
