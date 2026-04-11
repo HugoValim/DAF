@@ -29,13 +29,13 @@ class TestDAFScanInstantiation(unittest.TestCase):
 
     def test_dafscan_fixes_none_scan_db_to_temp(self):
         """Test that DAFScan fixes None scan_db to 'temp'"""
-        with patch('daf.command_line.scan.scan_daf.databroker.Broker') as mock_broker:
+        with patch("daf.command_line.scan.scan_daf.databroker.Broker") as mock_broker:
             mock_broker_instance = MagicMock()
             mock_broker_instance.insert = MagicMock()
             mock_broker.named.return_value = mock_broker_instance
 
-            with patch('daf.command_line.scan.scan_daf.KafkaProducer'):
-                with patch('daf.command_line.scan.scan_daf.RunEngine'):
+            with patch("daf.command_line.scan.scan_daf.KafkaProducer"):
+                with patch("daf.command_line.scan.scan_daf.RunEngine"):
                     from daf.command_line.scan.scan_daf import DAFScan, DAFScanInputs
 
                     inputs = DAFScanInputs(
@@ -61,13 +61,13 @@ class TestDAFScanInstantiation(unittest.TestCase):
 
     def test_dafscan_uses_valid_scan_db(self):
         """Test that DAFScan uses valid scan_db as provided"""
-        with patch('daf.command_line.scan.scan_daf.databroker.Broker') as mock_broker:
+        with patch("daf.command_line.scan.scan_daf.databroker.Broker") as mock_broker:
             mock_broker_instance = MagicMock()
             mock_broker_instance.insert = MagicMock()
             mock_broker.named.return_value = mock_broker_instance
 
-            with patch('daf.command_line.scan.scan_daf.KafkaProducer'):
-                with patch('daf.command_line.scan.scan_daf.RunEngine'):
+            with patch("daf.command_line.scan.scan_daf.KafkaProducer"):
+                with patch("daf.command_line.scan.scan_daf.RunEngine"):
                     from daf.command_line.scan.scan_daf import DAFScan, DAFScanInputs
 
                     inputs = DAFScanInputs(

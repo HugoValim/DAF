@@ -106,6 +106,7 @@ class ScanBase(CLIBase):
             "output": self.parsed_args_dict["output"],
             "kafka_topic": self.experiment_file_dict["kafka_topic"],
             "scan_db": self.experiment_file_dict["scan_db"],
+            "kafka_server": self.experiment_file_dict.get("kafka_server"),
         }
 
         return scan_inputs

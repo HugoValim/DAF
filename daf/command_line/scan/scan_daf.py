@@ -36,6 +36,7 @@ class DAFScanInputs:
     output: str = None
     kafka_topic: str = None
     scan_db: str = None
+    kafka_server: str = None
 
 
 class DAFScan:
@@ -70,12 +71,22 @@ class DAFScan:
         self.output = create_unique_file_name(daf_scan_inputs.output)
         self.kafka_topic = daf_scan_inputs.kafka_topic
         self.scan_db = daf_scan_inputs.scan_db
+        self.kafka_server = daf_scan_inputs.kafka_server
         # Pre-bind count plan with fixed number of points and delay
         self._count_plan = functools.partial(
             count, num=int(1e6), delay=self.acquisition_time
         )
+        self._producer = None
         self.configure_run_engine()
-        self.producer = KafkaProducer()
+
+    def _get_producer(self) -> "KafkaProducer | None":
+        """Lazily create KafkaProducer only when kafka_server is configured."""
+        if self._producer is None and self.kafka_server:
+            self._producer = KafkaProducer(
+                bootstrap_servers=self.kafka_server,
+                value_serializer=msgpack.dumps,
+            )
+        return self._producer
 
     def configure_run_engine(self):
         """Instantiate RunEngine and subscribe the needed callbacks"""
@@ -136,8 +147,9 @@ class DAFScan:
 
     def kafka_callback(self, name: str, doc: dict):
         """Callback to stream Bluesky Documents via Kafka"""
-        self.producer = KafkaProducer(value_serializer=msgpack.dumps)
-        self.producer.send(self.kafka_topic, (name, doc))
+        producer = self._get_producer()
+        if producer is not None:
+            producer.send(self.kafka_topic, (name, doc))
 
     def configure_scan(self):
         """Build motors, counters and the plan"""
