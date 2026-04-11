@@ -243,8 +243,10 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     def scan(
         self, hkli, hklf, points, diflimit=0.1, write=False,
-        name="testscan.txt", sep=",", startvalues=[0, 0, 0, 0, 0, 0],
+        name="testscan.txt", sep=",", startvalues=None,
     ):
+        if startvalues is None:
+            startvalues = [0, 0, 0, 0, 0, 0]
         scl = self.scan_generator(hkli, hklf, points + 1)
         angslist = []
         for i in tqdm(scl):
