@@ -9,6 +9,9 @@ from daf.gui.utils import center_screen, Icons
 
 
 class MyWindow(QWidget):
+
+    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+
     def __init__(self, n_motors, scan_type):
         super(MyWindow, self).__init__()
         self.n_motors = n_motors
@@ -72,24 +75,11 @@ class MyWindow(QWidget):
         label_motor.setFont(QtGui.QFont("Sans Serif", weight=QtGui.QFont.Bold))
         self.verticalLayout_2.addWidget(label_motor)
         horizontalLayout = QtWidgets.QHBoxLayout()
-        checkbox_dict["mu_" + str(idx)] = QtWidgets.QCheckBox(self.frame)
-        checkbox_dict["mu_" + str(idx)].setText("Mu")
-        horizontalLayout.addWidget(checkbox_dict["mu_" + str(idx)])
-        checkbox_dict["eta_" + str(idx)] = QtWidgets.QCheckBox(self.frame)
-        checkbox_dict["eta_" + str(idx)].setText("Eta")
-        horizontalLayout.addWidget(checkbox_dict["eta_" + str(idx)])
-        checkbox_dict["chi_" + str(idx)] = QtWidgets.QCheckBox(self.frame)
-        checkbox_dict["chi_" + str(idx)].setText("Chi")
-        horizontalLayout.addWidget(checkbox_dict["chi_" + str(idx)])
-        checkbox_dict["phi_" + str(idx)] = QtWidgets.QCheckBox(self.frame)
-        checkbox_dict["phi_" + str(idx)].setText("Phi")
-        horizontalLayout.addWidget(checkbox_dict["phi_" + str(idx)])
-        checkbox_dict["nu_" + str(idx)] = QtWidgets.QCheckBox(self.frame)
-        checkbox_dict["nu_" + str(idx)].setText("Nu")
-        horizontalLayout.addWidget(checkbox_dict["nu_" + str(idx)])
-        checkbox_dict["del_" + str(idx)] = QtWidgets.QCheckBox(self.frame)
-        checkbox_dict["del_" + str(idx)].setText("Del")
-        horizontalLayout.addWidget(checkbox_dict["del_" + str(idx)])
+        for motor in self._MOTOR_NAMES:
+            key = f"{motor}_{idx}"
+            checkbox_dict[key] = QtWidgets.QCheckBox(self.frame)
+            checkbox_dict[key].setText(motor.capitalize())
+            horizontalLayout.addWidget(checkbox_dict[key])
         self.verticalLayout_2.addLayout(horizontalLayout)
         horizontalLayout_2 = QtWidgets.QHBoxLayout()
         spacerItem = QtWidgets.QSpacerItem(

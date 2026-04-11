@@ -11,6 +11,45 @@ from daf.gui.utils import format_5_dec, Icons, center_screen
 
 
 class MyDisplay(QWidget):
+
+    _MODE_TABLE_KEYS = [f"{col}{row}" for col in range(5) for row in range(7)]
+    _CONS_NUMBERS = ("1", "2", "3")
+    _CONS_LABELS = ("label_set_cons1", "label_set_cons2", "label_set_cons3")
+    _SET_CONS_EDIT = ("lineEdit_set_cons1", "lineEdit_set_cons2", "lineEdit_set_cons3")
+    _CONSTRAINT_ANGLES = {
+        "chi": "cons_chi",
+        "delta": "cons_del",
+        "eta": "cons_eta",
+        "mu": "cons_mu",
+        "nu": "cons_nu",
+        "phi": "cons_phi",
+        "alpha": "cons_alpha",
+        "beta": "cons_beta",
+        "naz": "cons_naz",
+        "omega": "cons_omega",
+        "psi": "cons_psi",
+        "qaz": "cons_qaz",
+    }
+    _STYLESHEET_DEFAULT = """
+                                                qproperty-alignment: AlignCenter;
+                                                border: 1px solid rgb(0, 0, 0);
+                                                padding: 5px 0px;
+                                                color: rgb(0, 0, 0);
+                                                max-height: 16px;
+                                                font-size: 14px;
+                                            """
+    _STYLESHEET_HIGHLIGHT = """
+
+                                                        qproperty-alignment: AlignCenter;
+                                                        border: 1px solid rgb(0, 0, 0);
+                                                        padding: 5px 0px;
+                                                        color: rgb(0, 0, 0);
+                                                        max-height: 16px;
+                                                        font-size: 14px;
+                                                        background-color: green;
+
+                                                """
+
     def __init__(self, update_dict: dict):
         super().__init__()
         self.app = QApplication.instance()
@@ -41,34 +80,28 @@ class MyDisplay(QWidget):
         self.mode_input.textChanged.connect(self.get_cons)
         self.mode_input.textChanged.connect(self.update_labels)
         self.mode_input_button.clicked.connect(self.set_mode)
-        self.lineEdit_set_cons1.textChanged.connect(self.get_cons)
-        self.lineEdit_set_cons2.textChanged.connect(self.get_cons)
-        self.lineEdit_set_cons3.textChanged.connect(self.get_cons)
+        for edit in self._SET_CONS_EDIT:
+            getattr(self, edit).textChanged.connect(self.get_cons)
 
     def init_labels(self):
         """Initialize labels disabled"""
-        self.label_set_cons1.setEnabled(False)
-        self.label_set_cons2.setEnabled(False)
-        self.label_set_cons3.setEnabled(False)
+        for label in self._CONS_LABELS:
+            getattr(self, label).setEnabled(False)
 
-    def setup_dicts(self):
+    def _build_table_dict(self):
+        """Build the table label dictionary."""
+        return {key: getattr(self, f"label_mode{key}") for key in self._MODE_TABLE_KEYS}
+
+    def _setup_dicts(self):
         """Make cons and set_cons dict"""
-        cons_dict = {
-            "1": self.label_set_cons1,
-            "2": self.label_set_cons2,
-            "3": self.label_set_cons3,
-        }
-        set_cons_dict = {
-            "1": self.lineEdit_set_cons1,
-            "2": self.lineEdit_set_cons2,
-            "3": self.lineEdit_set_cons3,
-        }
+        cons_dict = {num: getattr(self, label) for num, label in zip(self._CONS_NUMBERS, self._CONS_LABELS)}
+        set_cons_dict = {num: getattr(self, edit) for num, edit in zip(self._CONS_NUMBERS, self._SET_CONS_EDIT)}
         return cons_dict, set_cons_dict
 
     def default_labels(self):
         """Handle labels"""
-        cons_dict, set_cons_dict = self.setup_dicts()
-        for key in cons_dict.keys():
+        cons_dict, set_cons_dict = self._setup_dicts()
+        for key in self._CONS_NUMBERS:
             if cons_dict[key].text() not in self.mode_list:
                 cons_dict[key].setText("Constraint")
                 set_cons_dict[key].setText("N/A")
@@ -77,104 +110,31 @@ class MyDisplay(QWidget):
 
     def update_labels(self):
         """Update constraint label names"""
-        cons_dict, set_cons_dict = self.setup_dicts()
-        # Update constraint fields with the angles written in .Experement file
+        cons_dict, set_cons_dict = self._setup_dicts()
         dict_args = self.update_dict["default"]
-        dict_cons_angles = {
-            "chi": "cons_chi",
-            "delta": "cons_del",
-            "eta": "cons_eta",
-            "mu": "cons_mu",
-            "nu": "cons_nu",
-            "phi": "cons_phi",
-            "alpha": "cons_alpha",
-            "beta": "cons_beta",
-            "naz": "cons_naz",
-            "omega": "cons_omega",
-            "psi": "cons_psi",
-            "qaz": "cons_qaz",
-        }
 
-        for key in cons_dict.keys():
-            # print(cons_dict[key].text().lower().split(' ')[0])
+        for key in self._CONS_NUMBERS:
             if (
                 "=" not in cons_dict[key].text()
                 and "Constraint" not in cons_dict[key].text()
             ):
                 angle_now = cons_dict[key].text().lower().split(" ")[0]
-                if angle_now in dict_cons_angles.keys():
+                if angle_now in self._CONSTRAINT_ANGLES:
                     set_cons_dict[key].setText(
-                        str(dict_args[dict_cons_angles[angle_now]])
+                        str(dict_args[self._CONSTRAINT_ANGLES[angle_now]])
                     )
 
     def highlight_table(self):
         """Logic to highlight the table"""
-        table_dict = {
-            "00": self.label_mode00,
-            "10": self.label_mode10,
-            "20": self.label_mode20,
-            "30": self.label_mode30,
-            "40": self.label_mode40,
-            "50": self.label_mode50,
-            "60": self.label_mode60,
-            "01": self.label_mode01,
-            "11": self.label_mode11,
-            "21": self.label_mode21,
-            "31": self.label_mode31,
-            "41": self.label_mode41,
-            "51": self.label_mode51,
-            "61": self.label_mode61,
-            "02": self.label_mode02,
-            "12": self.label_mode12,
-            "22": self.label_mode22,
-            "32": self.label_mode32,
-            "42": self.label_mode42,
-            "52": self.label_mode52,
-            "62": self.label_mode62,
-            "03": self.label_mode03,
-            "13": self.label_mode13,
-            "23": self.label_mode23,
-            "33": self.label_mode33,
-            "43": self.label_mode43,
-            "53": self.label_mode53,
-            "63": self.label_mode63,
-            "04": self.label_mode04,
-            "14": self.label_mode14,
-            "24": self.label_mode24,
-            "34": self.label_mode34,
-            "44": self.label_mode44,
-            "54": self.label_mode54,
-            "64": self.label_mode64,
-        }
+        table_dict = self._build_table_dict()
 
         column = 0
-        self.mode_list = []  # list to store the current mode
-        for key in table_dict.keys():
-            table_dict[key].setStyleSheet(
-                """   
-                                                qproperty-alignment: AlignCenter;
-                                                border: 1px solid rgb(0, 0, 0);
-                                                padding: 5px 0px;
-                                                color: rgb(0, 0, 0);
-                                                max-height: 16px;
-                                                font-size: 14px;
-                                            """
-            )
+        self.mode_list = []
+        for key in self._MODE_TABLE_KEYS:
+            table_dict[key].setStyleSheet(self._STYLESHEET_DEFAULT)
             if len(str(self.mode_input.text())) >= column + 1:
                 if key == str(self.mode_input.text())[column] + str(column):
-                    table_dict[key].setStyleSheet(
-                        """
-                                                        
-                                                        qproperty-alignment: AlignCenter;
-                                                        border: 1px solid rgb(0, 0, 0);
-                                                        padding: 5px 0px;
-                                                        color: rgb(0, 0, 0);
-                                                        max-height: 16px;
-                                                        font-size: 14px;
-                                                        background-color: green;
-
-                                                """
-                    )
+                    table_dict[key].setStyleSheet(self._STYLESHEET_HIGHLIGHT)
                     column += 1
                     self.mode_list.append(table_dict[key].text())
 
@@ -183,9 +143,9 @@ class MyDisplay(QWidget):
 
     def get_cons(self):
         """Get the current constraints and update this section on the fly"""
-        cons_dict, set_cons_dict = self.setup_dicts()
+        cons_dict, set_cons_dict = self._setup_dicts()
         mode_cont = 1
-        self.cons_table = []  # table to store the constraints to be passed to daf.cons
+        self.cons_table = []
         for i in self.mode_list:
             if i != "." and i != "X":
                 if mode_cont <= 3:
