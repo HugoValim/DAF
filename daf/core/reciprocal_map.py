@@ -35,6 +35,8 @@ def _get_matplotlib_pyplot(funcname="XU"):
 
 _EPSILON = 1e-7  # Threshold for filtering peaks by strength
 _ANGLE_TOO_SMALL_THRESHOLD = 1e-4  # Threshold for checking if calculated angle is valid
+_MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+_PI = math.pi
 
 
 def _compute_bragg_indices(mat, exp, ttmax):
@@ -101,15 +103,11 @@ def get_peaks(mat, exp, ttmax=180):
 class ReciprocalMapWindow:
     def two_theta_max(self):
         """Method to get the maximum 2theta to show in the 2D reciprocal map"""
-        if type(self.bounds[4]) == float:
-            nub = self.bounds[4]
-        else:
-            nub = np.linspace(self.bounds[4][0], self.bounds[4][1], 1000)
+        def to_linspace(val):
+            return val if isinstance(val, float) else np.linspace(val[0], val[1], 1000)
 
-        if type(self.bounds[5]) == float:
-            delb = self.bounds[5]
-        else:
-            delb = np.linspace(self.bounds[5][0], self.bounds[5][1], 1000)
+        nub = to_linspace(self.bounds[4])
+        delb = to_linspace(self.bounds[5])
 
         delb, nub = np.meshgrid(delb, nub)
         R = np.cos(np.radians(delb)) * np.cos(np.radians(nub))

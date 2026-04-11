@@ -25,6 +25,8 @@ class SetUUB(ExperimentBase):
         daf.ub -s -p
         """
 
+    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -141,16 +143,9 @@ class SetUUB(ExperimentBase):
     def store_current_reflection(self, reflection: list) -> None:
         """Store the current reflection using the current diffractometer position. The user should pass the HKL"""
         ref = self.experiment_file_dict["reflections"]
-        h = reflection[0]
-        k = reflection[1]
-        l = reflection[2]
-        mu = self.experiment_file_dict["motors"]["mu"]["value"]
-        eta = self.experiment_file_dict["motors"]["eta"]["value"]
-        chi = self.experiment_file_dict["motors"]["chi"]["value"]
-        phi = self.experiment_file_dict["motors"]["phi"]["value"]
-        nu = self.experiment_file_dict["motors"]["nu"]["value"]
-        delta = self.experiment_file_dict["motors"]["del"]["value"]
-        ref_now = [h, k, l, mu, eta, chi, phi, nu, delta, self.en]
+        hkl = reflection[:3]
+        motor_vals = [self.experiment_file_dict["motors"][m]["value"] for m in self._MOTOR_NAMES]
+        ref_now = hkl + tuple(motor_vals) + (self.en,)
         ref.append(ref_now)
         self.experiment_file_dict["reflections"] = ref
         self.write_flag = True
