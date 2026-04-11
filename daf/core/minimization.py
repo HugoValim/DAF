@@ -28,6 +28,12 @@ _DEFAULT_MAX_ERROR = 1e-5  # Default max error threshold for Q2AngFit
 _CHUTE_ANGLES = (45, 45, 45, 45, 45, 45)  # Motor angle offsets for retry sequence
 
 
+# Pseudo angles that require full computation via calculate_pseudo_angle_from_motor_angles
+_PSEUDO_ANGLE_COMPUTED = frozenset({
+    "alpha", "beta", "qaz", "naz", "tau", "psi", "omega", "aeqb",
+})
+
+
 def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
     """Compute all pseudo angles from motor angles, returning a dict."""
     result = calculate_pseudo_angle_from_motor_angles(
@@ -62,22 +68,10 @@ class MinimizationProc(UBMatrix):
             Mu, Eta, Chi, Phi, Nu, Del, self.samp, self.hkl, self.lam, self.nref, self.U
         )
 
-        if pseudo_angle == "alpha":
-            return computed["alpha"] - fix_angle
-        elif pseudo_angle == "beta":
-            return computed["beta"] - fix_angle
-        elif pseudo_angle == "qaz":
-            return computed["qaz"] - fix_angle
-        elif pseudo_angle == "naz":
-            return computed["naz"] - fix_angle
-        elif pseudo_angle == "tau":
-            return computed["tau"] - fix_angle
-        elif pseudo_angle == "psi":
-            return computed["psi"] - fix_angle
-        elif pseudo_angle == "omega":
-            return computed["omega"] - fix_angle
-        elif pseudo_angle == "aeqb":
+        if pseudo_angle == "aeqb":
             return computed["beta"] - computed["alpha"]
+        if pseudo_angle in computed:
+            return computed[pseudo_angle] - fix_angle
 
     def motor_angles(self, *args, qvec=False, max_err=_DEFAULT_MAX_ERROR, **kwargs):
 
