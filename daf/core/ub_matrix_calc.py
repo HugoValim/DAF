@@ -8,6 +8,66 @@ from math import sqrt, sin, cos, atan2, acos
 from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
 
 
+# --------------------------------------------------------------------
+# Quaternion and rotation matrix helpers (pure math, stateless)
+# --------------------------------------------------------------------
+
+
+def _quaternion_from_u123(u1, u2, u3):
+    """Convert u1,u2,u3 to quaternion components q0,q1,q2,q3."""
+    q0 = sqrt(1.0 - u1) * sin(2.0 * np.pi * u2)
+    q1 = sqrt(1.0 - u1) * cos(2.0 * np.pi * u2)
+    q2 = sqrt(u1) * sin(2.0 * np.pi * u3)
+    q3 = sqrt(u1) * cos(2.0 * np.pi * u3)
+    return q0, q1, q2, q3
+
+
+def _rotation_matrix_from_quaternion(q0, q1, q2, q3):
+    """Build a 3x3 rotation matrix from quaternion components."""
+    return np.array(
+        [
+            [
+                q0**2 + q1**2 - q2**2 - q3**2,
+                2.0 * (q1 * q2 - q0 * q3),
+                2.0 * (q1 * q3 + q0 * q2),
+            ],
+            [
+                2.0 * (q1 * q2 + q0 * q3),
+                q0**2 - q1**2 + q2**2 - q3**2,
+                2.0 * (q2 * q3 - q0 * q1),
+            ],
+            [
+                2.0 * (q1 * q3 - q0 * q2),
+                2.0 * (q2 * q3 + q0 * q1),
+                q0**2 - q1**2 - q2**2 + q3**2,
+            ],
+        ]
+    )
+
+
+def _init_u123_from_matrix(um):
+    """Derive initial u1,u2,u3 values from a U matrix."""
+    def sign(x):
+        return -1 if x < 0 else 1
+
+    tr = um[0, 0] + um[1, 1] + um[2, 2]
+    sgn_q1 = sign(um[2, 1] - um[1, 2])
+    sgn_q2 = sign(um[0, 2] - um[2, 0])
+    sgn_q3 = sign(um[1, 0] - um[0, 1])
+    q0 = sqrt(1.0 + tr) / 2.0
+    q1 = sgn_q1 * sqrt(1.0 + um[0, 0] - um[1, 1] - um[2, 2]) / 2.0
+    q2 = sgn_q2 * sqrt(1.0 - um[0, 0] + um[1, 1] - um[2, 2]) / 2.0
+    q3 = sgn_q3 * sqrt(1.0 - um[0, 0] - um[1, 1] + um[2, 2]) / 2.0
+    u1 = (1.0 - um[0, 0]) / 2.0
+    u2 = atan2(q0, q1) / (2.0 * np.pi)
+    u3 = atan2(q2, q3) / (2.0 * np.pi)
+    if u2 < 0:
+        u2 += 1.0
+    if u3 < 0:
+        u3 += 1.0
+    return u1, u2, u3
+
+
 class UBMatrix:
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
 
@@ -154,33 +214,10 @@ class UBMatrix:
         return x
 
     def _get_quat_from_u123(self, u1, u2, u3):
-        q0, q1 = sqrt(1.0 - u1) * sin(2.0 * np.pi * u2), sqrt(1.0 - u1) * cos(
-            2.0 * np.pi * u2
-        )
-        q2, q3 = sqrt(u1) * sin(2.0 * np.pi * u3), sqrt(u1) * cos(2.0 * np.pi * u3)
-        return q0, q1, q2, q3
+        return _quaternion_from_u123(u1, u2, u3)
 
     def _get_rot_matrix(self, q0, q1, q2, q3):
-        rot = np.array(
-            [
-                [
-                    q0**2 + q1**2 - q2**2 - q3**2,
-                    2.0 * (q1 * q2 - q0 * q3),
-                    2.0 * (q1 * q3 + q0 * q2),
-                ],
-                [
-                    2.0 * (q1 * q2 + q0 * q3),
-                    q0**2 - q1**2 + q2**2 - q3**2,
-                    2.0 * (q2 * q3 - q0 * q1),
-                ],
-                [
-                    2.0 * (q1 * q3 - q0 * q2),
-                    2.0 * (q2 * q3 + q0 * q1),
-                    q0**2 - q1**2 - q2**2 + q3**2,
-                ],
-            ]
-        )
-        return rot
+        return _rotation_matrix_from_quaternion(q0, q1, q2, q3)
 
     def angle_between_vectors(self, a, b):
         costheta = self.dot3(a * (1 / LA.norm(a)), b * (1 / LA.norm(b)))
@@ -223,34 +260,10 @@ class UBMatrix:
         res += self.angle_between_vectors(q_hkl, q_vals)
         return res
 
-    def _get_init_u123(self, um):
-        def sign(x):
-            if x < 0:
-                return -1
-            else:
-                return 1
-
-        tr = um[0, 0] + um[1, 1] + um[2, 2]
-        sgn_q1 = sign(um[2, 1] - um[1, 2])
-        sgn_q2 = sign(um[0, 2] - um[2, 0])
-        sgn_q3 = sign(um[1, 0] - um[0, 1])
-        q0 = sqrt(1.0 + tr) / 2.0
-        q1 = sgn_q1 * sqrt(1.0 + um[0, 0] - um[1, 1] - um[2, 2]) / 2.0
-        q2 = sgn_q2 * sqrt(1.0 - um[0, 0] + um[1, 1] - um[2, 2]) / 2.0
-        q3 = sgn_q3 * sqrt(1.0 - um[0, 0] - um[1, 1] + um[2, 2]) / 2.0
-        u1 = (1.0 - um[0, 0]) / 2.0
-        u2 = atan2(q0, q1) / (2.0 * np.pi)
-        u3 = atan2(q2, q3) / (2.0 * np.pi)
-        if u2 < 0:
-            u2 += 1.0
-        if u3 < 0:
-            u3 += 1.0
-        return u1, u2, u3
-
     def fit_u_matrix(self, init_u, refl_list):
         uc = self.samp
         try:
-            start = list(self._get_init_u123(init_u))
+            start = list(_init_u123_from_matrix(init_u))
             lower = [0, 0, 0]
             upper = [1, 1, 1]
             sigma = [1e-2, 1e-2, 1e-2]
@@ -279,6 +292,4 @@ class UBMatrix:
         xr = q1 / sqrt(1.0 - q0 * q0)
         yr = q2 / sqrt(1.0 - q0 * q0)
         zr = q3 / sqrt(1.0 - q0 * q0)
-        TODEG = 180 / (2 * np.pi)
-        print(angle * TODEG, (xr, yr, zr), res)
         return res_u
