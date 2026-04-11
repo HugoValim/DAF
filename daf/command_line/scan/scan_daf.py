@@ -45,7 +45,6 @@ class DAFScan:
         "relative": rel_scan,
         "list_scan": list_scan,
         "grid_scan": grid_scan,
-        "count": None,
     }
 
     COUNTERS_MAP = {
@@ -71,9 +70,8 @@ class DAFScan:
         self.output = create_unique_file_name(daf_scan_inputs.output)
         self.kafka_topic = daf_scan_inputs.kafka_topic
         self.scan_db = daf_scan_inputs.scan_db
-        self.PLANS_MAP["count"] = functools.partial(
-            count, num=int(1e6), delay=self.acquisition_time
-        )  # gambiarra pro count
+        # Pre-bind count plan with fixed number of points and delay
+        self._count_plan = functools.partial(count, num=int(1e6), delay=self.acquisition_time)
         self.configure_run_engine()
         self.producer = KafkaProducer()
 
@@ -97,13 +95,12 @@ class DAFScan:
         return md
 
     def instantiate_callbacks(self):
-        """Instantiate all callbacks and store then in a dict"""
-        self.callbacks = {}
-        self.callbacks["bec"] = BestEffortCallback()
-        # self.callbacks["nexus"] = self.nexus_callback()
-        self.callbacks["kafka"] = self.kafka_callback
-        self.callbacks["db"] = self.config_databroker()
-        # self.callbacks["debug"] = self.debug_callback
+        """Instantiate all callbacks and store them in a dict."""
+        self.callbacks = {
+            "bec": BestEffortCallback(),
+            "kafka": self.kafka_callback,
+            "db": self.config_databroker(),
+        }
 
     def subscribe_callbacks(self):
         """Subscribe all callbacks to the RunEngine"""
@@ -188,7 +185,9 @@ class DAFScan:
         return movables
 
     def get_plan(self, bluesky_plan_args: list):
-        """Get the plan that's going to be used based in the scan_type argument"""
+        """Return the Bluesky plan for the configured scan type."""
+        if self.scan_type == "count":
+            return self._count_plan([*self.ophyd_counters.values()], *bluesky_plan_args)
         return self.PLANS_MAP[self.scan_type](
             [*self.ophyd_counters.values()], *bluesky_plan_args
         )
@@ -207,32 +206,15 @@ class DAFScan:
                 return float(val)
 
     def write_stats(self):
+        """Extract and write scan peak statistics to the experiment file."""
         self.io = du.DAFIO(read=False)
         self.experiment_file_dict = self.io.read()
         stats = ("com", "cen", "max", "min", "fwhm")
         stat_dict = {}
-        # print(self.callbacks["bec"].peaks)
         for key in stats:
             stat_dict[key] = {}
-            for counter_name, stats in self.callbacks["bec"].peaks[key].items():
-                stat_dict[key][counter_name] = self.convert_to_float_if_not_none(stats)
-        # for counter, counter_info in self.counters.items():
-        #     if counter_info["type"] == "AD":
-        #         continue
-        #     stat_dict[counter] = {}
-        #     stat_dict[counter]["peak"] = self.convert_to_float_if_not_none(
-        #         self.callbacks["bec"].peaks["max"][counter][1]
-        #     )
-        #     stat_dict[counter]["peak_at"] = self.convert_to_float_if_not_none(
-        #         self.callbacks["bec"].peaks["max"][counter][0]
-        #     )
-        #     stat_dict[counter]["FWHM"] = self.convert_to_float_if_not_none(
-        #         self.callbacks["bec"].peaks["fwhm"][counter]
-        #     )
-        #     # stat_dict[counter]["FWHM_at"] = self.callbacks["bec"].peaks["fwhm"][counter][0]
-        #     stat_dict[counter]["COM"] = self.convert_to_float_if_not_none(
-        #         self.callbacks["bec"].peaks["com"][counter]
-        #     )
+            for counter_name, counter_stats in self.callbacks["bec"].peaks[key].items():
+                stat_dict[key][counter_name] = self.convert_to_float_if_not_none(counter_stats)
         self.experiment_file_dict["scan_stats"] = stat_dict
         self.io.write(self.experiment_file_dict)
 
