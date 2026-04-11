@@ -178,8 +178,7 @@ class DAFScan:
         movables = []
         for motor_name, ophyd_motor in self.ophyd_motors.items():
             movables.append(ophyd_motor)
-            for i in self.scan_data[motor_name]:
-                movables.append(i)
+            movables.extend(self.scan_data[motor_name])
         if self.steps is not None:
             movables.append(self.steps)
         return movables
