@@ -6,9 +6,9 @@ import pandas as pd
 from tqdm import tqdm
 
 from daf.core.mode_parser import ModeParser, PREDEFINED_MATERIALS
-from daf.utils.print_utils import TablePrinter
 from daf.core.reciprocal_map import ReciprocalMapWindow
 from daf.core.minimization import MinimizationProc
+from daf.core.cli_formatting import DAFFormatter, build_forprint_rows, build_dprint
 
 
 class DAF(MinimizationProc, ReciprocalMapWindow):
@@ -34,7 +34,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.Del_bound = parser.Del_bound
         self.pseudo_constraints_w_value_list = parser.pseudo_constraints_w_value_list
         self.define_standard_experiment()
-        self.define_standard_print_parameters()
+        self._formatter = DAFFormatter()
 
     def define_standard_experiment(self):
         self.nref = (0, 0, 1)
@@ -51,220 +51,57 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             ["x+", "z-", "y+", "z-"], ["x+", "z-"], [0, 1, 0]
         )
 
-    def define_standard_print_parameters(self):
-        self.space = 12
-        self.marker = "-"
-        self.column_marker = "|"
-        self.center = (
-            self.column_marker + "{:^" + str(self.space - 2) + "}" + self.column_marker
+    def _get_dprint(self):
+        """Build dprint dict for constraint display."""
+        return build_dprint(
+            self.Mu_bound, self.Eta_bound, self.Chi_bound,
+            self.Phi_bound, self.Nu_bound, self.Del_bound
         )
-        self.roundfit = 5
-        self.centshow = "{:^" + str(16 - 2) + "}"
 
-    def _build_forprint_rows(self, dprint: dict, col1: int, col2: int) -> list:
-        """Build constraint rows for display table.
-
-        Shared logic between show() and __str__().
-        """
-        rows = self.pseudo_constraints_w_value_list.copy()
-
-        if col1 in (1, 2):
-            if col1 == 1:
-                rows.insert(0, (self.setup[0], self.Del_bound))
-            elif col1 == 2:
-                rows.insert(0, (self.setup[0], self.Nu_bound))
-            for i in self.motor_constraints:
-                if i not in ("Del", "Nu"):
-                    rows.append((i, dprint[i]))
-            if col2 == 0:
-                rows.insert(1, ("XD", "--"))
-
-        else:
-            if col1 == 0 and col2 == 0:
-                rows.insert(0, ("XD", "--"))
-                rows.insert(0, ("XD", "--"))
-                for i in self.motor_constraints:
-                    rows.append((i, dprint[i]))
-            elif col1 == 0:
-                rows.insert(0, ("XD", "--"))
-                for i in self.motor_constraints:
-                    rows.append((i, dprint[i]))
-            elif col2 == 0:
-                rows.insert(1, ("XD", "--"))
-                for i in self.motor_constraints:
-                    rows.append((i, dprint[i]))
-            else:
-                for i in self.motor_constraints:
-                    rows.append((i, dprint[i]))
-
-        return rows
+    def _build_forprint_rows(self, dprint, col1, col2):
+        """Build constraint rows for display table."""
+        return build_forprint_rows(
+            self.pseudo_constraints_w_value_list,
+            self.motor_constraints,
+            dprint, col1, col2, self.setup
+        )
 
     def show(self, sh, ident=3, space=20):
-        lb = lambda x: "{:.5f}".format(float(x))
+        """Show experiment info in different formats."""
+        self._formatter.set_print_options(space=space)
 
-        self.centshow = "{:^" + str(space - 2) + "}"
-
-        dprint = {
-            "x": "--",
-            "Mu": self.Mu_bound,
-            "Eta": self.Eta_bound,
-            "Chi": self.Chi_bound,
-            "Phi": self.Phi_bound,
-            "Nu": self.Nu_bound,
-            "Del": self.Del_bound,
-        }
-
+        dprint = self._get_dprint()
         self.forprint = self._build_forprint_rows(dprint, self.col1, self.col2)
 
-        conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
-        experiment_list = [
-            self.sampleor,
-            lb(self.lam),
-            lb(self.en / 1000),
-            "["
-            + str(self.idir[0])
-            + ","
-            + str(self.idir[1])
-            + ","
-            + str(self.idir[2])
-            + "]",
-            "["
-            + str(self.ndir[0])
-            + ","
-            + str(self.ndir[1])
-            + ","
-            + str(self.ndir[2])
-            + "]",
-            "["
-            + str(self.nref[0])
-            + ","
-            + str(self.nref[1])
-            + ","
-            + str(self.nref[2])
-            + "]",
-        ]
-        sample_info = [
-            self.samp.name,
-            self.samp.a,
-            self.samp.b,
-            self.samp.c,
-            self.samp.alpha,
-            self.samp.beta,
-            self.samp.gamma,
-        ]
-
-        fmt = [
-            ("", "ident", ident),
-            ("", "col1", space),
-            ("", "col2", space),
-            ("", "col3", space),
-            ("", "col4", space),
-            ("", "col5", space),
-            ("", "col6", space),
-        ]
-
         if sh == "mode":
-            data = [
-                {
-                    "ident": "",
-                    "col1": self.centshow.format("MODE"),
-                    "col2": self.centshow.format(self.setup[0]),
-                    "col3": self.centshow.format(self.setup[1]),
-                    "col4": self.centshow.format(self.setup[2]),
-                    "col5": self.centshow.format(self.setup[3]),
-                    "col6": self.centshow.format(self.setup[4]),
-                },
-                {
-                    "ident": "",
-                    "col1": self.centshow.format(
-                        str(self.col1)
-                        + str(self.col2)
-                        + str(self.col3)
-                        + str(self.col4)
-                        + str(self.col5)
-                    ),
-                    "col2": self.centshow.format(self.forprint[0][1]),
-                    "col3": self.centshow.format(self.forprint[1][1]),
-                    "col4": self.centshow.format(self.forprint[2][1]),
-                    "col5": self.centshow.format(self.forprint[3][1]),
-                    "col6": self.centshow.format(self.forprint[4][1]),
-                },
-            ]
-            return TablePrinter(fmt, ul="")(data)
+            return self._formatter.format_mode(
+                self.setup, self.col1, self.col2, self.col3, self.col4, self.col5,
+                self.forprint
+            )
 
         if sh == "expt":
-            data = [
-                {
-                    "col1": self.centshow.format("Sampleor"),
-                    "col2": self.centshow.format("WaveLength (angstrom)"),
-                    "col3": self.centshow.format("Energy (keV)"),
-                    "col4": self.centshow.format("Incidence Dir"),
-                    "col5": self.centshow.format("Normal Dir"),
-                    "col6": self.centshow.format("Reference Dir"),
-                },
-                {
-                    "col1": self.centshow.format(self.sampleor),
-                    "col2": self.centshow.format(lb(str(self.lam))),
-                    "col3": self.centshow.format(str(lb(self.en / 1000))),
-                    "col4": self.centshow.format(
-                        str(self.idir[0])
-                        + " "
-                        + str(self.idir[1])
-                        + " "
-                        + str(self.idir[2])
-                    ),
-                    "col5": self.centshow.format(
-                        str(self.ndir[0])
-                        + " "
-                        + str(self.ndir[1])
-                        + " "
-                        + str(self.ndir[2])
-                    ),
-                    "col6": self.centshow.format(
-                        str(self.nref[0])
-                        + " "
-                        + str(self.nref[1])
-                        + " "
-                        + str(self.nref[2])
-                    ),
-                },
-            ]
-            return TablePrinter(fmt, ul="")(data)
+            return self._formatter.format_experiment(
+                self.sampleor, self.lam, self.en, self.idir, self.ndir, self.nref
+            )
 
         if sh == "sample":
-            fmt = [
-                ("", "ident", ident),
-                ("", "col1", space),
-                ("", "col2", space),
-                ("", "col3", space),
-                ("", "col4", space),
-                ("", "col5", space),
-                ("", "col6", space),
-                ("", "col7", space),
-            ]
-            data = [
-                {
-                    "col1": self.centshow.format("Sample"),
-                    "col2": self.centshow.format("a"),
-                    "col3": self.centshow.format("b"),
-                    "col4": self.centshow.format("c"),
-                    "col5": self.centshow.format("Alpha"),
-                    "col6": self.centshow.format("Beta"),
-                    "col7": self.centshow.format("Gamma"),
-                },
-                {
-                    "col1": self.centshow.format(self.samp.name),
-                    "col2": self.centshow.format(lb(str(self.samp.a))),
-                    "col3": self.centshow.format(str(lb(self.samp.b))),
-                    "col4": self.centshow.format(str(lb(self.samp.c))),
-                    "col5": self.centshow.format(str(lb(self.samp.alpha))),
-                    "col6": self.centshow.format(str(lb(self.samp.beta))),
-                    "col7": self.centshow.format(str(lb(self.samp.gamma))),
-                },
-            ]
-            return TablePrinter(fmt, ul="")(data)
+            return self._formatter.format_sample(self.samp)
 
         if sh == "gui":
+            conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
+            experiment_list = [
+                self.sampleor,
+                self._formatter._fmt(self.lam),
+                self._formatter._fmt(self.en / 1000),
+                self.idir,
+                self.ndir,
+                self.nref,
+            ]
+            sample_info = [
+                self.samp.name,
+                self.samp.a, self.samp.b, self.samp.c,
+                self.samp.alpha, self.samp.beta, self.samp.gamma,
+            ]
             return self.setup, conscols, self.forprint, experiment_list, sample_info
 
     def set_hkl(self, HKL):
@@ -333,123 +170,34 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             self.en = xu.lam2en(self.lam)
 
     def set_print_options(self, marker="-", column_marker="|", space=12):
-        self.marker = marker
-        self.column_marker = column_marker
-
-        if space > 10:
-            self.space = space if space % 2 == 0 else space - 1
-        else:
-            self.space = 10
-
-        self.center = (
-            self.column_marker + "{:^" + str(self.space - 2) + "}" + self.column_marker
+        """Set print formatting options."""
+        self._formatter.set_print_options(
+            marker=marker, column_marker=column_marker, space=space
         )
-        self.roundfit = int(4 + ((self.space - 10) / 2)) if self.space > 10 else 4
 
     def __str__(self):
-        lb = lambda x: "{:.5f}".format(float(x))
-
+        """String representation of current DAF state."""
         if self.isscan:
             return repr(self.formscantxt)
 
-        dprint = {
-            "x": "--",
-            "Mu": self.Mu_bound,
-            "Eta": self.Eta_bound,
-            "Chi": self.Chi_bound,
-            "Phi": self.Phi_bound,
-            "Nu": self.Nu_bound,
-            "Del": self.Del_bound,
-        }
-
+        dprint = self._get_dprint()
         self.forprint = self._build_forprint_rows(dprint, self.col1, self.col2)
 
         self.forprint = [
-            (i[0], lb(i[1])) if i[1] != "--" else (i[0], i[1])
+            (i[0], self._formatter._fmt(i[1])) if i[1] != "--" else (i[0], i[1])
             for i in self.forprint
         ]
 
-        data = [
-            {"col1": self.center.format("MODE"),
-             "col2": self.center.format(self.setup[0]),
-             "col3": self.center.format(self.setup[1]),
-             "col4": self.center.format(self.setup[2]),
-             "col5": self.center.format(self.setup[3]),
-             "col6": self.center.format(self.setup[4]),
-             "col7": self.center.format("Error")},
-            {"col1": self.center.format(
-                str(self.col1) + str(self.col2) + str(self.col3) + str(self.col4) + str(self.col5)),
-             "col2": self.center.format(self.forprint[0][1]),
-             "col3": self.center.format(self.forprint[1][1]),
-             "col4": self.center.format(self.forprint[2][1]),
-             "col5": self.center.format(self.forprint[3][1]),
-             "col6": self.center.format(self.forprint[4][1]),
-             "col7": self.center.format("%.3g" % self.qerror)},
-            *self._separator_row(),
-            {"col1": self.center.format("H"), "col2": self.center.format("K"),
-             "col3": self.center.format("L"), "col4": self.center.format("Ref vector"),
-             "col5": self.center.format("Energy (keV)"), "col6": self.center.format("WL (angstrom)"),
-             "col7": self.center.format("Sample")},
-            {"col1": self.center.format(str(lb(self.hkl_calc[0]))),
-             "col2": self.center.format(str(lb(self.hkl_calc[1]))),
-             "col3": self.center.format(str(lb(self.hkl_calc[2]))),
-             "col4": self.center.format(
-                 str(self.nref[0]) + " " + str(self.nref[1]) + " " + str(self.nref[2])),
-             "col5": self.center.format(lb(self.en / 1000)),
-             "col6": self.center.format(lb(self.lam)),
-             "col7": self.center.format(self.samp.name)},
-            *self._separator_row(),
-            {"col1": self.center.format("Qx"), "col2": self.center.format("Qy"),
-             "col3": self.center.format("Qz"), "col4": self.center.format("|Q|"),
-             "col5": self.center.format("Exp 2theta"), "col6": self.center.format("Dhkl"),
-             "col7": self.center.format("FHKL (Base)")},
-            {"col1": self.center.format(str(lb(self.Qshow[0]))),
-             "col2": self.center.format(str(lb(self.Qshow[1]))),
-             "col3": self.center.format(str(lb(self.Qshow[2]))),
-             "col4": self.center.format(lb(self.Qnorm)),
-             "col5": self.center.format(lb(self.ttB1)),
-             "col6": self.center.format(lb(self.dhkl)),
-             "col7": self.center.format(lb(self.FHKL))},
-            *self._separator_row(),
-            {"col1": self.center.format("Alpha"), "col2": self.center.format("Beta"),
-             "col3": self.center.format("Psi"), "col4": self.center.format("Tau"),
-             "col5": self.center.format("Qaz"), "col6": self.center.format("Naz"),
-             "col7": self.center.format("Omega")},
-            {"col1": self.center.format(lb(self.alphain)),
-             "col2": self.center.format(lb(self.betaout)),
-             "col3": self.center.format(lb(self.psipseudo)),
-             "col4": self.center.format(lb(self.taupseudo)),
-             "col5": self.center.format(lb(self.qaz)),
-             "col6": self.center.format(lb(self.naz)),
-             "col7": self.center.format(lb(self.omega))},
-            *self._separator_row(),
-            {"col1": self.center.format("Del"), "col2": self.center.format("Eta"),
-             "col3": self.center.format("Chi"), "col4": self.center.format("Phi"),
-             "col5": self.center.format("Nu"), "col6": self.center.format("Mu"),
-             "col7": self.center.format("--")},
-            {"col1": self.center.format(lb(self.Del)),
-             "col2": self.center.format(lb(self.Eta)),
-             "col3": self.center.format(lb(self.Chi)),
-             "col4": self.center.format(lb(self.Phi)),
-             "col5": self.center.format(lb(self.Nu)),
-             "col6": self.center.format(lb(self.Mu)),
-             "col7": self.center.format("--")},
-            *self._separator_row(),
-        ]
-
-        fmt = [
-            ("", "col1", self.space), ("", "col2", self.space), ("", "col3", self.space),
-            ("", "col4", self.space), ("", "col5", self.space), ("", "col6", self.space),
-            ("", "col7", self.space),
-        ]
-        return TablePrinter(fmt, ul=self.marker)(data)
-
-    def _separator_row(self) -> list:
-        mk = self.marker * self.space
-        return [
-            {"col1": mk, "col2": mk, "col3": mk, "col4": mk,
-             "col5": mk, "col6": mk, "col7": mk}
-        ]
+        return self._formatter.format_full_status(
+            self.setup,
+            self.col1, self.col2, self.col3, self.col4, self.col5,
+            self.forprint, self.qerror,
+            self.hkl_calc, self.nref, self.en, self.lam, self.samp,
+            self.alphain, self.betaout, self.psipseudo, self.taupseudo,
+            self.qaz, self.naz, self.omega,
+            self.Del, self.Eta, self.Chi, self.Phi, self.Nu, self.Mu,
+            self.Qshow, self.Qnorm, self.ttB1, self.dhkl, self.FHKL
+        )
 
     def __call__(self, *args, **kwargs):
         return self.motor_angles(*args, **kwargs)
