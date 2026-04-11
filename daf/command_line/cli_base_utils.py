@@ -21,6 +21,12 @@ class DevNull:
 class CLIBase:
     """Base class to be inherited by all command line classes"""
 
+    # Mapping of export_angles() index to name
+    _ANGLE_EXPORT_NAMES = (
+        "mu", "eta", "chi", "phi", "nu", "del", "twotheta", "theta",
+        "alpha", "qaz", "naz", "tau", "psi", "beta", "omega", "hklnow",
+    )
+
     def __init__(self):
         self.io = du.DAFIO()
         self.read_experiment_file()
@@ -147,25 +153,7 @@ class CLIBase:
     def get_angles_from_calculated_exp(self) -> dict:
         """Get all angles and pseudo-angles based on a previous calculation, return a dicts"""
         angs = self.exp.export_angles()
-        exp_dict = {
-            "mu": angs[0],
-            "eta": angs[1],
-            "chi": angs[2],
-            "phi": angs[3],
-            "nu": angs[4],
-            "del": angs[5],
-            "twotheta": angs[6],
-            "theta": angs[7],
-            "alpha": angs[8],
-            "qaz": angs[9],
-            "naz": angs[10],
-            "tau": angs[11],
-            "psi": angs[12],
-            "beta": angs[13],
-            "omega": angs[14],
-            "hklnow": angs[15],
-        }
-        return exp_dict
+        return {name: angs[i] for i, name in enumerate(self._ANGLE_EXPORT_NAMES)}
 
     def write_motors_bounds_to_experiment_file(self, dict_to_write: dict) -> None:
         """Write motor bounds to the experiment file"""
