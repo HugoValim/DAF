@@ -142,8 +142,10 @@ class SetUUB(CLIBase):
         """Store the current reflection using the current diffractometer position. The user should pass the HKL"""
         ref = self.experiment_file_dict["reflections"]
         hkl = reflection[:3]
-        motor_vals = [self.experiment_file_dict["motors"][m]["value"] for m in self._MOTOR_NAMES]
-        ref_now = hkl + tuple(motor_vals) + (self.en,)
+        motor_vals = [
+            self.experiment_file_dict["motors"][m]["value"] for m in self._MOTOR_NAMES
+        ]
+        ref_now = list(hkl) + list(motor_vals) + [self.en]
         ref.append(ref_now)
         self.experiment_file_dict["reflections"] = ref
         self.write_flag = True
@@ -167,12 +169,14 @@ class SetUUB(CLIBase):
         rows = []
         for i in range(3):
             ident = f"{label} = " if i == 1 else ""
-            rows.append({
-                "ident": ident,
-                "col1": fmt.format(format_5_decimals(matrix[i][0])),
-                "col2": fmt.format(format_5_decimals(matrix[i][1])),
-                "col3": (fmt + "|").format(format_5_decimals(matrix[i][2])),
-            })
+            rows.append(
+                {
+                    "ident": ident,
+                    "col1": fmt.format(format_5_decimals(matrix[i][0])),
+                    "col2": fmt.format(format_5_decimals(matrix[i][1])),
+                    "col3": (fmt + "|").format(format_5_decimals(matrix[i][2])),
+                }
+            )
         return rows
 
     def build_u_and_ub_print(self) -> tuple:
@@ -190,20 +194,36 @@ class SetUUB(CLIBase):
         refs = self.experiment_file_dict["reflections"]
         center = "{:^11}"
         space = 10
-        headers = ("Index", "H", "K", "L", "Mu", "Eta", "Chi", "Phi", "Nu", "Del", "Energy")
+        headers = (
+            "Index",
+            "H",
+            "K",
+            "L",
+            "Mu",
+            "Eta",
+            "Chi",
+            "Phi",
+            "Nu",
+            "Del",
+            "Energy",
+        )
         fmt = [("", f"col{i+1}", space) for i in range(11)]
 
-        data = [{"col1": center.format(headers[0]),
-                 "col2": center.format(headers[1]),
-                 "col3": center.format(headers[2]),
-                 "col4": center.format(headers[3]),
-                 "col5": center.format(headers[4]),
-                 "col6": center.format(headers[5]),
-                 "col7": center.format(headers[6]),
-                 "col8": center.format(headers[7]),
-                 "col9": center.format(headers[8]),
-                 "col10": center.format(headers[9]),
-                 "col11": center.format(headers[10])}]
+        data = [
+            {
+                "col1": center.format(headers[0]),
+                "col2": center.format(headers[1]),
+                "col3": center.format(headers[2]),
+                "col4": center.format(headers[3]),
+                "col5": center.format(headers[4]),
+                "col6": center.format(headers[5]),
+                "col7": center.format(headers[6]),
+                "col8": center.format(headers[7]),
+                "col9": center.format(headers[8]),
+                "col10": center.format(headers[9]),
+                "col11": center.format(headers[10]),
+            }
+        ]
 
         for i, ref in enumerate(refs):
             row = {"col1": center.format(str(i + 1))}
@@ -267,7 +287,14 @@ class SetUUB(CLIBase):
         float_lp = [float(i) for i in calculated_lattice_parameters]
         self.experiment_file_dict["U_mat"] = U.tolist()
         self.experiment_file_dict["UB_mat"] = UB.tolist()
-        lp_keys = ("lparam_a", "lparam_b", "lparam_c", "lparam_alpha", "lparam_beta", "lparam_gama")
+        lp_keys = (
+            "lparam_a",
+            "lparam_b",
+            "lparam_c",
+            "lparam_alpha",
+            "lparam_beta",
+            "lparam_gama",
+        )
         for key, val in zip(lp_keys, float_lp):
             self.experiment_file_dict[key] = val
         self.write_flag = True

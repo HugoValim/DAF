@@ -15,7 +15,9 @@ def format_vec(vec):
     return "[" + ", ".join(str(v) for v in vec) + "]"
 
 
-def build_forprint_rows(pseudo_constraints, motor_constraints, dprint, col1, col2, setup):
+def build_forprint_rows(
+    pseudo_constraints, motor_constraints, dprint, col1, col2, setup
+):
     """Build constraint rows for display table.
 
     Shared logic between show() and __str__().
@@ -76,15 +78,15 @@ class DAFFormatter:
     def __init__(self, space=None, marker=None, column_marker=None):
         self.space = space if space is not None else _DEFAULT_SPACE
         self.marker = marker if marker is not None else _DEFAULT_MARKER
-        self.column_marker = column_marker if column_marker is not None else _DEFAULT_COLUMN_MARKER
+        self.column_marker = (
+            column_marker if column_marker is not None else _DEFAULT_COLUMN_MARKER
+        )
         self._update_format_strings()
 
     def _update_format_strings(self):
         """Update format strings based on current space/marker/column_marker."""
         self.center = (
-            self.column_marker
-            + "{:^" + str(self.space - 2) + "}"
-            + self.column_marker
+            self.column_marker + "{:^" + str(self.space - 2) + "}" + self.column_marker
         )
         self.roundfit = int(4 + ((self.space - 10) / 2)) if self.space > 10 else 4
         self.centshow = "{:^" + str(16 - 2) + "}"
@@ -107,16 +109,26 @@ class DAFFormatter:
         """Generate a separator row."""
         mk = self.marker * self.space
         return [
-            {"col1": mk, "col2": mk, "col3": mk, "col4": mk,
-             "col5": mk, "col6": mk, "col7": mk}
+            {
+                "col1": mk,
+                "col2": mk,
+                "col3": mk,
+                "col4": mk,
+                "col5": mk,
+                "col6": mk,
+                "col7": mk,
+            }
         ]
 
     def _base_fmt(self):
         """Base format spec for 7-column tables."""
         return [
-            ("", "col1", self.space), ("", "col2", self.space),
-            ("", "col3", self.space), ("", "col4", self.space),
-            ("", "col5", self.space), ("", "col6", self.space),
+            ("", "col1", self.space),
+            ("", "col2", self.space),
+            ("", "col3", self.space),
+            ("", "col4", self.space),
+            ("", "col5", self.space),
+            ("", "col6", self.space),
             ("", "col7", self.space),
         ]
 
@@ -124,18 +136,24 @@ class DAFFormatter:
         """Format spec for 6-column tables."""
         return [
             ("", "ident", ident),
-            ("", "col1", space), ("", "col2", space),
-            ("", "col3", space), ("", "col4", space),
-            ("", "col5", space), ("", "col6", space),
+            ("", "col1", space),
+            ("", "col2", space),
+            ("", "col3", space),
+            ("", "col4", space),
+            ("", "col5", space),
+            ("", "col6", space),
         ]
 
     def _7col_fmt(self, ident=3, space=20):
         """Format spec for 7-column tables."""
         return [
             ("", "ident", ident),
-            ("", "col1", space), ("", "col2", space),
-            ("", "col3", space), ("", "col4", space),
-            ("", "col5", space), ("", "col6", space),
+            ("", "col1", space),
+            ("", "col2", space),
+            ("", "col3", space),
+            ("", "col4", space),
+            ("", "col5", space),
+            ("", "col6", space),
             ("", "col7", space),
         ]
 
@@ -155,11 +173,21 @@ class DAFFormatter:
             {
                 "ident": "",
                 "col1": self.centshow.format(mode_num),
-                "col2": self.centshow.format(forprint[0][1]),
-                "col3": self.centshow.format(forprint[1][1]),
-                "col4": self.centshow.format(forprint[2][1]),
-                "col5": self.centshow.format(forprint[3][1]),
-                "col6": self.centshow.format(forprint[4][1]),
+                "col2": self.centshow.format(forprint[0][1])
+                if len(forprint) > 0
+                else self.centshow.format("--"),
+                "col3": self.centshow.format(forprint[1][1])
+                if len(forprint) > 1
+                else self.centshow.format("--"),
+                "col4": self.centshow.format(forprint[2][1])
+                if len(forprint) > 2
+                else self.centshow.format("--"),
+                "col5": self.centshow.format(forprint[3][1])
+                if len(forprint) > 3
+                else self.centshow.format("--"),
+                "col6": self.centshow.format(forprint[4][1])
+                if len(forprint) > 4
+                else self.centshow.format("--"),
             },
         ]
         return TablePrinter(self._6col_fmt(), ul="")(data)
@@ -211,14 +239,41 @@ class DAFFormatter:
         return TablePrinter(self._7col_fmt(), ul="")(data)
 
     def format_full_status(
-        self, setup, col1, col2, col3, col4, col5,
-        forprint, qerror,
-        hkl_calc, nref, en, lam, samp,
-        alphain, betaout, psipseudo, taupseudo, qaz, naz, omega,
-        del_val, eta_val, chi_val, phi_val, nu_val, mu_val,
-        Qshow, Qnorm, ttB1, dhkl, FHKL
+        self,
+        setup,
+        col1,
+        col2,
+        col3,
+        col4,
+        col5,
+        forprint,
+        qerror,
+        hkl_calc,
+        nref,
+        en,
+        lam,
+        samp,
+        alphain,
+        betaout,
+        psipseudo,
+        taupseudo,
+        qaz,
+        naz,
+        omega,
+        del_val,
+        eta_val,
+        chi_val,
+        phi_val,
+        nu_val,
+        mu_val,
+        Qshow,
+        Qnorm,
+        ttB1,
+        dhkl,
+        FHKL,
     ):
         """Format the full __str__ output for DAF."""
+
         def c(val):
             return self.center.format(val)
 
@@ -231,40 +286,100 @@ class DAFFormatter:
         mode_num = str(col1) + str(col2) + str(col3) + str(col4) + str(col5)
 
         data = [
-            {"col1": c("MODE"), "col2": c(setup[0]), "col3": c(setup[1]),
-             "col4": c(setup[2]), "col5": c(setup[3]), "col6": c(setup[4]),
-             "col7": c("Error")},
-            {"col1": c(mode_num), "col2": c(forprint[0][1]), "col3": c(forprint[1][1]),
-             "col4": c(forprint[2][1]), "col5": c(forprint[3][1]), "col6": c(forprint[4][1]),
-             "col7": c("%.3g" % qerror)},
+            {
+                "col1": c("MODE"),
+                "col2": c(setup[0]),
+                "col3": c(setup[1]),
+                "col4": c(setup[2]),
+                "col5": c(setup[3]),
+                "col6": c(setup[4]),
+                "col7": c("Error"),
+            },
+            {
+                "col1": c(mode_num),
+                "col2": c(forprint[0][1]) if len(forprint) > 0 else c("--"),
+                "col3": c(forprint[1][1]) if len(forprint) > 1 else c("--"),
+                "col4": c(forprint[2][1]) if len(forprint) > 2 else c("--"),
+                "col5": c(forprint[3][1]) if len(forprint) > 3 else c("--"),
+                "col6": c(forprint[4][1]) if len(forprint) > 4 else c("--"),
+                "col7": c("%.3g" % qerror),
+            },
             *self._separator_row(),
-            {"col1": c("H"), "col2": c("K"), "col3": c("L"),
-             "col4": c("Ref vector"), "col5": c("Energy (keV)"), "col6": c("WL (angstrom)"),
-             "col7": c("Sample")},
-            {"col1": f(hkl_calc[0]), "col2": f(hkl_calc[1]), "col3": f(hkl_calc[2]),
-             "col4": c(format_vec(nref)), "col5": f(en / 1000), "col6": f(lam),
-             "col7": c(samp.name)},
+            {
+                "col1": c("H"),
+                "col2": c("K"),
+                "col3": c("L"),
+                "col4": c("Ref vector"),
+                "col5": c("Energy (keV)"),
+                "col6": c("WL (angstrom)"),
+                "col7": c("Sample"),
+            },
+            {
+                "col1": f(hkl_calc[0]),
+                "col2": f(hkl_calc[1]),
+                "col3": f(hkl_calc[2]),
+                "col4": c(format_vec(nref)),
+                "col5": f(en / 1000),
+                "col6": f(lam),
+                "col7": c(samp.name),
+            },
             *self._separator_row(),
-            {"col1": c("Qx"), "col2": c("Qy"), "col3": c("Qz"),
-             "col4": c("|Q|"), "col5": c("Exp 2theta"), "col6": c("Dhkl"),
-             "col7": c("FHKL (Base)")},
-            {"col1": f(Qshow[0]), "col2": f(Qshow[1]), "col3": f(Qshow[2]),
-             "col4": f(Qnorm), "col5": f(ttB1), "col6": f(dhkl),
-             "col7": f(FHKL)},
+            {
+                "col1": c("Qx"),
+                "col2": c("Qy"),
+                "col3": c("Qz"),
+                "col4": c("|Q|"),
+                "col5": c("Exp 2theta"),
+                "col6": c("Dhkl"),
+                "col7": c("FHKL (Base)"),
+            },
+            {
+                "col1": f(Qshow[0]),
+                "col2": f(Qshow[1]),
+                "col3": f(Qshow[2]),
+                "col4": f(Qnorm),
+                "col5": f(ttB1),
+                "col6": f(dhkl),
+                "col7": f(FHKL),
+            },
             *self._separator_row(),
-            {"col1": c("Alpha"), "col2": c("Beta"), "col3": c("Psi"),
-             "col4": c("Tau"), "col5": c("Qaz"), "col6": c("Naz"),
-             "col7": c("Omega")},
-            {"col1": f(alphain), "col2": f(betaout), "col3": f(psipseudo),
-             "col4": f(taupseudo), "col5": f(qaz), "col6": f(naz),
-             "col7": f(omega)},
+            {
+                "col1": c("Alpha"),
+                "col2": c("Beta"),
+                "col3": c("Psi"),
+                "col4": c("Tau"),
+                "col5": c("Qaz"),
+                "col6": c("Naz"),
+                "col7": c("Omega"),
+            },
+            {
+                "col1": f(alphain),
+                "col2": f(betaout),
+                "col3": f(psipseudo),
+                "col4": f(taupseudo),
+                "col5": f(qaz),
+                "col6": f(naz),
+                "col7": f(omega),
+            },
             *self._separator_row(),
-            {"col1": c("Del"), "col2": c("Eta"), "col3": c("Chi"),
-             "col4": c("Phi"), "col5": c("Nu"), "col6": c("Mu"),
-             "col7": c("--")},
-            {"col1": f(del_val), "col2": f(eta_val), "col3": f(chi_val),
-             "col4": f(phi_val), "col5": f(nu_val), "col6": f(mu_val),
-             "col7": c("--")},
+            {
+                "col1": c("Del"),
+                "col2": c("Eta"),
+                "col3": c("Chi"),
+                "col4": c("Phi"),
+                "col5": c("Nu"),
+                "col6": c("Mu"),
+                "col7": c("--"),
+            },
+            {
+                "col1": f(del_val),
+                "col2": f(eta_val),
+                "col3": f(chi_val),
+                "col4": f(phi_val),
+                "col5": f(nu_val),
+                "col6": f(mu_val),
+                "col7": c("--"),
+            },
             *self._separator_row(),
         ]
 
