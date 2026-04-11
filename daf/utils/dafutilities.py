@@ -12,6 +12,7 @@ import yaml
 from daf.utils.daf_paths import DAFPaths as dp
 
 logger = logging.getLogger(__name__)
+_ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
 
 DEFAULT = dp.check_for_local_config()
 TIMEOUT = 2  # .2s timeout for caputs and cagets
@@ -122,7 +123,7 @@ class DAFIO:
 
         bl_counter = 0
         for key, value in self.BL_PVS.items():
-            if updated_bl_pv_list[bl_counter] is not None and updated_bl_pv_list[bl_counter] < 100:  # Less them 100keV
+            if updated_bl_pv_list[bl_counter] is not None and updated_bl_pv_list[bl_counter] < _ENERGY_KEV_THRESHOLD:
                 dict_["beamline_pvs"][key]["value"] = (
                     updated_bl_pv_list[bl_counter] * 1000
                 )

@@ -25,7 +25,9 @@ _MOTOR_PSEUDO_MAP = {
 # Tolerance for numerical computations
 _ANGLE_OFFSET = 1e-6  # Small offset added to motor angles for numerical stability
 _DEFAULT_MAX_ERROR = 1e-5  # Default max error threshold for Q2AngFit
+_SCAN_QERROR_THRESHOLD = 1e-5  # Threshold for raising qerror in scan (shares _DEFAULT_MAX_ERROR intent)
 _CHUTE_ANGLES = (45, 45, 45, 45, 45, 45)  # Motor angle offsets for retry sequence
+_ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
 
 
 # Pseudo angles that require full computation via calculate_pseudo_angle_from_motor_angles

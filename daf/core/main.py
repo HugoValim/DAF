@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from daf.core.mode_parser import ModeParser, PREDEFINED_MATERIALS
 from daf.core.reciprocal_map import ReciprocalMapWindow
-from daf.core.minimization import MinimizationProc
+from daf.core.minimization import MinimizationProc, _SCAN_QERROR_THRESHOLD
 from daf.core.cli_formatting import DAFFormatter, build_forprint_rows, build_dprint
 
 
@@ -257,7 +257,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
             if np.max(teste) > diflimit and diflimit != 0:
                 raise ValueError("Exceded max limit of angles variation")
-            if float(a[-1]) > 1e-5:
+            if float(a[-1]) > _SCAN_QERROR_THRESHOLD:
                 raise ValueError("qerror is too big, process failed")
 
             startvalues = a[:6]
