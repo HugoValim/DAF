@@ -8,7 +8,6 @@ from daf.utils.generate_daf_default import default, generate_file
 
 
 class TestDefaultConfig(unittest.TestCase):
-
     def test_default_mode(self):
         """Test default mode is set correctly"""
         self.assertEqual(default["Mode"], "2052")
@@ -108,7 +107,6 @@ class TestDefaultConfig(unittest.TestCase):
 
 
 class TestGenerateFile(unittest.TestCase):
-
     def test_generate_file_creates_file(self):
         """Test that generate_file creates a file"""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -126,6 +124,7 @@ class TestGenerateFile(unittest.TestCase):
 
             # Read back and verify
             import yaml
+
             with open(file_path) as f:
                 loaded = yaml.safe_load(f)
 
@@ -139,6 +138,7 @@ class TestGenerateFile(unittest.TestCase):
             generate_file(file_path=tmpdir, file_name="test_default.yml")
 
             import yaml
+
             with open(file_path) as f:
                 loaded = yaml.safe_load(f)
 
@@ -146,5 +146,5 @@ class TestGenerateFile(unittest.TestCase):
             self.assertEqual(loaded["Mode"], "2052")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -6,7 +6,6 @@ from daf.utils.print_utils import TablePrinter, format_5_decimals
 
 
 class TestTablePrinter(unittest.TestCase):
-
     def test_table_printer_initialization(self):
         """Test TablePrinter initialization with format"""
         fmt = [
@@ -113,7 +112,6 @@ class TestTablePrinter(unittest.TestCase):
 
 
 class TestFormat5Decimals(unittest.TestCase):
-
     def test_format_integer(self):
         """Test formatting integer"""
         result = format_5_decimals(42)
@@ -140,5 +138,5 @@ class TestFormat5Decimals(unittest.TestCase):
         self.assertEqual(result, "-5.50000")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

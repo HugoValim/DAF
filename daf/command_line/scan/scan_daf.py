@@ -71,7 +71,9 @@ class DAFScan:
         self.kafka_topic = daf_scan_inputs.kafka_topic
         self.scan_db = daf_scan_inputs.scan_db
         # Pre-bind count plan with fixed number of points and delay
-        self._count_plan = functools.partial(count, num=int(1e6), delay=self.acquisition_time)
+        self._count_plan = functools.partial(
+            count, num=int(1e6), delay=self.acquisition_time
+        )
         self.configure_run_engine()
         self.producer = KafkaProducer()
 
@@ -213,7 +215,9 @@ class DAFScan:
         for key in stats:
             stat_dict[key] = {}
             for counter_name, counter_stats in self.callbacks["bec"].peaks[key].items():
-                stat_dict[key][counter_name] = self.convert_to_float_if_not_none(counter_stats)
+                stat_dict[key][counter_name] = self.convert_to_float_if_not_none(
+                    counter_stats
+                )
         self.experiment_file_dict["scan_stats"] = stat_dict
         self.io.write(self.experiment_file_dict)
 

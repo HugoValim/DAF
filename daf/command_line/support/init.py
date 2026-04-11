@@ -94,7 +94,7 @@ class Init(SupportBase):
         self.write_yaml(daf_default, scan_utils_daf_default_path)
 
     def build_global_experiment_file(self):
-        """Build the global configuration file if it is not built yet"""        
+        """Build the global configuration file if it is not built yet"""
         if not os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
             data = self.build_current_file(self.parsed_args_dict["simulated"])
             self.write_to_disc(data, is_global=True, fetch_motors=False)
@@ -108,11 +108,16 @@ class Init(SupportBase):
     def run_cmd(self) -> None:
         if self.parsed_args_dict["simulated"]:
             run_container()
-        data = self.build_current_file(self.parsed_args_dict["simulated"], self.parsed_args_dict["kafka_topic"], self.parsed_args_dict["scan_db"])
+        data = self.build_current_file(
+            self.parsed_args_dict["simulated"],
+            self.parsed_args_dict["kafka_topic"],
+            self.parsed_args_dict["scan_db"],
+        )
         self.write_to_disc(data, is_global=self.parsed_args_dict["global"])
         if self.parsed_args_dict["all"]:
             self.open_daf_guis()
         self.build_global_experiment_file()
+
 
 @cli_decorator
 def main() -> None:

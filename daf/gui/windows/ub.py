@@ -218,9 +218,7 @@ class MyDisplay(QWidget):
                 QtWidgets.QMessageBox.Ok,
             )
         else:
-            subprocess.Popen(
-                ["daf.ub", "-c3", inp[0], inp[1], inp[2]], shell=False
-            )
+            subprocess.Popen(["daf.ub", "-c3", inp[0], inp[1], inp[2]], shell=False)
 
     def set_u_to_i(self):
         """Set the U lineEdits values to the 3x3 identity matrix."""
@@ -242,7 +240,8 @@ class MyDisplay(QWidget):
         """Set the U matrix from lineEdit values."""
         values = [
             getattr(self, f"lineEdit_u_{r}{c}").text()
-            for r in range(3) for c in range(3)
+            for r in range(3)
+            for c in range(3)
         ]
         subprocess.Popen(
             ["daf.ub", "-u"] + values,
@@ -263,7 +262,8 @@ class MyDisplay(QWidget):
         """Set the UB matrix from lineEdit values."""
         values = [
             getattr(self, f"lineEdit_ub_{r}{c}").text()
-            for r in range(3) for c in range(3)
+            for r in range(3)
+            for c in range(3)
         ]
         subprocess.Popen(
             ["daf.ub", "-ub"] + values,

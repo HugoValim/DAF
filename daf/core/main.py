@@ -54,8 +54,12 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
     def _get_dprint(self):
         """Build dprint dict for constraint display."""
         return build_dprint(
-            self.Mu_bound, self.Eta_bound, self.Chi_bound,
-            self.Phi_bound, self.Nu_bound, self.Del_bound
+            self.Mu_bound,
+            self.Eta_bound,
+            self.Chi_bound,
+            self.Phi_bound,
+            self.Nu_bound,
+            self.Del_bound,
         )
 
     def _build_forprint_rows(self, dprint, col1, col2):
@@ -63,7 +67,10 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         return build_forprint_rows(
             self.pseudo_constraints_w_value_list,
             self.motor_constraints,
-            dprint, col1, col2, self.setup
+            dprint,
+            col1,
+            col2,
+            self.setup,
         )
 
     def show(self, sh, ident=3, space=20):
@@ -75,8 +82,13 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
         if sh == "mode":
             return self._formatter.format_mode(
-                self.setup, self.col1, self.col2, self.col3, self.col4, self.col5,
-                self.forprint
+                self.setup,
+                self.col1,
+                self.col2,
+                self.col3,
+                self.col4,
+                self.col5,
+                self.forprint,
             )
 
         if sh == "expt":
@@ -99,8 +111,12 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             ]
             sample_info = [
                 self.samp.name,
-                self.samp.a, self.samp.b, self.samp.c,
-                self.samp.alpha, self.samp.beta, self.samp.gamma,
+                self.samp.a,
+                self.samp.b,
+                self.samp.c,
+                self.samp.alpha,
+                self.samp.beta,
+                self.samp.gamma,
             ]
             return self.setup, conscols, self.forprint, experiment_list, sample_info
 
@@ -190,13 +206,36 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
         return self._formatter.format_full_status(
             self.setup,
-            self.col1, self.col2, self.col3, self.col4, self.col5,
-            self.forprint, self.qerror,
-            self.hkl_calc, self.nref, self.en, self.lam, self.samp,
-            self.alphain, self.betaout, self.psipseudo, self.taupseudo,
-            self.qaz, self.naz, self.omega,
-            self.Del, self.Eta, self.Chi, self.Phi, self.Nu, self.Mu,
-            self.Qshow, self.Qnorm, self.ttB1, self.dhkl, self.FHKL
+            self.col1,
+            self.col2,
+            self.col3,
+            self.col4,
+            self.col5,
+            self.forprint,
+            self.qerror,
+            self.hkl_calc,
+            self.nref,
+            self.en,
+            self.lam,
+            self.samp,
+            self.alphain,
+            self.betaout,
+            self.psipseudo,
+            self.taupseudo,
+            self.qaz,
+            self.naz,
+            self.omega,
+            self.Del,
+            self.Eta,
+            self.Chi,
+            self.Phi,
+            self.Nu,
+            self.Mu,
+            self.Qshow,
+            self.Qnorm,
+            self.ttB1,
+            self.dhkl,
+            self.FHKL,
         )
 
     def __call__(self, *args, **kwargs):
@@ -235,15 +274,35 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     def export_angles(self):
         return [
-            self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del,
-            self.ttB1, self.tB1, self.alphain, self.qaz, self.naz,
-            self.taupseudo, self.psipseudo, self.betaout, self.omega,
-            self.hkl_calc, "{0:.2e}".format(self.qerror),
+            self.Mu,
+            self.Eta,
+            self.Chi,
+            self.Phi,
+            self.Nu,
+            self.Del,
+            self.ttB1,
+            self.tB1,
+            self.alphain,
+            self.qaz,
+            self.naz,
+            self.taupseudo,
+            self.psipseudo,
+            self.betaout,
+            self.omega,
+            self.hkl_calc,
+            "{0:.2e}".format(self.qerror),
         ]
 
     def scan(
-        self, hkli, hklf, points, diflimit=0.1, write=False,
-        name="testscan.txt", sep=",", startvalues=None,
+        self,
+        hkli,
+        hklf,
+        points,
+        diflimit=0.1,
+        write=False,
+        name="testscan.txt",
+        sep=",",
+        startvalues=None,
     ):
         if startvalues is None:
             startvalues = [0, 0, 0, 0, 0, 0]
@@ -264,19 +323,57 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
             pd.DataFrame(
                 [b],
-                columns=["Mu", "Eta", "Chi", "Phi", "Nu", "Del", "2theta", "theta",
-                         "alpha", "qaz", "naz", "tau", "psi", "beta", "omega",
-                         "H", "K", "L", "Error"],
+                columns=[
+                    "Mu",
+                    "Eta",
+                    "Chi",
+                    "Phi",
+                    "Nu",
+                    "Del",
+                    "2theta",
+                    "theta",
+                    "alpha",
+                    "qaz",
+                    "naz",
+                    "tau",
+                    "psi",
+                    "beta",
+                    "omega",
+                    "H",
+                    "K",
+                    "L",
+                    "Error",
+                ],
             ).to_csv(".my_scan_counter.csv", mode="a", header=False)
 
         self.isscan = True
         self.formscantxt = pd.DataFrame(
             angslist,
-            columns=["Mu", "Eta", "Chi", "Phi", "Nu", "Del", "2theta", "theta",
-                     "alpha", "qaz", "naz", "tau", "psi", "beta", "omega",
-                     "H", "K", "L", "Error"],
+            columns=[
+                "Mu",
+                "Eta",
+                "Chi",
+                "Phi",
+                "Nu",
+                "Del",
+                "2theta",
+                "theta",
+                "alpha",
+                "qaz",
+                "naz",
+                "tau",
+                "psi",
+                "beta",
+                "omega",
+                "H",
+                "K",
+                "L",
+                "Error",
+            ],
         )
-        self.formscan = self.formscantxt[["Mu", "Eta", "Chi", "Phi", "Nu", "Del", "Error"]]
+        self.formscan = self.formscantxt[
+            ["Mu", "Eta", "Chi", "Phi", "Nu", "Del", "Error"]
+        ]
 
         if write:
             self.formscantxt.to_csv(name, sep=sep)

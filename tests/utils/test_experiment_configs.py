@@ -6,7 +6,6 @@ from daf.utils.experiment_configs import samples, Hi
 
 
 class TestSamples(unittest.TestCase):
-
     def test_samples_is_dict(self):
         """Test that samples is a dictionary"""
         self.assertIsInstance(samples, dict)
@@ -20,23 +19,24 @@ class TestSamples(unittest.TestCase):
     def test_samples_si_is_xray_material(self):
         """Test that Si sample is from xrayutilities"""
         si = samples["Si"]
-        self.assertTrue(hasattr(si, 'a'))  # Should have lattice parameter 'a'
-        self.assertTrue(hasattr(si, 'b'))
-        self.assertTrue(hasattr(si, 'c'))
+        self.assertTrue(hasattr(si, "a"))  # Should have lattice parameter 'a'
+        self.assertTrue(hasattr(si, "b"))
+        self.assertTrue(hasattr(si, "c"))
 
     def test_samples_all_have_name(self):
         """Test that all samples have a name attribute"""
         for name, sample in samples.items():
-            self.assertTrue(hasattr(sample, 'name'),
-                           f"Sample {name} missing 'name' attribute")
+            self.assertTrue(
+                hasattr(sample, "name"), f"Sample {name} missing 'name' attribute"
+            )
 
     def test_samples_all_have_lattice_params(self):
         """Test that all samples have lattice parameters"""
         for name, sample in samples.items():
             # All crystals should have a, b, c lattice parameters
-            self.assertTrue(hasattr(sample, 'a'))
-            self.assertTrue(hasattr(sample, 'b'))
-            self.assertTrue(hasattr(sample, 'c'))
+            self.assertTrue(hasattr(sample, "a"))
+            self.assertTrue(hasattr(sample, "b"))
+            self.assertTrue(hasattr(sample, "c"))
 
     def test_some_samples_have_alpha_beta_gamma(self):
         """Test that some samples have non-90 degree angles (triclinic/monoclinic)"""
@@ -65,7 +65,6 @@ class TestSamples(unittest.TestCase):
 
 
 class TestHiDataclass(unittest.TestCase):
-
     def test_hi_default_one(self):
         """Test default value of 'one' attribute"""
         hi = Hi()
@@ -83,5 +82,5 @@ class TestHiDataclass(unittest.TestCase):
         self.assertEqual(hi.two, "world")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

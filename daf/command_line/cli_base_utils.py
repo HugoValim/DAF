@@ -26,8 +26,22 @@ class CLIBase:
 
     # Mapping of export_angles() index to name
     _ANGLE_EXPORT_NAMES = (
-        "mu", "eta", "chi", "phi", "nu", "del", "twotheta", "theta",
-        "alpha", "qaz", "naz", "tau", "psi", "beta", "omega", "hklnow",
+        "mu",
+        "eta",
+        "chi",
+        "phi",
+        "nu",
+        "del",
+        "twotheta",
+        "theta",
+        "alpha",
+        "qaz",
+        "naz",
+        "tau",
+        "psi",
+        "beta",
+        "omega",
+        "hklnow",
     )
 
     def __init__(self, read: bool = True):
@@ -49,20 +63,35 @@ class CLIBase:
 
     def _get_motor_bounds(self) -> dict:
         """Extract motor bounds from experiment file as a dict."""
-        return {m: self.experiment_file_dict["motors"][m]["bounds"] for m in self._MOTOR_NAMES}
+        return {
+            m: self.experiment_file_dict["motors"][m]["bounds"]
+            for m in self._MOTOR_NAMES
+        }
 
     def _get_constraints_dict(self) -> dict:
         """Extract constraints from experiment file as a dict."""
         cons_keys = (
-            "cons_mu", "cons_eta", "cons_chi", "cons_phi",
-            "cons_nu", "cons_del", "cons_alpha", "cons_beta",
-            "cons_psi", "cons_omega", "cons_qaz", "cons_naz",
+            "cons_mu",
+            "cons_eta",
+            "cons_chi",
+            "cons_phi",
+            "cons_nu",
+            "cons_del",
+            "cons_alpha",
+            "cons_beta",
+            "cons_psi",
+            "cons_omega",
+            "cons_qaz",
+            "cons_naz",
         )
         return {k: self.experiment_file_dict[k] for k in cons_keys}
 
     def _get_motor_values(self) -> dict:
         """Extract current motor values from experiment file as a dict."""
-        return {m: self.experiment_file_dict["motors"][m]["value"] for m in self._MOTOR_NAMES}
+        return {
+            m: self.experiment_file_dict["motors"][m]["value"]
+            for m in self._MOTOR_NAMES
+        }
 
     def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
@@ -81,8 +110,7 @@ class CLIBase:
         material = self.experiment_file_dict["Material"]
         if material in self.experiment_file_dict["user_samples"]:
             exp.set_material(
-                material,
-                *self.experiment_file_dict["user_samples"][material]
+                material, *self.experiment_file_dict["user_samples"][material]
             )
         else:
             exp.set_material(

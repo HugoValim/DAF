@@ -8,6 +8,7 @@ from daf.command_line.experiment.operation_mode import OperationMode
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.utils import dafutilities as du
 
+
 @pytest.fixture
 def remove_local_config():
     if os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT):
@@ -27,6 +28,7 @@ def set_mode(monkeypatch):
         obj.run_cmd()
         return obj
 
+
 @pytest.fixture()
 def run_command_line(monkeypatch, request):
     command_line_arguments = []
@@ -40,6 +42,7 @@ def run_command_line(monkeypatch, request):
         obj = Reset()
         return obj
 
+
 @pytest.mark.skip
 @pytest.mark.fixt_data("daf.reset")
 def test_no_input(set_mode, run_command_line):
@@ -52,6 +55,7 @@ def test_no_input(set_mode, run_command_line):
     file_data_2 = io.only_read()
     assert file_data_2["Mode"] == "2052"
 
+
 @pytest.mark.fixt_data("daf.reset", "-g")
 def test_remove_global_input(remove_local_config, set_mode, run_command_line):
     obj = run_command_line
@@ -62,19 +66,12 @@ def test_remove_global_input(remove_local_config, set_mode, run_command_line):
     file_data_2 = io.only_read()
     assert file_data_2["Mode"] == "2052"
 
+
 @pytest.mark.fixt_data("daf.reset", "--hard")
 def test_reset_hard_input(remove_local_config, set_mode, run_command_line):
     obj = run_command_line
     obj.run_cmd()
     assert not os.path.isdir(dp.DAF_CONFIGS)
-
-
-
-
-
-
-
-
 
 
 # import os

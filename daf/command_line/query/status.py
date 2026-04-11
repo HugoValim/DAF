@@ -92,12 +92,14 @@ class Status(CLIBase):
         data = []
         for i in range(3):
             ident = f"{label:6} = " if i == 1 else ""
-            data.append({
-                "ident": ident,
-                "col1": center1.format(format_5_decimals(matrix[i][0])),
-                "col2": center2.format(format_5_decimals(matrix[i][1])),
-                "col3": center3.format(format_5_decimals(matrix[i][2])),
-            })
+            data.append(
+                {
+                    "ident": ident,
+                    "col1": center1.format(format_5_decimals(matrix[i][0])),
+                    "col2": center2.format(format_5_decimals(matrix[i][1])),
+                    "col3": center3.format(format_5_decimals(matrix[i][2])),
+                }
+            )
         return data
 
     def show_u_and_ub(self):

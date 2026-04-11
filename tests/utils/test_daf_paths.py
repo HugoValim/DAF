@@ -9,7 +9,6 @@ from unittest.mock import patch
 
 
 class TestDAFPaths(unittest.TestCase):
-
     def test_default_file_name(self):
         """Test that default file name is .Experiment"""
         from daf.utils.daf_paths import DAFPaths
@@ -59,7 +58,7 @@ class TestDAFPaths(unittest.TestCase):
             local_file = Path(tmpdir) / ".Experiment"
             local_file.touch()
 
-            with patch.object(DAFPaths, 'LOCAL_EXPERIMENT_DEFAULT', str(local_file)):
+            with patch.object(DAFPaths, "LOCAL_EXPERIMENT_DEFAULT", str(local_file)):
                 result = DAFPaths.check_for_local_config()
                 self.assertEqual(result, local_file)
 
@@ -71,11 +70,15 @@ class TestDAFPaths(unittest.TestCase):
             global_file = Path(tmpdir) / ".Experiment"
             global_file.touch()
 
-            with patch.object(DAFPaths, 'GLOBAL_EXPERIMENT_DEFAULT', str(global_file)):
-                with patch.object(DAFPaths, 'LOCAL_EXPERIMENT_DEFAULT', '/nonexistent/path/.Experiment'):
+            with patch.object(DAFPaths, "GLOBAL_EXPERIMENT_DEFAULT", str(global_file)):
+                with patch.object(
+                    DAFPaths,
+                    "LOCAL_EXPERIMENT_DEFAULT",
+                    "/nonexistent/path/.Experiment",
+                ):
                     result = DAFPaths.check_for_local_config()
                     self.assertEqual(result, global_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

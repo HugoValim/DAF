@@ -32,56 +32,95 @@ C.NONE = ShellColors.NO_COLOR
 # --------------------------------------------------------------------
 _COMMAND_GROUPS = (
     # (category_header, color, [(cmd, description), ...])
-    ("SUPPORT", C.WHITE, (
-        ("daf.init", "Initialize daf, creating the required files"),
-        ("daf.reset", "Reset configurations to default"),
-        ("daf.prompt", "Set daf prompt, must be used with source"),
-        ("daf.setup", "Manage daf setups"),
-        ("daf.newsample", "Create new folder and initialize daf in it"),
-    )),
-    ("GUIs", C.PURPLE, (
-        ("daf.gui", "Launch daf's main GUI"),
-        ("daf.live", "Launch daf's live plot"),
-        ("daf.rmap", "Launch a graphical reciprocal space map"),
-        ("daf.guiall", "Open all daf's GUIs"),
-    )),
-    ("CONFIGURE THE EXPERIMENT", C.GREEN, (
-        ("daf.expt", "Set sample, energy and reference vectors"),
-        ("daf.mode", "Set the mode of operation"),
-        ("daf.bounds", "Set diffractometer angles bounds"),
-        ("daf.cons", "Constrain angles and pseudo-angles during the experiment"),
-        ("daf.ub", "Set or calculate UB matrix from 2 or 3 reflections"),
-        ("daf.mc", "Manage counters to be used in scans"),
-    )),
-    ("QUERY INFORMATION", C.YELLOW, (
-        ("daf.status", "Show the experiment status"),
-        ("daf.wh", "Show the current position in reciprocal space, angles and pseudo-angles"),
-        ("daf.ca", "Calculate the diffractometer angles needed to reach a given HKL position"),
-    )),
-    ("MOVE MOTORS", C.BLUE, (
-        ("daf.amv", "Move the diffractometer motors by direct change in the angles"),
-        ("daf.ramv", "Move the diffractometer motors by a relative change in the angles"),
-        ("daf.mv", "Move in the reciprocal space by giving a HKL position"),
-    )),
-    ("SCANS", C.CYAN, (
-        ("daf.scan", "Perform a scan in HKL coordinates"),
-        ("daf.rfscan", "Perform a scan in HKL coordinates from a CSV file"),
-        ("daf.tscan", "Perform an infinite time scan for the configured counters"),
-        ("daf.ascan", "Perform an absolute scan in one diffractometer motor"),
-        ("daf.a2scan", "Perform an absolute scan using two diffractometer motors"),
-        ("daf.a3scan", "Perform an absolute scan using three diffractometer motors"),
-        ("daf.a4scan", "Perform an absolute scan using four diffractometer motors"),
-        ("daf.a5scan", "Perform an absolute scan using five diffractometer motors"),
-        ("daf.a6scan", "Perform an absolute scan using six diffractometer motors"),
-        ("daf.lup", "Perform a relative scan in one diffractometer motor"),
-        ("daf.dscan", "Perform a relative scan in one diffractometer motor"),
-        ("daf.d2scan", "Perform a relative scan in two diffractometer motors"),
-        ("daf.d3scan", "Perform a relative scan in three diffractometer motors"),
-        ("daf.d4scan", "Perform a relative scan in four diffractometer motors"),
-        ("daf.d5scan", "Perform a relative scan in five diffractometer motors"),
-        ("daf.d6scan", "Perform a relative scan in six diffractometer motors"),
-        ("daf.mesh", "Perform a mesh scan using two diffractometer motors"),
-    )),
+    (
+        "SUPPORT",
+        C.WHITE,
+        (
+            ("daf.init", "Initialize daf, creating the required files"),
+            ("daf.reset", "Reset configurations to default"),
+            ("daf.prompt", "Set daf prompt, must be used with source"),
+            ("daf.setup", "Manage daf setups"),
+            ("daf.newsample", "Create new folder and initialize daf in it"),
+        ),
+    ),
+    (
+        "GUIs",
+        C.PURPLE,
+        (
+            ("daf.gui", "Launch daf's main GUI"),
+            ("daf.live", "Launch daf's live plot"),
+            ("daf.rmap", "Launch a graphical reciprocal space map"),
+            ("daf.guiall", "Open all daf's GUIs"),
+        ),
+    ),
+    (
+        "CONFIGURE THE EXPERIMENT",
+        C.GREEN,
+        (
+            ("daf.expt", "Set sample, energy and reference vectors"),
+            ("daf.mode", "Set the mode of operation"),
+            ("daf.bounds", "Set diffractometer angles bounds"),
+            ("daf.cons", "Constrain angles and pseudo-angles during the experiment"),
+            ("daf.ub", "Set or calculate UB matrix from 2 or 3 reflections"),
+            ("daf.mc", "Manage counters to be used in scans"),
+        ),
+    ),
+    (
+        "QUERY INFORMATION",
+        C.YELLOW,
+        (
+            ("daf.status", "Show the experiment status"),
+            (
+                "daf.wh",
+                "Show the current position in reciprocal space, angles and pseudo-angles",
+            ),
+            (
+                "daf.ca",
+                "Calculate the diffractometer angles needed to reach a given HKL position",
+            ),
+        ),
+    ),
+    (
+        "MOVE MOTORS",
+        C.BLUE,
+        (
+            (
+                "daf.amv",
+                "Move the diffractometer motors by direct change in the angles",
+            ),
+            (
+                "daf.ramv",
+                "Move the diffractometer motors by a relative change in the angles",
+            ),
+            ("daf.mv", "Move in the reciprocal space by giving a HKL position"),
+        ),
+    ),
+    (
+        "SCANS",
+        C.CYAN,
+        (
+            ("daf.scan", "Perform a scan in HKL coordinates"),
+            ("daf.rfscan", "Perform a scan in HKL coordinates from a CSV file"),
+            ("daf.tscan", "Perform an infinite time scan for the configured counters"),
+            ("daf.ascan", "Perform an absolute scan in one diffractometer motor"),
+            ("daf.a2scan", "Perform an absolute scan using two diffractometer motors"),
+            (
+                "daf.a3scan",
+                "Perform an absolute scan using three diffractometer motors",
+            ),
+            ("daf.a4scan", "Perform an absolute scan using four diffractometer motors"),
+            ("daf.a5scan", "Perform an absolute scan using five diffractometer motors"),
+            ("daf.a6scan", "Perform an absolute scan using six diffractometer motors"),
+            ("daf.lup", "Perform a relative scan in one diffractometer motor"),
+            ("daf.dscan", "Perform a relative scan in one diffractometer motor"),
+            ("daf.d2scan", "Perform a relative scan in two diffractometer motors"),
+            ("daf.d3scan", "Perform a relative scan in three diffractometer motors"),
+            ("daf.d4scan", "Perform a relative scan in four diffractometer motors"),
+            ("daf.d5scan", "Perform a relative scan in five diffractometer motors"),
+            ("daf.d6scan", "Perform a relative scan in six diffractometer motors"),
+            ("daf.mesh", "Perform a mesh scan using two diffractometer motors"),
+        ),
+    ),
 )
 
 

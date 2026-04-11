@@ -30,8 +30,11 @@ class MyWindow(QWidget):
 
     def _add_spacer(self, layout):
         """Add an expanding spacer to a layout."""
-        layout.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+        layout.addItem(
+            QtWidgets.QSpacerItem(
+                40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+            )
+        )
 
     def _add_hkl_field(self, grid, label_text, row_label, col):
         """Add a (bold label + lineEdit) pair to the grid at the given column."""
@@ -105,7 +108,8 @@ class MyWindow(QWidget):
         self.horizontalLayout_2.addWidget(self.label_xlabel)
         self.comboBox_xlabel = QtWidgets.QComboBox(self.frame)
         self.comboBox_xlabel.addItems(
-            ["Points", "Mu", "Eta", "Chi", "Phi", "Nu", "Del"])
+            ["Points", "Mu", "Eta", "Chi", "Phi", "Nu", "Del"]
+        )
         self.horizontalLayout_2.addWidget(self.comboBox_xlabel)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
@@ -177,7 +181,8 @@ class MyWindow(QWidget):
             file = self.lineEdit_file_name.text()
             time = self.lineEdit_time.text()
             return ["daf.ffscan", file, time]
-        cmd = ["daf.scan",
+        cmd = [
+            "daf.scan",
             self.lineEdit_hi.text(),
             self.lineEdit_ki.text(),
             self.lineEdit_li.text(),

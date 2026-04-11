@@ -7,7 +7,6 @@ from daf.core.ub_matrix_calc import UBMatrix
 
 
 class TestUBMatrix(unittest.TestCase):
-
     def setUp(self):
         """Set up test fixtures"""
         self.ub_matrix = UBMatrix()
@@ -118,7 +117,7 @@ class TestUBMatrix(unittest.TestCase):
         angle = self.ub_matrix.angle_between_vectors(a, b)
 
         # Should be 90 degrees (pi/2 radians)
-        self.assertAlmostEqual(angle, np.pi/2)
+        self.assertAlmostEqual(angle, np.pi / 2)
 
     def test_angle_between_identical_vectors(self):
         """Test angle between a vector and itself"""
@@ -152,10 +151,10 @@ class TestUBMatrix(unittest.TestCase):
     def test_get_rot_matrix_90_degree_rotation(self):
         """Test rotation matrix for 90 degree rotation around z"""
         # 90 degree rotation around z: q0 = q3 = sqrt(2)/2, q1 = q2 = 0
-        q0 = np.sqrt(2)/2
+        q0 = np.sqrt(2) / 2
         q1 = 0.0
         q2 = 0.0
-        q3 = np.sqrt(2)/2
+        q3 = np.sqrt(2) / 2
 
         rot = self.ub_matrix._get_rot_matrix(q0, q1, q2, q3)
 
@@ -207,5 +206,5 @@ class TestUBMatrixWithSample(unittest.TestCase):
         self.assertEqual(len(rparam), 6)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

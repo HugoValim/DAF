@@ -166,7 +166,7 @@ class TestDAF(unittest.TestCase):
         obj.create_new_configuration_file("file_to_remove")
         obj.run_cmd()
         full_file_path = obj.get_full_file_path(param)
-        assert os.path.isfile(full_file_path) == False
+        assert os.path.isfile(full_file_path) is False
 
     def test_GIVEN_cli_argument_WHEN_inputing_set_default_THEN_check_if_it_was_written_correctly(
         self,

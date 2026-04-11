@@ -9,17 +9,19 @@ from unittest.mock import MagicMock, patch
 
 # Mock epics module before any daf imports
 mock_epics = MagicMock()
-sys.modules['epics'] = mock_epics
-sys.modules['epics.ca'] = MagicMock()
-sys.modules['epics.pv'] = MagicMock()
+sys.modules["epics"] = mock_epics
+sys.modules["epics.ca"] = MagicMock()
+sys.modules["epics.pv"] = MagicMock()
 
 # Mock pyepics
 mock_pyepics = MagicMock()
-sys.modules['pyepics'] = mock_pyepics
+sys.modules["pyepics"] = mock_pyepics
 
 # Create a proper mock for the DAFIO class that doesn't need epics
 from daf.utils import dafutilities
+
 original_dafio_init = dafutilities.DAFIO.__init__
+
 
 def mock_dafio_init(self, read=True):
     if read:
@@ -29,8 +31,10 @@ def mock_dafio_init(self, read=True):
         self.epics_put_flag = False
         self.epics_get_flag = False
 
+
 # Apply the mock
 dafutilities.DAFIO.__init__ = mock_dafio_init
+
 
 @pytest.fixture(autouse=True)
 def mock_epics_pvs(monkeypatch):
@@ -48,7 +52,9 @@ def mock_epics_pvs(monkeypatch):
     def mock_caget_many(pvnames, timeout=None):
         return [0] * len(pvnames)
 
-    def mock_caput_many(pvnames, values, timeout=None, wait=None, connection_timeout=None):
+    def mock_caput_many(
+        pvnames, values, timeout=None, wait=None, connection_timeout=None
+    ):
         return None
 
     mock_epics.caget = mock_caget
@@ -57,6 +63,7 @@ def mock_epics_pvs(monkeypatch):
     mock_epics.caput_many = mock_caput_many
 
     yield mock_epics
+
 
 @pytest.fixture
 def temp_experiment_file(tmp_path, monkeypatch):
@@ -101,7 +108,11 @@ def temp_experiment_file(tmp_path, monkeypatch):
         "beta": 0.0,
         "omega": 0.0,
         "U_mat": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
-        "UB_mat": [[1.15690279, 0.0, 0.0], [0.0, 1.15690279, 0.0], [0.0, 0.0, 1.15690279]],
+        "UB_mat": [
+            [1.15690279, 0.0, 0.0],
+            [0.0, 1.15690279, 0.0],
+            [0.0, 0.0, 1.15690279],
+        ],
         "lparam_a": 0.0,
         "lparam_b": 0.0,
         "lparam_c": 0.0,
@@ -138,12 +149,17 @@ def temp_experiment_file(tmp_path, monkeypatch):
             "del": {"pv": "SIM:m6", "value": 0.0, "bounds": [-180, 180], "up": True},
         },
         "beamline_pvs": {
-            "energy": {"pv": "SIM:energy", "value": 8000, "up": True, "simulated": False},
-        }
+            "energy": {
+                "pv": "SIM:energy",
+                "value": 8000,
+                "up": True,
+                "simulated": False,
+            },
+        },
     }
 
     exp_file = tmp_path / ".Experiment"
-    with open(exp_file, 'w') as f:
+    with open(exp_file, "w") as f:
         yaml.dump(experiment_data, f)
 
     return exp_file, experiment_data

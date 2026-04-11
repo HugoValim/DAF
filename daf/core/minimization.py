@@ -25,15 +25,26 @@ _MOTOR_PSEUDO_MAP = {
 # Tolerance for numerical computations
 _ANGLE_OFFSET = 1e-6  # Small offset added to motor angles for numerical stability
 _DEFAULT_MAX_ERROR = 1e-5  # Default max error threshold for Q2AngFit
-_SCAN_QERROR_THRESHOLD = 1e-5  # Threshold for raising qerror in scan (shares _DEFAULT_MAX_ERROR intent)
+_SCAN_QERROR_THRESHOLD = (
+    1e-5  # Threshold for raising qerror in scan (shares _DEFAULT_MAX_ERROR intent)
+)
 _CHUTE_ANGLES = (45, 45, 45, 45, 45, 45)  # Motor angle offsets for retry sequence
 _ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
 
 
 # Pseudo angles that require full computation via calculate_pseudo_angle_from_motor_angles
-_PSEUDO_ANGLE_COMPUTED = frozenset({
-    "alpha", "beta", "qaz", "naz", "tau", "psi", "omega", "aeqb",
-})
+_PSEUDO_ANGLE_COMPUTED = frozenset(
+    {
+        "alpha",
+        "beta",
+        "qaz",
+        "naz",
+        "tau",
+        "psi",
+        "omega",
+        "aeqb",
+    }
+)
 
 
 def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
@@ -217,10 +228,38 @@ class MinimizationProc(UBMatrix):
         """
         start_sequence = [
             (0, 0, 0, 0, 0, self.preangs[3]),
-            (self.chute1[0], self.chute1[1], self.chute1[2], 0, self.chute1[4], self.chute1[5]),
-            (self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]),
-            (self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]),
-            (self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]),
+            (
+                self.chute1[0],
+                self.chute1[1],
+                self.chute1[2],
+                0,
+                self.chute1[4],
+                self.chute1[5],
+            ),
+            (
+                self.chute1[0],
+                self.chute1[1],
+                self.chute1[2],
+                90,
+                self.chute1[4],
+                self.chute1[5],
+            ),
+            (
+                self.chute1[0],
+                self.chute1[1],
+                self.chute1[2],
+                180,
+                self.chute1[4],
+                self.chute1[5],
+            ),
+            (
+                self.chute1[0],
+                self.chute1[1],
+                self.chute1[2],
+                270,
+                self.chute1[4],
+                self.chute1[5],
+            ),
         ]
 
         for start in start_sequence:

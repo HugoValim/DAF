@@ -94,8 +94,14 @@ class MyDisplay(QWidget):
 
     def _setup_dicts(self):
         """Make cons and set_cons dict"""
-        cons_dict = {num: getattr(self, label) for num, label in zip(self._CONS_NUMBERS, self._CONS_LABELS)}
-        set_cons_dict = {num: getattr(self, edit) for num, edit in zip(self._CONS_NUMBERS, self._SET_CONS_EDIT)}
+        cons_dict = {
+            num: getattr(self, label)
+            for num, label in zip(self._CONS_NUMBERS, self._CONS_LABELS)
+        }
+        set_cons_dict = {
+            num: getattr(self, edit)
+            for num, edit in zip(self._CONS_NUMBERS, self._SET_CONS_EDIT)
+        }
         return cons_dict, set_cons_dict
 
     def default_labels(self):
@@ -171,9 +177,7 @@ class MyDisplay(QWidget):
                 )  # get only the angle name in lower case
                 fix_in = i[1]
                 daf_cons_args.extend(["--cons_" + str(ang), str(fix_in)])
-        p = subprocess.Popen(
-            ["daf.mode", str(self.mode_input.text())], shell=False
-        )
+        p = subprocess.Popen(["daf.mode", str(self.mode_input.text())], shell=False)
         p.wait()  # Wait for the first command, otherwise it'll not execute the second one
         if daf_cons_args:
             subprocess.Popen(["daf.cons"] + daf_cons_args, shell=False)

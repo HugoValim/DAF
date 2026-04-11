@@ -102,8 +102,14 @@ class ExperimentConfiguration(CLIBase):
 
     def set_lattice_parameters(self, lattice_parameters: list) -> None:
         """Set lattice parameters from a 6-element list."""
-        lp_keys = ("lparam_a", "lparam_b", "lparam_c",
-                   "lparam_alpha", "lparam_beta", "lparam_gama")
+        lp_keys = (
+            "lparam_a",
+            "lparam_b",
+            "lparam_c",
+            "lparam_alpha",
+            "lparam_beta",
+            "lparam_gama",
+        )
         for key, val in zip(lp_keys, lattice_parameters):
             self.experiment_file_dict[key] = val
 
@@ -133,8 +139,14 @@ class ExperimentConfiguration(CLIBase):
         exp = self.build_exp()
         predef = exp.predefined_samples
 
-        lp = [efd["lparam_a"], efd["lparam_b"], efd["lparam_c"],
-              efd["lparam_alpha"], efd["lparam_beta"], efd["lparam_gama"]]
+        lp = [
+            efd["lparam_a"],
+            efd["lparam_b"],
+            efd["lparam_c"],
+            efd["lparam_alpha"],
+            efd["lparam_beta"],
+            efd["lparam_gama"],
+        ]
 
         if sample not in predef and sample not in efd["user_samples"]:
             efd["user_samples"][sample] = lp

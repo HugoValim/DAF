@@ -31,31 +31,31 @@ class TestDAF(unittest.TestCase):
 
     def test_GIVEN_cli_argument_WHEN_passing_mode_option_THEN_check_parsed_args(self):
         obj = self.make_obj(["--mode"])
-        assert obj.parsed_args_dict["mode"] == True
+        assert obj.parsed_args_dict["mode"]
 
     def test_GIVEN_cli_argument_WHEN_passing_experiment_option_THEN_check_parsed_args(
         self,
     ):
         obj = self.make_obj(["--experiment"])
-        assert obj.parsed_args_dict["experiment"] == True
+        assert obj.parsed_args_dict["experiment"]
 
     def test_GIVEN_cli_argument_WHEN_passing_sample_option_THEN_check_parsed_args(self):
         obj = self.make_obj(["--sample"])
-        assert obj.parsed_args_dict["sample"] == True
+        assert obj.parsed_args_dict["sample"]
 
     def test_GIVEN_cli_argument_WHEN_passing_umatrix_option_THEN_check_parsed_args(
         self,
     ):
         obj = self.make_obj(["--umatrix"])
-        assert obj.parsed_args_dict["umatrix"] == True
+        assert obj.parsed_args_dict["umatrix"]
 
     def test_GIVEN_cli_argument_WHEN_passing_bounds_option_THEN_check_parsed_args(self):
         obj = self.make_obj(["--bounds"])
-        assert obj.parsed_args_dict["bounds"] == True
+        assert obj.parsed_args_dict["bounds"]
 
     def test_GIVEN_cli_argument_WHEN_passing_all_option_THEN_check_parsed_args(self):
         obj = self.make_obj(["--all"])
-        assert obj.parsed_args_dict["all"] == True
+        assert obj.parsed_args_dict["all"]
 
     def test_experiment_obj(self):
         obj = self.make_obj(["--all"])
@@ -96,7 +96,7 @@ class TestDAF(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             main()
 
-    def test_GIVEN_cli_argument_WHEN_inputing_bounds_THEN_test_for_problems(
+    def test_GIVEN_cli_argument_WHEN_inputing_all_THEN_test_for_problems(
         self,
     ):
         testargs = ["/home/hugo/work/SOL/tmp/daf/command_line/daf.init", "-a"]

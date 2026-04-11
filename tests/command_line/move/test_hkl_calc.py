@@ -12,9 +12,9 @@ from daf.core.main import DAF
 def set_energy_10():
 
     energy = 10000
+
     def build_args():
         return ["daf.expt", "--energy", str(energy)]
-
 
     mp = pytest.MonkeyPatch()
     with mp.context() as m:
@@ -22,6 +22,7 @@ def set_energy_10():
         obj = ExperimentConfiguration()
         obj.run_cmd()
         yield obj
+
 
 @pytest.fixture
 def motor_dict():

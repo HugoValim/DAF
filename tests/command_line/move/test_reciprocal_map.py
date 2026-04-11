@@ -76,13 +76,13 @@ class TestDAF(unittest.TestCase):
         assert graph_att_obj.ndir == [0, 0, 1]
         assert graph_att_obj.idir == 100
 
-    def test_GIVEN_cli_argument_WHEN_no_args_THEN_check_if_figure_was_created(self):
+    def test_GIVEN_cli_argument_WHEN_no_args_THEN_check_reciprocal_map_creation(self):
         obj = self.make_obj(["-s", "100"])
         graph_att_obj = obj.build_graph_att_obj([1, 1, 0], [0, 0, 1], 100)
         ax, h = obj.build_reciprocal_map(graph_att_obj)
         assert ax is not None
 
-    def test_GIVEN_cli_argument_WHEN_no_args_THEN_check_if_figure_was_created(self):
+    def test_GIVEN_cli_argument_WHEN_no_args_THEN_check_append_to_reciprocal_map(self):
 
         obj = self.make_obj(["-s", "100"])
         graph_att_obj = obj.build_graph_att_obj([1, 1, 0], [0, 0, 1], 100)

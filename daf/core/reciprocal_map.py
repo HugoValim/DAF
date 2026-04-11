@@ -26,6 +26,7 @@ def _get_matplotlib_pyplot(funcname="XU"):
     """
     try:
         from matplotlib import pyplot as plt
+
         return True, plt
     except ImportError:
         logger.warning("%s: Warning: plot functionality not available", funcname)
@@ -45,15 +46,15 @@ _PI = math.pi
 def _compute_bragg_indices(mat, exp, ttmax):
     """Compute maximal h,k,l indices for Bragg peaks within ttmax."""
     pi = math.pi
-    hma = int(math.ceil(
-        vec_norm(mat.a1) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0))
-    ))
-    kma = int(math.ceil(
-        vec_norm(mat.a2) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0))
-    ))
-    lma = int(math.ceil(
-        vec_norm(mat.a3) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0))
-    ))
+    hma = int(
+        math.ceil(vec_norm(mat.a1) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0)))
+    )
+    kma = int(
+        math.ceil(vec_norm(mat.a2) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0)))
+    )
+    lma = int(
+        math.ceil(vec_norm(mat.a3) * exp.k0 / pi * math.sin(math.radians(ttmax / 2.0)))
+    )
     return hma, -hma, kma, -kma, lma, -lma
 
 
@@ -75,7 +76,7 @@ def get_peaks(mat, exp, ttmax=180):
 
     qmax = 2 * exp.k0 * math.sin(math.radians(ttmax / 2.0))
     hkl = (
-        np.mgrid[hma:hmi - 1:-1, kma:kmi - 1:-1, lma:lmi - 1:-1]
+        np.mgrid[hma : hmi - 1 : -1, kma : kmi - 1 : -1, lma : lmi - 1 : -1]
         .reshape(3, -1)
         .T
     )
@@ -106,6 +107,7 @@ def get_peaks(mat, exp, ttmax=180):
 class ReciprocalMapWindow:
     def two_theta_max(self):
         """Method to get the maximum 2theta to show in the 2D reciprocal map"""
+
         def to_linspace(val):
             return val if isinstance(val, float) else np.linspace(val[0], val[1], 1000)
 
@@ -347,9 +349,21 @@ class ReciprocalMapWindow:
                     if angles[6] < _ANGLE_TOO_SMALL_THRESHOLD:
                         logger.info(self.__str__())
                         subprocess.Popen(
-                            ["daf.amv", "-m", lb(exp_dict["mu"]), "-e", lb(exp_dict["eta"]),
-                             "-c", lb(exp_dict["chi"]), "-p", lb(exp_dict["phi"]),
-                             "-n", lb(exp_dict["nu"]), "-d", lb(exp_dict["del"])],
+                            [
+                                "daf.amv",
+                                "-m",
+                                lb(exp_dict["mu"]),
+                                "-e",
+                                lb(exp_dict["eta"]),
+                                "-c",
+                                lb(exp_dict["chi"]),
+                                "-p",
+                                lb(exp_dict["phi"]),
+                                "-n",
+                                lb(exp_dict["nu"]),
+                                "-d",
+                                lb(exp_dict["del"]),
+                            ],
                             shell=False,
                         )
                     else:

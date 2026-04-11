@@ -117,7 +117,9 @@ class MyDisplay(QWidget):
         """Set the new sample"""
         if self.checkBox_new_mat.isChecked():
             samp = self.lineEdit_samp_name.text()
-            params = [getattr(self, f"lineEdit_{p}").text() for p in self._LATTICE_PARAMS]
+            params = [
+                getattr(self, f"lineEdit_{p}").text() for p in self._LATTICE_PARAMS
+            ]
             subprocess.Popen(
                 ["daf.expt", "-s", samp, "-p"] + params,
                 shell=False,

@@ -62,15 +62,21 @@ class ScanTab(QWidget):
 
         # Scans - absolute
         for n, btn_name in self._ASCAN_BUTTONS:
-            getattr(self, btn_name).clicked.connect(lambda _, n=n: self.open_scan_window(n, "abs"))
+            getattr(self, btn_name).clicked.connect(
+                lambda _, n=n: self.open_scan_window(n, "abs")
+            )
 
         # Scans - relative
         for n, btn_name in self._DSCAN_BUTTONS:
-            getattr(self, btn_name).clicked.connect(lambda _, n=n: self.open_scan_window(n, "rel"))
+            getattr(self, btn_name).clicked.connect(
+                lambda _, n=n: self.open_scan_window(n, "rel")
+            )
 
         # Scans - mesh
         for n, btn_name in self._MESH_BUTTONS:
-            getattr(self, btn_name).clicked.connect(lambda _, n=n: self.open_scan_window(n, "mesh"))
+            getattr(self, btn_name).clicked.connect(
+                lambda _, n=n: self.open_scan_window(n, "mesh")
+            )
 
         self.pushButton_hklscan.clicked.connect(lambda: self.open_hkl_scan_window())
 

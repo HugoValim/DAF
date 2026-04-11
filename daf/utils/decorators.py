@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 LOG_FILE_NAME = "Log"
 
 
-
 def cli_decorator(func: callable):
     def wrapper(*args, **kwargs):
         ret = func(*args, **kwargs)
@@ -18,8 +17,8 @@ def cli_decorator(func: callable):
         daf_log()
         check_version()
         return ret
-    return wrapper
 
+    return wrapper
 
 
 def daf_log():

@@ -21,10 +21,29 @@ class StatusTab(QWidget):
         ("sample_launcher", "open_sample_window"),
         ("ub_launcher", "open_ub_window"),
     )
-    _MODE_LABELS = ("mode_1_label", "mode_2_label", "mode_3_label", "mode_4_label", "mode_5_label")
-    _CONS_LABELS = ("cons_1_label", "cons_2_label", "cons_3_label", "cons_4_label", "cons_5_label")
+    _MODE_LABELS = (
+        "mode_1_label",
+        "mode_2_label",
+        "mode_3_label",
+        "mode_4_label",
+        "mode_5_label",
+    )
+    _CONS_LABELS = (
+        "cons_1_label",
+        "cons_2_label",
+        "cons_3_label",
+        "cons_4_label",
+        "cons_5_label",
+    )
     _EXP_LABELS = ("wl_label", "energy_label", "idir_label", "ndir_label", "rdir_label")
-    _SAMPLE_LABELS = ("a_label", "b_label", "c_label", "alpha_label", "beta_label", "gamma_label")
+    _SAMPLE_LABELS = (
+        "a_label",
+        "b_label",
+        "c_label",
+        "alpha_label",
+        "beta_label",
+        "gamma_label",
+    )
 
     def __init__(self, dafio):
         super().__init__()

@@ -32,7 +32,9 @@ def fetch_pvs_and_check_for_connection():
     for key in data["motors"].keys():
         val = epics.caget(data["motors"][key]["pv"], timeout=2)
         if val is None:
-            logger.warning("Cannot connect to %s, PV: %s", key, data["motors"][key]["pv"])
+            logger.warning(
+                "Cannot connect to %s, PV: %s", key, data["motors"][key]["pv"]
+            )
             data["motors"][key]["up"] = 0
     return data
 
@@ -123,7 +125,10 @@ class DAFIO:
 
         bl_counter = 0
         for key, value in self.BL_PVS.items():
-            if updated_bl_pv_list[bl_counter] is not None and updated_bl_pv_list[bl_counter] < _ENERGY_KEV_THRESHOLD:
+            if (
+                updated_bl_pv_list[bl_counter] is not None
+                and updated_bl_pv_list[bl_counter] < _ENERGY_KEV_THRESHOLD
+            ):
                 dict_["beamline_pvs"][key]["value"] = (
                     updated_bl_pv_list[bl_counter] * 1000
                 )

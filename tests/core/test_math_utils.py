@@ -7,7 +7,6 @@ from daf.core.math_utils import unit_vector, vector_angle, vec_norm
 
 
 class TestMathUtils(unittest.TestCase):
-
     def test_unit_vector_1d(self):
         """Test unit_vector with 1D array"""
         v = np.array([3.0, 4.0, 0.0])
@@ -18,7 +17,7 @@ class TestMathUtils(unittest.TestCase):
     def test_unit_vector_2d(self):
         """Test unit_vector with 2D array"""
         v = np.array([1.0, 1.0, 1.0])
-        expected = np.array([1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)])
+        expected = np.array([1 / np.sqrt(3), 1 / np.sqrt(3), 1 / np.sqrt(3)])
         result = unit_vector(v)
         np.testing.assert_array_almost_equal(result, expected)
 
@@ -34,7 +33,7 @@ class TestMathUtils(unittest.TestCase):
         v1 = np.array([1.0, 0.0, 0.0])
         v2 = np.array([0.0, 1.0, 0.0])
         result = vector_angle(v1, v2)
-        self.assertAlmostEqual(result, np.pi/2)
+        self.assertAlmostEqual(result, np.pi / 2)
 
     def test_vector_angle_parallel(self):
         """Test angle between parallel vectors"""
@@ -62,7 +61,7 @@ class TestMathUtils(unittest.TestCase):
         v1 = np.array([1.0, 0.0, 0.0])
         v2 = np.array([0.0, 1.0, 0.0])
         result = vector_angle(v1, v2, deg=False)
-        self.assertAlmostEqual(result, np.pi/2)
+        self.assertAlmostEqual(result, np.pi / 2)
 
     def test_vec_norm_single_vector(self):
         """Test vec_norm with a single 3D vector"""
@@ -98,5 +97,5 @@ class TestMathUtils(unittest.TestCase):
         self.assertAlmostEqual(result, 90.0, places=5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

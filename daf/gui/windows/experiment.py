@@ -93,8 +93,7 @@ class MyDisplay(QWidget):
     def _build_vector_arg(self, prefix: str) -> str:
         """Build a vector argument string from line edits."""
         return " ".join(
-            getattr(self, f"lineEdit_{prefix}_{i}").text()
-            for i in range(1, 4)
+            getattr(self, f"lineEdit_{prefix}_{i}").text() for i in range(1, 4)
         )
 
     def set_energy(self):

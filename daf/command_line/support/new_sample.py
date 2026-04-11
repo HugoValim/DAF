@@ -55,7 +55,8 @@ class NewSample(SupportBase):
     def kill_other_guis() -> None:
         """If the --all option is passed open all DAF's GUIs as well"""
         subprocess.Popen(
-            ["ps", "axo", "comm="], shell=False,
+            ["ps", "axo", "comm="],
+            shell=False,
         )
 
     def run_cmd(self) -> None:

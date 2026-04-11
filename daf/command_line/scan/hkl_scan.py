@@ -81,8 +81,7 @@ class HKLScan(ScanBase):
         """Generate the scan path for scans"""
         self.exp = self.build_exp()
         diffractometer_motor_start_values = [
-            self.experiment_file_dict["motors"][i]["value"]
-            for i in self._MOTOR_NAMES
+            self.experiment_file_dict["motors"][i]["value"] for i in self._MOTOR_NAMES
         ]
         scan_points = self.exp.scan(
             self.parsed_args_dict["hkli"],

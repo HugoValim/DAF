@@ -18,9 +18,18 @@ class SamplePos(CLIBase):
             """
 
     _SAMPLE_MOTORS = (
-        "sample_z", "sample_x", "sample_rx", "sample_y", "sample_ry",
-        "sample_x_s1", "sample_y_s1", "diffractomer_ux", "diffractomer_uy",
-        "diffractomer_rx", "theta_analyzer_crystal", "2theta_analyzer_crystal",
+        "sample_z",
+        "sample_x",
+        "sample_rx",
+        "sample_y",
+        "sample_ry",
+        "sample_x_s1",
+        "sample_y_s1",
+        "diffractomer_ux",
+        "diffractomer_uy",
+        "diffractomer_rx",
+        "theta_analyzer_crystal",
+        "2theta_analyzer_crystal",
     )
 
     def __init__(self):
@@ -38,9 +47,7 @@ class SamplePos(CLIBase):
         """Print information about angles, pseudo-angles and HKL position based on the current .Experiment file"""
         print("")
         for motor in self._SAMPLE_MOTORS:
-            val = format_5_decimals(
-                self.experiment_file_dict["motors"][motor]["value"]
-            )
+            val = format_5_decimals(self.experiment_file_dict["motors"][motor]["value"])
             print(f"{motor:26} =    {val}")
         print("")
 

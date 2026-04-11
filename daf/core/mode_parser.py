@@ -193,9 +193,7 @@ class ModeParser:
                 if mapped != "x":
                     self.pseudo_angle_constraints.append(mapped)
 
-        self.fixed_motor_list = [
-            m for m in self.motor_constraints if m != "x"
-        ]
+        self.fixed_motor_list = [m for m in self.motor_constraints if m != "x"]
 
     def _compute_motor_bounds(self) -> None:
         self.Mu_bound = 0 if "Mu" in self.fixed_motor_list else _DEFAULT_BOUNDS["Mu"]

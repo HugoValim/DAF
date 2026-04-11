@@ -12,8 +12,14 @@ from daf.gui.utils import format_5_dec, Icons, center_screen
 class MyDisplay(QWidget):
 
     _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
-    _MOTOR_PAIRS = (("mu", "eta"), ("eta", "chi"), ("chi", "phi"),
-                    ("phi", "nu"), ("nu", "del"), ("del", "mu"))
+    _MOTOR_PAIRS = (
+        ("mu", "eta"),
+        ("eta", "chi"),
+        ("chi", "phi"),
+        ("phi", "nu"),
+        ("nu", "del"),
+        ("del", "mu"),
+    )
 
     def __init__(self):
         super().__init__()

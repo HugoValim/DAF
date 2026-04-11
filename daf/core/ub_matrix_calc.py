@@ -58,6 +58,7 @@ def _rotation_matrix_from_quaternion(q0, q1, q2, q3):
 
 def _init_u123_from_matrix(um):
     """Derive initial u1,u2,u3 values from a U matrix."""
+
     def sign(x):
         return -1 if x < 0 else 1
 
@@ -291,7 +292,12 @@ class UBMatrix:
             args=(uc, ref_data),
             method="SLSQP",
             tol=_OPTIMIZE_TOL,
-            options={"disp": False, "maxiter": 10000, "eps": _OPTIMIZE_EPS, "ftol": _OPTIMIZE_TOL},
+            options={
+                "disp": False,
+                "maxiter": 10000,
+                "eps": _OPTIMIZE_EPS,
+                "ftol": _OPTIMIZE_TOL,
+            },
         )
         # bounds=bounds)
         vals = res.x

@@ -12,5 +12,6 @@ __all__ = ["samples"]
 @dataclass
 class Hi:
     """Placeholder dataclass — not used in production."""
+
     one: str = "oioi"
     two: str = "oi"
