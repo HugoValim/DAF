@@ -38,7 +38,7 @@ def fitGauss(xarray, yarray):
         result = mod.fit(y, pars, x=x)
         fwhm = result.values["fwhm"]
         fwhm_position = result.values["center"]
-    except:
+    except Exception:
         result = None
     peak_position = xarray[np.argmax(y)]
     peak = np.max(y)

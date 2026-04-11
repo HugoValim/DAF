@@ -97,7 +97,7 @@ class StatusTab(QWidget):
 
     def set_label_text_from_eval(self, label: str, text: str) -> None:
         "Update the label text after evaluating a string"
-        eval(label).setText(str(format_5_dec(text)))
+        getattr(self, label).setText(str(format_5_dec(text)))
 
     def update_u_and_ub(self, update_dict):
         """Update status Matrixes"""
