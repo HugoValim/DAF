@@ -12,78 +12,67 @@ from daf.core.matrix_utils import (
 from daf.core.math_utils import vector_angle
 
 
+# Motor pseudo-angle names that map directly to motor indices
+_MOTOR_PSEUDO_MAP = {
+    "Mu": 0,
+    "Eta": 1,
+    "Chi": 2,
+    "Phi": 3,
+    "Nu": 4,
+    "Del": 5,
+}
+
+
+def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
+    """Compute all pseudo angles from motor angles, returning a dict."""
+    result = calculate_pseudo_angle_from_motor_angles(
+        Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U
+    )
+    return result
+
+
 class MinimizationProc(UBMatrix):
     def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):
 
+        # Special geometric relations
         if pseudo_angle == "eta=del/2":
             return angles[1] - angles[5] / 2
         elif pseudo_angle == "mu=nu/2":
             return angles[0] - angles[4] / 2
 
-        PI = np.pi
-        MAT = np.array
-        rad = np.deg2rad
-        deg = np.rad2deg
+        # Direct motor angle constraints
+        if pseudo_angle in _MOTOR_PSEUDO_MAP:
+            idx = _MOTOR_PSEUDO_MAP[pseudo_angle]
+            return angles[idx] + 1e-6 - fix_angle
 
+        # Pseudo angles that require full computation
         Mu = angles[0] + 1e-6
-        if pseudo_angle == "Mu":
-            return Mu - fix_angle
-
         Eta = angles[1] + 1e-6
-        if pseudo_angle == "Eta":
-            return Eta - fix_angle
-
         Chi = angles[2] + 1e-6
-        if pseudo_angle == "Chi":
-            return Chi - fix_angle
-
         Phi = angles[3] + 1e-6
-        if pseudo_angle == "Phi":
-            return Phi - fix_angle
-
         Nu = angles[4] + 1e-6
-        if pseudo_angle == "Nu":
-            return Nu - fix_angle
-
         Del = angles[5] + 1e-6
-        if pseudo_angle == "Del":
-            return Del - fix_angle
 
-        pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
+        computed = _compute_pseudo_angles(
             Mu, Eta, Chi, Phi, Nu, Del, self.samp, self.hkl, self.lam, self.nref, self.U
         )
 
-        alphain = pseudo_angles_dict["alpha"]
-        betaout = pseudo_angles_dict["beta"]
-        qaz = pseudo_angles_dict["qaz"]
-        naz = pseudo_angles_dict["naz"]
-        taupseudo = pseudo_angles_dict["tau"]
-        psipseudo = pseudo_angles_dict["psi"]
-        omega = pseudo_angles_dict["omega"]
-
         if pseudo_angle == "alpha":
-            return alphain - fix_angle
-
+            return computed["alpha"] - fix_angle
         elif pseudo_angle == "beta":
-            return betaout - fix_angle
-
+            return computed["beta"] - fix_angle
         elif pseudo_angle == "qaz":
-            return qaz - fix_angle
-
+            return computed["qaz"] - fix_angle
         elif pseudo_angle == "naz":
-            return naz - fix_angle
-
+            return computed["naz"] - fix_angle
         elif pseudo_angle == "tau":
-            return taupseudo - fix_angle
-
+            return computed["tau"] - fix_angle
         elif pseudo_angle == "psi":
-            return psipseudo - fix_angle
-
+            return computed["psi"] - fix_angle
         elif pseudo_angle == "omega":
-            return omega - fix_angle
-
+            return computed["omega"] - fix_angle
         elif pseudo_angle == "aeqb":
-            return betaout - alphain
+            return computed["beta"] - computed["alpha"]
 
     def motor_angles(self, *args, qvec=False, max_err=1e-5, **kwargs):
 
@@ -105,274 +94,40 @@ class MinimizationProc(UBMatrix):
         else:
             self.start = [0, 0, 0, 0, 0, 0]
 
-        media = lambda x, y: (x + y) / 2
-        # self.chute1 = [media(i[0], i[1]) if type(i) != float else i for i in self.bounds]
         self.chute1 = [45, 45, 45, 45, 45, 45]
 
+        # Build constraint list from pseudo_constraints_w_value_list
         if len(self.pseudo_constraints_w_value_list) != 0:
             pseudoconst = self.pseudoAngleConst
-
-            if len(self.pseudo_constraints_w_value_list) == 1:
-
-                restrict = [
-                    {
-                        "type": "eq",
-                        "fun": lambda a: pseudoconst(
-                            a,
-                            self.pseudo_constraints_w_value_list[0][0],
-                            self.pseudo_constraints_w_value_list[0][1],
-                        ),
-                    }
-                ]
-
-            elif len(self.pseudo_constraints_w_value_list) == 2:
-
-                restrict = [
-                    {
-                        "type": "eq",
-                        "fun": lambda a: pseudoconst(
-                            a,
-                            self.pseudo_constraints_w_value_list[0][0],
-                            self.pseudo_constraints_w_value_list[0][1],
-                        ),
-                    },
-                    {
-                        "type": "eq",
-                        "fun": lambda a: pseudoconst(
-                            a,
-                            self.pseudo_constraints_w_value_list[1][0],
-                            self.pseudo_constraints_w_value_list[1][1],
-                        ),
-                    },
-                ]
-
-            elif len(self.pseudo_constraints_w_value_list) == 3:
-
-                restrict = [
-                    {
-                        "type": "eq",
-                        "fun": lambda a: pseudoconst(
-                            a,
-                            self.pseudo_constraints_w_value_list[0][0],
-                            self.pseudo_constraints_w_value_list[0][1],
-                        ),
-                    },
-                    {
-                        "type": "eq",
-                        "fun": lambda a: pseudoconst(
-                            a,
-                            self.pseudo_constraints_w_value_list[1][0],
-                            self.pseudo_constraints_w_value_list[1][1],
-                        ),
-                    },
-                    {
-                        "type": "eq",
-                        "fun": lambda a: pseudoconst(
-                            a,
-                            self.pseudo_constraints_w_value_list[2][0],
-                            self.pseudo_constraints_w_value_list[2][1],
-                        ),
-                    },
-                ]
-
-            ang, qerror, errcode = xu.Q2AngFit(
-                self.Q_lab,
-                self.hrxrd,
-                self.bounds,
-                startvalues=self.start,
-                constraints=restrict,
-                ormat=self.U,
-            )
-
-            if qerror > max_err:
-                while True:
-                    self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-                    self.start = (0, 0, 0, 0, 0, self.preangs[3])
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        constraints=restrict,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        0,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        constraints=restrict,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    # self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.preangs[3]]
-                    # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, constraints=restrict, ormat=self.U)
-                    # if qerror < 1e-5:
-                    #     break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        90,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        constraints=restrict,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        180,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        constraints=restrict,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        270,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        constraints=restrict,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    break
-
+            restrict = [
+                {
+                    "type": "eq",
+                    "fun": lambda a, idx=idx: pseudoconst(
+                        a,
+                        self.pseudo_constraints_w_value_list[idx][0],
+                        self.pseudo_constraints_w_value_list[idx][1],
+                    ),
+                }
+                for idx in range(len(self.pseudo_constraints_w_value_list))
+            ]
         else:
+            restrict = None
 
-            ang, qerror, errcode = xu.Q2AngFit(
-                self.Q_lab,
-                self.hrxrd,
-                self.bounds,
-                startvalues=self.start,
-                ormat=self.U,
+        ang, qerror, errcode = xu.Q2AngFit(
+            self.Q_lab,
+            self.hrxrd,
+            self.bounds,
+            startvalues=self.start,
+            constraints=restrict,
+            ormat=self.U,
+        )
+
+        if qerror > max_err:
+            ang, self.qerror = self._retry_q2angfit_with_start_sequence(
+                restrict, max_err
             )
-            if qerror > max_err:
-                while True:
-                    self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
-                    self.start = (0, 0, 0, 0, 0, self.preangs[3])
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        0,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        90,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    # self.start = [0, self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]]
-                    # ang, qerror, errcode = xu.Q2AngFit(self.Q_lab, self.hrxrd, self.bounds, startvalues = self.start, ormat=self.U)
-                    # if qerror < 1e-5:
-                    #     break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        180,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    self.start = [
-                        self.chute1[0],
-                        self.chute1[1],
-                        self.chute1[2],
-                        270,
-                        self.chute1[4],
-                        self.chute1[5],
-                    ]
-                    ang, qerror, errcode = xu.Q2AngFit(
-                        self.Q_lab,
-                        self.hrxrd,
-                        self.bounds,
-                        startvalues=self.start,
-                        ormat=self.U,
-                    )
-                    if qerror < max_err:
-                        break
-                    break
-
-        self.qerror = qerror
+        else:
+            self.qerror = qerror
         self.hkl_calc = np.round(
             self.hrxrd.Ang2HKL(*ang, mat=self.samp, en=self.en, U=self.U), 5
         )
@@ -451,3 +206,31 @@ class MinimizationProc(UBMatrix):
             self.fcsv(self.hkl_calc[2]),
             "{0:.2e}".format(self.qerror),
         ]
+
+    def _retry_q2angfit_with_start_sequence(self, constraints, max_err):
+        """Retry Q2AngFit with a sequence of different start values.
+
+        The retry sequence tries progressively wider sweeps of the Phi motor
+        (0, 90, 180, 270 degrees) combined with the chute1 angles,
+        as well as an initial estimate from Q2Ang.
+        """
+        start_sequence = [
+            (0, 0, 0, 0, 0, self.preangs[3]),
+            (self.chute1[0], self.chute1[1], self.chute1[2], 0, self.chute1[4], self.chute1[5]),
+            (self.chute1[0], self.chute1[1], self.chute1[2], 90, self.chute1[4], self.chute1[5]),
+            (self.chute1[0], self.chute1[1], self.chute1[2], 180, self.chute1[4], self.chute1[5]),
+            (self.chute1[0], self.chute1[1], self.chute1[2], 270, self.chute1[4], self.chute1[5]),
+        ]
+
+        for start in start_sequence:
+            self.start = list(start)
+            ang, self.qerror, errcode = xu.Q2AngFit(
+                self.Q_lab,
+                self.hrxrd,
+                self.bounds,
+                startvalues=self.start,
+                constraints=constraints,
+                ormat=self.U,
+            )
+            if self.qerror < max_err:
+                return
