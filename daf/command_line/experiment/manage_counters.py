@@ -10,11 +10,11 @@ import yaml
 from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
 from daf.utils.daf_paths import DAFPaths as dp
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 from daf.config.counters_config import counters_config
 
 
-class ManageCounters(ExperimentBase):
+class ManageCounters(CLIBase):
     DESC = """Manage counter configuration files"""
     EPI = """
     Eg:

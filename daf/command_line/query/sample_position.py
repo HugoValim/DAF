@@ -5,10 +5,10 @@ import argparse as ap
 
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
-from daf.command_line.query.query_utils import QueryBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class SamplePos(QueryBase):
+class SamplePos(CLIBase):
     """Class to show the current position, both in real and reciprocal space"""
 
     DESC = """Show current position in reciprocal space as well as all diffractometer's angles and pseudo-angles"""

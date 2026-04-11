@@ -5,11 +5,11 @@ import numpy as np
 
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 from daf.utils import dafutilities as du
 
 
-class ExperimentConfiguration(ExperimentBase):
+class ExperimentConfiguration(CLIBase):
     DESC = """Sets several experiment configuration conditions"""
 
     EPI = """

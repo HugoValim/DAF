@@ -77,8 +77,6 @@ class HKLScan(ScanBase):
         args = self.parser.parse_args()
         return args
 
-    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
-
     def generate_data_for_scan(self) -> np.array:
         """Generate the scan path for scans"""
         self.exp = self.build_exp()

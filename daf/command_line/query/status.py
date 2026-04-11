@@ -6,10 +6,10 @@ import numpy as np
 from daf.utils.print_utils import TablePrinter
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
-from daf.command_line.query.query_utils import QueryBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class Status(QueryBase):
+class Status(CLIBase):
 
     DESC = """Show the experiment status"""
     EPI = """
@@ -18,7 +18,6 @@ class Status(QueryBase):
         daf.status -m
         """
 
-    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
     _MATRIX_FMT = (
         ("", "ident", 9),
         ("", "col1", 12),

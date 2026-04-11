@@ -13,7 +13,7 @@ class ScanBase(CLIBase):
     def __init__(
         self, *args, number_of_motors: int = None, scan_type: str = None, **kwargs
     ):
-        self.io = du.DAFIO(read=False)
+        super().__init__(read=False)
         self.experiment_file_dict = self.io.only_read()
         self.number_of_motors = number_of_motors
         self.scan_type = scan_type

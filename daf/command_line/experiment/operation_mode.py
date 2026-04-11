@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class OperationMode(ExperimentBase):
+class OperationMode(CLIBase):
     DESC = """
                  >detector<  >Reference<     >Sample<     >Sample<     >Sample<
                     g_mode1      g_mode2      g_mode3      g_mode4      g_mode5

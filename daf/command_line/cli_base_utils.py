@@ -21,15 +21,19 @@ class DevNull:
 class CLIBase:
     """Base class to be inherited by all command line classes"""
 
+    # Motor names in canonical order
+    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
+
     # Mapping of export_angles() index to name
     _ANGLE_EXPORT_NAMES = (
         "mu", "eta", "chi", "phi", "nu", "del", "twotheta", "theta",
         "alpha", "qaz", "naz", "tau", "psi", "beta", "omega", "hklnow",
     )
 
-    def __init__(self):
-        self.io = du.DAFIO()
-        self.read_experiment_file()
+    def __init__(self, read: bool = True):
+        self.io = du.DAFIO(read=read)
+        if read:
+            self.read_experiment_file()
         # sys.stderr = DevNull()
 
     def read_experiment_file(self):
@@ -45,8 +49,7 @@ class CLIBase:
 
     def _get_motor_bounds(self) -> dict:
         """Extract motor bounds from experiment file as a dict."""
-        motor_names = ("mu", "eta", "chi", "phi", "nu", "del")
-        return {m: self.experiment_file_dict["motors"][m]["bounds"] for m in motor_names}
+        return {m: self.experiment_file_dict["motors"][m]["bounds"] for m in self._MOTOR_NAMES}
 
     def _get_constraints_dict(self) -> dict:
         """Extract constraints from experiment file as a dict."""
@@ -59,8 +62,7 @@ class CLIBase:
 
     def _get_motor_values(self) -> dict:
         """Extract current motor values from experiment file as a dict."""
-        motor_names = ("mu", "eta", "chi", "phi", "nu", "del")
-        return {m: self.experiment_file_dict["motors"][m]["value"] for m in motor_names}
+        return {m: self.experiment_file_dict["motors"][m]["value"] for m in self._MOTOR_NAMES}
 
     def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
@@ -144,7 +146,7 @@ class CLIBase:
     def calculate_hkl(self, hkl: list) -> float:
         """Calculate the angles to a given HKL"""
         motor_vals = self._get_motor_values()
-        startvalue = [motor_vals[m] for m in ("mu", "eta", "chi", "phi", "nu", "del")]
+        startvalue = [motor_vals[m] for m in self._MOTOR_NAMES]
         self.exp.set_hkl(hkl)
         self.exp(sv=startvalue)
         error = self.exp.qerror

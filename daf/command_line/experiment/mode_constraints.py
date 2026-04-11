@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class ModeConstraints(ExperimentBase):
+class ModeConstraints(CLIBase):
     DESC = """Function to constrain angles during the experiment"""
     EPI = """
         Eg:

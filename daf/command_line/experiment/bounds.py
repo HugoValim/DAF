@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class Bounds(ExperimentBase):
+class Bounds(CLIBase):
     DESC = """Sets the bounds of the diffractometer angles"""
     EPI = """
     Eg:
@@ -88,8 +88,6 @@ class Bounds(ExperimentBase):
     def reset_bounds_to_default(self) -> None:
         """Reset all motor bounds to default. It writes directly to the .Experiment file"""
         self.write_to_experiment_file(self.DEFAULT_BOUNDS, is_motor_bounds=True)
-
-    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
 
     def list_bounds(self) -> None:
         """Method to print the current bounds"""

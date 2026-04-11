@@ -17,8 +17,6 @@ class FromFileScan(ScanBase):
 
         """
 
-    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
-
     def __init__(self):
         super().__init__(scan_type="list_scan")
         self.exp = self.build_exp()

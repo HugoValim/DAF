@@ -9,10 +9,10 @@ from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
 from daf.utils import daf_paths as dp
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class SetUUB(ExperimentBase):
+class SetUUB(CLIBase):
     DESC = """Defines UB matrix and Calculate UB matrix from 2 or 3 reflections"""
     EPI = """
     Eg:
@@ -24,8 +24,6 @@ class SetUUB(ExperimentBase):
         daf.ub -s
         daf.ub -s -p
         """
-
-    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
 
     def __init__(self):
         super().__init__()
