@@ -7,6 +7,10 @@ from daf.command_line.support.init import Init, main
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.utils import dafutilities as du
 
+@pytest.fixture
+def remove_local_config():
+    if os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT):
+        os.remove(dp.LOCAL_EXPERIMENT_DEFAULT)
 
 @pytest.fixture
 def remove_local_config():
