@@ -59,6 +59,7 @@ def init_daf(tmp_path_factory):
     if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
         os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
+
 @pytest.fixture
 def init_daf_function(tmp_path_factory):
     dir = tmp_path_factory.mktemp("daf")
@@ -75,6 +76,7 @@ def init_daf_function(tmp_path_factory):
     if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
         os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
 
+
 @pytest.fixture
 def init_daf_function_global(tmp_path_factory):
     dir = tmp_path_factory.mktemp("daf")
@@ -90,7 +92,6 @@ def init_daf_function_global(tmp_path_factory):
         yield obj
     if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
         os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
-
 
 
 # @pytest.fixture(autouse=True, scope="module")
@@ -124,13 +125,14 @@ def init_daf_function_global(tmp_path_factory):
 #         obj.run_cmd()
 #         yield obj
 
+
 @pytest.fixture(autouse=True, scope="module")
 def set_sample():
 
     energy = 1
+
     def build_args():
         return ["daf.expt", "-s", "Si"]
-
 
     mp = pytest.MonkeyPatch()
     with mp.context() as m:
@@ -139,4 +141,3 @@ def set_sample():
         obj.run_cmd()
         yield obj
     # os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
-

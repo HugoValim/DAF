@@ -75,6 +75,7 @@ class DAFMainWindow(QMainWindow):
         self._config.setValue(Y_LOC, window_loc.y())
         event.accept()
 
+
 @cli_decorator
 def main() -> None:
     QtCore.QLocale.setDefault(QtCore.QLocale(QtCore.QLocale.c()))

@@ -19,6 +19,9 @@ class HKLMove(MoveBase):
 
         """
 
+    # Maximum acceptable error for HKL calculation success
+    _MAX_ERROR_THRESHOLD = 1e-4
+
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -64,8 +67,8 @@ class HKLMove(MoveBase):
 
     def write_angles_if_small_error(self, error: float) -> None:
         """Writes to .Experiment file if the minimization was successful"""
-        if float(error) > 1e-4:
-            print("Can't find the HKL {}".format(args.Move))
+        if float(error) > self._MAX_ERROR_THRESHOLD:
+            print("Can't find the HKL {}".format(self.parsed_args.hkl_position))
             return
         exp_dict = self.get_angles_from_calculated_exp()
         self.update_experiment_file(exp_dict)

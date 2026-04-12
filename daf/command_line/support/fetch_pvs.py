@@ -17,6 +17,7 @@ class FetchPVs(SupportBase):
         """
 
     def __init__(self):
+        super().__init__()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.io = du.DAFIO(read=False)
@@ -32,11 +33,6 @@ class FetchPVs(SupportBase):
 
         args = self.parser.parse_args()
         return args
-
-    def get_offline_motors_and_write(self):
-        """Get all motors that are offline and set their up bit so DAF become aware"""
-        data = du.fetch_pvs_and_check_for_connection()
-        self.io.write(data)
 
     def run_cmd(self) -> None:
         self.get_offline_motors_and_write()

@@ -14,6 +14,37 @@ from daf.gui.utils import format_5_dec, Icons
 
 
 class StatusTab(QWidget):
+
+    _LAUNCHER_BUTTONS = (
+        ("set_mode_launcher", "open_mode_window"),
+        ("experiment_launcher", "open_experiment_window"),
+        ("sample_launcher", "open_sample_window"),
+        ("ub_launcher", "open_ub_window"),
+    )
+    _MODE_LABELS = (
+        "mode_1_label",
+        "mode_2_label",
+        "mode_3_label",
+        "mode_4_label",
+        "mode_5_label",
+    )
+    _CONS_LABELS = (
+        "cons_1_label",
+        "cons_2_label",
+        "cons_3_label",
+        "cons_4_label",
+        "cons_5_label",
+    )
+    _EXP_LABELS = ("wl_label", "energy_label", "idir_label", "ndir_label", "rdir_label")
+    _SAMPLE_LABELS = (
+        "a_label",
+        "b_label",
+        "c_label",
+        "alpha_label",
+        "beta_label",
+        "gamma_label",
+    )
+
     def __init__(self, dafio):
         super().__init__()
         uic.loadUi(self.ui_filepath(), self)
@@ -32,16 +63,12 @@ class StatusTab(QWidget):
 
     def set_icons(self):
         """Set used icons"""
-        self.set_mode_launcher.setIcon(QIcon(Icons.pen))
-        self.experiment_launcher.setIcon(QIcon(Icons.pen))
-        self.sample_launcher.setIcon(QIcon(Icons.pen))
-        self.ub_launcher.setIcon(QIcon(Icons.pen))
+        for btn_name, _ in self._LAUNCHER_BUTTONS:
+            getattr(self, btn_name).setIcon(QIcon(Icons.pen))
 
     def make_connections(self):
-        self.set_mode_launcher.clicked.connect(self.open_mode_window)
-        self.experiment_launcher.clicked.connect(self.open_experiment_window)
-        self.sample_launcher.clicked.connect(self.open_sample_window)
-        self.ub_launcher.clicked.connect(self.open_ub_window)
+        for btn_name, method_name in self._LAUNCHER_BUTTONS:
+            getattr(self, btn_name).clicked.connect(getattr(self, method_name))
 
     def open_mode_window(self):
         self.mode_window = set_mode.MyDisplay(self.update_dict)
@@ -69,50 +96,27 @@ class StatusTab(QWidget):
 
     def update_mode(self, mode_num, mode, cons):
         """Update status mode label"""
-        mode_text = (
-            "MODE: "
-            + str(mode_num[0])
-            + str(mode_num[1])
-            + str(mode_num[2])
-            + str(mode_num[3])
-            + str(mode_num[4])
-        )
+        mode_text = "MODE: " + "".join(str(m) for m in mode_num)
         self.mode_label.setText(mode_text)
-        self.mode_1_label.setText(mode[0])
-        self.mode_2_label.setText(mode[1])
-        self.mode_3_label.setText(mode[2])
-        self.mode_4_label.setText(mode[3])
-        self.mode_5_label.setText(mode[4])
-
-        # Update status constraints label
-        self.cons_1_label.setText(str(cons[0][1]))
-        self.cons_2_label.setText(str(cons[1][1]))
-        self.cons_3_label.setText(str(cons[2][1]))
-        self.cons_4_label.setText(str(cons[3][1]))
-        self.cons_5_label.setText(str(cons[4][1]))
+        for label, val in zip(self._MODE_LABELS, mode):
+            getattr(self, label).setText(val)
+        for label, val in zip(self._CONS_LABELS, (c[1] for c in cons)):
+            getattr(self, label).setText(str(val))
 
     def update_experiment(self, exp_list):
         """Update status experiment label"""
-        self.wl_label.setText(str(exp_list[1]))
-        self.energy_label.setText(str(exp_list[2]))
-        self.idir_label.setText(str(exp_list[3]))
-        self.ndir_label.setText(str(exp_list[4]))
-        self.rdir_label.setText(str(exp_list[5]))
-        # self..setText(str(exp_list[0]))
+        for label, val in zip(self._EXP_LABELS, exp_list[1:]):
+            getattr(self, label).setText(str(val))
 
     def update_sample(self, samp_info):
         """Update sample info label"""
         self.sample.setText(str(samp_info[0]))
-        self.a_label.setText(format_5_dec(str(samp_info[1])))
-        self.b_label.setText(format_5_dec(str(samp_info[2])))
-        self.c_label.setText(format_5_dec(str(samp_info[3])))
-        self.alpha_label.setText(format_5_dec(str(samp_info[4])))
-        self.beta_label.setText(format_5_dec(str(samp_info[5])))
-        self.gamma_label.setText(format_5_dec(str(samp_info[6])))
+        for label, val in zip(self._SAMPLE_LABELS, samp_info[1:]):
+            getattr(self, label).setText(format_5_dec(str(val)))
 
     def set_label_text_from_eval(self, label: str, text: str) -> None:
         "Update the label text after evaluating a string"
-        eval(label).setText(str(format_5_dec(text)))
+        getattr(self, label).setText(str(format_5_dec(text)))
 
     def update_u_and_ub(self, update_dict):
         """Update status Matrixes"""

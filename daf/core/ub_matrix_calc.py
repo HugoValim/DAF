@@ -8,6 +8,78 @@ from math import sqrt, sin, cos, atan2, acos
 from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
 
 
+# --------------------------------------------------------------------
+# Numerical tolerance constants
+# --------------------------------------------------------------------
+
+_SMALL_NORMALIZE = 1e-4  # Threshold for vector normalization in calc_U_2HKL
+_SMALL_BOUND = 1e-10  # Threshold for rounding error correction in bound()
+_OPTIMIZE_TOL = 1e-10  # Optimization tolerance for SLSQP
+_OPTIMIZE_EPS = 1e-6  # Step size for SLSQP
+_FIT_SIGMA = 1e-2  # Initial sigma guess for UB matrix fitting
+
+
+# --------------------------------------------------------------------
+# Quaternion and rotation matrix helpers (pure math, stateless)
+# --------------------------------------------------------------------
+
+
+def _quaternion_from_u123(u1, u2, u3):
+    """Convert u1,u2,u3 to quaternion components q0,q1,q2,q3."""
+    q0 = sqrt(1.0 - u1) * sin(2.0 * np.pi * u2)
+    q1 = sqrt(1.0 - u1) * cos(2.0 * np.pi * u2)
+    q2 = sqrt(u1) * sin(2.0 * np.pi * u3)
+    q3 = sqrt(u1) * cos(2.0 * np.pi * u3)
+    return q0, q1, q2, q3
+
+
+def _rotation_matrix_from_quaternion(q0, q1, q2, q3):
+    """Build a 3x3 rotation matrix from quaternion components."""
+    return np.array(
+        [
+            [
+                q0**2 + q1**2 - q2**2 - q3**2,
+                2.0 * (q1 * q2 - q0 * q3),
+                2.0 * (q1 * q3 + q0 * q2),
+            ],
+            [
+                2.0 * (q1 * q2 + q0 * q3),
+                q0**2 - q1**2 + q2**2 - q3**2,
+                2.0 * (q2 * q3 - q0 * q1),
+            ],
+            [
+                2.0 * (q1 * q3 - q0 * q2),
+                2.0 * (q2 * q3 + q0 * q1),
+                q0**2 - q1**2 - q2**2 + q3**2,
+            ],
+        ]
+    )
+
+
+def _init_u123_from_matrix(um):
+    """Derive initial u1,u2,u3 values from a U matrix."""
+
+    def sign(x):
+        return -1 if x < 0 else 1
+
+    tr = um[0, 0] + um[1, 1] + um[2, 2]
+    sgn_q1 = sign(um[2, 1] - um[1, 2])
+    sgn_q2 = sign(um[0, 2] - um[2, 0])
+    sgn_q3 = sign(um[1, 0] - um[0, 1])
+    q0 = sqrt(1.0 + tr) / 2.0
+    q1 = sgn_q1 * sqrt(1.0 + um[0, 0] - um[1, 1] - um[2, 2]) / 2.0
+    q2 = sgn_q2 * sqrt(1.0 - um[0, 0] + um[1, 1] - um[2, 2]) / 2.0
+    q3 = sgn_q3 * sqrt(1.0 - um[0, 0] - um[1, 1] + um[2, 2]) / 2.0
+    u1 = (1.0 - um[0, 0]) / 2.0
+    u2 = atan2(q0, q1) / (2.0 * np.pi)
+    u3 = atan2(q2, q3) / (2.0 * np.pi)
+    if u2 < 0:
+        u2 += 1.0
+    if u3 < 0:
+        u3 += 1.0
+    return u1, u2, u3
+
+
 class UBMatrix:
     def uphi(self, Mu, Eta, Chi, Phi, Nu, Del):
 
@@ -63,11 +135,10 @@ class UBMatrix:
         t2p = np.cross(t3p, t1p)
         # print(t2p)
         # ...and nornmalise and check that the reflections used are appropriate
-        SMALL = 1e-4  # Taken from Vlieg's code
 
         def normalise(m):
             d = LA.norm(m)
-            if d < SMALL:
+            if d < _SMALL_NORMALIZE:
 
                 raise DiffcalcException(
                     "Invalid UB reference data. Please check that the specified "
@@ -141,8 +212,7 @@ class UBMatrix:
         moves x between -1 and 1. Used to correct for rounding errors which may
         have moved the sin or cosine of a value outside this range.
         """
-        SMALL = 1e-10
-        if abs(x) > (1 + SMALL):
+        if abs(x) > (1 + _SMALL_BOUND):
             raise AssertionError(
                 "The value (%f) was unexpectedly too far outside -1 or 1 to "
                 "safely bound. Please report this." % x
@@ -154,33 +224,10 @@ class UBMatrix:
         return x
 
     def _get_quat_from_u123(self, u1, u2, u3):
-        q0, q1 = sqrt(1.0 - u1) * sin(2.0 * np.pi * u2), sqrt(1.0 - u1) * cos(
-            2.0 * np.pi * u2
-        )
-        q2, q3 = sqrt(u1) * sin(2.0 * np.pi * u3), sqrt(u1) * cos(2.0 * np.pi * u3)
-        return q0, q1, q2, q3
+        return _quaternion_from_u123(u1, u2, u3)
 
     def _get_rot_matrix(self, q0, q1, q2, q3):
-        rot = np.array(
-            [
-                [
-                    q0**2 + q1**2 - q2**2 - q3**2,
-                    2.0 * (q1 * q2 - q0 * q3),
-                    2.0 * (q1 * q3 + q0 * q2),
-                ],
-                [
-                    2.0 * (q1 * q2 + q0 * q3),
-                    q0**2 - q1**2 + q2**2 - q3**2,
-                    2.0 * (q2 * q3 - q0 * q1),
-                ],
-                [
-                    2.0 * (q1 * q3 - q0 * q2),
-                    2.0 * (q2 * q3 + q0 * q1),
-                    q0**2 - q1**2 - q2**2 + q3**2,
-                ],
-            ]
-        )
-        return rot
+        return _rotation_matrix_from_quaternion(q0, q1, q2, q3)
 
     def angle_between_vectors(self, a, b):
         costheta = self.dot3(a * (1 / LA.norm(a)), b * (1 / LA.norm(b)))
@@ -223,37 +270,13 @@ class UBMatrix:
         res += self.angle_between_vectors(q_hkl, q_vals)
         return res
 
-    def _get_init_u123(self, um):
-        def sign(x):
-            if x < 0:
-                return -1
-            else:
-                return 1
-
-        tr = um[0, 0] + um[1, 1] + um[2, 2]
-        sgn_q1 = sign(um[2, 1] - um[1, 2])
-        sgn_q2 = sign(um[0, 2] - um[2, 0])
-        sgn_q3 = sign(um[1, 0] - um[0, 1])
-        q0 = sqrt(1.0 + tr) / 2.0
-        q1 = sgn_q1 * sqrt(1.0 + um[0, 0] - um[1, 1] - um[2, 2]) / 2.0
-        q2 = sgn_q2 * sqrt(1.0 - um[0, 0] + um[1, 1] - um[2, 2]) / 2.0
-        q3 = sgn_q3 * sqrt(1.0 - um[0, 0] - um[1, 1] + um[2, 2]) / 2.0
-        u1 = (1.0 - um[0, 0]) / 2.0
-        u2 = atan2(q0, q1) / (2.0 * np.pi)
-        u3 = atan2(q2, q3) / (2.0 * np.pi)
-        if u2 < 0:
-            u2 += 1.0
-        if u3 < 0:
-            u3 += 1.0
-        return u1, u2, u3
-
     def fit_u_matrix(self, init_u, refl_list):
         uc = self.samp
         try:
-            start = list(self._get_init_u123(init_u))
+            start = list(_init_u123_from_matrix(init_u))
             lower = [0, 0, 0]
             upper = [1, 1, 1]
-            sigma = [1e-2, 1e-2, 1e-2]
+            sigma = [_FIT_SIGMA, _FIT_SIGMA, _FIT_SIGMA]
         except AttributeError:
             raise DiffcalcException(
                 "UB matrix not initialised. Cannot run UB matrix fitting procedure."
@@ -268,8 +291,13 @@ class UBMatrix:
             start,
             args=(uc, ref_data),
             method="SLSQP",
-            tol=1e-10,
-            options={"disp": False, "maxiter": 10000, "eps": 1e-6, "ftol": 1e-10},
+            tol=_OPTIMIZE_TOL,
+            options={
+                "disp": False,
+                "maxiter": 10000,
+                "eps": _OPTIMIZE_EPS,
+                "ftol": _OPTIMIZE_TOL,
+            },
         )
         # bounds=bounds)
         vals = res.x
@@ -279,6 +307,4 @@ class UBMatrix:
         xr = q1 / sqrt(1.0 - q0 * q0)
         yr = q2 / sqrt(1.0 - q0 * q0)
         zr = q3 / sqrt(1.0 - q0 * q0)
-        TODEG = 180 / (2 * np.pi)
-        print(angle * TODEG, (xr, yr, zr), res)
         return res_u

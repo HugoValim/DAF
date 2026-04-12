@@ -13,7 +13,7 @@ class ScanBase(CLIBase):
     def __init__(
         self, *args, number_of_motors: int = None, scan_type: str = None, **kwargs
     ):
-        self.io = du.DAFIO(read=False)
+        super().__init__(read=False)
         self.experiment_file_dict = self.io.only_read()
         self.number_of_motors = number_of_motors
         self.scan_type = scan_type
@@ -106,6 +106,7 @@ class ScanBase(CLIBase):
             "output": self.parsed_args_dict["output"],
             "kafka_topic": self.experiment_file_dict["kafka_topic"],
             "scan_db": self.experiment_file_dict["scan_db"],
+            "kafka_server": self.experiment_file_dict.get("kafka_server"),
         }
 
         return scan_inputs

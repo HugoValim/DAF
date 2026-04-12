@@ -21,6 +21,10 @@ class ScanTab(QWidget):
     config_file_prefix = "config."
     config_file_sufix = ".yml"
 
+    _ASCAN_BUTTONS = [(i, f"pushButton_a{i}scan") for i in range(1, 7)]
+    _DSCAN_BUTTONS = [(i, f"pushButton_d{i}scan") for i in range(1, 7)]
+    _MESH_BUTTONS = [(2, "pushButton_m2scan")]
+
     def __init__(self, dafio):
         super().__init__()
         uic.loadUi(self.ui_filepath(), self)
@@ -56,21 +60,24 @@ class ScanTab(QWidget):
             self.counters_menu_builder
         )
 
-        # Scans
-        self.pushButton_ascan.clicked.connect(lambda: self.open_scan_window(1, "abs"))
-        self.pushButton_a2scan.clicked.connect(lambda: self.open_scan_window(2, "abs"))
-        self.pushButton_a3scan.clicked.connect(lambda: self.open_scan_window(3, "abs"))
-        self.pushButton_a4scan.clicked.connect(lambda: self.open_scan_window(4, "abs"))
-        self.pushButton_a5scan.clicked.connect(lambda: self.open_scan_window(5, "abs"))
-        self.pushButton_a6scan.clicked.connect(lambda: self.open_scan_window(6, "abs"))
+        # Scans - absolute
+        for n, btn_name in self._ASCAN_BUTTONS:
+            getattr(self, btn_name).clicked.connect(
+                lambda _, n=n: self.open_scan_window(n, "abs")
+            )
 
-        self.pushButton_dscan.clicked.connect(lambda: self.open_scan_window(1, "rel"))
-        self.pushButton_d2scan.clicked.connect(lambda: self.open_scan_window(2, "rel"))
-        self.pushButton_d3scan.clicked.connect(lambda: self.open_scan_window(3, "rel"))
-        self.pushButton_d4scan.clicked.connect(lambda: self.open_scan_window(4, "rel"))
-        self.pushButton_d5scan.clicked.connect(lambda: self.open_scan_window(5, "rel"))
-        self.pushButton_d6scan.clicked.connect(lambda: self.open_scan_window(6, "rel"))
-        self.pushButton_m2scan.clicked.connect(lambda: self.open_scan_window(2, "mesh"))
+        # Scans - relative
+        for n, btn_name in self._DSCAN_BUTTONS:
+            getattr(self, btn_name).clicked.connect(
+                lambda _, n=n: self.open_scan_window(n, "rel")
+            )
+
+        # Scans - mesh
+        for n, btn_name in self._MESH_BUTTONS:
+            getattr(self, btn_name).clicked.connect(
+                lambda _, n=n: self.open_scan_window(n, "mesh")
+            )
+
         self.pushButton_hklscan.clicked.connect(lambda: self.open_hkl_scan_window())
 
         self.live_view_launcher.clicked.connect(self.open_live_view)
@@ -189,13 +196,13 @@ class ScanTab(QWidget):
     def set_counter(self):
         item = self.listWidget_files.currentItem()
         value = item.text()
-        os.system("daf.mc -s {}".format(value))
+        subprocess.Popen(["daf.mc", "-s", value], shell=False)
         self.label_current_config.setText(value)
 
     def set_main_counter(self):
         counter = self.listWidget_counters.currentItem().text()
         self.label_main_counter.setText(counter)
-        os.system("daf.mc -m {}".format(counter))
+        subprocess.Popen(["daf.mc", "-m", counter], shell=False)
 
     def new_counter_file(self):
         configs = self.list_config_files()
@@ -218,10 +225,10 @@ class ScanTab(QWidget):
                 )
 
                 if ret == QtWidgets.QMessageBox.Ok:
-                    os.system("daf.mc -n {}".format(text))
+                    subprocess.Popen(["daf.mc", "-n", text], shell=False)
 
             else:
-                os.system("daf.mc -n {}".format(text))
+                subprocess.Popen(["daf.mc", "-n", text], shell=False)
         self.counters_scroll_area()
 
     def add_counter_manager(self):
@@ -236,13 +243,13 @@ class ScanTab(QWidget):
         """Add a counter to a setup"""
         file = self.listWidget_files.currentItem().text()
         counter = self.combo_box.currentText()
-        os.system("daf.mc -a {} {}".format(file, counter))
+        subprocess.Popen(["daf.mc", "-a", file, counter], shell=False)
         self.on_counters_list_widget_change()
 
     def remove_counter_file(self):
         item = self.listWidget_files.currentItem()
         value = item.text()
-        os.system("daf.mc -r {}".format(value))
+        subprocess.Popen(["daf.mc", "-r", value], shell=False)
         self.counters_scroll_area()
 
     def remove_counter(self):
@@ -251,8 +258,8 @@ class ScanTab(QWidget):
             item = self.listWidget_files.currentItem()
             value = item.text()
             counter = get_selected.text()
-            os.system("daf.mc -rc {} {}".format(value, counter))
+            subprocess.Popen(["daf.mc", "-rc", value, counter], shell=False)
             self.on_counters_list_widget_change()
 
     def open_live_view(self):
-        subprocess.Popen("daf.live")
+        subprocess.Popen(["daf.live"], shell=False)

@@ -80,7 +80,7 @@ def calculate_pseudo_angle_from_motor_angles(
     hkl: "vector",
     wave_length: float,
     rdir: "vector",
-    U: "3x3 array",
+    U: "np.ndarray",
 ) -> dict:
     """Calculate all pseudo angles from motor angles and return a dict with the calculated values"""
 
@@ -122,7 +122,7 @@ def calculate_pseudo_angle_from_motor_angles(
 
     k = (2 * np.pi) / (wave_length)
     Ki = k * np.array([0, 1, 0])
-    Kf0 = Ki  ##### eq (6)
+    Kf0 = Ki  # eq (6)
     Kfnu = k * np.array(
         [
             np.sin(np.deg2rad(Del)),

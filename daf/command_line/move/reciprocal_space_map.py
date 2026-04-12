@@ -31,6 +31,8 @@ class ReciprocalSpace(MoveBase):
         daf.rmap -i 1 1 0 -n 0 0 1 -m Ge
         """
 
+    _DEFAULT_SCALE = 100
+
     def __init__(self):
         super().__init__()
         self.parsed_args = self.parse_command_line()
@@ -84,17 +86,20 @@ class ReciprocalSpace(MoveBase):
         graph_att_obj = GraphAttributes(ttmin, ttmax, idir, ndir, scale)
         return graph_att_obj
 
-    def build_reciprocal_map(self, graph_att: GraphAttributes):
-        """Build the reciprocal space map based in the current conditions"""
-
-        ax, h = self.exp.show_reciprocal_space_plane(
+    def _show_reciprocal_space_plane(self, exp, axis, graph_att: GraphAttributes):
+        """Call show_reciprocal_space_plane with the given experiment and axis."""
+        return exp.show_reciprocal_space_plane(
             ttmax=graph_att.ttmax,
             ttmin=graph_att.ttmin,
             idir=graph_att.idir,
             ndir=graph_att.ndir,
             scalef=graph_att.scale,
+            ax=axis,
         )
 
+    def build_reciprocal_map(self, graph_att: GraphAttributes):
+        """Build the reciprocal space map based in the current conditions"""
+        ax, h = self._show_reciprocal_space_plane(self.exp, None, graph_att)
         return ax, h
 
     def append_to_reciprocal_map(
@@ -107,14 +112,7 @@ class ReciprocalSpace(MoveBase):
         exp = self.build_exp()
         exp.set_material(sample)
         ttmax, ttmin = exp.two_theta_max()
-        ax, h2 = exp.show_reciprocal_space_plane(
-            ttmax=graph_att.ttmax,
-            ttmin=graph_att.ttmin,
-            idir=graph_att.idir,
-            ndir=graph_att.ndir,
-            scalef=graph_att.scale,
-            ax=axis,
-        )
+        ax, h2 = self._show_reciprocal_space_plane(exp, axis, graph_att)
 
         return ax, h2
 

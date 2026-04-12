@@ -2,6 +2,7 @@
 """Library for reading and writing experiment files"""
 
 import atexit
+import logging
 import os
 import time
 
@@ -9,6 +10,9 @@ import epics
 import yaml
 
 from daf.utils.daf_paths import DAFPaths as dp
+
+logger = logging.getLogger(__name__)
+_ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
 
 DEFAULT = dp.check_for_local_config()
 TIMEOUT = 2  # .2s timeout for caputs and cagets
@@ -28,7 +32,9 @@ def fetch_pvs_and_check_for_connection():
     for key in data["motors"].keys():
         val = epics.caget(data["motors"][key]["pv"], timeout=2)
         if val is None:
-            print("Cannot connect to {}, PV: {}".format(key, data["motors"][key]["pv"]))
+            logger.warning(
+                "Cannot connect to %s, PV: %s", key, data["motors"][key]["pv"]
+            )
             data["motors"][key]["up"] = 0
     return data
 
@@ -119,13 +125,16 @@ class DAFIO:
 
         bl_counter = 0
         for key, value in self.BL_PVS.items():
-            if updated_bl_pv_list[bl_counter] is not None and updated_bl_pv_list[bl_counter] < 100:  # Less them 100keV
+            if (
+                updated_bl_pv_list[bl_counter] is not None
+                and updated_bl_pv_list[bl_counter] < _ENERGY_KEV_THRESHOLD
+            ):
                 dict_["beamline_pvs"][key]["value"] = (
                     updated_bl_pv_list[bl_counter] * 1000
                 )
             else:
                 dict_["beamline_pvs"][key]["value"] = 1
-                bl_counter += 1
+            bl_counter += 1
         return dict_
 
     def epics_put(self, dict_):
@@ -174,7 +183,7 @@ class DAFIO:
 
         for bl_pv in dict_["beamline_pvs"].keys():
             if not dict_["beamline_pvs"][bl_pv]["up"]:
-                dict_["beamline_pvs"]["value"] = 0
+                dict_["beamline_pvs"][bl_pv]["value"] = 0
 
     def write(self, dict_, filepath=DEFAULT):
         """Write data to experiment file and also move motors if needed"""

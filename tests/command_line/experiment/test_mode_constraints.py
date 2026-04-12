@@ -116,13 +116,13 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj(["-r"])
-        assert obj.parsed_args_dict["reset"] == True
+        assert obj.parsed_args_dict["reset"]
 
     def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_check_parsed_args(
         self,
     ):
         obj = self.make_obj(["-l"])
-        assert obj.parsed_args_dict["list"] == True
+        assert obj.parsed_args_dict["list"]
 
     def test_GIVEN_cli_argument_WHEN_inputing_cons_mu_THEN_check_if_it_was_written_correctly(
         self,
@@ -433,7 +433,7 @@ class TestDAF(unittest.TestCase):
         assert 0 == dict_now["cons_qaz"]
         assert 0 == dict_now["cons_naz"]
 
-    def test_GIVEN_cli_argument_WHEN_inputing_reset_THEN_test_for_problems(
+    def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_test_for_problems(
         self,
     ):
         obj = self.make_obj([])

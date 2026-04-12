@@ -7,17 +7,17 @@ import epics
 from daf.command_line.experiment.set_u_ub_matrix import SetUUB, main
 from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
 
-CALCULATED_U =[
-        [0.99939, -0.03488, 0.00122],
-        [0.03490, 0.99878, -0.03488],
-        [-0.00000, 0.03490, 0.99939],
-    ]
+CALCULATED_U = [
+    [0.99939, -0.03488, 0.00122],
+    [0.03490, 0.99878, -0.03488],
+    [-0.00000, 0.03490, 0.99939],
+]
 
-CALCULATED_UB =[
-        [1.15620, -0.04035, 0.00141],
-        [0.04037, 1.15549, -0.04035],
-        [-0.00000, 0.04038, 1.15620],
-    ]
+CALCULATED_UB = [
+    [1.15620, -0.04035, 0.00141],
+    [0.04037, 1.15549, -0.04035],
+    [-0.00000, 0.04038, 1.15620],
+]
 
 CALCULATED_LATTICE_PARAMETERS = {
     "lparam_a": 5.431013398913497,
@@ -37,9 +37,9 @@ THIRD_REFLECTION = ["0", "0", "1", "0", "5.28232", "92", "92", "0", "10.5647"]
 def set_energy():
 
     energy = 1
+
     def build_args():
         return ["daf.expt", "--energy", str(energy)]
-
 
     mp = pytest.MonkeyPatch()
     with mp.context() as m:
@@ -66,101 +66,125 @@ def run_command_line(monkeypatch, request):
 
 @pytest.mark.fixt_data("daf.ub", "-r", *FIRST_REFLECTION)
 def test_inputed_first_reflection_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     print(obj.parsed_args_dict["reflection"])
     print([float(i) for i in FIRST_REFLECTION])
-    assert obj.parsed_args_dict["reflection"][:-1] == [float(i) for i in FIRST_REFLECTION]
+    assert obj.parsed_args_dict["reflection"][:-1] == [
+        float(i) for i in FIRST_REFLECTION
+    ]
     assert dict_now["reflections"][0][:-1] == [float(i) for i in FIRST_REFLECTION]
 
 
 @pytest.mark.fixt_data("daf.ub", "-r", *SECOND_REFLECTION)
 def test_inputed_second_reflection_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     print(obj.parsed_args_dict["reflection"])
     print([float(i) for i in SECOND_REFLECTION])
-    assert obj.parsed_args_dict["reflection"][:-1] == [float(i) for i in SECOND_REFLECTION]
+    assert obj.parsed_args_dict["reflection"][:-1] == [
+        float(i) for i in SECOND_REFLECTION
+    ]
     assert dict_now["reflections"][1][:-1] == [float(i) for i in SECOND_REFLECTION]
 
 
 @pytest.mark.fixt_data("daf.ub", "-r", *THIRD_REFLECTION)
 def test_inputed_third_reflection_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     print(obj.parsed_args_dict["reflection"])
     print([float(i) for i in THIRD_REFLECTION])
-    assert obj.parsed_args_dict["reflection"][:-1] == [float(i) for i in THIRD_REFLECTION]
+    assert obj.parsed_args_dict["reflection"][:-1] == [
+        float(i) for i in THIRD_REFLECTION
+    ]
     assert dict_now["reflections"][2][:-1] == [float(i) for i in THIRD_REFLECTION]
-   
+
+
 @pytest.mark.fixt_data("daf.ub", "-rn", *["1", "0", "0"])
 def test_reflection_now_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     print(obj.parsed_args_dict["reflection"])
     print([float(i) for i in THIRD_REFLECTION])
     print(dict_now["reflections"])
-    assert obj.parsed_args_dict["reflection_now"]== [float(i) for i in ["1", "0", "0"]]
+    assert obj.parsed_args_dict["reflection_now"] == [float(i) for i in ["1", "0", "0"]]
     assert dict_now["reflections"][3][:3] == [float(i) for i in ["1", "0", "0"]]
+
 
 @pytest.mark.fixt_data("daf.ub", "-cr", "4")
 def test_remove_reflection_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     assert len(dict_now["reflections"]) == 3
 
+
 @pytest.mark.fixt_data("daf.ub", "-u", *["1", "0", "0", "0", "1", "0", "0", "0", "1"])
 def test_set_u_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     param = ["1", "0", "0", "0", "1", "0", "0", "0", "1"]
     assert obj.parsed_args_dict["u_matrix"] == [float(i) for i in param]
 
+
 @pytest.mark.fixt_data("daf.ub", "-ub", *["1", "0", "0", "0", "1", "0", "0", "0", "1"])
 def test_set_ub_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     param = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     dict_now = obj.io.read()
     assert dict_now["UB_mat"] == param
 
+
 @pytest.mark.fixt_data("daf.ub", "-c2", *["1", "2"])
 def test_calc_from_2_ref_args(run_command_line, set_energy):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     for i in range(len(CALCULATED_U)):
         for j in range(len(CALCULATED_U[0])):
-            assert dict_now["U_mat"][i][j] ==  pytest.approx(CALCULATED_U[i][j], abs=1e-1)
+            assert dict_now["U_mat"][i][j] == pytest.approx(
+                CALCULATED_U[i][j], abs=1e-1
+            )
     for i in range(len(CALCULATED_UB)):
         for j in range(len(CALCULATED_UB[0])):
-            assert dict_now["UB_mat"][i][j] ==  pytest.approx(CALCULATED_UB[i][j], abs=1e-1)
+            assert dict_now["UB_mat"][i][j] == pytest.approx(
+                CALCULATED_UB[i][j], abs=1e-1
+            )
+
 
 @pytest.mark.fixt_data("daf.ub", "-c3", *["1", "2", "3"])
 def test_calc_from_3_ref_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
     dict_now = obj.io.read()
     for i in range(len(CALCULATED_U)):
         for j in range(len(CALCULATED_U[0])):
-            assert dict_now["U_mat"][i][j] ==  pytest.approx(CALCULATED_U[i][j], abs=1e-1)
+            assert dict_now["U_mat"][i][j] == pytest.approx(
+                CALCULATED_U[i][j], abs=1e-1
+            )
     for i in range(len(CALCULATED_UB)):
         for j in range(len(CALCULATED_UB[0])):
-            assert dict_now["UB_mat"][i][j] ==  pytest.approx(CALCULATED_UB[i][j], abs=1e-1)
+            assert dict_now["UB_mat"][i][j] == pytest.approx(
+                CALCULATED_UB[i][j], abs=1e-1
+            )
     for key, value in CALCULATED_LATTICE_PARAMETERS.items():
         print(dict_now[key])
         assert dict_now[key] == pytest.approx(
-             CALCULATED_LATTICE_PARAMETERS[key], abs=1e-3
+            CALCULATED_LATTICE_PARAMETERS[key], abs=1e-3
         )
-    
+
+
 @pytest.mark.fixt_data("daf.ub", "-l")
 def test_list_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
+
 
 @pytest.mark.fixt_data("daf.ub", "-s")
 def test_show_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
+
 
 @pytest.mark.fixt_data("daf.ub", "-p")
 def test_param_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line
+
 
 @pytest.mark.fixt_data("daf.ub", "-ca")
 def test_clear_all_args(run_command_line):
-    obj= run_command_line
+    obj = run_command_line

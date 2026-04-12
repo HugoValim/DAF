@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class ModeConstraints(ExperimentBase):
+class ModeConstraints(CLIBase):
     DESC = """Function to constrain angles during the experiment"""
     EPI = """
         Eg:
@@ -116,41 +116,26 @@ class ModeConstraints(ExperimentBase):
         args = self.parser.parse_args()
         return args
 
+    _PSEUDO_CONS = ("alpha", "beta", "psi", "qaz", "naz", "omega")
+    _MOTOR_CONS = ("mu", "eta", "chi", "phi", "nu", "del")
+
     def reset_to_constraints_zero(self) -> None:
         """Reset all constraints to 0 (the default value), it writes directly to the .Experiment file"""
-        dict_to_reset = {
-            "cons_mu": 0,
-            "cons_eta": 0,
-            "cons_chi": 0,
-            "cons_phi": 0,
-            "cons_nu": 0,
-            "cons_del": 0,
-            "cons_alpha": 0,
-            "cons_beta": 0,
-            "cons_psi": 0,
-            "cons_omega": 0,
-            "cons_qaz": 0,
-            "cons_naz": 0,
-        }
-        for key in dict_to_reset:
-            self.experiment_file_dict[key] = dict_to_reset[key]
+        for motor in self._MOTOR_CONS:
+            self.experiment_file_dict[f"cons_{motor}"] = 0
+        for pseudo in self._PSEUDO_CONS:
+            self.experiment_file_dict[f"cons_{pseudo}"] = 0
 
     def list_contraints(self) -> None:
         """Method to print the current constraints"""
         print("")
-        print("Alpha =    {}".format(self.experiment_file_dict["cons_alpha"]))
-        print("Beta  =    {}".format(self.experiment_file_dict["cons_beta"]))
-        print("Psi   =    {}".format(self.experiment_file_dict["cons_psi"]))
-        print("Qaz   =    {}".format(self.experiment_file_dict["cons_qaz"]))
-        print("Naz   =    {}".format(self.experiment_file_dict["cons_naz"]))
-        print("Omega =    {}".format(self.experiment_file_dict["cons_omega"]))
+        for pseudo in self._PSEUDO_CONS:
+            val = self.experiment_file_dict[f"cons_{pseudo}"]
+            print(f"{pseudo.capitalize():5} =    {val}")
         print("")
-        print("Mu    =    {}".format(self.experiment_file_dict["cons_mu"]))
-        print("Eta   =    {}".format(self.experiment_file_dict["cons_eta"]))
-        print("Chi   =    {}".format(self.experiment_file_dict["cons_chi"]))
-        print("Phi   =    {}".format(self.experiment_file_dict["cons_phi"]))
-        print("Nu    =    {}".format(self.experiment_file_dict["cons_nu"]))
-        print("Del   =    {}".format(self.experiment_file_dict["cons_del"]))
+        for motor in self._MOTOR_CONS:
+            val = self.experiment_file_dict[f"cons_{motor}"]
+            print(f"{motor.capitalize():4} =    {val}")
         print("")
 
     def run_cmd(self) -> None:

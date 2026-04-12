@@ -56,7 +56,7 @@ class TestDAF(unittest.TestCase):
         full_arg = "save"
         param = []
         obj = self.make_obj([arg, *param])
-        assert obj.parsed_args_dict[full_arg] == True
+        assert obj.parsed_args_dict[full_arg]
 
     def test_GIVEN_cli_argument_WHEN_inputing_save_as_THEN_check_parsed_args(
         self,
@@ -83,7 +83,7 @@ class TestDAF(unittest.TestCase):
         full_arg = "list"
         param = []
         obj = self.make_obj([arg, *param])
-        assert obj.parsed_args_dict[full_arg] == True
+        assert obj.parsed_args_dict[full_arg]
 
     def test_GIVEN_cli_argument_WHEN_inputing_description_THEN_check_parsed_args(
         self,
@@ -136,7 +136,7 @@ class TestDAF(unittest.TestCase):
         full_arg = "save"
         param = []
         obj = self.make_obj([arg, *param])
-        assert obj.parsed_args_dict[full_arg] == True
+        assert obj.parsed_args_dict[full_arg]
         obj.checkout_setup(dp.DEFAULT_FILE_NAME)
         obj.update_setup_description(".", "test desc")
         obj.run_cmd()

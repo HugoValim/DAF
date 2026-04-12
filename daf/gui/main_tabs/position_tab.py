@@ -13,6 +13,11 @@ from daf.gui.utils import format_5_dec, Icons, Counter
 
 
 class PositionTab(QWidget, Counter):
+
+    _MOTOR_NAMES = ("del", "eta", "chi", "phi", "nu", "mu")
+    _HKL_LABELS = ("H", "K", "L")
+    _PSEUDO_LABELS = ("alpha", "beta", "psi", "tau", "qaz", "naz", "omega")
+
     def __init__(self, dafio):
         super().__init__()
         uic.loadUi(self.ui_filepath(), self)
@@ -54,148 +59,39 @@ class PositionTab(QWidget, Counter):
         """Stop all DAF motors"""
         self.io.stop()
 
-    def refresh_pydm_motors(self, data: dict) -> None:
+    def _configure_motor_channel(self, motor: str, pv: str) -> None:
+        """Configure all PyDM widget channels for a single motor."""
         translate = QCoreApplication.translate
-
-        # set del motor labels
-        del_channel = "ca://" + data["motors"]["del"]["pv"]
-        self.PyDMLabel_del_desc.setProperty(
-            "channel", translate("Form", del_channel + ".DESC")
+        channel = f"ca://{pv}"
+        suffix_to_postfix = {
+            "desc": ".DESC",
+            "val": ".VAL",
+            "rbv": ".RBV",
+        }
+        for suffix, postfix in suffix_to_postfix.items():
+            widget = getattr(self, f"PyDMLabel_{motor}_{suffix}")
+            widget.setProperty("channel", translate("Form", channel + postfix))
+        getattr(self, f"PyDMByteIndicator_{motor}").setProperty(
+            "channel", translate("Form", channel + ".MOVN")
         )
-        self.PyDMLabel_del_val.setProperty(
-            "channel", translate("Form", del_channel + ".VAL")
-        )
-        self.PyDMLabel_del_rbv.setProperty(
-            "channel", translate("Form", del_channel + ".RBV")
-        )
-        self.PyDMByteIndicator_del.setProperty(
-            "channel", translate("Form", del_channel + ".MOVN")
-        )
-        self.PyDMPushButton_del.setProperty(
-            "channel", translate("Form", del_channel + ".STOP")
+        getattr(self, f"PyDMPushButton_{motor}").setProperty(
+            "channel", translate("Form", channel + ".STOP")
         )
 
-        # set eta motor labels
-
-        del_channel = "ca://" + data["motors"]["eta"]["pv"]
-        self.PyDMLabel_eta_desc.setProperty(
-            "channel", translate("Form", del_channel + ".DESC")
-        )
-        self.PyDMLabel_eta_val.setProperty(
-            "channel", translate("Form", del_channel + ".VAL")
-        )
-        self.PyDMLabel_eta_rbv.setProperty(
-            "channel", translate("Form", del_channel + ".RBV")
-        )
-        self.PyDMByteIndicator_eta.setProperty(
-            "channel", translate("Form", del_channel + ".MOVN")
-        )
-        self.PyDMPushButton_eta.setProperty(
-            "channel", translate("Form", del_channel + ".STOP")
-        )
-
-        # set chi motor labels
-
-        del_channel = "ca://" + data["motors"]["chi"]["pv"]
-        self.PyDMLabel_chi_desc.setProperty(
-            "channel", translate("Form", del_channel + ".DESC")
-        )
-        self.PyDMLabel_chi_val.setProperty(
-            "channel", translate("Form", del_channel + ".VAL")
-        )
-        self.PyDMLabel_chi_rbv.setProperty(
-            "channel", translate("Form", del_channel + ".RBV")
-        )
-        self.PyDMByteIndicator_chi.setProperty(
-            "channel", translate("Form", del_channel + ".MOVN")
-        )
-        self.PyDMPushButton_chi.setProperty(
-            "channel", translate("Form", del_channel + ".STOP")
-        )
-
-        # set phi motor labels
-
-        del_channel = "ca://" + data["motors"]["phi"]["pv"]
-        self.PyDMLabel_phi_desc.setProperty(
-            "channel", translate("Form", del_channel + ".DESC")
-        )
-        self.PyDMLabel_phi_val.setProperty(
-            "channel", translate("Form", del_channel + ".VAL")
-        )
-        self.PyDMLabel_phi_rbv.setProperty(
-            "channel", translate("Form", del_channel + ".RBV")
-        )
-        self.PyDMByteIndicator_phi.setProperty(
-            "channel", translate("Form", del_channel + ".MOVN")
-        )
-        self.PyDMPushButton_phi.setProperty(
-            "channel", translate("Form", del_channel + ".STOP")
-        )
-
-        # set nu motor labels
-
-        del_channel = "ca://" + data["motors"]["nu"]["pv"]
-        self.PyDMLabel_nu_desc.setProperty(
-            "channel", translate("Form", del_channel + ".DESC")
-        )
-        self.PyDMLabel_nu_val.setProperty(
-            "channel", translate("Form", del_channel + ".VAL")
-        )
-        self.PyDMLabel_nu_rbv.setProperty(
-            "channel", translate("Form", del_channel + ".RBV")
-        )
-        self.PyDMByteIndicator_nu.setProperty(
-            "channel", translate("Form", del_channel + ".MOVN")
-        )
-        self.PyDMPushButton_nu.setProperty(
-            "channel", translate("Form", del_channel + ".STOP")
-        )
-
-        # set mu motor labels
-
-        del_channel = "ca://" + data["motors"]["mu"]["pv"]
-        self.PyDMLabel_mu_desc.setProperty(
-            "channel", translate("Form", del_channel + ".DESC")
-        )
-        self.PyDMLabel_mu_val.setProperty(
-            "channel", translate("Form", del_channel + ".VAL")
-        )
-        self.PyDMLabel_mu_rbv.setProperty(
-            "channel", translate("Form", del_channel + ".RBV")
-        )
-        self.PyDMByteIndicator_mu.setProperty(
-            "channel", translate("Form", del_channel + ".MOVN")
-        )
-        self.PyDMPushButton_mu.setProperty(
-            "channel", translate("Form", del_channel + ".STOP")
-        )
+    def refresh_pydm_motors(self, data: dict) -> None:
+        """Refresh PyDM motor channels for all six motors."""
+        for motor in self._MOTOR_NAMES:
+            pv = data["motors"][motor]["pv"]
+            self._configure_motor_channel(motor, pv)
 
     def update_hkl(self):
         """Update HKL pos labels"""
-        self.H_val.setText(str(format_5_dec(self.update_dict["hkl"][0])))
-        self.K_val.setText(str(format_5_dec(self.update_dict["hkl"][1])))
-        self.L_val.setText(str(format_5_dec(self.update_dict["hkl"][2])))
+        for label, val in zip(self._HKL_LABELS, self.update_dict["hkl"]):
+            getattr(self, f"{label}_val").setText(str(format_5_dec(val)))
 
     def update_cons(self):
         """Update pseudo-angle pos labels"""
-        self.label_alpha.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["alpha"]))
-        )
-        self.label_beta.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["beta"]))
-        )
-        self.label_psi.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["psi"]))
-        )
-        self.label_tau.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["tau"]))
-        )
-        self.label_qaz.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["qaz"]))
-        )
-        self.label_naz.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["naz"]))
-        )
-        self.label_omega.setText(
-            str(format_5_dec(self.update_dict["pseudo_dict"]["omega"]))
-        )
+        for label in self._PSEUDO_LABELS:
+            getattr(self, f"label_{label}").setText(
+                str(format_5_dec(self.update_dict["pseudo_dict"][label]))
+            )

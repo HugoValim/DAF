@@ -13,6 +13,18 @@ import daf.utils.experiment_configs as ec
 
 
 class MyDisplay(QWidget):
+
+    _TAB_ORDER_PAIRS = (
+        ("lineEdit_samp_name", "lineEdit_a"),
+        ("lineEdit_a", "lineEdit_b"),
+        ("lineEdit_b", "lineEdit_c"),
+        ("lineEdit_c", "lineEdit_alpha"),
+        ("lineEdit_alpha", "lineEdit_beta"),
+        ("lineEdit_beta", "lineEdit_gamma"),
+        ("lineEdit_gamma", "pushButton_set"),
+    )
+    _LATTICE_PARAMS = ("a", "b", "c", "alpha", "beta", "gamma")
+
     def __init__(self, update_dict: dict):
         super().__init__()
         self.app = QApplication.instance()
@@ -40,13 +52,8 @@ class MyDisplay(QWidget):
         self.pushButton_set.setIcon(QIcon(Icons.check))
 
     def set_tab_order(self):
-        self.setTabOrder(self.lineEdit_samp_name, self.lineEdit_a)
-        self.setTabOrder(self.lineEdit_a, self.lineEdit_b)
-        self.setTabOrder(self.lineEdit_b, self.lineEdit_c)
-        self.setTabOrder(self.lineEdit_c, self.lineEdit_alpha)
-        self.setTabOrder(self.lineEdit_alpha, self.lineEdit_beta)
-        self.setTabOrder(self.lineEdit_beta, self.lineEdit_gamma)
-        self.setTabOrder(self.lineEdit_gamma, self.pushButton_set)
+        for from_widget, to_widget in self._TAB_ORDER_PAIRS:
+            self.setTabOrder(getattr(self, from_widget), getattr(self, to_widget))
 
     def init_frame_new_samp(self):
         """Hide the frame at UI start"""
@@ -110,19 +117,13 @@ class MyDisplay(QWidget):
         """Set the new sample"""
         if self.checkBox_new_mat.isChecked():
             samp = self.lineEdit_samp_name.text()
-            a = self.lineEdit_a.text()
-            b = self.lineEdit_b.text()
-            c = self.lineEdit_c.text()
-            alpha = self.lineEdit_alpha.text()
-            beta = self.lineEdit_beta.text()
-            gamma = self.lineEdit_gamma.text()
-
+            params = [
+                getattr(self, f"lineEdit_{p}").text() for p in self._LATTICE_PARAMS
+            ]
             subprocess.Popen(
-                "daf.expt -s {} -p {} {} {} {} {} {}".format(
-                    samp, a, b, c, alpha, beta, gamma
-                ),
-                shell=True,
+                ["daf.expt", "-s", samp, "-p"] + params,
+                shell=False,
             )
         else:
             samp = self.comboBox_materials.currentText()
-            subprocess.Popen("daf.expt -s {}".format(samp), shell=True)
+            subprocess.Popen(["daf.expt", "-s", samp], shell=False)

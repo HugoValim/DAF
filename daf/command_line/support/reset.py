@@ -53,7 +53,9 @@ class Reset(SupportBase):
 
     def hard_reset(self) -> None:
         """Also remove all configuration files user home"""
-        os.system('rm -fr "$HOME/.daf/"')
+        import shutil
+
+        shutil.rmtree(os.path.expanduser("~/.daf/"), ignore_errors=True)
 
     def run_cmd(self) -> None:
         self.soft_reset()

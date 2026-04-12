@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 
 
-class Bounds(ExperimentBase):
+class Bounds(CLIBase):
     DESC = """Sets the bounds of the diffractometer angles"""
     EPI = """
     Eg:
@@ -92,24 +92,9 @@ class Bounds(ExperimentBase):
     def list_bounds(self) -> None:
         """Method to print the current bounds"""
         print("")
-        print(
-            "Mu    =    {}".format(self.experiment_file_dict["motors"]["mu"]["bounds"])
-        )
-        print(
-            "Eta   =    {}".format(self.experiment_file_dict["motors"]["eta"]["bounds"])
-        )
-        print(
-            "Chi   =    {}".format(self.experiment_file_dict["motors"]["chi"]["bounds"])
-        )
-        print(
-            "Phi   =    {}".format(self.experiment_file_dict["motors"]["phi"]["bounds"])
-        )
-        print(
-            "Nu    =    {}".format(self.experiment_file_dict["motors"]["nu"]["bounds"])
-        )
-        print(
-            "Del   =    {}".format(self.experiment_file_dict["motors"]["del"]["bounds"])
-        )
+        for motor in self._MOTOR_NAMES:
+            bounds = self.experiment_file_dict["motors"][motor]["bounds"]
+            print(f"{motor.capitalize():4} =    {bounds}")
         print("")
 
     def run_cmd(self) -> None:

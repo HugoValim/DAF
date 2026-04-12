@@ -50,13 +50,13 @@ class AngleMove(MoveBase):
                 MAX = dict_["max"][self.experiment_file_dict["main_scan_counter"]][0]
                 MIN = dict_["min"][self.experiment_file_dict["main_scan_counter"]][0]
             else:
-                values_view = dict_.keys()
-                value_iterator = iter(values_view)
-                first_key = next(value_iterator)
-                FWHM = dict_["fwhm"][first_key]
-                CEN = dict_["com"][first_key]
-                MAX = dict_["max"][first_key][0]
-                MIN = dict_["min"][first_key][0]
+                # Get the first counter name from any sub-dict (all have same keys)
+                counter_names = dict_["fwhm"].keys()
+                first_counter = next(iter(counter_names))
+                FWHM = dict_["fwhm"][first_counter]
+                CEN = dict_["com"][first_counter]
+                MAX = dict_["max"][first_counter][0]
+                MIN = dict_["min"][first_counter][0]
             stat_dict = {"FWHM": FWHM, "CEN": CEN, "MAX": MAX, "MIN": MIN}
         dict_parsed_with_counter_stats = {
             key: (

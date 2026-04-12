@@ -5,11 +5,11 @@ import numpy as np
 
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
-from daf.command_line.experiment.experiment_utils import ExperimentBase
+from daf.command_line.cli_base_utils import CLIBase
 from daf.utils import dafutilities as du
 
 
-class ExperimentConfiguration(ExperimentBase):
+class ExperimentConfiguration(CLIBase):
     DESC = """Sets several experiment configuration conditions"""
 
     EPI = """
@@ -96,14 +96,22 @@ class ExperimentConfiguration(ExperimentBase):
         args = self.parser.parse_args()
         return args
 
+    # Standard angles for idir/ndir-based UB calculation
+    _IDIR_ANGLES = (0, 5, 0, -90, 0, 10)
+    _NDIR_ANGLES = (0, 5, 90, 0, 0, 10)
+
     def set_lattice_parameters(self, lattice_parameters: list) -> None:
-        """Sets the inputed lattice parameters to the .Experiment file"""
-        self.experiment_file_dict["lparam_a"] = lattice_parameters[0]
-        self.experiment_file_dict["lparam_b"] = lattice_parameters[1]
-        self.experiment_file_dict["lparam_c"] = lattice_parameters[2]
-        self.experiment_file_dict["lparam_alpha"] = lattice_parameters[3]
-        self.experiment_file_dict["lparam_beta"] = lattice_parameters[4]
-        self.experiment_file_dict["lparam_gama"] = lattice_parameters[5]
+        """Set lattice parameters from a 6-element list."""
+        lp_keys = (
+            "lparam_a",
+            "lparam_b",
+            "lparam_c",
+            "lparam_alpha",
+            "lparam_beta",
+            "lparam_gama",
+        )
+        for key, val in zip(lp_keys, lattice_parameters):
+            self.experiment_file_dict[key] = val
 
     def set_energy(self, energy_to_set: float) -> float:
         """Sets the energy to the .Experiment file"""
@@ -114,17 +122,9 @@ class ExperimentConfiguration(ExperimentBase):
         return offset
 
     def set_u_and_ub_based_in_idir_ndir(self, idir: list, ndir: list) -> tuple:
-        """
-        Calculate U and UB from idir and ndirm using a standard diffractometer angles.
-        This will be used as the main "idir" and "ndir" but works better setting the
-        U and UB matrix from that then using the raw idir, ndir.
-        """
+        """Calculate U and UB from idir/ndir using standard diffractometer angles."""
         exp = self.build_exp()
-        hkl1 = idir
-        angs1 = [0, 5, 0, -90, 0, 10]
-        hkl2 = ndir
-        angs2 = [0, 5, 90, 0, 0, 10]
-        U, UB = exp.calc_U_2HKL(hkl1, angs1, hkl2, angs2)
+        U, UB = exp.calc_U_2HKL(idir, self._IDIR_ANGLES, ndir, self._NDIR_ANGLES)
 
         self.experiment_file_dict["IDir_print"] = idir
         self.experiment_file_dict["NDir_print"] = ndir
@@ -133,47 +133,30 @@ class ExperimentConfiguration(ExperimentBase):
         return U, UB
 
     def set_material(self, sample: str) -> None:
-        """Sets a new material from a predefined xrayutilities sample or a new sample from lattice parameters"""
-        self.experiment_file_dict["Material"] = sample
+        """Set material from predefined xrayutilities sample or user-defined lattice params."""
+        efd = self.experiment_file_dict
+        efd["Material"] = sample
         exp = self.build_exp()
         predef = exp.predefined_samples
-        if (
-            sample not in predef
-            and sample not in self.experiment_file_dict["user_samples"].keys()
-        ):
-            nsamp_dict = self.experiment_file_dict["user_samples"]
-            nsamp_dict[sample] = [
-                self.experiment_file_dict["lparam_a"],
-                self.experiment_file_dict["lparam_b"],
-                self.experiment_file_dict["lparam_c"],
-                self.experiment_file_dict["lparam_alpha"],
-                self.experiment_file_dict["lparam_beta"],
-                self.experiment_file_dict["lparam_gama"],
-            ]
-            self.experiment_file_dict["user_samples"] = nsamp_dict
-        if (
-            self.experiment_file_dict["Material"]
-            in self.experiment_file_dict["user_samples"].keys()
-        ):
-            exp.set_material(
-                self.experiment_file_dict["Material"],
-                *self.experiment_file_dict["user_samples"][
-                    self.experiment_file_dict["Material"]
-                ]
-            )
+
+        lp = [
+            efd["lparam_a"],
+            efd["lparam_b"],
+            efd["lparam_c"],
+            efd["lparam_alpha"],
+            efd["lparam_beta"],
+            efd["lparam_gama"],
+        ]
+
+        if sample not in predef and sample not in efd["user_samples"]:
+            efd["user_samples"][sample] = lp
+
+        if sample in efd["user_samples"]:
+            exp.set_material(sample, *efd["user_samples"][sample])
         else:
-            exp.set_material(
-                self.experiment_file_dict["Material"],
-                self.experiment_file_dict["lparam_a"],
-                self.experiment_file_dict["lparam_b"],
-                self.experiment_file_dict["lparam_c"],
-                self.experiment_file_dict["lparam_alpha"],
-                self.experiment_file_dict["lparam_beta"],
-                self.experiment_file_dict["lparam_gama"],
-            )
-        UB = exp.calcUB()
-        # yaml doesn't handle numpy arrays well, so using python's list is a better choice
-        self.experiment_file_dict["UB_mat"] = UB.tolist()
+            exp.set_material(sample, *lp)
+
+        efd["UB_mat"] = exp.calcUB().tolist()
 
     def set_rdir(self, rdir: np.array):
         """Sets RDir"""

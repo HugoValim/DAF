@@ -86,13 +86,13 @@ class TestDAF(unittest.TestCase):
         self,
     ):
         obj = self.make_obj(["-r"])
-        assert obj.parsed_args_dict["reset"] == True
+        assert obj.parsed_args_dict["reset"]
 
     def test_GIVEN_cli_argument_WHEN_inputing_list_THEN_check_parsed_args(
         self,
     ):
         obj = self.make_obj(["-l"])
-        assert obj.parsed_args_dict["list"] == True
+        assert obj.parsed_args_dict["list"]
 
     def test_GIVEN_cli_argument_WHEN_inputing_bounds_mu_THEN_check_if_it_was_written_correctly(
         self,

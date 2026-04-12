@@ -343,7 +343,7 @@ class TestDAF(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
-        assert dict_now["simulated"] == True
+        assert dict_now["simulated"]
 
     def test_GIVEN_cli_argument_WHEN_inputing_real_THEN_test_for_problems(
         self,
@@ -353,4 +353,4 @@ class TestDAF(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             main()
         dict_now = obj.io.read()
-        assert dict_now["simulated"] == False
+        assert dict_now["simulated"] is False
