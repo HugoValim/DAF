@@ -18,11 +18,11 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
     def __init__(self, *args):
         parser = ModeParser(args)
         self.setup = parser.setup
-        self.col1 = parser.col1
-        self.col2 = parser.col2
-        self.col3 = parser.col3
-        self.col4 = parser.col4
-        self.col5 = parser.col5
+        self.constraint_col1 = parser.constraint_col1
+        self.constraint_col2 = parser.constraint_col2
+        self.constraint_col3 = parser.constraint_col3
+        self.constraint_col4 = parser.constraint_col4
+        self.constraint_col5 = parser.constraint_col5
         self.motor_constraints = parser.motor_constraints
         self.pseudo_angle_constraints = parser.pseudo_angle_constraints
         self.fixed_motor_list = parser.fixed_motor_list
@@ -40,12 +40,12 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.nref = (0, 0, 1)
         self.idir = (0, 0, 1)
         self.ndir = (1, 1, 0)
-        self.sampleor = "x+"
+        self.sampleleor = "x+"
         self.en = 8000
         self.lam = xu.en2lam(self.en)
         self.posrestrict = ()
         self.negrestrict = ()
-        self.fcsv = "{0:.4f}".format
+        self.format_float = "{0:.4f}".format
         self.U = np.identity(3)
         self.qconv = xu.experiment.QConversion(
             ["x+", "z-", "y+", "z-"], ["x+", "z-"], [0, 1, 0]
@@ -78,31 +78,31 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self._formatter.set_print_options(space=space)
 
         dprint = self._get_dprint()
-        self.forprint = self._build_forprint_rows(dprint, self.col1, self.col2)
+        self.forprint = self._build_forprint_rows(dprint, self.constraint_col1, self.constraint_col2)
 
         if sh == "mode":
             return self._formatter.format_mode(
                 self.setup,
-                self.col1,
-                self.col2,
-                self.col3,
-                self.col4,
-                self.col5,
+                self.constraint_col1,
+                self.constraint_col2,
+                self.constraint_col3,
+                self.constraint_col4,
+                self.constraint_col5,
                 self.forprint,
             )
 
         if sh == "expt":
             return self._formatter.format_experiment(
-                self.sampleor, self.lam, self.en, self.idir, self.ndir, self.nref
+                self.sampleleor, self.lam, self.en, self.idir, self.ndir, self.nref
             )
 
         if sh == "sample":
-            return self._formatter.format_sample(self.samp)
+            return self._formatter.format_sample(self.sample)
 
         if sh == "gui":
-            conscols = [self.col1, self.col2, self.col3, self.col4, self.col5]
+            conscols = [self.constraint_col1, self.constraint_col2, self.constraint_col3, self.constraint_col4, self.constraint_col5]
             experiment_list = [
-                self.sampleor,
+                self.sampleleor,
                 self._formatter._fmt(self.lam),
                 self._formatter._fmt(self.en / 1000),
                 self.idir,
@@ -110,13 +110,13 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
                 self.nref,
             ]
             sample_info = [
-                self.samp.name,
-                self.samp.a,
-                self.samp.b,
-                self.samp.c,
-                self.samp.alpha,
-                self.samp.beta,
-                self.samp.gamma,
+                self.sample.name,
+                self.sample.a,
+                self.sample.b,
+                self.sample.c,
+                self.sample.alpha,
+                self.sample.beta,
+                self.sample.gamma,
             ]
             return self.setup, conscols, self.forprint, experiment_list, sample_info
 
@@ -125,9 +125,9 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     def set_material(self, sample, *args):
         if sample in PREDEFINED_MATERIALS:
-            self.samp = PREDEFINED_MATERIALS[sample]
+            self.sample = PREDEFINED_MATERIALS[sample]
         else:
-            self.samp = xu.materials.Crystal(
+            self.sample = xu.materials.Crystal(
                 str(sample),
                 xu.materials.SGLattice(
                     1, args[0], args[1], args[2], args[3], args[4], args[5]
@@ -165,7 +165,6 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         return self.motor_bounds_list, self.pseudo_constraints_w_value_list
 
     def set_circle_constrain(self, **kwargs):
-        """Deprecated, check and remove"""
         for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
             if motor in kwargs and motor not in self.fixed_motor_list:
                 setattr(self, bound_attr, kwargs[motor])
@@ -176,7 +175,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.idir = idir
         self.ndir = ndir
         self.nref = rdir
-        self.sampleor = sampleor
+        self.sampleleor = sampleor
 
         if en > 50:
             self.en = en
@@ -197,7 +196,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             return repr(self.formscantxt)
 
         dprint = self._get_dprint()
-        self.forprint = self._build_forprint_rows(dprint, self.col1, self.col2)
+        self.forprint = self._build_forprint_rows(dprint, self.constraint_col1, self.constraint_col2)
 
         self.forprint = [
             (i[0], self._formatter._fmt(i[1])) if i[1] != "--" else (i[0], i[1])
@@ -206,18 +205,18 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
         return self._formatter.format_full_status(
             self.setup,
-            self.col1,
-            self.col2,
-            self.col3,
-            self.col4,
-            self.col5,
+            self.constraint_col1,
+            self.constraint_col2,
+            self.constraint_col3,
+            self.constraint_col4,
+            self.constraint_col5,
             self.forprint,
             self.qerror,
             self.hkl_calc,
             self.nref,
             self.en,
             self.lam,
-            self.samp,
+            self.sample,
             self.alphain,
             self.betaout,
             self.psipseudo,
@@ -248,11 +247,11 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.U = U
 
     def calcUB(self):
-        return self.U.dot(self.samp.B)
+        return self.U.dot(self.sample.B)
 
     def build_xrd_experiment(self):
         self.hrxrd = xu.HXRD(
-            self.idir, self.ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor
+            self.idir, self.ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleleor
         )
 
     def build_bounds(self):
@@ -267,7 +266,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     def calc_from_angs(self, Mu, Eta, Chi, Phi, Nu, Del):
         hkl = self.hrxrd.Ang2HKL(
-            Mu, Eta, Chi, Phi, Nu, Del, mat=self.samp, en=self.en, U=self.U
+            Mu, Eta, Chi, Phi, Nu, Del, mat=self.sample, en=self.en, U=self.U
         )
         self.hkl = hkl
         return hkl
@@ -310,7 +309,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         angslist = []
         for i in tqdm(scl):
             self.hkl = i
-            a, b = self.motor_angles(self, sv=startvalues)
+            a, b = self.motor_angles(self, start_values=startvalues)
             angslist.append(b)
             teste = np.abs(np.array(a[:6]) - np.array(startvalues))
 

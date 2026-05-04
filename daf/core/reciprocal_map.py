@@ -40,7 +40,6 @@ def _get_matplotlib_pyplot(funcname="XU"):
 _EPSILON = 1e-7  # Threshold for filtering peaks by strength
 _ANGLE_TOO_SMALL_THRESHOLD = 1e-4  # Threshold for checking if calculated angle is valid
 _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
-_PI = math.pi
 
 
 def _compute_bragg_indices(mat, exp, ttmax):
@@ -182,8 +181,8 @@ class ReciprocalMapWindow:
             logger.error("matplotlib needed for show_reciprocal_space_plane")
             return
 
-        exp = xu.HXRD(idir, ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor)
-        mat = self.samp
+        exp = xu.HXRD(idir, ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleleor)
+        mat = self.sample
 
         if ttmax is None:
             ttmax = 180
@@ -319,13 +318,13 @@ class ReciprocalMapWindow:
 
                 hkl = d["hkl"][m][ind["ind"][0]]
                 self.hkl = hkl
-                ang = self.motor_angles(self, sv=startvalue, flagmap=True)
+                ang = self.motor_angles(self, start_values=startvalue, flagmap=True)
                 angles = list(ang[0][:6]) + [float(ang[0][-1])]
 
                 np.set_printoptions(**popts)
 
                 pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-                    *angles[:6], self.samp, self.hkl, self.lam, self.nref, self.U
+                    *angles[:6], self.sample, self.hkl, self.lam, self.nref, self.U
                 )
                 exp_dict = {
                     "mu": angles[0],

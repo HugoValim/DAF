@@ -121,8 +121,8 @@ class UBMatrix:
         u1p, th1 = self.uphi(*angh1)
         u2p, th2 = self.uphi(*angh2)
 
-        h1c = self.samp.B.dot(h1)
-        h2c = self.samp.B.dot(h2)
+        h1c = self.sample.B.dot(h1)
+        h2c = self.sample.B.dot(h2)
 
         # Create modified unit vectors t1, t2 and t3 in crystal and phi systems
 
@@ -160,7 +160,7 @@ class UBMatrix:
 
         U = Tp.T.dot(TcI)
         self.U = U
-        self.UB = U.dot(self.samp.B)
+        self.UB = U.dot(self.sample.B)
 
         return U, self.UB
 
@@ -236,10 +236,10 @@ class UBMatrix:
     def _func_orient(self, vals, crystal, ref_data):
         quat = self._get_quat_from_u123(*vals)
         trial_u = self._get_rot_matrix(*quat)
-        tmp_ub = trial_u * crystal.B
+        trial_ub = trial_u * crystal.B
 
         res = 0
-        I = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        I = np.eye(3)
 
         for ref in ref_data:
             en = ref[9]
@@ -266,12 +266,12 @@ class UBMatrix:
         q_del = (NU * DEL - I) * np.array([[0], [2 * np.pi / wl], [0]])
         q_vals = LA.inv(PHI) * LA.inv(CHI) * LA.inv(ETA) * LA.inv(MU) * q_del
 
-        q_hkl = tmp_ub * hkl_vals
+        q_hkl = trial_ub * hkl_vals
         res += self.angle_between_vectors(q_hkl, q_vals)
         return res
 
     def fit_u_matrix(self, init_u, refl_list):
-        uc = self.samp
+        uc = self.sample
         try:
             start = list(_init_u123_from_matrix(init_u))
             lower = [0, 0, 0]
@@ -285,7 +285,6 @@ class UBMatrix:
         from scipy.optimize import minimize
 
         ref_data = refl_list
-        bounds = zip(lower, upper)
         res = minimize(
             self._func_orient,
             start,

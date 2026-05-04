@@ -78,7 +78,7 @@ class MinimizationProc(UBMatrix):
         Del = angles[5] + _ANGLE_OFFSET
 
         computed = _compute_pseudo_angles(
-            Mu, Eta, Chi, Phi, Nu, Del, self.samp, self.hkl, self.lam, self.nref, self.U
+            Mu, Eta, Chi, Phi, Nu, Del, self.sample, self.hkl, self.lam, self.nref, self.U
         )
 
         if pseudo_angle == "aeqb":
@@ -94,19 +94,19 @@ class MinimizationProc(UBMatrix):
             self.Q_lab = qvec
 
         else:
-            self.Q_material = self.samp.Q(self.hkl)
+            self.Q_material = self.sample.Q(self.hkl)
 
             self.Q_lab = self.hrxrd.Transform(self.Q_material)
 
-        self.dhkl = self.samp.planeDistance(self.hkl)
-        tilt = vector_angle(self.hkl, self.samp.Q(self.ndir), deg=True)
+        self.dhkl = self.sample.planeDistance(self.hkl)
+        tilt = vector_angle(self.hkl, self.sample.Q(self.ndir), deg=True)
 
-        if "sv" in kwargs.keys():
-            self.start = kwargs["sv"]
+        if "start_values" in kwargs:
+            self.start = kwargs["start_values"]
         else:
             self.start = [0, 0, 0, 0, 0, 0]
 
-        self.chute1 = list(_CHUTE_ANGLES)
+        self.fallback_angles = list(_CHUTE_ANGLES)
 
         # Build constraint list from pseudo_constraints_w_value_list
         if len(self.pseudo_constraints_w_value_list) != 0:
@@ -141,7 +141,7 @@ class MinimizationProc(UBMatrix):
         else:
             self.qerror = qerror
         self.hkl_calc = np.round(
-            self.hrxrd.Ang2HKL(*ang, mat=self.samp, en=self.en, U=self.U), 5
+            self.hrxrd.Ang2HKL(*ang, mat=self.sample, en=self.en, U=self.U), 5
         )
 
         self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
@@ -158,7 +158,7 @@ class MinimizationProc(UBMatrix):
             self.Phi,
             self.Nu,
             self.Del,
-            self.samp,
+            self.sample,
             self.hkl,
             self.lam,
             self.nref,
@@ -177,7 +177,7 @@ class MinimizationProc(UBMatrix):
         self.Qshow = pseudo_angles_dict["q_vector"]
         self.Qnorm = pseudo_angles_dict["q_vector_norm"]
         self.FHKL = LA.norm(
-            self.samp.StructureFactor(pseudo_angles_dict["q_vector"], self.en)
+            self.sample.StructureFactor(pseudo_angles_dict["q_vector"], self.en)
         )
 
         return [
@@ -198,24 +198,24 @@ class MinimizationProc(UBMatrix):
             self.omega,
             "{0:.2e}".format(self.qerror),
         ], [
-            self.fcsv(self.Mu),
-            self.fcsv(self.Eta),
-            self.fcsv(self.Chi),
-            self.fcsv(self.Phi),
-            self.fcsv(self.Nu),
-            self.fcsv(self.Del),
-            self.fcsv(self.ttB1),
-            self.fcsv(self.tB1),
-            self.fcsv(self.alphain),
-            self.fcsv(self.qaz),
-            self.fcsv(self.naz),
-            self.fcsv(self.taupseudo),
-            self.fcsv(self.psipseudo),
-            self.fcsv(self.betaout),
-            self.fcsv(self.omega),
-            self.fcsv(self.hkl_calc[0]),
-            self.fcsv(self.hkl_calc[1]),
-            self.fcsv(self.hkl_calc[2]),
+            self.format_float(self.Mu),
+            self.format_float(self.Eta),
+            self.format_float(self.Chi),
+            self.format_float(self.Phi),
+            self.format_float(self.Nu),
+            self.format_float(self.Del),
+            self.format_float(self.ttB1),
+            self.format_float(self.tB1),
+            self.format_float(self.alphain),
+            self.format_float(self.qaz),
+            self.format_float(self.naz),
+            self.format_float(self.taupseudo),
+            self.format_float(self.psipseudo),
+            self.format_float(self.betaout),
+            self.format_float(self.omega),
+            self.format_float(self.hkl_calc[0]),
+            self.format_float(self.hkl_calc[1]),
+            self.format_float(self.hkl_calc[2]),
             "{0:.2e}".format(self.qerror),
         ]
 
@@ -223,42 +223,42 @@ class MinimizationProc(UBMatrix):
         """Retry Q2AngFit with a sequence of different start values.
 
         The retry sequence tries progressively wider sweeps of the Phi motor
-        (0, 90, 180, 270 degrees) combined with the chute1 angles,
+        (0, 90, 180, 270 degrees) combined with the fallback_angles,
         as well as an initial estimate from Q2Ang.
         """
         start_sequence = [
             (0, 0, 0, 0, 0, self.preangs[3]),
             (
-                self.chute1[0],
-                self.chute1[1],
-                self.chute1[2],
+                self.fallback_angles[0],
+                self.fallback_angles[1],
+                self.fallback_angles[2],
                 0,
-                self.chute1[4],
-                self.chute1[5],
+                self.fallback_angles[4],
+                self.fallback_angles[5],
             ),
             (
-                self.chute1[0],
-                self.chute1[1],
-                self.chute1[2],
+                self.fallback_angles[0],
+                self.fallback_angles[1],
+                self.fallback_angles[2],
                 90,
-                self.chute1[4],
-                self.chute1[5],
+                self.fallback_angles[4],
+                self.fallback_angles[5],
             ),
             (
-                self.chute1[0],
-                self.chute1[1],
-                self.chute1[2],
+                self.fallback_angles[0],
+                self.fallback_angles[1],
+                self.fallback_angles[2],
                 180,
-                self.chute1[4],
-                self.chute1[5],
+                self.fallback_angles[4],
+                self.fallback_angles[5],
             ),
             (
-                self.chute1[0],
-                self.chute1[1],
-                self.chute1[2],
+                self.fallback_angles[0],
+                self.fallback_angles[1],
+                self.fallback_angles[2],
                 270,
-                self.chute1[4],
-                self.chute1[5],
+                self.fallback_angles[4],
+                self.fallback_angles[5],
             ),
         ]
 

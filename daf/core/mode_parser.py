@@ -163,18 +163,18 @@ class ModeParser:
             raise ValueError("Energy mode was not implemented yet")
 
     def _parse_columns(self, mode: tuple) -> None:
-        self.col1 = mode[0]
-        self.col2 = mode[1]
-        self.col3 = mode[2]
-        self.col4 = mode[3] if len(mode) >= 4 else 0
-        self.col5 = mode[4] if len(mode) == 5 else 0
+        self.constraint_col1 = mode[0]
+        self.constraint_col2 = mode[1]
+        self.constraint_col3 = mode[2]
+        self.constraint_col4 = mode[3] if len(mode) >= 4 else 0
+        self.constraint_col5 = mode[4] if len(mode) == 5 else 0
 
         self.setup = (
-            MODE_COLUMNS[1][self.col1],
-            MODE_COLUMNS[2][self.col2],
-            MODE_COLUMNS[3][self.col3],
-            MODE_COLUMNS[4][self.col4],
-            MODE_COLUMNS[5][self.col5],
+            MODE_COLUMNS[1][self.constraint_col1],
+            MODE_COLUMNS[2][self.constraint_col2],
+            MODE_COLUMNS[3][self.constraint_col3],
+            MODE_COLUMNS[4][self.constraint_col4],
+            MODE_COLUMNS[5][self.constraint_col5],
         )
 
     def _derive_constraints(self) -> None:

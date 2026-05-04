@@ -176,7 +176,7 @@ class CLIBase:
         motor_vals = self._get_motor_values()
         startvalue = [motor_vals[m] for m in self._MOTOR_NAMES]
         self.exp.set_hkl(hkl)
-        self.exp(sv=startvalue)
+        self.exp(start_values=startvalue)
         error = self.exp.qerror
         return error
 
