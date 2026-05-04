@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import subprocess
 import math
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 import numpy as np
 import xrayutilities as xu
@@ -126,6 +126,63 @@ class ReciprocalMapWindow:
 
         return np.degrees(np.max(Z)), np.degrees(np.min(Z))
 
+    def _setup_figure(self, ax: Axes | None, k0: float, plt: Any) -> tuple[Any, Axes]:
+        """Create or reuse a matplotlib figure/axes, set fixed axis limits."""
+        if not ax:
+            fig = plt.figure(figsize=(9, 5))
+            ax = plt.subplot(111)
+        else:
+            fig = ax.get_figure()
+            plt.sca(ax)
+        plt.axis("scaled")
+        ax.set_autoscaley_on(False)
+        ax.set_autoscalex_on(False)
+        plt.xlim(-2.05 * k0, 2.05 * k0)
+        plt.ylim(-0.05 * k0, 2.05 * k0)
+        return fig, ax
+
+    def _draw_laue_zones(
+        self, ax: Axes, plt: Any, k0: float,
+        ttmax: float, ttmin: float | None
+    ) -> None:
+        """Draw Laue zone circles onto ax."""
+        c = plt.matplotlib.patches.Circle(
+            (0, 0), 2 * k0, facecolor="#FF9180", edgecolor="none"
+        )
+        ax.add_patch(c)
+        qmax = 2 * k0 * math.sin(math.radians(ttmax / 2.0))
+        c = plt.matplotlib.patches.Circle(
+            (0, 0), qmax, facecolor="#FFFFFF", edgecolor="none"
+        )
+        ax.add_patch(c)
+        if ttmin:
+            qmin = 2 * k0 * math.sin(math.radians(ttmin / 2.0))
+            c = plt.matplotlib.patches.Circle(
+                (0, 0), qmin, facecolor="#FF9180", edgecolor="none"
+            )
+            ax.add_patch(c)
+        for cx, cy, r in [(0, 0, 2 * k0), (k0, 0, k0), (-k0, 0, k0)]:
+            c = plt.matplotlib.patches.Circle(
+                (cx, cy), r, facecolor="none", edgecolor="0.5"
+            )
+            ax.add_patch(c)
+        plt.hlines(0, -2 * k0, 2 * k0, color="0.5", lw=0.5)
+        plt.vlines(0, -2 * k0, 2 * k0, color="0.5", lw=0.5)
+
+    def _plot_peaks(
+        self, ax: Axes, plt: Any,
+        x: np.ndarray, y: np.ndarray, s: np.ndarray,
+        mat_name: str, label: str | None, color: str | None,
+    ) -> PathCollection:
+        """Scatter-plot Bragg peaks and return the PathCollection handle."""
+        label = label if label else mat_name
+        h = plt.scatter(x, y, s=s, zorder=2, label=label)
+        if color:
+            h.set_color(color)
+        plt.xlabel(r"$Q$ inplane ($\mathrm{\AA^{-1}}$)")
+        plt.ylabel(r"$Q$ out of plane ($\mathrm{\AA^{-1}}$)")
+        return h
+
     def show_reciprocal_space_plane(
         self,
         ttmax: float | None = None,
@@ -188,7 +245,7 @@ class ReciprocalMapWindow:
             logger.error("matplotlib needed for show_reciprocal_space_plane")
             return
 
-        exp = xu.HXRD(idir, ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleleor)
+        exp = xu.HXRD(idir, ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor)
         mat = self.sample
 
         if ttmax is None:
@@ -197,50 +254,10 @@ class ReciprocalMapWindow:
         d = get_peaks(mat, exp, ttmax)
         k0 = exp.k0
 
-        if not ax:
-            fig = plt.figure(figsize=(9, 5))
-            ax = plt.subplot(111)
-        else:
-            fig = ax.get_figure()
-            plt.sca(ax)
-
-        plt.axis("scaled")
-        ax.set_autoscaley_on(False)
-        ax.set_autoscalex_on(False)
-        plt.xlim(-2.05 * k0, 2.05 * k0)
-        plt.ylim(-0.05 * k0, 2.05 * k0)
+        fig, ax = self._setup_figure(ax, k0, plt)
 
         if show_Laue:
-            c = plt.matplotlib.patches.Circle(
-                (0, 0), 2 * k0, facecolor="#FF9180", edgecolor="none"
-            )
-            ax.add_patch(c)
-            qmax = 2 * k0 * math.sin(math.radians(ttmax / 2.0))
-            c = plt.matplotlib.patches.Circle(
-                (0, 0), qmax, facecolor="#FFFFFF", edgecolor="none"
-            )
-            ax.add_patch(c)
-            if ttmin:
-                qmax = 2 * k0 * math.sin(math.radians(ttmin / 2.0))
-                c = plt.matplotlib.patches.Circle(
-                    (0, 0), qmax, facecolor="#FF9180", edgecolor="none"
-                )
-                ax.add_patch(c)
-
-            c = plt.matplotlib.patches.Circle(
-                (0, 0), 2 * k0, facecolor="none", edgecolor="0.5"
-            )
-            ax.add_patch(c)
-            c = plt.matplotlib.patches.Circle(
-                (k0, 0), k0, facecolor="none", edgecolor="0.5"
-            )
-            ax.add_patch(c)
-            c = plt.matplotlib.patches.Circle(
-                (-k0, 0), k0, facecolor="none", edgecolor="0.5"
-            )
-            ax.add_patch(c)
-            plt.hlines(0, -2 * k0, 2 * k0, color="0.5", lw=0.5)
-            plt.vlines(0, -2 * k0, 2 * k0, color="0.5", lw=0.5)
+            self._draw_laue_zones(ax, plt, k0, ttmax, ttmin)
 
         # generate mask for plotting
         m = np.zeros_like(d, dtype=bool)
@@ -258,14 +275,8 @@ class ReciprocalMapWindow:
                 x[i] = np.sign(qv[1]) * np.sqrt(qv[0] ** 2 + qv[1] ** 2)
             y[i] = qv[2]
             s[i] = r * scalef
-        label = label if label else mat.name
-        h = plt.scatter(x, y, s=s, zorder=2, label=label)
 
-        if color:
-            h.set_color(color)
-
-        plt.xlabel(r"$Q$ inplane ($\mathrm{\AA^{-1}}$)")
-        plt.ylabel(r"$Q$ out of plane ($\mathrm{\AA^{-1}}$)")
+        h = self._plot_peaks(ax, plt, x, y, s, mat.name, label, color)
 
         if show_legend:
             if len(fig.legends) == 1:
