@@ -89,6 +89,23 @@ class MinimizationProc(UBMatrix):
         if hasattr(computed, pseudo_angle):
             return getattr(computed, pseudo_angle) - fix_angle
 
+    def _build_constraints(self) -> list | None:
+        """Build scipy constraint dicts from pseudo_constraints_w_value_list."""
+        if not self.pseudo_constraints_w_value_list:
+            return None
+        pseudoconst = self.pseudoAngleConst
+        return [
+            {
+                "type": "eq",
+                "fun": lambda a, idx=idx: pseudoconst(
+                    a,
+                    self.pseudo_constraints_w_value_list[idx][0],
+                    self.pseudo_constraints_w_value_list[idx][1],
+                ),
+            }
+            for idx in range(len(self.pseudo_constraints_w_value_list))
+        ]
+
     def motor_angles(
         self, *args: Any, qvec: Any = False, max_err: float = _DEFAULT_MAX_ERROR, **kwargs: Any
     ) -> tuple[list, list]:
@@ -113,22 +130,7 @@ class MinimizationProc(UBMatrix):
 
         self.fallback_angles = list(_CHUTE_ANGLES)
 
-        # Build constraint list from pseudo_constraints_w_value_list
-        if len(self.pseudo_constraints_w_value_list) != 0:
-            pseudoconst = self.pseudoAngleConst
-            restrict = [
-                {
-                    "type": "eq",
-                    "fun": lambda a, idx=idx: pseudoconst(
-                        a,
-                        self.pseudo_constraints_w_value_list[idx][0],
-                        self.pseudo_constraints_w_value_list[idx][1],
-                    ),
-                }
-                for idx in range(len(self.pseudo_constraints_w_value_list))
-            ]
-        else:
-            restrict = None
+        restrict = self._build_constraints()
 
         ang, qerror, errcode = xu.Q2AngFit(
             self.Q_lab,

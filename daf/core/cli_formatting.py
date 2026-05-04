@@ -238,6 +238,46 @@ class DAFFormatter:
         ]
         return TablePrinter(self._7col_fmt(), ul="")(data)
 
+    def _format_motor_section(
+        self, del_val, eta_val, chi_val, phi_val, nu_val, mu_val
+    ) -> list:
+        """Return the two-row motor-angles block for the full status table."""
+        c = self.center.format
+        f = lambda v: self.center.format(self._fmt(v))  # noqa: E731
+        return [
+            {
+                "col1": c("Del"), "col2": c("Eta"), "col3": c("Chi"),
+                "col4": c("Phi"), "col5": c("Nu"), "col6": c("Mu"), "col7": c("--"),
+            },
+            {
+                "col1": f(del_val), "col2": f(eta_val), "col3": f(chi_val),
+                "col4": f(phi_val), "col5": f(nu_val), "col6": f(mu_val), "col7": c("--"),
+            },
+        ]
+
+    def _format_constraint_section(
+        self, setup, col1, col2, col3, col4, col5, forprint, qerror
+    ) -> list:
+        """Return the two-row mode/constraint block for the full status table."""
+        c = self.center.format
+        mode_num = str(col1) + str(col2) + str(col3) + str(col4) + str(col5)
+        return [
+            {
+                "col1": c("MODE"), "col2": c(setup[0]), "col3": c(setup[1]),
+                "col4": c(setup[2]), "col5": c(setup[3]), "col6": c(setup[4]),
+                "col7": c("Error"),
+            },
+            {
+                "col1": c(mode_num),
+                "col2": c(forprint[0][1]) if len(forprint) > 0 else c("--"),
+                "col3": c(forprint[1][1]) if len(forprint) > 1 else c("--"),
+                "col4": c(forprint[2][1]) if len(forprint) > 2 else c("--"),
+                "col5": c(forprint[3][1]) if len(forprint) > 3 else c("--"),
+                "col6": c(forprint[4][1]) if len(forprint) > 4 else c("--"),
+                "col7": c("%.3g" % qerror),
+            },
+        ]
+
     def format_full_status(
         self,
         setup,
@@ -280,30 +320,10 @@ class DAFFormatter:
         def f(val):
             return self.center.format(self._fmt(val))
 
-        def sep(val):
-            return self.center.format(val)
-
-        mode_num = str(col1) + str(col2) + str(col3) + str(col4) + str(col5)
-
         data = [
-            {
-                "col1": c("MODE"),
-                "col2": c(setup[0]),
-                "col3": c(setup[1]),
-                "col4": c(setup[2]),
-                "col5": c(setup[3]),
-                "col6": c(setup[4]),
-                "col7": c("Error"),
-            },
-            {
-                "col1": c(mode_num),
-                "col2": c(forprint[0][1]) if len(forprint) > 0 else c("--"),
-                "col3": c(forprint[1][1]) if len(forprint) > 1 else c("--"),
-                "col4": c(forprint[2][1]) if len(forprint) > 2 else c("--"),
-                "col5": c(forprint[3][1]) if len(forprint) > 3 else c("--"),
-                "col6": c(forprint[4][1]) if len(forprint) > 4 else c("--"),
-                "col7": c("%.3g" % qerror),
-            },
+            *self._format_constraint_section(
+                setup, col1, col2, col3, col4, col5, forprint, qerror
+            ),
             *self._separator_row(),
             {
                 "col1": c("H"),
@@ -362,24 +382,7 @@ class DAFFormatter:
                 "col7": f(omega),
             },
             *self._separator_row(),
-            {
-                "col1": c("Del"),
-                "col2": c("Eta"),
-                "col3": c("Chi"),
-                "col4": c("Phi"),
-                "col5": c("Nu"),
-                "col6": c("Mu"),
-                "col7": c("--"),
-            },
-            {
-                "col1": f(del_val),
-                "col2": f(eta_val),
-                "col3": f(chi_val),
-                "col4": f(phi_val),
-                "col5": f(nu_val),
-                "col6": f(mu_val),
-                "col7": c("--"),
-            },
+            *self._format_motor_section(del_val, eta_val, chi_val, phi_val, nu_val, mu_val),
             *self._separator_row(),
         ]
 

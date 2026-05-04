@@ -9,6 +9,13 @@ import pandas as pd
 from tqdm import tqdm
 
 from daf.core.mode_parser import ModeParser, PREDEFINED_MATERIALS
+
+_SCAN_COLUMNS = [
+    "Mu", "Eta", "Chi", "Phi", "Nu", "Del",
+    "2theta", "theta", "alpha", "qaz", "naz",
+    "tau", "psi", "beta", "omega",
+    "H", "K", "L", "Error",
+]
 from daf.core.reciprocal_map import ReciprocalMapWindow
 from daf.core.minimization import MinimizationProc, _SCAN_QERROR_THRESHOLD
 from daf.core.cli_formatting import DAFFormatter, build_forprint_rows, build_dprint
@@ -295,6 +302,9 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             "{0:.2e}".format(self.qerror),
         ]
 
+    def _build_scan_dataframe(self, angles_list: list) -> pd.DataFrame:
+        return pd.DataFrame(angles_list, columns=_SCAN_COLUMNS)
+
     def scan(
         self,
         hkli,
@@ -323,56 +333,12 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
             startvalues = a[:6]
 
-            pd.DataFrame(
-                [b],
-                columns=[
-                    "Mu",
-                    "Eta",
-                    "Chi",
-                    "Phi",
-                    "Nu",
-                    "Del",
-                    "2theta",
-                    "theta",
-                    "alpha",
-                    "qaz",
-                    "naz",
-                    "tau",
-                    "psi",
-                    "beta",
-                    "omega",
-                    "H",
-                    "K",
-                    "L",
-                    "Error",
-                ],
-            ).to_csv(".my_scan_counter.csv", mode="a", header=False)
+            self._build_scan_dataframe([b]).to_csv(
+                ".my_scan_counter.csv", mode="a", header=False
+            )
 
         self.isscan = True
-        self.formscantxt = pd.DataFrame(
-            angslist,
-            columns=[
-                "Mu",
-                "Eta",
-                "Chi",
-                "Phi",
-                "Nu",
-                "Del",
-                "2theta",
-                "theta",
-                "alpha",
-                "qaz",
-                "naz",
-                "tau",
-                "psi",
-                "beta",
-                "omega",
-                "H",
-                "K",
-                "L",
-                "Error",
-            ],
-        )
+        self.formscantxt = self._build_scan_dataframe(angslist)
         self.formscan = self.formscantxt[
             ["Mu", "Eta", "Chi", "Phi", "Nu", "Del", "Error"]
         ]
