@@ -7,7 +7,7 @@ from daf.core.types import PseudoAngles, RotationMatrices
 
 
 def calculate_rotation_matrix_from_diffractometer_angles(
-    mu, eta, chi, phi, nu, del_
+    mu: float, eta: float, chi: float, phi: float, nu: float, del_: float
 ) -> RotationMatrices:
     """Calculate the rotation matrix for all diffractometer motors."""
     # Matrices from 4S+2D angles, H. You, JAC, 1999, 32, 614-23
@@ -77,10 +77,10 @@ def calculate_pseudo_angle_from_motor_angles(
     Nu: float,
     Del: float,
     sample: xu.materials.material.Crystal,
-    hkl: "vector",
+    hkl: np.ndarray,
     wave_length: float,
-    rdir: "vector",
-    U: "np.ndarray",
+    rdir: np.ndarray,
+    U: np.ndarray,
 ) -> PseudoAngles:
     """Calculate all pseudo angles from motor angles."""
 

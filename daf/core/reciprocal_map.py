@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """Reciprocal space mapping and visualization for diffraction experiments."""
+from __future__ import annotations
 
 import logging
 import subprocess
 import math
+from typing import TYPE_CHECKING
+
 import numpy as np
 import xrayutilities as xu
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
+    from matplotlib.collections import PathCollection
 
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import calculate_pseudo_angle_from_motor_angles
@@ -121,20 +128,20 @@ class ReciprocalMapWindow:
 
     def show_reciprocal_space_plane(
         self,
-        ttmax=None,
-        ttmin=None,
-        maxqout=0.01,
-        scalef=100,
-        ax=None,
-        color=None,
-        show_Laue=True,
-        show_legend=True,
-        projection="perpendicular",
-        label=None,
-        idir=None,
-        ndir=None,
-        move=True,
-    ):
+        ttmax: float | None = None,
+        ttmin: float | None = None,
+        maxqout: float = 0.01,
+        scalef: float = 100,
+        ax: Axes | None = None,
+        color: str | None = None,
+        show_Laue: bool = True,
+        show_legend: bool = True,
+        projection: str = "perpendicular",
+        label: str | None = None,
+        idir: tuple | None = None,
+        ndir: tuple | None = None,
+        move: bool = True,
+    ) -> tuple[Axes, PathCollection] | None:
         """
         show a plot of the coplanar diffraction plane with peak positions for the
         respective material. the size of the spots is scaled with the strength of

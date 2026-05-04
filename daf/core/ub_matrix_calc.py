@@ -270,7 +270,7 @@ class UBMatrix:
         res += self.angle_between_vectors(q_hkl, q_vals)
         return res
 
-    def fit_u_matrix(self, init_u, refl_list):
+    def fit_u_matrix(self, init_u: np.ndarray, refl_list: list) -> np.ndarray:
         uc = self.sample
         try:
             start = list(_init_u123_from_matrix(init_u))

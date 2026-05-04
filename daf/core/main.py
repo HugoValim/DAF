@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
+from typing import Any
 
 import xrayutilities as xu
 import numpy as np
@@ -15,7 +18,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     predefined_samples = PREDEFINED_MATERIALS
 
-    def __init__(self, *args):
+    def __init__(self, *args: int) -> None:
         parser = ModeParser(args)
         self.setup = parser.setup
         self.constraint_col1 = parser.constraint_col1
@@ -36,11 +39,11 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.define_standard_experiment()
         self._formatter = DAFFormatter()
 
-    def define_standard_experiment(self):
+    def define_standard_experiment(self) -> None:
         self.nref = (0, 0, 1)
         self.idir = (0, 0, 1)
         self.ndir = (1, 1, 0)
-        self.sampleleor = "x+"
+        self.sampleor = "x+"
         self.en = 8000
         self.lam = xu.en2lam(self.en)
         self.posrestrict = ()
@@ -73,7 +76,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             self.setup,
         )
 
-    def show(self, sh, ident=3, space=20):
+    def show(self, sh: str, ident: int = 3, space: int = 20) -> str | tuple:
         """Show experiment info in different formats."""
         self._formatter.set_print_options(space=space)
 
@@ -93,7 +96,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
         if sh == "expt":
             return self._formatter.format_experiment(
-                self.sampleleor, self.lam, self.en, self.idir, self.ndir, self.nref
+                self.sampleor, self.lam, self.en, self.idir, self.ndir, self.nref
             )
 
         if sh == "sample":
@@ -102,7 +105,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         if sh == "gui":
             conscols = [self.constraint_col1, self.constraint_col2, self.constraint_col3, self.constraint_col4, self.constraint_col5]
             experiment_list = [
-                self.sampleleor,
+                self.sampleor,
                 self._formatter._fmt(self.lam),
                 self._formatter._fmt(self.en / 1000),
                 self.idir,
@@ -123,7 +126,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
     def set_hkl(self, HKL):
         self.hkl = HKL
 
-    def set_material(self, sample, *args):
+    def set_material(self, sample: str, *args: float) -> None:
         if sample in PREDEFINED_MATERIALS:
             self.sample = PREDEFINED_MATERIALS[sample]
         else:
@@ -175,7 +178,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         self.idir = idir
         self.ndir = ndir
         self.nref = rdir
-        self.sampleleor = sampleor
+        self.sampleor = sampleor
 
         if en > 50:
             self.en = en
@@ -251,7 +254,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     def build_xrd_experiment(self):
         self.hrxrd = xu.HXRD(
-            self.idir, self.ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleleor
+            self.idir, self.ndir, en=self.en, qconv=self.qconv, sampleor=self.sampleor
         )
 
     def build_bounds(self):

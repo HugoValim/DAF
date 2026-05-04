@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
+from typing import Any
 
 import xrayutilities as xu
 import numpy as np
@@ -51,7 +54,12 @@ def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
 
 
 class MinimizationProc(UBMatrix):
-    def pseudoAngleConst(self, angles, pseudo_angle, fix_angle):
+    def pseudoAngleConst(
+        self,
+        angles: list[float],
+        pseudo_angle: str,
+        fix_angle: float | str,
+    ) -> float | None:
 
         # Special geometric relations
         if pseudo_angle == "eta=del/2":
@@ -81,7 +89,9 @@ class MinimizationProc(UBMatrix):
         if hasattr(computed, pseudo_angle):
             return getattr(computed, pseudo_angle) - fix_angle
 
-    def motor_angles(self, *args, qvec=False, max_err=_DEFAULT_MAX_ERROR, **kwargs):
+    def motor_angles(
+        self, *args: Any, qvec: Any = False, max_err: float = _DEFAULT_MAX_ERROR, **kwargs: Any
+    ) -> tuple[list, list]:
 
         self.isscan = False
 
