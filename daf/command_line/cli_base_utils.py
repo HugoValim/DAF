@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import argparse as ap
+import dataclasses
 import sys
 
 import numpy as np
@@ -155,21 +156,20 @@ class CLIBase:
     def get_pseudo_angles_from_motor_angles(self) -> dict:
         """Calculate pseudo-angles from diffractometer angles"""
         motor_vals = self._get_motor_values()
-        pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
+        result = calculate_pseudo_angle_from_motor_angles(
             motor_vals["mu"],
             motor_vals["eta"],
             motor_vals["chi"],
             motor_vals["phi"],
             motor_vals["nu"],
             motor_vals["del"],
-            self.exp.samp,
+            self.exp.sample,
             self.calculate_hkl_from_angles(),
             self.exp.lam,
             self.exp.nref,
             self.exp.U,
         )
-
-        return pseudo_angles_dict
+        return dataclasses.asdict(result)
 
     def calculate_hkl(self, hkl: list) -> float:
         """Calculate the angles to a given HKL"""

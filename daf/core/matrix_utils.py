@@ -3,12 +3,13 @@ from numpy import linalg as la
 import xrayutilities as xu
 
 from daf.core.math_utils import vector_angle
+from daf.core.types import PseudoAngles, RotationMatrices
 
 
 def calculate_rotation_matrix_from_diffractometer_angles(
     mu, eta, chi, phi, nu, del_
-) -> dict:
-    """Calculate the rotation matrix for all diffractometer motors and return a dict with all calculated rotations"""
+) -> RotationMatrices:
+    """Calculate the rotation matrix for all diffractometer motors."""
     # Matrices from 4S+2D angles, H. You, JAC, 1999, 32, 614-23
     phi_rotation = np.array(
         [
@@ -58,15 +59,14 @@ def calculate_rotation_matrix_from_diffractometer_angles(
         ]
     )
 
-    result_dict = {
-        "mu": mu_rotation,
-        "eta": eta_rotation,
-        "chi": chi_rotation,
-        "phi": phi_rotation,
-        "nu": nu_rotation,
-        "del": del_rotation,
-    }
-    return result_dict
+    return RotationMatrices(
+        mu=mu_rotation,
+        eta=eta_rotation,
+        chi=chi_rotation,
+        phi=phi_rotation,
+        nu=nu_rotation,
+        del_=del_rotation,
+    )
 
 
 def calculate_pseudo_angle_from_motor_angles(
@@ -81,19 +81,19 @@ def calculate_pseudo_angle_from_motor_angles(
     wave_length: float,
     rdir: "vector",
     U: "np.ndarray",
-) -> dict:
-    """Calculate all pseudo angles from motor angles and return a dict with the calculated values"""
+) -> PseudoAngles:
+    """Calculate all pseudo angles from motor angles."""
 
     calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(
         Mu, Eta, Chi, Phi, Nu, Del
     )
 
-    MU = calculated_matrixes["mu"]
-    ETA = calculated_matrixes["eta"]
-    CHI = calculated_matrixes["chi"]
-    PHI = calculated_matrixes["phi"]
-    NU = calculated_matrixes["nu"]
-    DEL = calculated_matrixes["del"]
+    MU = calculated_matrixes.mu
+    ETA = calculated_matrixes.eta
+    CHI = calculated_matrixes.chi
+    PHI = calculated_matrixes.phi
+    NU = calculated_matrixes.nu
+    DEL = calculated_matrixes.del_
 
     Z = MU.dot(ETA).dot(CHI).dot(PHI)
     n = rdir
@@ -202,18 +202,16 @@ def calculate_pseudo_angle_from_motor_angles(
     )
     omega = np.rad2deg(np.arcsin(arg4))
 
-    result_dict = {
-        "alpha": alphain,
-        "qaz": qaz,
-        "naz": naz,
-        "tau": taupseudo,
-        "psi": psipseudo,
-        "beta": betaout,
-        "omega": omega,
-        "twotheta": ttB1,
-        "theta": tB1,
-        "q_vector": q,
-        "q_vector_norm": normQ,
-    }
-
-    return result_dict
+    return PseudoAngles(
+        alpha=alphain,
+        qaz=qaz,
+        naz=naz,
+        tau=taupseudo,
+        psi=psipseudo,
+        beta=betaout,
+        omega=omega,
+        twotheta=ttB1,
+        theta=tB1,
+        q_vector=q,
+        q_vector_norm=normQ,
+    )

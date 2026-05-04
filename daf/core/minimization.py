@@ -5,10 +5,7 @@ import numpy as np
 from numpy import linalg as LA
 
 from daf.core.ub_matrix_calc import UBMatrix
-from daf.core.matrix_utils import (
-    calculate_rotation_matrix_from_diffractometer_angles,
-    calculate_pseudo_angle_from_motor_angles,
-)
+from daf.core.matrix_utils import calculate_pseudo_angle_from_motor_angles
 from daf.core.math_utils import vector_angle
 
 
@@ -48,11 +45,9 @@ _PSEUDO_ANGLE_COMPUTED = frozenset(
 
 
 def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
-    """Compute all pseudo angles from motor angles, returning a dict."""
-    result = calculate_pseudo_angle_from_motor_angles(
+    return calculate_pseudo_angle_from_motor_angles(
         Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U
     )
-    return result
 
 
 class MinimizationProc(UBMatrix):
@@ -82,9 +77,9 @@ class MinimizationProc(UBMatrix):
         )
 
         if pseudo_angle == "aeqb":
-            return computed["beta"] - computed["alpha"]
-        if pseudo_angle in computed:
-            return computed[pseudo_angle] - fix_angle
+            return computed.beta - computed.alpha
+        if hasattr(computed, pseudo_angle):
+            return getattr(computed, pseudo_angle) - fix_angle
 
     def motor_angles(self, *args, qvec=False, max_err=_DEFAULT_MAX_ERROR, **kwargs):
 
@@ -147,10 +142,6 @@ class MinimizationProc(UBMatrix):
         self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
         self.Nu, self.Del = (ang[4], ang[5])
 
-        calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(
-            self.Mu, self.Eta, self.Chi, self.Phi, self.Nu, self.Del
-        )
-
         pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
             self.Mu,
             self.Eta,
@@ -165,19 +156,19 @@ class MinimizationProc(UBMatrix):
             self.U,
         )
 
-        self.ttB1 = pseudo_angles_dict["twotheta"]
-        self.tB1 = pseudo_angles_dict["theta"]
-        self.alphain = pseudo_angles_dict["alpha"]
-        self.qaz = pseudo_angles_dict["qaz"]
-        self.naz = pseudo_angles_dict["naz"]
-        self.taupseudo = pseudo_angles_dict["tau"]
-        self.psipseudo = pseudo_angles_dict["psi"]
-        self.betaout = pseudo_angles_dict["beta"]
-        self.omega = pseudo_angles_dict["omega"]
-        self.Qshow = pseudo_angles_dict["q_vector"]
-        self.Qnorm = pseudo_angles_dict["q_vector_norm"]
+        self.ttB1 = pseudo_angles_dict.twotheta
+        self.tB1 = pseudo_angles_dict.theta
+        self.alphain = pseudo_angles_dict.alpha
+        self.qaz = pseudo_angles_dict.qaz
+        self.naz = pseudo_angles_dict.naz
+        self.taupseudo = pseudo_angles_dict.tau
+        self.psipseudo = pseudo_angles_dict.psi
+        self.betaout = pseudo_angles_dict.beta
+        self.omega = pseudo_angles_dict.omega
+        self.Qshow = pseudo_angles_dict.q_vector
+        self.Qnorm = pseudo_angles_dict.q_vector_norm
         self.FHKL = LA.norm(
-            self.sample.StructureFactor(pseudo_angles_dict["q_vector"], self.en)
+            self.sample.StructureFactor(pseudo_angles_dict.q_vector, self.en)
         )
 
         return [

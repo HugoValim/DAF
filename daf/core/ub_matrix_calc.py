@@ -87,12 +87,12 @@ class UBMatrix:
             Mu, Eta, Chi, Phi, Nu, Del
         )
 
-        MU = calculated_matrixes["mu"]
-        ETA = calculated_matrixes["eta"]
-        CHI = calculated_matrixes["chi"]
-        PHI = calculated_matrixes["phi"]
-        NU = calculated_matrixes["nu"]
-        DEL = calculated_matrixes["del"]
+        MU = calculated_matrixes.mu
+        ETA = calculated_matrixes.eta
+        CHI = calculated_matrixes.chi
+        PHI = calculated_matrixes.phi
+        NU = calculated_matrixes.nu
+        DEL = calculated_matrixes.del_
 
         ttB1 = np.rad2deg(np.arccos(np.cos(np.deg2rad(Nu)) * np.cos(np.deg2rad(Del))))
         theta = ttB1 / 2
@@ -256,12 +256,12 @@ class UBMatrix:
             Mu, Eta, Chi, Phi, Nu, Del
         )
 
-        MU = calculated_matrixes["mu"]
-        ETA = calculated_matrixes["eta"]
-        CHI = calculated_matrixes["chi"]
-        PHI = calculated_matrixes["phi"]
-        NU = calculated_matrixes["nu"]
-        DEL = calculated_matrixes["del"]
+        MU = calculated_matrixes.mu
+        ETA = calculated_matrixes.eta
+        CHI = calculated_matrixes.chi
+        PHI = calculated_matrixes.phi
+        NU = calculated_matrixes.nu
+        DEL = calculated_matrixes.del_
 
         q_del = (NU * DEL - I) * np.array([[0], [2 * np.pi / wl], [0]])
         q_vals = LA.inv(PHI) * LA.inv(CHI) * LA.inv(ETA) * LA.inv(MU) * q_del
