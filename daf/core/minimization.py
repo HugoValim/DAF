@@ -229,6 +229,7 @@ class MinimizationProc(UBMatrix):
         (0, 90, 180, 270 degrees) combined with the fallback_angles,
         as well as an initial estimate from Q2Ang.
         """
+        self.preangs = self.hrxrd.Q2Ang(self.Q_lab)
         start_sequence = [
             (0, 0, 0, 0, 0, self.preangs[3]),
             (
@@ -276,4 +277,5 @@ class MinimizationProc(UBMatrix):
                 ormat=self.U,
             )
             if self.qerror < max_err:
-                return
+                break
+        return ang, self.qerror
