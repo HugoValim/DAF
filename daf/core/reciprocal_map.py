@@ -115,7 +115,7 @@ class ReciprocalMapWindow:
         """Method to get the maximum 2theta to show in the 2D reciprocal map"""
 
         def to_linspace(val):
-            return val if isinstance(val, float) else np.linspace(val[0], val[1], 1000)
+            return val if isinstance(val, (int, float)) else np.linspace(val[0], val[1], 1000)
 
         nub = to_linspace(self.bounds[4])
         delb = to_linspace(self.bounds[5])
