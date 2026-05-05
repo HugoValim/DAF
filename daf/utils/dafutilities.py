@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Library for reading and writing experiment files"""
+from __future__ import annotations
 
 import atexit
 import logging
@@ -10,6 +11,7 @@ import epics
 import yaml
 
 from daf.utils.daf_paths import DAFPaths as dp
+from daf.utils.experiment_file_schema import ExperimentFile
 
 logger = logging.getLogger(__name__)
 _ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
@@ -165,10 +167,10 @@ class DAFIO:
         )
         self.wait()
 
-    def read(self, filepath=DEFAULT):
-        """Read data from the experiment file"""
+    def read(self, filepath=DEFAULT) -> ExperimentFile:
+        """Read data from the experiment file."""
         with open(filepath) as file:
-            data = yaml.safe_load(file)
+            data: ExperimentFile = yaml.safe_load(file)
             if self.epics_get_flag:
                 data = self.epics_get(data)
             return data
