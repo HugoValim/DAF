@@ -12,9 +12,9 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_operation_modes_WHEN_mode_is_correct_THEN_it_is_right_setted(self):
         for test_mode in self.MODES_TO_TEST:
             exp = DAF(*test_mode)
-            assert exp.col1 == test_mode[0]
-            assert exp.col2 == test_mode[1]
-            assert exp.col3 == test_mode[2]
+            assert exp.constraint_col1 == test_mode[0]
+            assert exp.constraint_col2 == test_mode[1]
+            assert exp.constraint_col3 == test_mode[2]
 
     def test_GIVEN_operation_modes_WHEN_mode_is_correct_THEN_check_if_setup_is_correct(
         self,
@@ -93,7 +93,7 @@ class TestDAF(unittest.TestCase):
         for sample in self.SAMPLE_LIST:
             exp = DAF(2, 1, 5)
             exp.set_material(sample)
-            sample_now = exp.samp
+            sample_now = exp.sample
             assert sample_now.name == sample
             count += 1
 

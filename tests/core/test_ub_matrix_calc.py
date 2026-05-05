@@ -172,7 +172,7 @@ class TestUBMatrixWithSample(unittest.TestCase):
         import xrayutilities as xu
 
         self.ub_matrix = UBMatrix()
-        self.ub_matrix.samp = xu.materials.Si
+        self.ub_matrix.sample = xu.materials.Si
         self.ub_matrix.lam = 1.0
 
     def test_calc_u_2hkl(self):

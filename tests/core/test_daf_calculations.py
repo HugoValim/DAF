@@ -97,7 +97,7 @@ class TestDAF(unittest.TestCase):
         exp.set_material("Si")
         exp.set_hkl((1, 1, 1))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
-            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 0.58649, (0, 0, 1), exp.U
+            mu, eta, chi, phi, nu, del_, exp.sample, exp.hkl, 0.58649, (0, 0, 1), exp.U
         )
 
         pseudo_angles_to_compare = {
@@ -132,7 +132,7 @@ class TestDAF(unittest.TestCase):
         exp.set_material("Si")
         exp.set_hkl((2, 0, 3))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
-            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+            mu, eta, chi, phi, nu, del_, exp.sample, exp.hkl, 1.23984, (0, 0, 1), exp.U
         )
 
         pseudo_angles_to_compare = {
@@ -167,7 +167,7 @@ class TestDAF(unittest.TestCase):
         exp.set_material("Si")
         exp.set_hkl((1, 2, 3))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
-            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+            mu, eta, chi, phi, nu, del_, exp.sample, exp.hkl, 1.23984, (0, 0, 1), exp.U
         )
 
         pseudo_angles_to_compare = {
@@ -203,7 +203,7 @@ class TestDAF(unittest.TestCase):
         exp.set_hkl((1, 1, 1))
         exp.set_constraints(chi=90)
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
-            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+            mu, eta, chi, phi, nu, del_, exp.sample, exp.hkl, 1.23984, (0, 0, 1), exp.U
         )
 
         pseudo_angles_to_compare = {
@@ -238,7 +238,7 @@ class TestDAF(unittest.TestCase):
         exp.set_material("Si")
         exp.set_hkl((4, 2, 3))
         calculated_pseudo_angles = calculate_pseudo_angle_from_motor_angles(
-            mu, eta, chi, phi, nu, del_, exp.samp, exp.hkl, 1.23984, (0, 0, 1), exp.U
+            mu, eta, chi, phi, nu, del_, exp.sample, exp.hkl, 1.23984, (0, 0, 1), exp.U
         )
 
         pseudo_angles_to_compare = {
