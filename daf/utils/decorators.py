@@ -45,8 +45,9 @@ def log_macro(dargs):
 def check_version():
     """Check the version of current file if it exists, if the version is deprecated remove the file"""
     reset_flag = False
+    default_path = du.DEFAULT()
     try:
-        data = du.read_yml(du.DEFAULT)
+        data = du.read_yml(default_path)
         if (
             data["version"].split(".")[0] != __version__.split(".")[0]
         ):  # If Version if different from "1.x.y" remove data:
@@ -59,6 +60,6 @@ def check_version():
         logger.warning(
             "Your .Experiment file will be removed, please run daf.init to generate an up-to-date file"
         )
-        if os.path.isfile(du.DEFAULT):
-            os.remove(du.DEFAULT)
+        if os.path.isfile(default_path):
+            os.remove(default_path)
         sys.exit(0)

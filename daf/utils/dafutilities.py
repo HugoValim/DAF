@@ -16,8 +16,14 @@ from daf.utils.experiment_file_schema import ExperimentFile
 logger = logging.getLogger(__name__)
 _ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
 
-DEFAULT = dp.check_for_local_config()
 TIMEOUT = 2  # .2s timeout for caputs and cagets
+
+
+def _default_path():
+    return dp.check_for_local_config()
+
+
+DEFAULT = _default_path
 
 
 def read_yml(filepath: str = None):
@@ -53,7 +59,7 @@ class DAFIO:
 
     def build_epics_pvs(self):
         """Build PVs list to work with caput/caget many"""
-        if os.path.isfile(DEFAULT):
+        if os.path.isfile(_default_path()):
             dict_now = self.only_read()
             self.MOTOR_PVS = {
                 key: dict_now["motors"][key]["pv"]
@@ -79,8 +85,10 @@ class DAFIO:
         self.write(self.read())
 
     @staticmethod
-    def only_read(filepath=DEFAULT):
+    def only_read(filepath=None):
         """Just get the data from .Experiment file without any epics command"""
+        if filepath is None:
+            filepath = _default_path()
         with open(filepath) as file:
             data = yaml.safe_load(file)
             return data
@@ -167,8 +175,10 @@ class DAFIO:
         )
         self.wait()
 
-    def read(self, filepath=DEFAULT) -> ExperimentFile:
+    def read(self, filepath=None) -> ExperimentFile:
         """Read data from the experiment file."""
+        if filepath is None:
+            filepath = _default_path()
         with open(filepath) as file:
             data: ExperimentFile = yaml.safe_load(file)
             if self.epics_get_flag:
@@ -187,8 +197,10 @@ class DAFIO:
             if not dict_["beamline_pvs"][bl_pv]["up"]:
                 dict_["beamline_pvs"][bl_pv]["value"] = 0
 
-    def write(self, dict_, filepath=DEFAULT):
+    def write(self, dict_, filepath=None):
         """Write data to experiment file and also move motors if needed"""
+        if filepath is None:
+            filepath = _default_path()
         if self.epics_put_flag:
             self.epics_put(dict_)
         self.check_for_offline_motors_and_bl_pvs_before_write(dict_)

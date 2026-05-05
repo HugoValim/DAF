@@ -147,7 +147,7 @@ class TestCheckVersion(unittest.TestCase):
         """Test check_version passes when version matches"""
         with patch("daf.utils.decorators.du") as mock_du:
             mock_du.read_yml.return_value = {"version": "1.0.0"}
-            mock_du.DEFAULT = "/tmp/test"
+            mock_du.DEFAULT = MagicMock(return_value="/tmp/test")
             with patch.object(sys, "exit") as mock_exit:
                 with patch.object(os.path, "isfile", return_value=True):
                     from daf import __version__
@@ -164,7 +164,7 @@ class TestCheckVersion(unittest.TestCase):
         """Test check_version exits when version is too old"""
         with patch("daf.utils.decorators.du") as mock_du:
             mock_du.read_yml.return_value = {"version": "0.5.0"}
-            mock_du.DEFAULT = "/tmp/test"
+            mock_du.DEFAULT = MagicMock(return_value="/tmp/test")
             with patch.object(sys, "exit") as mock_exit:
                 with patch.object(os.path, "isfile", return_value=True):
                     from daf.utils.decorators import check_version
