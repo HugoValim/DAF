@@ -89,16 +89,16 @@ class Setup(SupportBase):
         """Get the current setup written in the .Experiment file"""
         return self.experiment_file_dict["setup"]
 
-    @staticmethod
-    def create_new_setup(setup_name: str) -> None:
+    def create_new_setup(self, setup_name: str) -> None:
         """Create a new DAF setup"""
-        gdd.generate_file(file_name=setup_name, file_path=dp.DAF_CONFIGS)
+        data = self.build_current_file(simulated=True)
+        gdd.generate_file(data=data, file_name=setup_name, file_path=dp.DAF_CONFIGS)
 
     def checkout_setup(self, setup_name: str) -> None:
         """Change to a new DAF setup"""
         full_file_path = os.path.join(dp.DAF_CONFIGS, setup_name)
         with open(full_file_path, "r") as src:
-            with open(du.DEFAULT, "w") as dst:
+            with open(du.DEFAULT(), "w") as dst:
                 dst.write(src.read())
         self.experiment_file_dict = self.io.read()
         self.experiment_file_dict["setup"] = setup_name

@@ -37,7 +37,8 @@ class SupportBase(CLIBase):
             beamline_pvs,
             counters_config,
         ) = self.get_motors_beamline_pvs_counters_info(simulated)
-        base_data = gdd.default
+        import copy
+        base_data = copy.deepcopy(gdd.default)
         base_data["simulated"] = simulated
         base_data["motors"] = motors
         base_data["beamline_pvs"] = beamline_pvs
