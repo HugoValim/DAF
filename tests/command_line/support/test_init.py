@@ -7,6 +7,17 @@ from daf.command_line.support.init import Init, main
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.utils import dafutilities as du
 
+
+try:
+    import docker
+    docker.from_env().version()
+    _DOCKER_AVAILABLE = True
+except Exception:
+    _DOCKER_AVAILABLE = False
+
+pytestmark = pytest.mark.skipif(not _DOCKER_AVAILABLE, reason="Docker not available")
+
+
 @pytest.fixture
 def remove_local_config():
     if os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT):

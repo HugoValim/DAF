@@ -1,3 +1,4 @@
+import math
 import sys
 
 import pytest
@@ -293,7 +294,9 @@ def test_if_pseudo_angles_are_written_correctly_eta_del(run_command_line):
     del pseudo_dict["q_vector"]
     del pseudo_dict["q_vector_norm"]
     for key, value in pseudo_dict.items():
-        assert dict_now[key] == pytest.approx(pseudo_dict[key])
+        if math.isnan(dict_now[key]) and math.isnan(value):
+            continue
+        assert dict_now[key] == pytest.approx(value)
 
 
 @pytest.mark.fixt_data("daf.amv", "--chi", "--phi")
@@ -304,4 +307,6 @@ def test_if_pseudo_angles_are_written_correctly_chi_phi(run_command_line):
     del pseudo_dict["q_vector"]
     del pseudo_dict["q_vector_norm"]
     for key, value in pseudo_dict.items():
-        assert dict_now[key] == pytest.approx(pseudo_dict[key])
+        if math.isnan(dict_now[key]) and math.isnan(value):
+            continue
+        assert dict_now[key] == pytest.approx(value)

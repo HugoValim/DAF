@@ -74,7 +74,7 @@ class TestDAF(unittest.TestCase):
         graph_att_obj = obj.build_graph_att_obj([1, 1, 0], [0, 0, 1], 100)
         assert graph_att_obj.idir == [1, 1, 0]
         assert graph_att_obj.ndir == [0, 0, 1]
-        assert graph_att_obj.idir == 100
+        assert graph_att_obj.scale == 100
 
     def test_GIVEN_cli_argument_WHEN_no_args_THEN_check_reciprocal_map_creation(self):
         obj = self.make_obj(["-s", "100"])

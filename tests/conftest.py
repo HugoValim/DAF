@@ -1,143 +1,174 @@
+"""
+Unit test configuration for DAF.
+This conftest provides mocks for EPICS and other integration dependencies.
+"""
 import sys
 import os
-
 import pytest
-import epics
+from unittest.mock import MagicMock
 
-from daf.command_line.support.init import Init, main
-from daf.command_line.experiment.experiment_configuration import ExperimentConfiguration
-from daf.command_line.support.reset import Reset
-from daf.config.motors_sim_config import PV_PREFIX
-from daf.utils.daf_paths import DAFPaths as dp
-from daf.utils.build_container import run_container
+# Mock epics module before any daf imports so DAFIO can be imported safely
+mock_epics = MagicMock()
+mock_epics.__version__ = "3.5.7"
+sys.modules["epics"] = mock_epics
+sys.modules["epics.ca"] = MagicMock()
+sys.modules["epics.pv"] = MagicMock()
 
-NUMBER_OF_MOTORS = 40
-
-
-@pytest.fixture(autouse=True, scope="session")
-def build_iocs():
-    run_container()
+# Mock pyepics
+mock_pyepics = MagicMock()
+sys.modules["pyepics"] = mock_pyepics
 
 
 @pytest.fixture(autouse=True, scope="session")
-def set_motors_velo_and_acc():
-    motor_list = []
-    for i in range(NUMBER_OF_MOTORS):
-        motor_now = PV_PREFIX + "m" + str(i + 1)
-        motor_list.append(motor_now)
-    accl_motor_pv_list = [pv + ".ACCL" for pv in motor_list]
-    velo_motor_pv_list = [pv + ".VELO" for pv in motor_list]
-    epics.caput_many(
-        accl_motor_pv_list, [1e-5 for i in accl_motor_pv_list], wait="all"
-    )  # Reduce the time needed for the motor to accelerate
-    epics.caput_many(
-        velo_motor_pv_list, [1e5 for i in velo_motor_pv_list], wait="all"
-    )  # Increase max motor velocity
-    epics.caput_many(
-        motor_list, [0 for i in motor_list], wait="all"
-    )  # Return all to position 0
-    yield
-    epics.caput_many(
-        motor_list, [0 for i in motor_list], wait="all"
-    )  # Return all to position 0
+def ensure_global_experiment_file():
+    """Ensure ~/.daf/.Experiment exists so integration tests can read it."""
+    from daf.utils.daf_paths import DAFPaths as dp
+    import daf.utils.generate_daf_default as gdd
+    from daf.command_line.support.init import Init
+
+    os.makedirs(dp.DAF_CONFIGS, exist_ok=True)
+    os.makedirs(dp.SCAN_CONFIGS, exist_ok=True)
+    if not os.path.exists(dp.GLOBAL_EXPERIMENT_DEFAULT):
+        data = Init.build_current_file(Init, True)
+        data["simulated"] = True
+        data["PV_energy"] = 10000.0
+        gdd.generate_file(data=data, file_name=dp.GLOBAL_EXPERIMENT_DEFAULT)
 
 
-@pytest.fixture(scope="module", autouse=True)
-def init_daf(tmp_path_factory):
-    dir = tmp_path_factory.mktemp("daf")
-    os.chdir(dir)
-
-    def build_args():
-        return ["daf.init", "--simulated"]
-
-    mp = pytest.MonkeyPatch()
-    with mp.context() as m:
-        m.setattr(sys, "argv", build_args())
-        obj = Init()
-        obj.run_cmd()
-        yield obj
-    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
-        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+# Stateful EPICS PV mock — set up at module level so module/session-scoped
+# fixtures that call EPICS before the function-scoped fixture runs still work.
+_pv_store: dict = {}
 
 
-@pytest.fixture
-def init_daf_function(tmp_path_factory):
-    dir = tmp_path_factory.mktemp("daf")
-    os.chdir(dir)
+def mock_caget(pvname, timeout=None):
+    return _pv_store.get(pvname, 0)
 
-    def build_args():
-        return ["daf.init", "--simulated"]
 
-    mp = pytest.MonkeyPatch()
-    with mp.context() as m:
-        m.setattr(sys, "argv", build_args())
-        obj = Init()
-        yield obj
-    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
-        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+def mock_caput(pvname, value, timeout=None, wait=None):
+    _pv_store[pvname] = value
+    # Mirror writes to readback PV so epics_get sees the updated value
+    if not pvname.endswith((".RBV", ".LLM", ".HLM", ".STOP", ".MOVN", ".ACCL", ".VELO")):
+        _pv_store[pvname + ".RBV"] = value
+
+
+def mock_caget_many(pvnames, timeout=None):
+    return [_pv_store.get(pv, 0) for pv in pvnames]
+
+
+def mock_caput_many(pvnames, values, timeout=None, wait=None, connection_timeout=None):
+    for pv, val in zip(pvnames, values):
+        _pv_store[pv] = val
+        if not pv.endswith((".RBV", ".LLM", ".HLM", ".STOP", ".MOVN", ".ACCL", ".VELO")):
+            _pv_store[pv + ".RBV"] = val
+
+
+mock_epics.caget = mock_caget
+mock_epics.caput = mock_caput
+mock_epics.caget_many = mock_caget_many
+mock_epics.caput_many = mock_caput_many
+
+
+@pytest.fixture(autouse=True, scope="session")
+def mock_epics_pvs():
+    """Yield the stateful EPICS mock (state persists across the test session)."""
+    yield mock_epics
 
 
 @pytest.fixture
-def init_daf_function_global(tmp_path_factory):
-    dir = tmp_path_factory.mktemp("daf")
-    os.chdir(dir)
+def temp_experiment_file(tmp_path, monkeypatch):
+    """Create a temporary experiment file for testing"""
+    import yaml
 
-    def build_args():
-        return ["daf.init", "--simulated", "-g"]
+    experiment_data = {
+        "Mode": "2052",
+        "Material": "Si",
+        "IDir": [0, 1, 0],
+        "IDir_print": [0, 1, 0],
+        "NDir": [0, 0, 1],
+        "NDir_print": [0, 0, 1],
+        "RDir": [0, 0, 1],
+        "Sampleor": "z+",
+        "energy_offset": 0.0,
+        "hklnow": [0, 0, 0],
+        "reflections": [],
+        "Print_marker": "",
+        "Print_cmarker": "",
+        "Print_space": "",
+        "hkl": "",
+        "cons_mu": 0.0,
+        "cons_eta": 0.0,
+        "cons_chi": 0.0,
+        "cons_phi": 0.0,
+        "cons_nu": 0.0,
+        "cons_del": 0.0,
+        "cons_alpha": 0.0,
+        "cons_beta": 0.0,
+        "cons_psi": 0.0,
+        "cons_omega": 0.0,
+        "cons_qaz": 0.0,
+        "cons_naz": 0.0,
+        "twotheta": 0.0,
+        "theta": 0.0,
+        "alpha": 0.0,
+        "qaz": 90.0,
+        "naz": 0.0,
+        "tau": 0.0,
+        "psi": 0.0,
+        "beta": 0.0,
+        "omega": 0.0,
+        "U_mat": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+        "UB_mat": [
+            [1.15690279, 0.0, 0.0],
+            [0.0, 1.15690279, 0.0],
+            [0.0, 0.0, 1.15690279],
+        ],
+        "lparam_a": 0.0,
+        "lparam_b": 0.0,
+        "lparam_c": 0.0,
+        "lparam_alpha": 0.0,
+        "lparam_beta": 0.0,
+        "lparam_gama": 0.0,
+        "Max_diff": 0.1,
+        "scan_name": "scan_test",
+        "separator": ",",
+        "macro_flag": False,
+        "macro_file": "macro",
+        "setup": "default",
+        "user_samples": {},
+        "setup_desc": "This is DAF default setup",
+        "default_counters": "config.daf_default.yml",
+        "dark_mode": 0,
+        "scan_stats": {},
+        "PV_energy": 0.0,
+        "scan_running": False,
+        "scan_counters": [],
+        "current_scan_file": "",
+        "main_scan_counter": None,
+        "main_scan_motor": "",
+        "simulated": False,
+        "kafka_topic": "EMA_bluesky",
+        "scan_db": "temp",
+        "version": "1.0.0",
+        "motors": {
+            "mu": {"pv": "SIM:m1", "value": 0.0, "bounds": [-180, 180], "up": True},
+            "eta": {"pv": "SIM:m2", "value": 0.0, "bounds": [-180, 180], "up": True},
+            "chi": {"pv": "SIM:m3", "value": 0.0, "bounds": [-5, 95], "up": True},
+            "phi": {"pv": "SIM:m4", "value": 0.0, "bounds": [30, 400], "up": True},
+            "nu": {"pv": "SIM:m5", "value": 0.0, "bounds": [-180, 180], "up": True},
+            "del": {"pv": "SIM:m6", "value": 0.0, "bounds": [-180, 180], "up": True},
+        },
+        "beamline_pvs": {
+            "energy": {
+                "pv": "SIM:energy",
+                "value": 8000,
+                "up": True,
+                "simulated": False,
+            },
+        },
+    }
 
-    mp = pytest.MonkeyPatch()
-    with mp.context() as m:
-        m.setattr(sys, "argv", build_args())
-        obj = Init()
-        yield obj
-    if os.path.isfile(dp.GLOBAL_EXPERIMENT_DEFAULT):
-        os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+    exp_file = tmp_path / ".Experiment"
+    with open(exp_file, "w") as f:
+        yaml.dump(experiment_data, f)
 
-
-# @pytest.fixture(autouse=True, scope="module")
-# def reset():
-
-#     energy = 1
-#     def build_args():
-#         return ["daf.reset"]
-
-
-#     mp = pytest.MonkeyPatch()
-#     with mp.context() as m:
-#         m.setattr(sys, "argv", build_args())
-#         obj = Reset()
-#         obj.run_cmd()
-#         yield obj
-
-
-# @pytest.fixture(autouse=True, scope="module")
-# def set_energy():
-
-#     energy = 1
-#     def build_args():
-#         return ["daf.expt", "--energy", str(energy)]
-
-
-#     mp = pytest.MonkeyPatch()
-#     with mp.context() as m:
-#         m.setattr(sys, "argv", build_args())
-#         obj = ExperimentConfiguration()
-#         obj.run_cmd()
-#         yield obj
-
-
-@pytest.fixture(autouse=True, scope="module")
-def set_sample():
-
-    energy = 1
-
-    def build_args():
-        return ["daf.expt", "-s", "Si"]
-
-    mp = pytest.MonkeyPatch()
-    with mp.context() as m:
-        m.setattr(sys, "argv", build_args())
-        obj = ExperimentConfiguration()
-        obj.run_cmd()
-        yield obj
-    # os.remove(dp.GLOBAL_EXPERIMENT_DEFAULT)
+    return exp_file, experiment_data

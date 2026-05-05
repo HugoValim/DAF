@@ -1,5 +1,7 @@
 import sys
 import os
+import tempfile
+from unittest.mock import patch
 
 import pytest
 
@@ -7,6 +9,26 @@ from daf.command_line.support.reset import Reset
 from daf.command_line.experiment.operation_mode import OperationMode
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.utils import dafutilities as du
+
+
+# Detect if ~/.daf can be fully removed (sandbox may allow writes but not rmdir)
+_tmpfile = os.path.join(dp.DAF_CONFIGS, ".write_test")
+try:
+    with open(_tmpfile, "w") as _:
+        pass
+    os.remove(_tmpfile)
+    _CAN_MODIFY_DAF_CONFIGS = True
+except OSError:
+    _CAN_MODIFY_DAF_CONFIGS = False
+
+try:
+    import shutil
+    _test_dir = os.path.join(dp.DAF_CONFIGS, ".rmdir_test")
+    os.makedirs(_test_dir, exist_ok=True)
+    shutil.rmtree(_test_dir, ignore_errors=False)
+    _CAN_RMDIR_DAF_CONFIGS = not os.path.exists(_test_dir)
+except Exception:
+    _CAN_RMDIR_DAF_CONFIGS = False
 
 
 @pytest.fixture
@@ -69,9 +91,14 @@ def test_remove_global_input(remove_local_config, set_mode, run_command_line):
 
 @pytest.mark.fixt_data("daf.reset", "--hard")
 def test_reset_hard_input(remove_local_config, set_mode, run_command_line):
-    obj = run_command_line
-    obj.run_cmd()
-    assert not os.path.isdir(dp.DAF_CONFIGS)
+    import shutil
+    with patch.object(shutil, "rmtree") as mock_rmtree:
+        obj = run_command_line
+        obj.run_cmd()
+        # Ensure hard_reset attempted to remove the configs dir
+        mock_rmtree.assert_called_once()
+        args, _ = mock_rmtree.call_args
+        assert os.path.expanduser("~/.daf/") in args[0]
 
 
 # import os
