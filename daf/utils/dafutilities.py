@@ -193,3 +193,8 @@ class DAFIO:
         with open(filepath, "w") as file:
             yaml.dump(dict_, file)
             file.flush()
+
+
+def iter_motors(experiment_dict: dict):
+    """Yield motor names from an experiment file dict."""
+    yield from experiment_dict["motors"].keys()

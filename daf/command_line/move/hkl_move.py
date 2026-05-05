@@ -6,7 +6,7 @@ import numpy as np
 from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
-from daf.command_line.move.move_utils import MoveBase
+from daf.command_line.move.move_utils import MoveBase, _add_hkl_display_args
 
 
 class HKLMove(MoveBase):
@@ -37,30 +37,7 @@ class HKLMove(MoveBase):
             nargs=3,
             help="H, K, L position to be moved",
         )
-        self.parser.add_argument(
-            "-q", "--quiet", action="store_true", help="do not show the full output"
-        )
-        self.parser.add_argument(
-            "-m",
-            "--marker",
-            type=str,
-            help="marker to be used in the print",
-            default="",
-        )
-        self.parser.add_argument(
-            "-cm",
-            "--column-marker",
-            type=str,
-            help="column marker to be used in the print",
-            default="",
-        )
-        self.parser.add_argument(
-            "-s",
-            "--size",
-            type=int,
-            help="size of the print, default is 14",
-            default=14,
-        )
+        _add_hkl_display_args(self.parser)
 
         args = self.parser.parse_args()
         return args
