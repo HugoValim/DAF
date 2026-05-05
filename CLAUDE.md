@@ -20,15 +20,31 @@ conda activate daf-tests
 ```
 
 ### Testing
+
+There are two test tiers with different conftest files:
+
+**Unit tests** (EPICS fully mocked, no Docker needed — preferred for development):
 ```bash
-pytest                          # Run all tests
-pytest tests/unit_conftest.py    # Run unit tests with EPICS mocks
-pytest -m "not slow"             # Skip slow tests
+pytest tests/ -p no:randomly --ignore=tests/gui/ -p no:randomly
+# The -p no:randomly flag is required to avoid test-order failures
 ```
+
+**Integration tests** (requires Docker + simulated IOC via `tests/conftest.py`):
+```bash
+pytest tests/                  # Runs all tests including integration
+pytest -m "not slow"           # Skip slow tests
+```
+
+Run a single test file:
+```bash
+pytest tests/core/test_daf_calculations.py -v --tb=short
+```
+
+The unit conftest (`tests/unit_conftest.py`) patches `epics`, `pyepics`, and `DAFIO.__init__` at import time. It is not a runnable test file — it's included via pytest's conftest discovery. The integration conftest (`tests/conftest.py`) launches a Docker container with a simulated IOC and calls `daf.init --simulated`.
 
 ### Linting (pre-commit)
 ```bash
-pre-commit run --all-files       # Run all hooks
+pre-commit run --all-files
 pre-commit run black --all-files
 pre-commit run flake8 --all-files
 ```
@@ -36,16 +52,13 @@ pre-commit run flake8 --all-files
 ## Architecture
 
 ### Core Engine
-- **`daf.core.main.DAF`** - Central class inheriting from `MinimizationProc` and `ReciprocalMapWindow`
-  - Handles angle solving (minimization) and reciprocal space visualization
-  - Uses `xrayutilities` for X-ray physics and crystal calculations
-  - Builds xrd experiment via `xu.HXRD` class
+- **`daf.core.main.DAF`** — Central class inheriting from `MinimizationProc` and `ReciprocalMapWindow`. Handles angle solving and reciprocal space visualization. Builds the xrd experiment via `xu.HXRD`.
 
 ### CLI Command Structure
 All CLI commands inherit from `daf.command_line.cli_base_utils.CLIBase`:
-1. `parse_command_line()` - Define argparse
-2. `run_cmd()` - Execute command (abstract method)
-3. `build_exp()` - Instantiate DAF with current experiment config
+1. `parse_command_line()` — Define argparse
+2. `run_cmd()` — Execute command (abstract method)
+3. `build_exp()` — Instantiate DAF with current experiment config
 
 Commands are registered via `setup.py` entry_points as console_scripts.
 
@@ -57,8 +70,14 @@ Commands are registered via `setup.py` entry_points as console_scripts.
 | `daf/core/minimization.py` | Angle minimization solver |
 | `daf/core/mode_parser.py` | Mode parsing, predefined materials |
 | `daf/core/matrix_utils.py` | Rotation matrix calculations |
+| `daf/core/math_utils.py` | Vector/angle math utilities |
+| `daf/core/reciprocal_map.py` | Reciprocal space mapping window |
+| `daf/core/cli_formatting.py` | Output formatting for CLI |
 | `daf/command_line/cli_base_utils.py` | Base class for all CLI commands |
-| `daf/utils/dafutilities.py` | DAFIO - experiment file persistence |
+| `daf/utils/dafutilities.py` | DAFIO — experiment file persistence |
+| `daf/utils/daf_paths.py` | Path resolution (local vs global config) |
+| `daf/utils/experiment_configs.py` | Experiment state persistence helpers |
+| `daf/utils/print_utils.py` | Table printing utilities |
 
 ### Data Flow
 1. CLI command reads `.Experiment` file via `DAFIO`
@@ -66,8 +85,14 @@ Commands are registered via `setup.py` entry_points as console_scripts.
 3. DAF uses `xrayutilities` for HKL ↔ angle conversions
 4. Results written back via `DAFIO.write()`
 
-### Experiment File Format
+### Experiment File Format & Path Resolution
 YAML file (`.Experiment`) storing: Mode, Material, lattice params, U/UB matrices, motor positions/bounds, constraints, energy, beamline PVs.
+
+`DAFPaths.check_for_local_config()` resolves which file to use:
+- Local: `./.Experiment` (takes priority when present)
+- Global: `~/.daf/.Experiment` (fallback)
+
+Scan configs live in `~/.daf/scan/`.
 
 ## EPICS Integration
 
@@ -77,6 +102,40 @@ DAF uses EPICS (Experimental Physics and Industrial Control System) for hardware
 - Tests mock EPICS entirely via `tests/unit_conftest.py`
 
 Initialization (`daf.init -s` for simulated) launches a Docker container running simulated IOC servers.
+
+## CLI Commands Reference
+
+| Command | Purpose |
+|---------|---------|
+| `daf.init` | Initialize DAF environment (`-s` simulated, `-6c` 6-circle) |
+| `daf.expt` | Set experiment (material, energy, lattice) |
+| `daf.mode` | Set diffractometer operation mode |
+| `daf.bounds` | Set angle limits |
+| `daf.cons` | Set constraint values |
+| `daf.ub` | Calculate/display U/UB matrices |
+| `daf.mc` | Manage scan counters |
+| `daf.amv` | Move by angle |
+| `daf.ramv` | Relative angle move |
+| `daf.mv` | Move by HKL |
+| `daf.ca` | HKL calculation display (no move) |
+| `daf.wh` | Show current HKL position |
+| `daf.spos` | Show sample position |
+| `daf.status` | Show full configuration |
+| `daf.scan` | HKL scan |
+| `daf.mesh` | Mesh scan |
+| `daf.ascan`/`daf.a2scan`…`daf.a6scan` | Absolute angle scans (1–6 motors) |
+| `daf.dscan`/`daf.lup`/`daf.d2scan`…`daf.d6scan` | Relative angle scans |
+| `daf.ffscan` | Scan from file |
+| `daf.tscan` | Time scan |
+| `daf.rmap` | Reciprocal space map GUI |
+| `daf.gui` / `daf.guiall` | Launch GUI |
+| `daf.live` | Live view |
+| `daf.setup` | Manage saved environments |
+| `daf.reset` | Reset to defaults |
+| `daf.newsample` | Create new sample |
+| `daf.fetch` | Fetch EPICS PVs |
+| `daf.kafka` | Kafka messaging support |
+| `daf.help` | Show command help |
 
 ## GUI Structure
 - PyQt5-based with qdarkstyle dark theme
