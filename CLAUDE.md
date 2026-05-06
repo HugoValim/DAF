@@ -15,29 +15,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Installation
 ```bash
 pip install -e .
-conda env create -f environment.yml
-conda activate daf-tests
+conda env create -f environment.yml  # or: mamba env create -f environment.yml
 ```
 
 ### Testing
+
+The project uses a **mamba** environment named `daf-tests`. Use `mamba run` to run tests without activating the environment:
 
 There are two test tiers with different conftest files:
 
 **Unit tests** (EPICS fully mocked, no Docker needed — preferred for development):
 ```bash
-pytest tests/ -p no:randomly --ignore=tests/gui/ -p no:randomly
+mamba run -n daf-tests pytest tests/ -p no:randomly --ignore=tests/gui/
 # The -p no:randomly flag is required to avoid test-order failures
 ```
 
 **Integration tests** (requires Docker + simulated IOC via `tests/conftest.py`):
 ```bash
-pytest tests/                  # Runs all tests including integration
-pytest -m "not slow"           # Skip slow tests
+mamba run -n daf-tests pytest tests/                  # Runs all tests including integration
+mamba run -n daf-tests pytest -m "not slow"           # Skip slow tests
 ```
 
 Run a single test file:
 ```bash
-pytest tests/core/test_daf_calculations.py -v --tb=short
+mamba run -n daf-tests pytest tests/core/test_daf_calculations.py -v --tb=short
 ```
 
 The unit conftest (`tests/unit_conftest.py`) patches `epics`, `pyepics`, and `DAFIO.__init__` at import time. It is not a runnable test file — it's included via pytest's conftest discovery. The integration conftest (`tests/conftest.py`) launches a Docker container with a simulated IOC and calls `daf.init --simulated`.
@@ -52,38 +53,44 @@ pre-commit run flake8 --all-files
 ## Architecture
 
 ### Core Engine
-- **`daf.core.main.DAF`** — Central class inheriting from `MinimizationProc` and `ReciprocalMapWindow`. Handles angle solving and reciprocal space visualization. Builds the xrd experiment via `xu.HXRD`.
+- **`daf.core.main.DAF`** — Central class inheriting from `MinimizationProc` and `ReciprocalMapWindow`. Holds `self.mode` (a `ModeParser` instance) for bounds, constraints, and fixed motor lists. Builds the xrd experiment via `xu.HXRD`.
+- **`daf.core.mode_parser.ModeParser`** — Owns mode logic: `constraint_columns()`, `bounds_for(motor)`, `set_bound(motor, val)`, `fixed_motor_list`, `pseudo_constraints()`. DAF backward-compat properties delegate to `self.mode`.
+- **`daf.core.daf_engine_factory.DAFEngineFactory`** — Pure factory with `from_dict(experiment_dict) -> DAF`. No EPICS, no file I/O, unit-testable with a plain dict.
 
 ### CLI Command Structure
 All CLI commands inherit from `daf.command_line.cli_base_utils.CLIBase`:
 1. `parse_command_line()` — Define argparse
 2. `run_cmd()` — Execute command (abstract method)
-3. `build_exp()` — Instantiate DAF with current experiment config
+3. `build_exp()` — Delegates to `DAFEngineFactory.from_dict()` with the loaded experiment dict
 
 Commands are registered via `setup.py` entry_points as console_scripts.
 
 ### Key Modules
 | Module | Purpose |
 |--------|---------|
-| `daf/core/main.py` | DAF main class, experiment definition |
+| `daf/core/main.py` | DAF main class, experiment definition; holds `self.mode` (ModeParser) |
+| `daf/core/daf_engine_factory.py` | `DAFEngineFactory.from_dict()` — builds DAF from plain experiment dict |
 | `daf/core/ub_matrix_calc.py` | U/UB matrix calculations |
 | `daf/core/minimization.py` | Angle minimization solver |
-| `daf/core/mode_parser.py` | Mode parsing, predefined materials |
+| `daf/core/mode_parser.py` | `ModeParser` — bounds, constraints, fixed motors for a mode code |
 | `daf/core/matrix_utils.py` | Rotation matrix calculations |
 | `daf/core/math_utils.py` | Vector/angle math utilities |
 | `daf/core/reciprocal_map.py` | Reciprocal space mapping window |
 | `daf/core/cli_formatting.py` | Output formatting for CLI |
-| `daf/command_line/cli_base_utils.py` | Base class for all CLI commands |
-| `daf/utils/dafutilities.py` | DAFIO — experiment file persistence |
+| `daf/command_line/cli_base_utils.py` | Base class for all CLI commands; `build_exp()` delegates to `DAFEngineFactory` |
+| `daf/utils/dafutilities.py` | DAFIO — EPICS PV communication |
+| `daf/utils/experiment_file_store.py` | `ExperimentFileStore` — YAML read/write and numpy serialization |
+| `daf/utils/epics_motor_client.py` | `EpicsMotorClient` — EPICS motor position reads/writes |
 | `daf/utils/daf_paths.py` | Path resolution (local vs global config) |
 | `daf/utils/experiment_configs.py` | Experiment state persistence helpers |
 | `daf/utils/print_utils.py` | Table printing utilities |
 
 ### Data Flow
-1. CLI command reads `.Experiment` file via `DAFIO`
-2. `CLIBase.build_exp()` creates `DAF` instance with saved state
-3. DAF uses `xrayutilities` for HKL ↔ angle conversions
-4. Results written back via `DAFIO.write()`
+1. CLI command reads `.Experiment` file via `ExperimentFileStore`
+2. `CLIBase.build_exp()` delegates to `DAFEngineFactory.from_dict()` with the experiment dict
+3. `DAFEngineFactory` constructs and configures a `DAF` instance (no EPICS, no file I/O)
+4. DAF uses `xrayutilities` for HKL ↔ angle conversions
+5. Results written back via `DAFIO.write()` / `ExperimentFileStore`
 
 ### Experiment File Format & Path Resolution
 YAML file (`.Experiment`) storing: Mode, Material, lattice params, U/UB matrices, motor positions/bounds, constraints, energy, beamline PVs.
