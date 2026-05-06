@@ -66,6 +66,7 @@ setup(
             "daf.status = daf.command_line.query.status:main",
             "daf.wh = daf.command_line.query.where:main",
             "daf.spos = daf.command_line.query.sample_position:main",
+            "daf.ascan = daf.command_line.scan.angular_scan:main",
             "daf.scan = daf.command_line.scan.unified_scan:main",
             "daf.hscan = daf.command_line.scan.hkl_scan:main",
             "daf.ffscan = daf.command_line.scan.from_file_scan:main",
