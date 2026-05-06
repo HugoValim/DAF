@@ -1,11 +1,12 @@
 """
 Unit tests for daf.utils.dafutilities module
 """
-import unittest
 import os
 import tempfile
-import yaml
+import unittest
 from unittest.mock import patch, MagicMock
+
+import yaml
 
 
 class TestReadYml(unittest.TestCase):
@@ -78,17 +79,84 @@ class TestFetchPvsAndCheckForConnection(unittest.TestCase):
                     os.unlink(filepath)
 
 
+class TestZeroOfflineMotorsAndBlPvs(unittest.TestCase):
+    def test_offline_motors_are_zeroed(self):
+        """Test that offline motors are zeroed by the explicit policy function."""
+        from daf.utils.dafutilities import zero_offline_motors_and_bl_pvs
+
+        data = {
+            "motors": {"mu": {"value": 50.0, "bounds": [-10, 10], "up": False}},
+            "beamline_pvs": {},
+        }
+
+        zero_offline_motors_and_bl_pvs(data)
+
+        self.assertEqual(data["motors"]["mu"]["value"], 0)
+        self.assertEqual(data["motors"]["mu"]["bounds"][0], 0)
+        self.assertEqual(data["motors"]["mu"]["bounds"][1], 0)
+
+    def test_online_motors_unchanged(self):
+        """Test that online motors are not touched."""
+        from daf.utils.dafutilities import zero_offline_motors_and_bl_pvs
+
+        data = {
+            "motors": {"mu": {"value": 50.0, "bounds": [-10, 10], "up": True}},
+            "beamline_pvs": {},
+        }
+
+        zero_offline_motors_and_bl_pvs(data)
+
+        self.assertEqual(data["motors"]["mu"]["value"], 50.0)
+        self.assertEqual(data["motors"]["mu"]["bounds"][0], -10)
+        self.assertEqual(data["motors"]["mu"]["bounds"][1], 10)
+
+    def test_offline_bl_pvs_are_zeroed(self):
+        """Test that offline beamline PVs are zeroed."""
+        from daf.utils.dafutilities import zero_offline_motors_and_bl_pvs
+
+        data = {
+            "motors": {},
+            "beamline_pvs": {"energy": {"value": 8000, "up": False}},
+        }
+
+        zero_offline_motors_and_bl_pvs(data)
+
+        self.assertEqual(data["beamline_pvs"]["energy"]["value"], 0)
+
+    def test_online_bl_pvs_unchanged(self):
+        """Test that online beamline PVs are not touched."""
+        from daf.utils.dafutilities import zero_offline_motors_and_bl_pvs
+
+        data = {
+            "motors": {},
+            "beamline_pvs": {"energy": {"value": 8000, "up": True}},
+        }
+
+        zero_offline_motors_and_bl_pvs(data)
+
+        self.assertEqual(data["beamline_pvs"]["energy"]["value"], 8000)
+
+
 class TestDAFIO(unittest.TestCase):
     def test_dafio_init_with_read_true(self):
-        """Test DAFIO initialization with read=True"""
-        with patch("daf.utils.dafutilities.epics"):
-            from daf.utils.dafutilities import DAFIO
+        """Test DAFIO initialization with read=True creates epics client"""
+        with patch("daf.utils.dafutilities.EpicsMotorClient") as mock_client:
+            with patch("daf.utils.dafutilities.ExperimentFileStore") as mock_store:
+                mock_store_instance = MagicMock()
+                mock_store_instance.read.return_value = {
+                    "motors": {"mu": {"pv": "test:mu", "up": True}},
+                    "beamline_pvs": {},
+                }
+                mock_store.return_value = mock_store_instance
 
-            # This will use mocked epics
-            io = DAFIO(read=False)  # Use False to skip epics
+                from daf.utils.dafutilities import DAFIO
 
-            self.assertFalse(io.epics_put_flag)
-            self.assertFalse(io.epics_get_flag)
+                io = DAFIO(read=True)
+
+                self.assertTrue(io.epics_put_flag)
+                self.assertTrue(io.epics_get_flag)
+                self.assertIsNotNone(io.epics_client)
+                mock_client.return_value.build_epics_pvs.assert_called_once()
 
     def test_dafio_init_with_read_false(self):
         """Test DAFIO initialization with read=False"""
@@ -98,6 +166,7 @@ class TestDAFIO(unittest.TestCase):
 
         self.assertFalse(io.epics_put_flag)
         self.assertFalse(io.epics_get_flag)
+        self.assertIsNone(io.epics_client)
 
     def test_only_read_static_method(self):
         """Test only_read is a static method that reads file"""
@@ -153,49 +222,99 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
         finally:
             os.unlink(filepath)
 
+    def test_write_zeroes_offline_motors_explicitly(self):
+        """Test DAFIO write applies offline zeroing explicitly at the seam."""
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:
+            filepath = f.name
 
-class TestCheckForOfflineMotors(unittest.TestCase):
-    @unittest.skip(
-        "check_for_offline_motors_and_bl_pvs_before_write has bugs: modifies dict during iteration and uses wrong key path"
-    )
-    def test_check_for_offline_motors_sets_zero(self):
-        """Test offline motors are set to zero"""
+        try:
+            data = {
+                "motors": {
+                    "mu": {
+                        "pv": "test:mu",
+                        "value": 50.0,
+                        "bounds": [-10, 10],
+                        "up": False,
+                    }
+                },
+                "beamline_pvs": {
+                    "energy": {
+                        "pv": "test:energy",
+                        "value": 8000,
+                        "up": False,
+                        "simulated": False,
+                    }
+                },
+            }
+
+            from daf.utils.dafutilities import DAFIO
+
+            io = DAFIO(read=False)
+            io.write(data, filepath)
+
+            result = DAFIO.only_read(filepath)
+            self.assertEqual(result["motors"]["mu"]["value"], 0)
+            self.assertEqual(result["motors"]["mu"]["bounds"][0], 0)
+            self.assertEqual(result["motors"]["mu"]["bounds"][1], 0)
+            self.assertEqual(result["beamline_pvs"]["energy"]["value"], 0)
+        finally:
+            os.unlink(filepath)
+
+
+class TestDAFIOEpicsGetPut(unittest.TestCase):
+    def test_epics_get_delegates_to_client(self):
+        """Test DAFIO.epics_get delegates to EpicsMotorClient when available."""
+        with patch("daf.utils.dafutilities.EpicsMotorClient") as mock_client:
+            with patch("daf.utils.dafutilities.ExperimentFileStore") as mock_store:
+                mock_store_instance = MagicMock()
+                mock_store_instance.read.return_value = {
+                    "motors": {"mu": {"pv": "test:mu", "up": True}},
+                    "beamline_pvs": {},
+                }
+                mock_store.return_value = mock_store_instance
+
+                from daf.utils.dafutilities import DAFIO
+
+                io = DAFIO(read=True)
+                data = {"motors": {}, "beamline_pvs": {}}
+                io.epics_get(data)
+                mock_client.return_value.epics_get.assert_called_once_with(data)
+
+    def test_epics_put_delegates_to_client(self):
+        """Test DAFIO.epics_put delegates to EpicsMotorClient when available."""
+        with patch("daf.utils.dafutilities.EpicsMotorClient") as mock_client:
+            with patch("daf.utils.dafutilities.ExperimentFileStore") as mock_store:
+                mock_store_instance = MagicMock()
+                mock_store_instance.read.return_value = {
+                    "motors": {"mu": {"pv": "test:mu", "up": True}},
+                    "beamline_pvs": {},
+                }
+                mock_store.return_value = mock_store_instance
+
+                from daf.utils.dafutilities import DAFIO
+
+                io = DAFIO(read=True)
+                data = {"motors": {}, "beamline_pvs": {}}
+                io.epics_put(data)
+                mock_client.return_value.epics_put.assert_called_once_with(data)
+
+    def test_epics_get_no_op_when_read_false(self):
+        """Test DAFIO.epics_get is a no-op when epics client is None."""
         from daf.utils.dafutilities import DAFIO
 
         io = DAFIO(read=False)
+        data = {"motors": {}, "beamline_pvs": {}}
+        result = io.epics_get(data)
+        self.assertEqual(result, data)
 
-        data = {
-            "motors": {"mu": {"value": 50.0, "bounds": [0, 0], "up": False}},
-            "beamline_pvs": {},  # Must include beamline_pvs key
-        }
-
-        io.check_for_offline_motors_and_bl_pvs_before_write(data)
-
-        self.assertEqual(data["motors"]["mu"]["value"], 0)
-        self.assertEqual(data["motors"]["mu"]["bounds"][0], 0)
-        self.assertEqual(data["motors"]["mu"]["bounds"][1], 0)
-
-    @unittest.skip(
-        "check_for_offline_motors_and_bl_pvs_before_write has bugs: modifies dict during iteration and uses wrong key path"
-    )
-    def test_check_for_offline_bl_pvs_sets_zero(self):
-        """Test offline beamline PVs are set to zero"""
+    def test_epics_put_no_op_when_read_false(self):
+        """Test DAFIO.epics_put is a no-op when epics client is None."""
         from daf.utils.dafutilities import DAFIO
 
         io = DAFIO(read=False)
-
-        data = {
-            "motors": {},  # Must include motors key
-            "beamline_pvs": {"energy": {"value": 8000, "up": False}},
-        }
-
-        # Note: There's a bug in check_for_offline_motors_and_bl_pvs_before_write
-        # It sets dict_["beamline_pvs"]["value"] instead of dict_["beamline_pvs"][bl_pv]["value"]
-        # This test checks for the actual buggy behavior
-        io.check_for_offline_motors_and_bl_pvs_before_write(data)
-
-        # Due to the bug in the source code, this sets beamline_pvs directly
-        self.assertFalse(data["beamline_pvs"]["energy"]["up"])
+        data = {"motors": {}, "beamline_pvs": {}}
+        io.epics_put(data)
+        # Should not raise
 
 
 if __name__ == "__main__":

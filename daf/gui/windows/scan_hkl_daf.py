@@ -182,7 +182,7 @@ class MyWindow(QWidget):
             time = self.lineEdit_time.text()
             return ["daf.ffscan", file, time]
         cmd = [
-            "daf.scan",
+            "daf.hscan",
             self.lineEdit_hi.text(),
             self.lineEdit_ki.text(),
             self.lineEdit_li.text(),

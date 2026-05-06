@@ -15,13 +15,17 @@ def format_vec(vec):
     return "[" + ", ".join(str(v) for v in vec) + "]"
 
 
-def build_forprint_rows(
-    pseudo_constraints, motor_constraints, dprint, col1, col2, setup
-):
+def build_forprint_rows(mode, dprint):
     """Build constraint rows for display table.
 
     Shared logic between show() and __str__().
     """
+    pseudo_constraints = mode.pseudo_constraints()
+    motor_constraints = mode.motor_constraints
+    setup = mode.setup
+    col1 = mode.constraint_col1
+    col2 = mode.constraint_col2
+
     rows = list(pseudo_constraints)
 
     if col1 in (1, 2):
@@ -56,16 +60,16 @@ def build_forprint_rows(
     return rows
 
 
-def build_dprint(mu_bound, eta_bound, chi_bound, phi_bound, nu_bound, del_bound):
+def build_dprint(mode):
     """Build the dprint dict mapping motor names to bounds."""
     return {
         "x": "--",
-        "Mu": mu_bound,
-        "Eta": eta_bound,
-        "Chi": chi_bound,
-        "Phi": phi_bound,
-        "Nu": nu_bound,
-        "Del": del_bound,
+        "Mu": mode.bounds_for("Mu"),
+        "Eta": mode.bounds_for("Eta"),
+        "Chi": mode.bounds_for("Chi"),
+        "Phi": mode.bounds_for("Phi"),
+        "Nu": mode.bounds_for("Nu"),
+        "Del": mode.bounds_for("Del"),
     }
 
 
@@ -157,8 +161,10 @@ class DAFFormatter:
             ("", "col7", space),
         ]
 
-    def format_mode(self, setup, col1, col2, col3, col4, col5, forprint):
+    def format_mode(self, mode, forprint):
         """Format the mode display."""
+        setup = mode.setup
+        col1, col2, col3, col4, col5 = mode.constraint_columns()
         mode_num = str(col1) + str(col2) + str(col3) + str(col4) + str(col5)
         data = [
             {
@@ -255,11 +261,11 @@ class DAFFormatter:
             },
         ]
 
-    def _format_constraint_section(
-        self, setup, col1, col2, col3, col4, col5, forprint, qerror
-    ) -> list:
+    def _format_constraint_section(self, mode, forprint, qerror) -> list:
         """Return the two-row mode/constraint block for the full status table."""
         c = self.center.format
+        setup = mode.setup
+        col1, col2, col3, col4, col5 = mode.constraint_columns()
         mode_num = str(col1) + str(col2) + str(col3) + str(col4) + str(col5)
         return [
             {
@@ -280,12 +286,7 @@ class DAFFormatter:
 
     def format_full_status(
         self,
-        setup,
-        col1,
-        col2,
-        col3,
-        col4,
-        col5,
+        mode,
         forprint,
         qerror,
         hkl_calc,
@@ -321,9 +322,7 @@ class DAFFormatter:
             return self.center.format(self._fmt(val))
 
         data = [
-            *self._format_constraint_section(
-                setup, col1, col2, col3, col4, col5, forprint, qerror
-            ),
+            *self._format_constraint_section(mode, forprint, qerror),
             *self._separator_row(),
             {
                 "col1": c("H"),

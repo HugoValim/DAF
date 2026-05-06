@@ -13,9 +13,9 @@ class HKLScan(ScanBase):
     DESC = """Perform a scan using HKL coordinates"""
     EPI = """
     Eg:
-        daf.scan 1 1 1 1.1 1.1 1.1 100 0.1 -n my_scan
-        daf.scan 1 1 1 1.1 1.1 1.1 1000 0.1 -n my_scan -x eta -v
-        daf.scan 1 1 1 1.1 1.1 1.1 100 0.1 -p -t 0.5
+        daf.hscan 1 1 1 1.1 1.1 1.1 100 0.1 -n my_scan
+        daf.hscan 1 1 1 1.1 1.1 1.1 1000 0.1 -n my_scan -x eta -v
+        daf.hscan 1 1 1 1.1 1.1 1.1 100 0.1 -p -t 0.5
         """
 
     def __init__(self):

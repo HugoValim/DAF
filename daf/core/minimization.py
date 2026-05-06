@@ -91,7 +91,8 @@ class MinimizationProc(UBMatrix):
 
     def _build_constraints(self) -> list | None:
         """Build scipy constraint dicts from pseudo_constraints_w_value_list."""
-        if not self.pseudo_constraints_w_value_list:
+        pseudo_constraints = self.mode.pseudo_constraints()
+        if not pseudo_constraints:
             return None
         pseudoconst = self.pseudoAngleConst
         return [
@@ -99,11 +100,11 @@ class MinimizationProc(UBMatrix):
                 "type": "eq",
                 "fun": lambda a, idx=idx: pseudoconst(
                     a,
-                    self.pseudo_constraints_w_value_list[idx][0],
-                    self.pseudo_constraints_w_value_list[idx][1],
+                    pseudo_constraints[idx][0],
+                    pseudo_constraints[idx][1],
                 ),
             }
-            for idx in range(len(self.pseudo_constraints_w_value_list))
+            for idx in range(len(pseudo_constraints))
         ]
 
     def motor_angles(

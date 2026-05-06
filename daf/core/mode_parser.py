@@ -218,6 +218,45 @@ class ModeParser:
             for name in self.pseudo_angle_constraints
         ]
 
+    def bounds_for(self, motor: str) -> tuple | int:
+        """Return the bound for a given motor name."""
+        return self.motor_bounds[motor]
+
+    def set_bound(self, motor: str, value: tuple | int | float | list) -> None:
+        """Update the bound for a given motor name."""
+        self.motor_bounds[motor] = value
+        setattr(self, f"{motor}_bound", value)
+
+    def fixed_motors(self) -> list[str]:
+        """Return a copy of the fixed motor list."""
+        return list(self.fixed_motor_list)
+
+    def is_motor_fixed(self, motor: str) -> bool:
+        """Check if a motor is fixed in the current mode."""
+        return motor in self.fixed_motor_list
+
+    def constraints(self) -> tuple[list[str], list[str]]:
+        """Return motor constraints and pseudo-angle constraints."""
+        return list(self.motor_constraints), list(self.pseudo_angle_constraints)
+
+    def pseudo_constraints(self) -> list[tuple[str, tuple | int | str]]:
+        """Return a copy of pseudo constraints with their values."""
+        return list(self.pseudo_constraints_w_value_list)
+
+    def set_pseudo_constraints(self, constraints: list[tuple[str, tuple | int | str]]) -> None:
+        """Replace the pseudo constraints value list."""
+        self.pseudo_constraints_w_value_list = list(constraints)
+
+    def constraint_columns(self) -> tuple[int, int, int, int, int]:
+        """Return the five constraint column values as a tuple."""
+        return (
+            self.constraint_col1,
+            self.constraint_col2,
+            self.constraint_col3,
+            self.constraint_col4,
+            self.constraint_col5,
+        )
+
     @property
     def bounds_tuple(self) -> tuple:
         """Motor bounds as a 6-element tuple, for xrayutilities."""

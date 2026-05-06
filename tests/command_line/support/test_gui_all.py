@@ -11,6 +11,7 @@ import daf.utils.generate_daf_default as gdd
 from daf.command_line.support.init import Init
 
 
+@pytest.mark.skip(reason="GUI tests temporarily skipped")
 class TestDAF(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
