@@ -5,7 +5,7 @@ After the refactor:
   - ``ReciprocalMapGeometry`` is the core mixin (no matplotlib)
   - GUI helpers (_setup_figure, _draw_laue_zones, _plot_peaks,
     show_reciprocal_space_plane) now live in
-    ``daf.gui.windows.rmap_widget`` and are intentionally not tested
+    ``daf.core.reciprocal_map_plot`` and are intentionally not tested
     here (they require a Qt event-loop).
 """
 from unittest.mock import MagicMock, patch

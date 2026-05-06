@@ -3,7 +3,7 @@
 
 This module contains only pure Bragg-peak geometry (math that computes
 peak positions).  All matplotlib canvas, interactive callbacks, and
-subprocess spawning live in ``daf.gui.windows.rmap_widget``.
+subprocess spawning live in ``daf.core.reciprocal_map_plot``.
 """
 from __future__ import annotations
 
@@ -28,7 +28,9 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 _EPSILON = 1e-7  # Threshold for filtering peaks by structure-factor strength
-_ANGLE_TOO_SMALL_THRESHOLD = 1e-4  # Threshold for checking if a calculated angle is valid
+_ANGLE_TOO_SMALL_THRESHOLD = (
+    1e-4  # Threshold for checking if a calculated angle is valid
+)
 _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
 
 
@@ -37,7 +39,9 @@ _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
 # ---------------------------------------------------------------------------
 
 
-def _compute_bragg_indices(mat: Any, exp: Any, ttmax: float) -> tuple[int, int, int, int, int, int]:
+def _compute_bragg_indices(
+    mat: Any, exp: Any, ttmax: float
+) -> tuple[int, int, int, int, int, int]:
     """Compute maximal h, k, l indices for Bragg peaks within *ttmax* degrees."""
     pi = math.pi
     sin_half = math.sin(math.radians(ttmax / 2.0))
@@ -127,7 +131,11 @@ class ReciprocalMapGeometry:
         """
 
         def to_linspace(val: Any) -> Any:
-            return val if isinstance(val, (int, float)) else np.linspace(val[0], val[1], 1000)
+            return (
+                val
+                if isinstance(val, (int, float))
+                else np.linspace(val[0], val[1], 1000)
+            )
 
         nub = to_linspace(self.bounds[4])
         delb = to_linspace(self.bounds[5])
@@ -136,4 +144,6 @@ class ReciprocalMapGeometry:
         cos_product = np.cos(np.radians(delb_grid)) * np.cos(np.radians(nub_grid))
         two_theta = np.arccos(cos_product)
 
-        return float(np.degrees(np.max(two_theta))), float(np.degrees(np.min(two_theta)))
+        return float(np.degrees(np.max(two_theta))), float(
+            np.degrees(np.min(two_theta))
+        )
