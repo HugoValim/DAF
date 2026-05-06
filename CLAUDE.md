@@ -20,6 +20,8 @@ conda env create -f environment.yml  # or: mamba env create -f environment.yml
 
 ### Testing
 
+**Always run tests via the `daf-tests` mamba environment.** Do not use the system Python or other environments.
+
 The project uses a **mamba** environment named `daf-tests`. Use `mamba run` to run tests without activating the environment:
 
 There are two test tiers with different conftest files:
