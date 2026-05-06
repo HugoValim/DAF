@@ -6,6 +6,7 @@ import sys
 import numpy as np
 
 from daf.core.main import DAF
+from daf.core.daf_engine_factory import DAFEngineFactory
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import (
     calculate_pseudo_angle_from_motor_angles,
@@ -96,49 +97,11 @@ class CLIBase:
 
     def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
-        mode = [int(i) for i in self.experiment_file_dict["Mode"]]
-        U = np.array(self.experiment_file_dict["U_mat"])
-        idir = self.experiment_file_dict["IDir_print"]
-        ndir = self.experiment_file_dict["NDir_print"]
-        rdir = self.experiment_file_dict["RDir"]
-        bounds_dict = self._get_motor_bounds()
         self.en = (
             self.experiment_file_dict["beamline_pvs"]["energy"]["value"]
             - self.experiment_file_dict["energy_offset"]
         )
-
-        exp = DAF(*mode)
-        material = self.experiment_file_dict["Material"]
-        if material in self.experiment_file_dict["user_samples"]:
-            exp.set_material(
-                material, *self.experiment_file_dict["user_samples"][material]
-            )
-        else:
-            exp.set_material(
-                material,
-                self.experiment_file_dict["lparam_a"],
-                self.experiment_file_dict["lparam_b"],
-                self.experiment_file_dict["lparam_c"],
-                self.experiment_file_dict["lparam_alpha"],
-                self.experiment_file_dict["lparam_beta"],
-                self.experiment_file_dict["lparam_gama"],
-            )
-
-        exp.set_exp_conditions(
-            idir=idir,
-            ndir=ndir,
-            rdir=rdir,
-            en=self.en,
-            sampleor=self.experiment_file_dict["Sampleor"],
-        )
-        exp.set_circle_constrain(**bounds_dict)
-        exp.set_constraints(**self._get_constraints_dict())
-
-        exp.set_U(U)
-        exp.build_xrd_experiment()
-        exp.build_bounds()
-
-        return exp
+        return DAFEngineFactory.from_dict(self.experiment_file_dict)
 
     def calculate_hkl_from_angles(self) -> np.array:
         """Calculate current HKL position from diffractometer angles"""
@@ -228,6 +191,29 @@ class CLIBase:
             self.write_motors_bounds_to_experiment_file(dict_to_write)
         if write:
             self.io.write(self.experiment_file_dict)
+
+    @classmethod
+    def run_main(cls) -> None:
+        """Standard CLI lifecycle: instantiate, parse args, build experiment, run.
+
+        Subclasses registered as console_scripts entry points should call this
+        instead of defining their own ``main()`` boilerplate::
+
+            if __name__ == "__main__":
+                MyCommand.run_main()
+
+        The method:
+        1. Creates an instance (reads the experiment file).
+        2. Calls :meth:`parse_command_line` and stores ``parsed_args`` /
+           ``parsed_args_dict`` on the instance.
+        3. Calls :meth:`build_exp` and stores the result as ``self.exp``.
+        4. Calls :meth:`run_cmd`.
+        """
+        obj = cls()
+        obj.parsed_args = obj.parse_command_line()
+        obj.parsed_args_dict = vars(obj.parsed_args)
+        obj.exp = obj.build_exp()
+        obj.run_cmd()
 
     @abstractmethod
     def run_cmd(self):

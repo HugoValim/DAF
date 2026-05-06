@@ -20,12 +20,6 @@ class Where(CLIBase):
     _PSEUDO_NAMES = ("alpha", "beta", "psi", "tau", "qaz", "naz", "omega")
     _MOTOR_NAMES = ("del", "eta", "chi", "phi", "nu", "mu")
 
-    def __init__(self):
-        super().__init__()
-        self.parsed_args = self.parse_command_line()
-        self.parsed_args_dict = vars(self.parsed_args)
-        self.exp = self.build_exp()
-
     def parse_command_line(self):
         super().parse_command_line()
 
@@ -67,8 +61,7 @@ class Where(CLIBase):
 
 @cli_decorator
 def main() -> None:
-    obj = Where()
-    obj.run_cmd()
+    Where.run_main()
 
 
 if __name__ == "__main__":
