@@ -16,12 +16,12 @@ _SCAN_COLUMNS = [
     "tau", "psi", "beta", "omega",
     "H", "K", "L", "Error",
 ]
-from daf.core.reciprocal_map import ReciprocalMapWindow
+from daf.core.reciprocal_map import ReciprocalMapGeometry
 from daf.core.minimization import MinimizationProc, _SCAN_QERROR_THRESHOLD
 from daf.core.cli_formatting import DAFFormatter, build_forprint_rows, build_dprint
 
 
-class DAF(MinimizationProc, ReciprocalMapWindow):
+class DAF(MinimizationProc, ReciprocalMapGeometry):
 
     predefined_samples = PREDEFINED_MATERIALS
 
