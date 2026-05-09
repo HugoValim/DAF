@@ -7,19 +7,19 @@ class DAFSigIntHandler(SigintHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.signals_map = {
-            "r": self.RE.resume,
-            "resume": self.RE.resume,
-            "a": self.RE.abort,
-            "abort": self.RE.abort,
-            "h": self.RE.halt,
-            "halt": self.RE.halt,
-            "s": self.RE.stop,
-            "stop": self.RE.stop,
+            "r": self._RE.resume,
+            "resume": self._RE.resume,
+            "a": self._RE.abort,
+            "abort": self._RE.abort,
+            "h": self._RE.halt,
+            "halt": self._RE.halt,
+            "s": self._RE.stop,
+            "stop": self._RE.stop,
         }
 
     def handle_sigint(self, defer: bool):
 
-        self.RE.request_pause(defer)
+        self._RE.request_pause(defer)
         while True:
             user_response = input(
                 "RunEngine is paused, what do you want to do? , Resume(r), Abort(a), Stop(stop), Halt(h) \n\n"
@@ -33,7 +33,7 @@ class DAFSigIntHandler(SigintHandler):
         # Check for pause requests from keyboard.
         # TODO, there is a possible race condition between the two
         # pauses here
-        if self.RE.state.is_running and (not self.RE._interrupted):
+        if self._RE.state.is_running and (not self._RE._interrupted):
             if (
                 self.last_sigint_time is None
                 or time.time() - self.last_sigint_time > 10
