@@ -82,12 +82,8 @@ class TestExperimentFileStore:
 
         try:
             data = {
-                "motors": {
-                    "mu": {"value": 50.0, "bounds": [-10, 10], "up": False}
-                },
-                "beamline_pvs": {
-                    "energy": {"value": 8000, "up": False}
-                },
+                "motors": {"mu": {"value": 50.0, "bounds": [-10, 10], "up": False}},
+                "beamline_pvs": {"energy": {"value": 8000, "up": False}},
             }
 
             store = ExperimentFileStore(filepath)

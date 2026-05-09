@@ -79,12 +79,16 @@ def test_reciprocal_map_geometry_does_not_import_matplotlib_at_module_level():
             del sys.modules[key]
 
     # Temporarily block matplotlib so an accidental top-level import raises ImportError
-    real_import = __builtins__.__import__ if hasattr(__builtins__, "__import__") else __import__
+    real_import = (
+        __builtins__.__import__ if hasattr(__builtins__, "__import__") else __import__
+    )
 
     class _MatplotlibBlocker:
         def find_module(self, fullname, path=None):
             if fullname.startswith("matplotlib"):
-                raise ImportError(f"matplotlib must not be imported at module level: {fullname}")
+                raise ImportError(
+                    f"matplotlib must not be imported at module level: {fullname}"
+                )
             return None
 
     import sys as _sys
@@ -111,9 +115,10 @@ def test_reciprocal_map_geometry_has_no_matplotlib_in_base_class():
 
     source = inspect.getsource(ReciprocalMapGeometry)
     # The class body itself should not import matplotlib directly
-    assert "import matplotlib" not in source or "def " in source.split("import matplotlib")[0], (
-        "ReciprocalMapGeometry class body must not contain a bare 'import matplotlib' statement"
-    )
+    assert (
+        "import matplotlib" not in source
+        or "def " in source.split("import matplotlib")[0]
+    ), "ReciprocalMapGeometry class body must not contain a bare 'import matplotlib' statement"
 
 
 # ---------------------------------------------------------------------------
@@ -126,18 +131,18 @@ def test_daf_does_not_inherit_from_reciprocal_map_window():
     from daf.core.main import DAF
 
     base_names = [cls.__name__ for cls in DAF.__mro__]
-    assert "ReciprocalMapWindow" not in base_names, (
-        "DAF should no longer inherit from ReciprocalMapWindow after refactor"
-    )
+    assert (
+        "ReciprocalMapWindow" not in base_names
+    ), "DAF should no longer inherit from ReciprocalMapWindow after refactor"
 
 
 def test_daf_does_not_have_show_reciprocal_space_plane():
     """DAF must not expose show_reciprocal_space_plane() — that belongs to the GUI widget."""
     from daf.core.main import DAF
 
-    assert not hasattr(DAF, "show_reciprocal_space_plane"), (
-        "show_reciprocal_space_plane() is a GUI concern and must not live on DAF"
-    )
+    assert not hasattr(
+        DAF, "show_reciprocal_space_plane"
+    ), "show_reciprocal_space_plane() is a GUI concern and must not live on DAF"
 
 
 def test_daf_does_not_have_two_theta_max_via_window_mixin():
@@ -149,6 +154,6 @@ def test_daf_does_not_have_two_theta_max_via_window_mixin():
     # not ReciprocalMapWindow (which should be gone / empty).
     if hasattr(DAF, "two_theta_max"):
         mro_names = [cls.__name__ for cls in DAF.__mro__]
-        assert "ReciprocalMapWindow" not in mro_names, (
-            "two_theta_max must not come from ReciprocalMapWindow on DAF"
-        )
+        assert (
+            "ReciprocalMapWindow" not in mro_names
+        ), "two_theta_max must not come from ReciprocalMapWindow on DAF"

@@ -18,9 +18,7 @@ class TestRunMain(unittest.TestCase):
             from daf.command_line.cli_base_utils import CLIBase
 
             self.assertTrue(hasattr(CLIBase, "run_main"))
-            self.assertIsInstance(
-                CLIBase.__dict__["run_main"], classmethod
-            )
+            self.assertIsInstance(CLIBase.__dict__["run_main"], classmethod)
 
     def test_run_main_calls_lifecycle_in_order(self):
         """run_main() must call parse_command_line, build_exp, run_cmd in order."""
@@ -135,6 +133,7 @@ class TestWhereMigratedToRunMain(unittest.TestCase):
         """After migration Where.__init__ must not call parse_command_line itself."""
         # We verify by checking the source does NOT replicate the boilerplate
         import inspect
+
         with patch("daf.command_line.cli_base_utils.du.DAFIO"):
             from daf.command_line.query.where import Where
 

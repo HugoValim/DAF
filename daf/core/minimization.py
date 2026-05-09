@@ -81,7 +81,17 @@ class MinimizationProc(UBMatrix):
         Del = angles[5] + _ANGLE_OFFSET
 
         computed = _compute_pseudo_angles(
-            Mu, Eta, Chi, Phi, Nu, Del, self.sample, self.hkl, self.lam, self.nref, self.U
+            Mu,
+            Eta,
+            Chi,
+            Phi,
+            Nu,
+            Del,
+            self.sample,
+            self.hkl,
+            self.lam,
+            self.nref,
+            self.U,
         )
 
         if pseudo_angle == "aeqb":
@@ -108,7 +118,11 @@ class MinimizationProc(UBMatrix):
         ]
 
     def motor_angles(
-        self, *args: Any, qvec: Any = False, max_err: float = _DEFAULT_MAX_ERROR, **kwargs: Any
+        self,
+        *args: Any,
+        qvec: Any = False,
+        max_err: float = _DEFAULT_MAX_ERROR,
+        **kwargs: Any,
     ) -> tuple[list, list]:
 
         self.isscan = False

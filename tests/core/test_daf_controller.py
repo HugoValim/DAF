@@ -125,7 +125,14 @@ class TestMoveHKLResult:
     def test_success_flag_true_for_successful_move(self) -> None:
         result = MoveHKLResult(
             success=True,
-            angles={"mu": 0.0, "eta": 11.4, "chi": 35.3, "phi": 45.0, "nu": 0.0, "del": 22.8},
+            angles={
+                "mu": 0.0,
+                "eta": 11.4,
+                "chi": 35.3,
+                "phi": 45.0,
+                "nu": 0.0,
+                "del": 22.8,
+            },
             hkl_error=1e-9,
         )
         assert result.success is True

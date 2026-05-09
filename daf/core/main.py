@@ -11,10 +11,25 @@ from tqdm import tqdm
 from daf.core.mode_parser import ModeParser, PREDEFINED_MATERIALS
 
 _SCAN_COLUMNS = [
-    "Mu", "Eta", "Chi", "Phi", "Nu", "Del",
-    "2theta", "theta", "alpha", "qaz", "naz",
-    "tau", "psi", "beta", "omega",
-    "H", "K", "L", "Error",
+    "Mu",
+    "Eta",
+    "Chi",
+    "Phi",
+    "Nu",
+    "Del",
+    "2theta",
+    "theta",
+    "alpha",
+    "qaz",
+    "naz",
+    "tau",
+    "psi",
+    "beta",
+    "omega",
+    "H",
+    "K",
+    "L",
+    "Error",
 ]
 from daf.core.reciprocal_map import ReciprocalMapGeometry
 from daf.core.minimization import MinimizationProc, _SCAN_QERROR_THRESHOLD

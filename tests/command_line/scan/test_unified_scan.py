@@ -17,7 +17,14 @@ class TestUnifiedScanParsing:
         """Test UnifiedScan accepts all valid --type and --n-motors combinations."""
         from daf.command_line.scan.unified_scan import UnifiedScan
 
-        abbrev_map = {"mu": "m", "eta": "e", "chi": "c", "phi": "p", "nu": "n", "del": "d"}
+        abbrev_map = {
+            "mu": "m",
+            "eta": "e",
+            "chi": "c",
+            "phi": "p",
+            "nu": "n",
+            "del": "d",
+        }
         motors = list(abbrev_map.keys())
         argv = ["daf.scan", f"--type={scan_type}", f"--n-motors={n_motors}"]
         for i in range(n_motors):
@@ -41,7 +48,9 @@ class TestUnifiedScanParsing:
             "daf.scan",
             "--type=absolute",
             "--n-motors=3",
-            "--mu", "1", "10",
+            "--mu",
+            "1",
+            "10",
             "10",
             "0.1",
         ]
@@ -58,7 +67,9 @@ class TestUnifiedScanParsing:
             "daf.scan",
             "--type=invalid",
             "--n-motors=1",
-            "--mu", "1", "10",
+            "--mu",
+            "1",
+            "10",
             "10",
             "0.1",
         ]
@@ -75,7 +86,9 @@ class TestUnifiedScanParsing:
             "daf.scan",
             "--type=absolute",
             "--n-motors=7",
-            "--mu", "1", "10",
+            "--mu",
+            "1",
+            "10",
             "10",
             "0.1",
         ]
@@ -92,7 +105,9 @@ class TestUnifiedScanParsing:
             "daf.scan",
             "--type=absolute",
             "--n-motors=0",
-            "--mu", "1", "10",
+            "--mu",
+            "1",
+            "10",
             "10",
             "0.1",
         ]
@@ -113,7 +128,9 @@ class TestUnifiedScanRunCmd:
             "daf.scan",
             "--type=absolute",
             "--n-motors=1",
-            "--mu", "1", "10",
+            "--mu",
+            "1",
+            "10",
             "10",
             "0.1",
         ]
@@ -133,12 +150,42 @@ class TestUnifiedScanIntegration:
         """Return a minimal experiment dict for scan parsing."""
         return {
             "motors": {
-                "mu": {"cli_abbrev": "m", "pv": "SIM:m1", "value": 0.0, "bounds": [-180, 180]},
-                "eta": {"cli_abbrev": "e", "pv": "SIM:m2", "value": 0.0, "bounds": [-180, 180]},
-                "chi": {"cli_abbrev": "c", "pv": "SIM:m3", "value": 0.0, "bounds": [-5, 95]},
-                "phi": {"cli_abbrev": "p", "pv": "SIM:m4", "value": 0.0, "bounds": [30, 400]},
-                "nu": {"cli_abbrev": "n", "pv": "SIM:m5", "value": 0.0, "bounds": [-180, 180]},
-                "del": {"cli_abbrev": "d", "pv": "SIM:m6", "value": 0.0, "bounds": [-180, 180]},
+                "mu": {
+                    "cli_abbrev": "m",
+                    "pv": "SIM:m1",
+                    "value": 0.0,
+                    "bounds": [-180, 180],
+                },
+                "eta": {
+                    "cli_abbrev": "e",
+                    "pv": "SIM:m2",
+                    "value": 0.0,
+                    "bounds": [-180, 180],
+                },
+                "chi": {
+                    "cli_abbrev": "c",
+                    "pv": "SIM:m3",
+                    "value": 0.0,
+                    "bounds": [-5, 95],
+                },
+                "phi": {
+                    "cli_abbrev": "p",
+                    "pv": "SIM:m4",
+                    "value": 0.0,
+                    "bounds": [30, 400],
+                },
+                "nu": {
+                    "cli_abbrev": "n",
+                    "pv": "SIM:m5",
+                    "value": 0.0,
+                    "bounds": [-180, 180],
+                },
+                "del": {
+                    "cli_abbrev": "d",
+                    "pv": "SIM:m6",
+                    "value": 0.0,
+                    "bounds": [-180, 180],
+                },
             },
             "default_counters": "config.daf_default.yml",
             "main_scan_counter": None,
@@ -156,25 +203,30 @@ class TestUnifiedScanIntegration:
             "daf.scan",
             "--type=relative",
             "--n-motors=2",
-            "--mu", "-2", "2",
-            "--eta", "-4", "4",
+            "--mu",
+            "-2",
+            "2",
+            "--eta",
+            "-4",
+            "4",
             "10",
             "0.1",
         ]
         monkeypatch.setattr(sys, "argv", argv)
 
         with patch.object(UnifiedScan, "run_scan"):
-            with patch.object(
-                UnifiedScan, "__init__", lambda self, **kwargs: None
-            ):
+            with patch.object(UnifiedScan, "__init__", lambda self, **kwargs: None):
                 scan = UnifiedScan()
                 scan.experiment_file_dict = mock_experiment
                 scan.parser = None  # Will be recreated by parse_command_line
                 # Need to re-init parser and parse args manually
                 import argparse
+
                 scan.parser = argparse.ArgumentParser()
                 scan.parser.add_argument("--type", choices=["absolute", "relative"])
-                scan.parser.add_argument("--n-motors", type=int, choices=[1, 2, 3, 4, 5, 6])
+                scan.parser.add_argument(
+                    "--n-motors", type=int, choices=[1, 2, 3, 4, 5, 6]
+                )
                 for motor in mock_experiment["motors"].keys():
                     abbrev = mock_experiment["motors"][motor]["cli_abbrev"]
                     scan.parser.add_argument(

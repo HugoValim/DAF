@@ -10,6 +10,7 @@ from daf.utils import dafutilities as du
 
 try:
     import docker
+
     docker.from_env().version()
     _DOCKER_AVAILABLE = True
 except Exception:
@@ -17,11 +18,6 @@ except Exception:
 
 pytestmark = pytest.mark.skipif(not _DOCKER_AVAILABLE, reason="Docker not available")
 
-
-@pytest.fixture
-def remove_local_config():
-    if os.path.isfile(dp.LOCAL_EXPERIMENT_DEFAULT):
-        os.remove(dp.LOCAL_EXPERIMENT_DEFAULT)
 
 @pytest.fixture
 def remove_local_config():

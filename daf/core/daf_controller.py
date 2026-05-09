@@ -95,7 +95,9 @@ class DAFController:
         self,
         file_store: Any | None = None,
     ) -> None:
-        self._file_store = file_store if file_store is not None else ExperimentFileStore()
+        self._file_store = (
+            file_store if file_store is not None else ExperimentFileStore()
+        )
 
     # ------------------------------------------------------------------
     # Public API
@@ -138,15 +140,14 @@ class DAFController:
     def _build_engine(self, exp_dict: dict) -> DAF:
         """Construct and configure a :class:`~daf.core.main.DAF` instance."""
         from daf.core.daf_engine_factory import DAFEngineFactory
+
         return DAFEngineFactory.from_dict(exp_dict)
 
     @staticmethod
     def _get_motor_values(exp_dict: dict) -> dict:
         return {m: exp_dict["motors"][m]["value"] for m in _MOTOR_NAMES}
 
-    def _calculate_hkl(
-        self, engine: DAF, exp_dict: dict, hkl: list[float]
-    ) -> float:
+    def _calculate_hkl(self, engine: DAF, exp_dict: dict, hkl: list[float]) -> float:
         """Run the HKL minimisation and return the residual Q-error."""
         motor_vals = self._get_motor_values(exp_dict)
         start_values = [motor_vals[m] for m in _MOTOR_NAMES]

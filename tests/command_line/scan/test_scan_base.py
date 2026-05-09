@@ -286,6 +286,22 @@ class TestDAFSigIntHandler:
         # Just verify the class can be imported and has expected structure
         assert DAFSigIntHandler.__name__ == "DAFSigIntHandler"
 
+    def test_init_builds_signals_map_from_re(self):
+        """Test __init__ builds signals_map using the RunEngine passed to parent"""
+        from daf.command_line.scan.signal_handler import DAFSigIntHandler
+
+        mock_re = MagicMock()
+        handler = DAFSigIntHandler(mock_re)
+
+        assert handler.signals_map["r"] is mock_re.resume
+        assert handler.signals_map["resume"] is mock_re.resume
+        assert handler.signals_map["a"] is mock_re.abort
+        assert handler.signals_map["abort"] is mock_re.abort
+        assert handler.signals_map["h"] is mock_re.halt
+        assert handler.signals_map["halt"] is mock_re.halt
+        assert handler.signals_map["s"] is mock_re.stop
+        assert handler.signals_map["stop"] is mock_re.stop
+
 
 class TestScanBaseGetCounters:
     """Test ScanBase get_counters method"""

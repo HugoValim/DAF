@@ -23,6 +23,7 @@ except OSError:
 
 try:
     import shutil
+
     _test_dir = os.path.join(dp.DAF_CONFIGS, ".rmdir_test")
     os.makedirs(_test_dir, exist_ok=True)
     shutil.rmtree(_test_dir, ignore_errors=False)
@@ -92,6 +93,7 @@ def test_remove_global_input(remove_local_config, set_mode, run_command_line):
 @pytest.mark.fixt_data("daf.reset", "--hard")
 def test_reset_hard_input(remove_local_config, set_mode, run_command_line):
     import shutil
+
     with patch.object(shutil, "rmtree") as mock_rmtree:
         obj = run_command_line
         obj.run_cmd()

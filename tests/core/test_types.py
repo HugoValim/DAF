@@ -40,7 +40,9 @@ def test_motor_angles_fields():
 
 
 def test_calculate_rotation_matrix_returns_rotation_matrices_type():
-    from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
+    from daf.core.matrix_utils import (
+        calculate_rotation_matrix_from_diffractometer_angles,
+    )
 
     result = calculate_rotation_matrix_from_diffractometer_angles(0, 0, 0, 0, 0, 0)
     assert isinstance(result, RotationMatrices)
@@ -49,7 +51,9 @@ def test_calculate_rotation_matrix_returns_rotation_matrices_type():
 
 
 def test_rotation_matrices_attribute_access():
-    from daf.core.matrix_utils import calculate_rotation_matrix_from_diffractometer_angles
+    from daf.core.matrix_utils import (
+        calculate_rotation_matrix_from_diffractometer_angles,
+    )
 
     result = calculate_rotation_matrix_from_diffractometer_angles(0, 0, 0, 0, 0, 0)
     assert result.mu.shape == (3, 3)

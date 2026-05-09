@@ -60,8 +60,12 @@ def test_format_motor_section_returns_string():
 
     formatter = DAFFormatter()
     result = formatter._format_motor_section(
-        del_val=0.0, eta_val=0.0, chi_val=0.0,
-        phi_val=0.0, nu_val=0.0, mu_val=0.0,
+        del_val=0.0,
+        eta_val=0.0,
+        chi_val=0.0,
+        phi_val=0.0,
+        nu_val=0.0,
+        mu_val=0.0,
     )
     assert isinstance(result, list)
     assert len(result) == 2

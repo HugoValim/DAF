@@ -105,9 +105,7 @@ class DAFEngineFactory:
         """Set the sample material on *daf*."""
         material = experiment_dict["Material"]
         if material in experiment_dict.get("user_samples", {}):
-            daf.set_material(
-                material, *experiment_dict["user_samples"][material]
-            )
+            daf.set_material(material, *experiment_dict["user_samples"][material])
         else:
             daf.set_material(
                 material,

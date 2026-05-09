@@ -252,12 +252,22 @@ class DAFFormatter:
         f = lambda v: self.center.format(self._fmt(v))  # noqa: E731
         return [
             {
-                "col1": c("Del"), "col2": c("Eta"), "col3": c("Chi"),
-                "col4": c("Phi"), "col5": c("Nu"), "col6": c("Mu"), "col7": c("--"),
+                "col1": c("Del"),
+                "col2": c("Eta"),
+                "col3": c("Chi"),
+                "col4": c("Phi"),
+                "col5": c("Nu"),
+                "col6": c("Mu"),
+                "col7": c("--"),
             },
             {
-                "col1": f(del_val), "col2": f(eta_val), "col3": f(chi_val),
-                "col4": f(phi_val), "col5": f(nu_val), "col6": f(mu_val), "col7": c("--"),
+                "col1": f(del_val),
+                "col2": f(eta_val),
+                "col3": f(chi_val),
+                "col4": f(phi_val),
+                "col5": f(nu_val),
+                "col6": f(mu_val),
+                "col7": c("--"),
             },
         ]
 
@@ -269,8 +279,12 @@ class DAFFormatter:
         mode_num = str(col1) + str(col2) + str(col3) + str(col4) + str(col5)
         return [
             {
-                "col1": c("MODE"), "col2": c(setup[0]), "col3": c(setup[1]),
-                "col4": c(setup[2]), "col5": c(setup[3]), "col6": c(setup[4]),
+                "col1": c("MODE"),
+                "col2": c(setup[0]),
+                "col3": c(setup[1]),
+                "col4": c(setup[2]),
+                "col5": c(setup[3]),
+                "col6": c(setup[4]),
                 "col7": c("Error"),
             },
             {
@@ -381,7 +395,9 @@ class DAFFormatter:
                 "col7": f(omega),
             },
             *self._separator_row(),
-            *self._format_motor_section(del_val, eta_val, chi_val, phi_val, nu_val, mu_val),
+            *self._format_motor_section(
+                del_val, eta_val, chi_val, phi_val, nu_val, mu_val
+            ),
             *self._separator_row(),
         ]
 

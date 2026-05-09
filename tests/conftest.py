@@ -47,7 +47,9 @@ def mock_caget(pvname, timeout=None):
 def mock_caput(pvname, value, timeout=None, wait=None):
     _pv_store[pvname] = value
     # Mirror writes to readback PV so epics_get sees the updated value
-    if not pvname.endswith((".RBV", ".LLM", ".HLM", ".STOP", ".MOVN", ".ACCL", ".VELO")):
+    if not pvname.endswith(
+        (".RBV", ".LLM", ".HLM", ".STOP", ".MOVN", ".ACCL", ".VELO")
+    ):
         _pv_store[pvname + ".RBV"] = value
 
 
@@ -58,7 +60,9 @@ def mock_caget_many(pvnames, timeout=None):
 def mock_caput_many(pvnames, values, timeout=None, wait=None, connection_timeout=None):
     for pv, val in zip(pvnames, values):
         _pv_store[pv] = val
-        if not pv.endswith((".RBV", ".LLM", ".HLM", ".STOP", ".MOVN", ".ACCL", ".VELO")):
+        if not pv.endswith(
+            (".RBV", ".LLM", ".HLM", ".STOP", ".MOVN", ".ACCL", ".VELO")
+        ):
             _pv_store[pv + ".RBV"] = val
 
 

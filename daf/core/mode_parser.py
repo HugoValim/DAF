@@ -243,7 +243,9 @@ class ModeParser:
         """Return a copy of pseudo constraints with their values."""
         return list(self.pseudo_constraints_w_value_list)
 
-    def set_pseudo_constraints(self, constraints: list[tuple[str, tuple | int | str]]) -> None:
+    def set_pseudo_constraints(
+        self, constraints: list[tuple[str, tuple | int | str]]
+    ) -> None:
         """Replace the pseudo constraints value list."""
         self.pseudo_constraints_w_value_list = list(constraints)
 

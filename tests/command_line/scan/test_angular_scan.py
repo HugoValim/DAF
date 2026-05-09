@@ -84,21 +84,15 @@ class TestAngularScanParsesType:
             return args
 
     def test_type_absolute(self):
-        args = self._make_scan(
-            ["daf.ascan", "--type", "absolute", "--n-motors", "2"]
-        )
+        args = self._make_scan(["daf.ascan", "--type", "absolute", "--n-motors", "2"])
         assert args.type == "absolute"
 
     def test_type_relative(self):
-        args = self._make_scan(
-            ["daf.ascan", "--type", "relative", "--n-motors", "1"]
-        )
+        args = self._make_scan(["daf.ascan", "--type", "relative", "--n-motors", "1"])
         assert args.type == "relative"
 
     def test_n_motors_parsed_as_int(self):
-        args = self._make_scan(
-            ["daf.ascan", "--type", "absolute", "--n-motors", "3"]
-        )
+        args = self._make_scan(["daf.ascan", "--type", "absolute", "--n-motors", "3"])
         assert args.n_motors == 3
 
 
@@ -113,7 +107,10 @@ class TestAngularScanNMotorsValidation:
             obj = AngularScan.__new__(AngularScan)
             obj.experiment_file_dict = EXPERIMENT_FILE
             obj.parser = argparse.ArgumentParser()
-            with patch("sys.argv", ["daf.ascan", "--type", scan_type, "--n-motors", n_motors_str]):
+            with patch(
+                "sys.argv",
+                ["daf.ascan", "--type", scan_type, "--n-motors", n_motors_str],
+            ):
                 obj._add_type_and_n_motors_args()
                 return obj.parser.parse_args()
 
@@ -169,10 +166,42 @@ class TestAngularScanAllMotorCounts:
         2: ["-m", "0", "10", "-e", "0", "20"],
         3: ["-m", "0", "10", "-e", "0", "20", "-c", "0", "30"],
         4: ["-m", "0", "10", "-e", "0", "20", "-c", "0", "30", "-p", "0", "40"],
-        5: ["-m", "0", "10", "-e", "0", "20", "-c", "0", "30", "-p", "0", "40", "-n", "0", "50"],
+        5: [
+            "-m",
+            "0",
+            "10",
+            "-e",
+            "0",
+            "20",
+            "-c",
+            "0",
+            "30",
+            "-p",
+            "0",
+            "40",
+            "-n",
+            "0",
+            "50",
+        ],
         6: [
-            "-m", "0", "10", "-e", "0", "20", "-c", "0", "30",
-            "-p", "0", "40", "-n", "0", "50", "-d", "0", "60",
+            "-m",
+            "0",
+            "10",
+            "-e",
+            "0",
+            "20",
+            "-c",
+            "0",
+            "30",
+            "-p",
+            "0",
+            "40",
+            "-n",
+            "0",
+            "50",
+            "-d",
+            "0",
+            "60",
         ],
     }
 
@@ -232,9 +261,18 @@ class TestAngularScanAllMotorCounts:
                     scan_inputs = obj.configure_scan_input()
 
         required_keys = {
-            "scan_data", "inputed_motors", "motors_data_dict", "counters",
-            "main_counter", "scan_type", "steps", "acquisition_time", "output",
-            "kafka_topic", "scan_db", "kafka_server",
+            "scan_data",
+            "inputed_motors",
+            "motors_data_dict",
+            "counters",
+            "main_counter",
+            "scan_type",
+            "steps",
+            "acquisition_time",
+            "output",
+            "kafka_topic",
+            "scan_db",
+            "kafka_server",
         }
         assert required_keys.issubset(set(scan_inputs.keys()))
         assert scan_inputs["scan_type"] == "absolute"
@@ -266,9 +304,7 @@ class TestSetupPyEntryPoints:
         with open(path) as fh:
             source = fh.read()
         # Extract the list of "key = value" strings from console_scripts
-        match = re.search(
-            r'"console_scripts"\s*:\s*\[(.*?)\]', source, re.DOTALL
-        )
+        match = re.search(r'"console_scripts"\s*:\s*\[(.*?)\]', source, re.DOTALL)
         assert match, "Could not find console_scripts in setup.py"
         entries = re.findall(r'"([^"]+)"', match.group(1))
         result = {}
@@ -305,6 +341,6 @@ class TestSetupPyEntryPoints:
 
     def test_daf_ascan_points_to_angular_scan(self):
         scripts = self._get_console_scripts()
-        assert "angular_scan" in scripts.get("daf.ascan", ""), (
-            "daf.ascan must point to angular_scan module"
-        )
+        assert "angular_scan" in scripts.get(
+            "daf.ascan", ""
+        ), "daf.ascan must point to angular_scan module"

@@ -72,7 +72,14 @@ class TestDAFEngineFactory:
     def test_custom_material_from_user_samples(self, minimal_experiment_dict):
         """Factory should select custom material from user_samples dict."""
         minimal_experiment_dict["Material"] = "MyCustomSample"
-        minimal_experiment_dict["user_samples"]["MyCustomSample"] = [3.189, 3.189, 5.185, 90.0, 90.0, 120.0]
+        minimal_experiment_dict["user_samples"]["MyCustomSample"] = [
+            3.189,
+            3.189,
+            5.185,
+            90.0,
+            90.0,
+            120.0,
+        ]
         daf = DAFEngineFactory.from_dict(minimal_experiment_dict)
 
         assert daf.sample.name == "MyCustomSample"
