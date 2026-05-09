@@ -33,8 +33,8 @@ class CLIBase:
             self.read_experiment_file()
         # sys.stderr = DevNull()
 
-    def read_experiment_file(self):
-        self.experiment_file_dict = self.io.read()
+    def read_experiment_file(self) -> dict:
+        self.experiment_file_dict = self.io.read_persisted()
         return self.experiment_file_dict
 
     def parse_command_line(self):

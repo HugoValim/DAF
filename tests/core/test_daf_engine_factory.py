@@ -160,3 +160,31 @@ class TestCLIBaseIntegration:
 
         assert isinstance(daf, DAF)
         assert daf.sample.name == "Si"
+
+    def test_clibase_read_experiment_file_uses_persisted_read_path(
+        self, minimal_experiment_dict
+    ):
+        """CLI experiment loading should use the explicit persisted-only read path."""
+        from daf.command_line.cli_base_utils import CLIBase
+
+        class DummyIO:
+            def read(self):
+                raise AssertionError("CLIBase must use the explicit persisted read")
+
+            def read_persisted(self):
+                return minimal_experiment_dict
+
+        class DummyCLI(CLIBase):
+            DESC = "dummy"
+            EPI = ""
+
+            def run_cmd(self):
+                pass
+
+        cli = DummyCLI(read=False)
+        cli.io = DummyIO()
+
+        result = cli.read_experiment_file()
+
+        assert result is minimal_experiment_dict
+        assert cli.experiment_file_dict is minimal_experiment_dict

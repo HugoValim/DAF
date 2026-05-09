@@ -184,6 +184,93 @@ class TestDAFIO(unittest.TestCase):
 
 
 class TestDAFIOWriteAndRead(unittest.TestCase):
+    def test_only_read_uses_local_experiment_before_global(self):
+        """Test active experiment reads prefer local .Experiment over global."""
+        from daf.utils.daf_paths import DAFPaths
+        from daf.utils.dafutilities import DAFIO
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            global_dir = os.path.join(tmpdir, "global")
+            local_dir = os.path.join(tmpdir, "local")
+            os.makedirs(global_dir)
+            os.makedirs(local_dir)
+            global_file = os.path.join(global_dir, ".Experiment")
+            local_file = os.path.join(local_dir, ".Experiment")
+
+            with open(global_file, "w") as f:
+                yaml.dump({"source": "global"}, f)
+            with open(local_file, "w") as f:
+                yaml.dump({"source": "local"}, f)
+
+            current_dir = os.getcwd()
+            try:
+                os.chdir(local_dir)
+                with patch.object(DAFPaths, "GLOBAL_EXPERIMENT_DEFAULT", global_file):
+                    result = DAFIO.only_read()
+            finally:
+                os.chdir(current_dir)
+
+        self.assertEqual(result["source"], "local")
+
+    def test_read_returns_persisted_file_without_epics_overlay(self):
+        """Test DAFIO.read returns persisted YAML values, not live EPICS values."""
+        persisted_data = {
+            "motors": {
+                "mu": {
+                    "pv": "test:mu",
+                    "value": 10.0,
+                    "bounds": [-20.0, 20.0],
+                    "up": True,
+                }
+            },
+            "beamline_pvs": {
+                "energy": {
+                    "pv": "test:energy",
+                    "value": 8000.0,
+                    "up": True,
+                    "simulated": False,
+                }
+            },
+        }
+        live_data = {
+            "motors": {
+                "mu": {
+                    "pv": "test:mu",
+                    "value": 99.0,
+                    "bounds": [-1.0, 1.0],
+                    "up": True,
+                }
+            },
+            "beamline_pvs": {
+                "energy": {
+                    "pv": "test:energy",
+                    "value": 12000.0,
+                    "up": True,
+                    "simulated": False,
+                }
+            },
+        }
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:
+            yaml.dump(persisted_data, f)
+            filepath = f.name
+
+        try:
+            with patch("daf.utils.dafutilities.EpicsMotorClient") as mock_client:
+                mock_client.return_value.epics_get.return_value = live_data
+
+                from daf.utils.dafutilities import DAFIO
+
+                io = DAFIO(read=True)
+                result = io.read(filepath)
+
+                self.assertEqual(result["motors"]["mu"]["value"], 10.0)
+                self.assertEqual(result["motors"]["mu"]["bounds"], [-20.0, 20.0])
+                self.assertEqual(result["beamline_pvs"]["energy"]["value"], 8000.0)
+                mock_client.return_value.epics_get.assert_not_called()
+        finally:
+            os.unlink(filepath)
+
     def test_write_read_cycle(self):
         """Test DAFIO write and read cycle"""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:

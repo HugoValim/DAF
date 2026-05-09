@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import pathlib
 from typing import Any
 
 import epics
@@ -16,14 +17,14 @@ from daf.utils.epics_motor_client import EpicsMotorClient
 logger = logging.getLogger(__name__)
 
 
-def _default_path():
+def _default_path() -> pathlib.Path:
     return dp.check_for_local_config()
 
 
 DEFAULT = _default_path
 
 
-def read_yml(filepath: str = None):
+def read_yml(filepath: str | None = None) -> dict[str, Any]:
     """Just get the data from .Experiment file without any epics command"""
     with open(filepath) as file:
         data = yaml.safe_load(file)
@@ -61,7 +62,7 @@ def zero_offline_motors_and_bl_pvs(dict_: dict[str, Any]) -> None:
 
 
 class DAFIO:
-    def __init__(self, read=True):
+    def __init__(self, read: bool = True) -> None:
         self.file_store = ExperimentFileStore()
         if read:
             self.epics_client = EpicsMotorClient()
@@ -74,46 +75,47 @@ class DAFIO:
             self.epics_put_flag = False
             self.epics_get_flag = False
 
-    def sync_with_environment(self):
+    def sync_with_environment(self) -> None:
         """Get PVs and sync with it"""
-        self.write(self.read())
+        self.write(self.epics_get(self.read()))
 
     @staticmethod
-    def only_read(filepath=None):
+    def only_read(filepath: str | None = None) -> dict[str, Any]:
         """Just get the data from .Experiment file without any epics command"""
         return ExperimentFileStore.only_read(filepath)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop all motors"""
         if self.epics_client is not None:
             self.epics_client.stop()
 
-    def wait(self):
+    def wait(self) -> None:
         """Wait for all motors to reach its position"""
         if self.epics_client is not None:
             self.epics_client.wait()
 
-    def epics_get(self, dict_):
+    def epics_get(self, dict_: dict[str, Any]) -> dict[str, Any]:
         """Method to sync DAF with PVs"""
         if self.epics_client is not None:
             return self.epics_client.epics_get(dict_)
         return dict_
 
-    def epics_put(self, dict_):
+    def epics_put(self, dict_: dict[str, Any]) -> None:
         """Method to write inputed values to PV"""
         if self.epics_client is not None:
             self.epics_client.epics_put(dict_)
 
-    def read(self, filepath=None) -> ExperimentFile:
-        """Read data from the experiment file."""
+    def read_persisted(self, filepath: str | None = None) -> ExperimentFile:
+        """Read persisted experiment-file data without EPICS overlay."""
         if filepath is not None:
             store = ExperimentFileStore(filepath)
         else:
             store = self.file_store
-        data = store.read()
-        if self.epics_get_flag:
-            data = self.epics_get(data)
-        return data
+        return store.read()
+
+    def read(self, filepath: str | None = None) -> ExperimentFile:
+        """Read persisted experiment-file data without EPICS overlay."""
+        return self.read_persisted(filepath)
 
     def check_for_offline_motors_and_bl_pvs_before_write(self, dict_: dict):
         """Check for a offline motor before writing, if it is offline, set all values as 0"""
@@ -125,7 +127,8 @@ class DAFIO:
             store = ExperimentFileStore(filepath)
         else:
             store = self.file_store
-        if self.epics_put_flag:
+        if self.epics_put_flag and self.epics_client is not None:
+            self.epics_client.build_epics_pvs(dict_)
             self.epics_put(dict_)
         # Explicit zeroing policy at the seam before persistence
         zero_offline_motors_and_bl_pvs(dict_)
