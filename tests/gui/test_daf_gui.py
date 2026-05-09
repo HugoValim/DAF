@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import patch
 
 import daf.utils.dafutilities as du
-from daf.gui.scripts.daf_gui_caller import main
 import daf.utils.generate_daf_default as gdd
 
 pytestmark = pytest.mark.skip(reason="GUI tests temporarily skipped")
@@ -29,6 +28,8 @@ class TestDAF(unittest.TestCase):
     def test_GIVEN_cli_argument_WHEN_running_cli_THEN_test_for_problems(
         self,
     ):
+        from daf.gui.scripts.daf_gui_caller import main
+
         proc = main()
         time.sleep(2)
         assert proc.poll() != 1

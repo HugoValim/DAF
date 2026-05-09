@@ -297,10 +297,10 @@ class TestSetupPyEntryPoints:
     """setup.py must expose daf.ascan and must NOT expose the old 12 entry points."""
 
     def _get_console_scripts(self) -> dict[str, str]:
-        import ast
         import re
+        from pathlib import Path
 
-        path = "/home/hugo/cfg/DAF/.claude/worktrees/agent-a47a31bee0070ec6a/setup.py"
+        path = Path(__file__).resolve().parents[3] / "setup.py"
         with open(path) as fh:
             source = fh.read()
         # Extract the list of "key = value" strings from console_scripts
