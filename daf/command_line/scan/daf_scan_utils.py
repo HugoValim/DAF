@@ -6,6 +6,7 @@ import daf.utils.dafutilities as du
 from daf.command_line.cli_base_utils import CLIBase
 import daf.command_line.scan.scan_daf as sd
 from daf.command_line.scan.scan_daf import DAFScanInputs
+from daf.command_line.scan.scan_request import ScanRequest
 from daf.utils.daf_paths import DAFPaths as dp
 
 
@@ -89,27 +90,27 @@ class ScanBase(CLIBase):
         }
         return counter_data
 
-    def configure_scan_input(self):
+    def configure_scan_request(self) -> ScanRequest:
         scan_data = {
             motor: self.parsed_args_dict[motor] for motor in self.inputed_motors
         }
-        scan_inputs = {
-            "scan_data": scan_data,
-            "inputed_motors": self.inputed_motors,
-            "motors_data_dict": self.experiment_file_dict["motors"],
-            "counters": self.get_counters(),
-            "main_counter": self.experiment_file_dict["main_scan_counter"],
-            "scan_type": self.scan_type,
-            "steps": self.parsed_args_dict["step"]
-            + 1,  # Number of interval instead of number of points
-            "acquisition_time": self.parsed_args_dict["time"],
-            "output": self.parsed_args_dict["output"],
-            "kafka_topic": self.experiment_file_dict["kafka_topic"],
-            "scan_db": self.experiment_file_dict["scan_db"],
-            "kafka_server": self.experiment_file_dict.get("kafka_server"),
-        }
+        return ScanRequest(
+            scan_data=scan_data,
+            motors=self.inputed_motors,
+            motors_data=self.experiment_file_dict["motors"],
+            counters=self.get_counters(),
+            main_counter=self.experiment_file_dict["main_scan_counter"],
+            scan_type=self.scan_type,
+            steps=self.parsed_args_dict["step"] + 1,
+            acquisition_time=self.parsed_args_dict["time"],
+            output=self.parsed_args_dict["output"],
+            kafka_topic=self.experiment_file_dict["kafka_topic"],
+            scan_db=self.experiment_file_dict["scan_db"],
+            kafka_server=self.experiment_file_dict.get("kafka_server"),
+        )
 
-        return scan_inputs
+    def configure_scan_input(self):
+        return self.configure_scan_request().to_daf_scan_inputs()
 
     def run_scan(self) -> None:
         """Perform the scan"""

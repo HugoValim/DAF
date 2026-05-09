@@ -5,6 +5,7 @@ import sys
 from daf.utils.decorators import cli_decorator
 from daf.command_line.scan.daf_scan_utils import ScanBase
 from daf.command_line.cli_base_utils import CLIBase
+from daf.command_line.scan.scan_request import ScanRequest
 
 
 class MeshScan(ScanBase):
@@ -42,13 +43,20 @@ class MeshScan(ScanBase):
             motor: convert_last_element_to_int(self.parsed_args_dict[motor])
             for motor in self.inputed_motors
         }
-        scan_inputs = [
-            scan_data,
-            self.inputed_motors,
-            self.experiment_file_dict["motors"],
-            self.scan_type,
-        ]
-        return scan_inputs
+        return ScanRequest(
+            scan_data=scan_data,
+            motors=self.inputed_motors,
+            motors_data=self.experiment_file_dict["motors"],
+            counters=self.get_counters(),
+            main_counter=self.experiment_file_dict.get("main_scan_counter"),
+            scan_type=self.scan_type,
+            steps=None,
+            acquisition_time=self.parsed_args_dict["time"],
+            output=self.parsed_args_dict["output"],
+            kafka_topic=self.experiment_file_dict.get("kafka_topic"),
+            scan_db=self.experiment_file_dict.get("scan_db"),
+            kafka_server=self.experiment_file_dict.get("kafka_server"),
+        ).to_daf_scan_inputs()
 
     def run_cmd(self):
         """Method to print the user required information"""
