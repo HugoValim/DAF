@@ -34,6 +34,7 @@ _SCAN_COLUMNS = [
 from daf.core.reciprocal_map import ReciprocalMapGeometry
 from daf.core.minimization import MinimizationProc, _SCAN_QERROR_THRESHOLD
 from daf.core.cli_formatting import DAFFormatter, build_forprint_rows, build_dprint
+from daf.core.solution import DAFSolution
 
 
 class DAF(MinimizationProc, ReciprocalMapGeometry):
@@ -229,24 +230,8 @@ class DAF(MinimizationProc, ReciprocalMapGeometry):
 
     def set_constraints(self, *args, setineq=None, **kwargs):
         """Set constraints values to motor and pseudo angle constraints."""
-        self.pseudo_constraints_w_value_list = list()
-
-        for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
-            if motor in kwargs and motor in self.fixed_motor_list:
-                setattr(self, bound_attr, kwargs[motor])
-
-        for name in ("qaz", "naz", "alpha", "beta", "psi", "omega"):
-            if name in kwargs and name in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append((name, kwargs[name]))
-
-        for name in ("aeqb", "eta=del/2", "mu=nu/2"):
-            if name in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append((name, "--"))
-
-        self.motor_bounds_list = tuple(
-            getattr(self, attr) for attr in self.MOTOR_BOUNDS_MAP.values()
-        )
-        return self.motor_bounds_list, self.pseudo_constraints_w_value_list
+        self.motor_bounds_list, constraints = self.mode.apply_constraint_values(kwargs)
+        return self.motor_bounds_list, constraints
 
     def set_circle_constrain(self, **kwargs):
         for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
@@ -344,25 +329,10 @@ class DAF(MinimizationProc, ReciprocalMapGeometry):
         return hkl
 
     def export_angles(self):
-        return [
-            self.Mu,
-            self.Eta,
-            self.Chi,
-            self.Phi,
-            self.Nu,
-            self.Del,
-            self.ttB1,
-            self.tB1,
-            self.alphain,
-            self.qaz,
-            self.naz,
-            self.taupseudo,
-            self.psipseudo,
-            self.betaout,
-            self.omega,
-            self.hkl_calc,
-            "{0:.2e}".format(self.qerror),
-        ]
+        return self.solution().to_legacy_export_list()
+
+    def solution(self) -> DAFSolution:
+        return DAFSolution.from_engine(self)
 
     def _build_scan_dataframe(self, angles_list: list) -> pd.DataFrame:
         return pd.DataFrame(angles_list, columns=_SCAN_COLUMNS)

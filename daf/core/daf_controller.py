@@ -27,40 +27,12 @@ import dataclasses
 import logging
 from typing import Any
 
-import numpy as np
-
-from daf.core.main import DAF
+from daf.core.hkl_move import HKLMove
 from daf.utils.experiment_file_store import ExperimentFileStore
 
 __all__ = ["DAFController", "MoveHKLResult"]
 
 logger = logging.getLogger(__name__)
-
-# Motor names in canonical order (matches CLIBase._MOTOR_NAMES)
-_MOTOR_NAMES: tuple[str, ...] = ("mu", "eta", "chi", "phi", "nu", "del")
-
-# Angle names exported by DAF.export_angles(), in index order
-_ANGLE_EXPORT_NAMES: tuple[str, ...] = (
-    "mu",
-    "eta",
-    "chi",
-    "phi",
-    "nu",
-    "del",
-    "twotheta",
-    "theta",
-    "alpha",
-    "qaz",
-    "naz",
-    "tau",
-    "psi",
-    "beta",
-    "omega",
-    "hklnow",
-)
-
-# An HKL minimisation is considered successful when the residual is below this
-_MAX_HKL_ERROR: float = 1e-4
 
 
 @dataclasses.dataclass
@@ -123,40 +95,19 @@ class DAFController:
             A :class:`MoveHKLResult` with ``success``, ``angles``, and
             ``hkl_error`` fields.
         """
-        exp_dict = self._file_store.read()
-        engine = self._build_engine(exp_dict)
-        error = self._calculate_hkl(engine, exp_dict, [h, k, l])
-        angles = self._export_angles(engine)
-        success = float(error) <= _MAX_HKL_ERROR
-        logger.debug(
-            "move_hkl(%s, %s, %s): error=%.2e success=%s", h, k, l, error, success
+        result = HKLMove(file_store=self._file_store).calculate(
+            self._file_store.read(), [h, k, l]
         )
-        return MoveHKLResult(success=success, angles=angles, hkl_error=float(error))
-
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
-
-    def _build_engine(self, exp_dict: dict) -> DAF:
-        """Construct and configure a :class:`~daf.core.main.DAF` instance."""
-        from daf.core.daf_engine_factory import DAFEngineFactory
-
-        return DAFEngineFactory.from_dict(exp_dict)
-
-    @staticmethod
-    def _get_motor_values(exp_dict: dict) -> dict:
-        return {m: exp_dict["motors"][m]["value"] for m in _MOTOR_NAMES}
-
-    def _calculate_hkl(self, engine: DAF, exp_dict: dict, hkl: list[float]) -> float:
-        """Run the HKL minimisation and return the residual Q-error."""
-        motor_vals = self._get_motor_values(exp_dict)
-        start_values = [motor_vals[m] for m in _MOTOR_NAMES]
-        engine.set_hkl(hkl)
-        engine(start_values=start_values)
-        return engine.qerror
-
-    @staticmethod
-    def _export_angles(engine: DAF) -> dict:
-        """Return a dict mapping angle names to their computed values."""
-        raw = engine.export_angles()
-        return {name: raw[i] for i, name in enumerate(_ANGLE_EXPORT_NAMES)}
+        logger.debug(
+            "move_hkl(%s, %s, %s): error=%.2e success=%s",
+            h,
+            k,
+            l,
+            result.hkl_error,
+            result.success,
+        )
+        return MoveHKLResult(
+            success=result.success,
+            angles=result.angles,
+            hkl_error=result.hkl_error,
+        )

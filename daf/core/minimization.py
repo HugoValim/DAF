@@ -8,7 +8,8 @@ import numpy as np
 from numpy import linalg as LA
 
 from daf.core.ub_matrix_calc import UBMatrix
-from daf.core.matrix_utils import calculate_pseudo_angle_from_motor_angles
+from daf.core.geometry import DiffractometerGeometry
+from daf.core.matrix_utils import calculate_pseudo_angle_from_geometry
 from daf.core.math_utils import vector_angle
 
 
@@ -29,28 +30,6 @@ _SCAN_QERROR_THRESHOLD = (
     1e-5  # Threshold for raising qerror in scan (shares _DEFAULT_MAX_ERROR intent)
 )
 _CHUTE_ANGLES = (45, 45, 45, 45, 45, 45)  # Motor angle offsets for retry sequence
-_ENERGY_KEV_THRESHOLD = 100  # Threshold below which beamline PV values are in keV
-
-
-# Pseudo angles that require full computation via calculate_pseudo_angle_from_motor_angles
-_PSEUDO_ANGLE_COMPUTED = frozenset(
-    {
-        "alpha",
-        "beta",
-        "qaz",
-        "naz",
-        "tau",
-        "psi",
-        "omega",
-        "aeqb",
-    }
-)
-
-
-def _compute_pseudo_angles(Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U):
-    return calculate_pseudo_angle_from_motor_angles(
-        Mu, Eta, Chi, Phi, Nu, Del, samp, hkl, lam, nref, U
-    )
 
 
 class MinimizationProc(UBMatrix):
@@ -80,18 +59,15 @@ class MinimizationProc(UBMatrix):
         Nu = angles[4] + _ANGLE_OFFSET
         Del = angles[5] + _ANGLE_OFFSET
 
-        computed = _compute_pseudo_angles(
-            Mu,
-            Eta,
-            Chi,
-            Phi,
-            Nu,
-            Del,
-            self.sample,
-            self.hkl,
-            self.lam,
-            self.nref,
-            self.U,
+        computed = calculate_pseudo_angle_from_geometry(
+            DiffractometerGeometry(
+                motor_angles=(Mu, Eta, Chi, Phi, Nu, Del),
+                sample=self.sample,
+                hkl=self.hkl,
+                wave_length=self.lam,
+                reference_direction=self.nref,
+                u_matrix=self.U,
+            )
         )
 
         if pseudo_angle == "aeqb":
@@ -101,21 +77,7 @@ class MinimizationProc(UBMatrix):
 
     def _build_constraints(self) -> list | None:
         """Build scipy constraint dicts from pseudo_constraints_w_value_list."""
-        pseudo_constraints = self.mode.pseudo_constraints()
-        if not pseudo_constraints:
-            return None
-        pseudoconst = self.pseudoAngleConst
-        return [
-            {
-                "type": "eq",
-                "fun": lambda a, idx=idx: pseudoconst(
-                    a,
-                    pseudo_constraints[idx][0],
-                    pseudo_constraints[idx][1],
-                ),
-            }
-            for idx in range(len(pseudo_constraints))
-        ]
+        return self.mode.solver_constraints(self.pseudoAngleConst)
 
     def motor_angles(
         self,
@@ -169,18 +131,22 @@ class MinimizationProc(UBMatrix):
         self.Mu, self.Eta, self.Chi, self.Phi = (ang[0], ang[1], ang[2], ang[3])
         self.Nu, self.Del = (ang[4], ang[5])
 
-        pseudo_angles_dict = calculate_pseudo_angle_from_motor_angles(
-            self.Mu,
-            self.Eta,
-            self.Chi,
-            self.Phi,
-            self.Nu,
-            self.Del,
-            self.sample,
-            self.hkl,
-            self.lam,
-            self.nref,
-            self.U,
+        pseudo_angles_dict = calculate_pseudo_angle_from_geometry(
+            DiffractometerGeometry(
+                motor_angles=(
+                    self.Mu,
+                    self.Eta,
+                    self.Chi,
+                    self.Phi,
+                    self.Nu,
+                    self.Del,
+                ),
+                sample=self.sample,
+                hkl=self.hkl,
+                wave_length=self.lam,
+                reference_direction=self.nref,
+                u_matrix=self.U,
+            )
         )
 
         self.ttB1 = pseudo_angles_dict.twotheta

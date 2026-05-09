@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse as ap
-import numpy as np
-
-from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
-from daf.utils import dafutilities as du
+from daf.core.hkl_move import HKLMove as CoreHKLMove
 from daf.command_line.move.move_utils import MoveBase, _add_hkl_display_args
 
 
@@ -44,7 +40,10 @@ class HKLCalc(MoveBase):
     def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        error = self.calculate_hkl(self.parsed_args_dict["hkl-position"])
+        result = CoreHKLMove(file_store=self.io).calculate(
+            self.experiment_file_dict, self.parsed_args_dict["hkl-position"]
+        )
+        self.exp = result.engine
         if not self.parsed_args_dict["quiet"]:
             self.exp.set_print_options(
                 marker=self.parsed_args_dict["marker"],

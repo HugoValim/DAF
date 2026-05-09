@@ -249,6 +249,63 @@ class ModeParser:
         """Replace the pseudo constraints value list."""
         self.pseudo_constraints_w_value_list = list(constraints)
 
+    def apply_constraint_values(self, values: dict) -> tuple[tuple, list]:
+        """Apply runtime constraint values to fixed motors and pseudo angles."""
+        self.pseudo_constraints_w_value_list = []
+        motor_keys = {
+            "Mu": ("Mu", "cons_mu"),
+            "Eta": ("Eta", "cons_eta"),
+            "Chi": ("Chi", "cons_chi"),
+            "Phi": ("Phi", "cons_phi"),
+            "Nu": ("Nu", "cons_nu"),
+            "Del": ("Del", "cons_del"),
+        }
+        pseudo_keys = {
+            "qaz": ("qaz", "cons_qaz"),
+            "naz": ("naz", "cons_naz"),
+            "alpha": ("alpha", "cons_alpha"),
+            "beta": ("beta", "cons_beta"),
+            "psi": ("psi", "cons_psi"),
+            "omega": ("omega", "cons_omega"),
+        }
+
+        for motor, keys in motor_keys.items():
+            if motor in self.fixed_motor_list:
+                for key in keys:
+                    if key in values:
+                        self.set_bound(motor, values[key])
+                        break
+
+        for pseudo, keys in pseudo_keys.items():
+            if pseudo in self.pseudo_angle_constraints:
+                for key in keys:
+                    if key in values:
+                        self.pseudo_constraints_w_value_list.append(
+                            (pseudo, values[key])
+                        )
+                        break
+
+        for name in ("aeqb", "eta=del/2", "mu=nu/2"):
+            if name in self.pseudo_angle_constraints:
+                self.pseudo_constraints_w_value_list.append((name, "--"))
+
+        return self.bounds_tuple, self.pseudo_constraints_w_value_list
+
+    def solver_constraints(self, evaluator):
+        """Build scipy-compatible equality constraints for pseudo angles."""
+        pseudo_constraints = self.pseudo_constraints()
+        if not pseudo_constraints:
+            return None
+        return [
+            {
+                "type": "eq",
+                "fun": lambda angles, name=name, value=value: evaluator(
+                    angles, name, value
+                ),
+            }
+            for name, value in pseudo_constraints
+        ]
+
     def constraint_columns(self) -> tuple[int, int, int, int, int]:
         """Return the five constraint column values as a tuple."""
         return (
