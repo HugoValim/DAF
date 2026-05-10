@@ -10,6 +10,7 @@ from typing import Any
 import yaml
 
 from daf.utils.daf_paths import DAFPaths as dp
+from daf.utils.experiment_file_schema import ExperimentFile, validate_experiment_file
 
 
 def _default_path() -> pathlib.Path:
@@ -25,10 +26,10 @@ class ExperimentFileStore:
             filepath if filepath is not None else _default_path()
         )
 
-    def read(self) -> dict[str, Any]:
+    def read(self) -> ExperimentFile:
         """Read and parse the experiment YAML file."""
         with self.filepath.open() as file:
-            return yaml.safe_load(file)
+            return validate_experiment_file(yaml.safe_load(file))
 
     def write(self, data: dict[str, Any]) -> None:
         """Write the experiment dict to the YAML file atomically."""
@@ -53,8 +54,8 @@ class ExperimentFileStore:
             raise
 
     @staticmethod
-    def only_read(filepath: str | pathlib.Path | None = None) -> dict[str, Any]:
+    def only_read(filepath: str | pathlib.Path | None = None) -> ExperimentFile:
         """Read the experiment YAML file without instantiating the store."""
         path = pathlib.Path(filepath if filepath is not None else _default_path())
         with path.open() as file:
-            return yaml.safe_load(file)
+            return validate_experiment_file(yaml.safe_load(file))

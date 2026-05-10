@@ -1,12 +1,24 @@
 """
 Unit tests for daf.utils.dafutilities module
 """
+import copy
 import os
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
 
 import yaml
+
+import daf.utils.generate_daf_default as gdd
+from daf.config.beamline_pvs_sim import beamline_pvs
+from daf.config.motors_sim_config import motors
+
+
+def valid_experiment_data():
+    data = copy.deepcopy(gdd.default)
+    data["motors"] = copy.deepcopy(motors)
+    data["beamline_pvs"] = copy.deepcopy(beamline_pvs)
+    return data
 
 
 class TestReadYml(unittest.TestCase):
@@ -171,14 +183,14 @@ class TestDAFIO(unittest.TestCase):
     def test_only_read_static_method(self):
         """Test only_read is a static method that reads file"""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:
-            yaml.dump({"test": "data"}, f)
+            yaml.dump(valid_experiment_data(), f)
             filepath = f.name
 
         try:
             from daf.utils.dafutilities import DAFIO
 
             result = DAFIO.only_read(filepath)
-            self.assertEqual(result["test"], "data")
+            self.assertEqual(result["Material"], "Si")
         finally:
             os.unlink(filepath)
 
@@ -197,10 +209,15 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
             global_file = os.path.join(global_dir, ".Experiment")
             local_file = os.path.join(local_dir, ".Experiment")
 
+            global_data = valid_experiment_data()
+            global_data["setup"] = "global"
+            local_data = valid_experiment_data()
+            local_data["setup"] = "local"
+
             with open(global_file, "w") as f:
-                yaml.dump({"source": "global"}, f)
+                yaml.dump(global_data, f)
             with open(local_file, "w") as f:
-                yaml.dump({"source": "local"}, f)
+                yaml.dump(local_data, f)
 
             current_dir = os.getcwd()
             try:
@@ -210,28 +227,19 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
             finally:
                 os.chdir(current_dir)
 
-        self.assertEqual(result["source"], "local")
+        self.assertEqual(result["setup"], "local")
 
     def test_read_returns_persisted_file_without_epics_overlay(self):
         """Test DAFIO.read returns persisted YAML values, not live EPICS values."""
-        persisted_data = {
-            "motors": {
-                "mu": {
-                    "pv": "test:mu",
-                    "value": 10.0,
-                    "bounds": [-20.0, 20.0],
-                    "up": True,
-                }
-            },
-            "beamline_pvs": {
-                "energy": {
-                    "pv": "test:energy",
-                    "value": 8000.0,
-                    "up": True,
-                    "simulated": False,
-                }
-            },
-        }
+        persisted_data = valid_experiment_data()
+        persisted_data["motors"]["mu"]["pv"] = "test:mu"
+        persisted_data["motors"]["mu"]["value"] = 10.0
+        persisted_data["motors"]["mu"]["bounds"] = [-20.0, 20.0]
+        persisted_data["motors"]["mu"]["up"] = True
+        persisted_data["beamline_pvs"]["energy"]["pv"] = "test:energy"
+        persisted_data["beamline_pvs"]["energy"]["value"] = 8000.0
+        persisted_data["beamline_pvs"]["energy"]["up"] = True
+        persisted_data["beamline_pvs"]["energy"]["simulated"] = False
         live_data = {
             "motors": {
                 "mu": {
@@ -278,24 +286,15 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
 
         try:
             # Write data
-            data = {
-                "motors": {
-                    "mu": {
-                        "pv": "test:mu",
-                        "value": 10.0,
-                        "bounds": [-180, 180],
-                        "up": True,
-                    }
-                },
-                "beamline_pvs": {
-                    "energy": {
-                        "pv": "test:energy",
-                        "value": 8000,
-                        "up": True,
-                        "simulated": False,
-                    }
-                },
-            }
+            data = valid_experiment_data()
+            data["motors"]["mu"]["pv"] = "test:mu"
+            data["motors"]["mu"]["value"] = 10.0
+            data["motors"]["mu"]["bounds"] = [-180, 180]
+            data["motors"]["mu"]["up"] = True
+            data["beamline_pvs"]["energy"]["pv"] = "test:energy"
+            data["beamline_pvs"]["energy"]["value"] = 8000
+            data["beamline_pvs"]["energy"]["up"] = True
+            data["beamline_pvs"]["energy"]["simulated"] = False
 
             from daf.utils.dafutilities import DAFIO
 
@@ -315,24 +314,15 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
             filepath = f.name
 
         try:
-            data = {
-                "motors": {
-                    "mu": {
-                        "pv": "test:mu",
-                        "value": 50.0,
-                        "bounds": [-10, 10],
-                        "up": False,
-                    }
-                },
-                "beamline_pvs": {
-                    "energy": {
-                        "pv": "test:energy",
-                        "value": 8000,
-                        "up": False,
-                        "simulated": False,
-                    }
-                },
-            }
+            data = valid_experiment_data()
+            data["motors"]["mu"]["pv"] = "test:mu"
+            data["motors"]["mu"]["value"] = 50.0
+            data["motors"]["mu"]["bounds"] = [-10, 10]
+            data["motors"]["mu"]["up"] = False
+            data["beamline_pvs"]["energy"]["pv"] = "test:energy"
+            data["beamline_pvs"]["energy"]["value"] = 8000
+            data["beamline_pvs"]["energy"]["up"] = False
+            data["beamline_pvs"]["energy"]["simulated"] = False
 
             from daf.utils.dafutilities import DAFIO
 
