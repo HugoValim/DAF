@@ -60,8 +60,12 @@ def test_format_motor_section_returns_string():
 
     formatter = DAFFormatter()
     result = formatter._format_motor_section(
-        del_val=0.0, eta_val=0.0, chi_val=0.0,
-        phi_val=0.0, nu_val=0.0, mu_val=0.0,
+        del_val=0.0,
+        eta_val=0.0,
+        chi_val=0.0,
+        phi_val=0.0,
+        nu_val=0.0,
+        mu_val=0.0,
     )
     assert isinstance(result, list)
     assert len(result) == 2
@@ -69,13 +73,10 @@ def test_format_motor_section_returns_string():
 
 def test_format_constraint_section_returns_string():
     from daf.core.cli_formatting import DAFFormatter
+    from daf.core.mode_parser import ModeParser
 
+    mode = ModeParser((2, 1, 5, 2, 0))
     formatter = DAFFormatter()
-    result = formatter._format_constraint_section(
-        setup=("Nu fixed", "alpha=beta", "eta=del/2", "", ""),
-        col1=2, col2=0, col3=5, col4=2, col5=0,
-        forprint=[],
-        qerror=0.0,
-    )
+    result = formatter._format_constraint_section(mode, [], 0.0)
     assert isinstance(result, list)
     assert len(result) == 2

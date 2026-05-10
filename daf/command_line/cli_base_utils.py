@@ -6,6 +6,8 @@ import sys
 import numpy as np
 
 from daf.core.main import DAF
+from daf.core.daf_engine_factory import DAFEngineFactory
+from daf.utils.experiment_config import ExperimentConfig, MOTOR_NAMES
 import daf.utils.dafutilities as du
 from daf.core.matrix_utils import (
     calculate_pseudo_angle_from_motor_angles,
@@ -23,27 +25,7 @@ class CLIBase:
     """Base class to be inherited by all command line classes"""
 
     # Motor names in canonical order
-    _MOTOR_NAMES = ("mu", "eta", "chi", "phi", "nu", "del")
-
-    # Mapping of export_angles() index to name
-    _ANGLE_EXPORT_NAMES = (
-        "mu",
-        "eta",
-        "chi",
-        "phi",
-        "nu",
-        "del",
-        "twotheta",
-        "theta",
-        "alpha",
-        "qaz",
-        "naz",
-        "tau",
-        "psi",
-        "beta",
-        "omega",
-        "hklnow",
-    )
+    _MOTOR_NAMES = MOTOR_NAMES
 
     def __init__(self, read: bool = True):
         self.io = du.DAFIO(read=read)
@@ -51,8 +33,13 @@ class CLIBase:
             self.read_experiment_file()
         # sys.stderr = DevNull()
 
-    def read_experiment_file(self):
-        self.experiment_file_dict = self.io.read()
+    def read_experiment_file(self) -> dict:
+        self.experiment_file_dict = self.io.read_persisted()
+        return self.experiment_file_dict
+
+    def sync_live_experiment_file(self) -> dict:
+        """Refresh the loaded experiment dict with explicit live EPICS state."""
+        self.experiment_file_dict = self.io.sync_live_state(self.experiment_file_dict)
         return self.experiment_file_dict
 
     def parse_command_line(self):
@@ -64,81 +51,20 @@ class CLIBase:
 
     def _get_motor_bounds(self) -> dict:
         """Extract motor bounds from experiment file as a dict."""
-        return {
-            m: self.experiment_file_dict["motors"][m]["bounds"]
-            for m in self._MOTOR_NAMES
-        }
+        return ExperimentConfig.from_dict(self.experiment_file_dict).motor_bounds
 
     def _get_constraints_dict(self) -> dict:
         """Extract constraints from experiment file as a dict."""
-        cons_keys = (
-            "cons_mu",
-            "cons_eta",
-            "cons_chi",
-            "cons_phi",
-            "cons_nu",
-            "cons_del",
-            "cons_alpha",
-            "cons_beta",
-            "cons_psi",
-            "cons_omega",
-            "cons_qaz",
-            "cons_naz",
-        )
-        return {k: self.experiment_file_dict[k] for k in cons_keys}
+        return ExperimentConfig.from_dict(self.experiment_file_dict).constraints
 
     def _get_motor_values(self) -> dict:
         """Extract current motor values from experiment file as a dict."""
-        return {
-            m: self.experiment_file_dict["motors"][m]["value"]
-            for m in self._MOTOR_NAMES
-        }
+        return ExperimentConfig.from_dict(self.experiment_file_dict).motor_values
 
     def build_exp(self) -> DAF:
         """Instantiate an instance of DAF main class setting all necessary parameters"""
-        mode = [int(i) for i in self.experiment_file_dict["Mode"]]
-        U = np.array(self.experiment_file_dict["U_mat"])
-        idir = self.experiment_file_dict["IDir_print"]
-        ndir = self.experiment_file_dict["NDir_print"]
-        rdir = self.experiment_file_dict["RDir"]
-        bounds_dict = self._get_motor_bounds()
-        self.en = (
-            self.experiment_file_dict["beamline_pvs"]["energy"]["value"]
-            - self.experiment_file_dict["energy_offset"]
-        )
-
-        exp = DAF(*mode)
-        material = self.experiment_file_dict["Material"]
-        if material in self.experiment_file_dict["user_samples"]:
-            exp.set_material(
-                material, *self.experiment_file_dict["user_samples"][material]
-            )
-        else:
-            exp.set_material(
-                material,
-                self.experiment_file_dict["lparam_a"],
-                self.experiment_file_dict["lparam_b"],
-                self.experiment_file_dict["lparam_c"],
-                self.experiment_file_dict["lparam_alpha"],
-                self.experiment_file_dict["lparam_beta"],
-                self.experiment_file_dict["lparam_gama"],
-            )
-
-        exp.set_exp_conditions(
-            idir=idir,
-            ndir=ndir,
-            rdir=rdir,
-            en=self.en,
-            sampleor=self.experiment_file_dict["Sampleor"],
-        )
-        exp.set_circle_constrain(**bounds_dict)
-        exp.set_constraints(**self._get_constraints_dict())
-
-        exp.set_U(U)
-        exp.build_xrd_experiment()
-        exp.build_bounds()
-
-        return exp
+        self.en = ExperimentConfig.from_dict(self.experiment_file_dict).energy
+        return DAFEngineFactory.from_dict(self.experiment_file_dict)
 
     def calculate_hkl_from_angles(self) -> np.array:
         """Calculate current HKL position from diffractometer angles"""
@@ -182,22 +108,19 @@ class CLIBase:
 
     def get_angles_from_calculated_exp(self) -> dict:
         """Get all angles and pseudo-angles based on a previous calculation, return a dicts"""
-        angs = self.exp.export_angles()
-        return {name: angs[i] for i, name in enumerate(self._ANGLE_EXPORT_NAMES)}
+        return self.exp.solution().to_angle_dict()
 
     def write_motors_bounds_to_experiment_file(self, dict_to_write: dict) -> None:
         """Write motor bounds to the experiment file"""
-        for key in self.experiment_file_dict["motors"].keys():
-            if key in dict_to_write.keys() and dict_to_write[key] is not None:
-                self.experiment_file_dict["motors"][key]["bounds"] = dict_to_write[key]
+        self.experiment_file_dict = ExperimentConfig.from_dict(
+            self.experiment_file_dict
+        ).with_motor_bounds(dict_to_write)
 
     def write_motors_to_experiment_file(self, dict_to_write: dict) -> None:
         """Write motor set point to the experiment file"""
-        for key in self.experiment_file_dict["motors"].keys():
-            if key in dict_to_write.keys() and dict_to_write[key] is not None:
-                self.experiment_file_dict["motors"][key]["value"] = float(
-                    dict_to_write[key]
-                )
+        self.experiment_file_dict = ExperimentConfig.from_dict(
+            self.experiment_file_dict
+        ).with_motor_setpoints(dict_to_write)
 
     def update_experiment_file(self, dict_to_write: dict, is_str: bool = False) -> None:
         """Update self.experiment_file_dict based on user inputs"""
@@ -228,6 +151,29 @@ class CLIBase:
             self.write_motors_bounds_to_experiment_file(dict_to_write)
         if write:
             self.io.write(self.experiment_file_dict)
+
+    @classmethod
+    def run_main(cls) -> None:
+        """Standard CLI lifecycle: instantiate, parse args, build experiment, run.
+
+        Subclasses registered as console_scripts entry points should call this
+        instead of defining their own ``main()`` boilerplate::
+
+            if __name__ == "__main__":
+                MyCommand.run_main()
+
+        The method:
+        1. Creates an instance (reads the experiment file).
+        2. Calls :meth:`parse_command_line` and stores ``parsed_args`` /
+           ``parsed_args_dict`` on the instance.
+        3. Calls :meth:`build_exp` and stores the result as ``self.exp``.
+        4. Calls :meth:`run_cmd`.
+        """
+        obj = cls()
+        obj.parsed_args = obj.parse_command_line()
+        obj.parsed_args_dict = vars(obj.parsed_args)
+        obj.exp = obj.build_exp()
+        obj.run_cmd()
 
     @abstractmethod
     def run_cmd(self):

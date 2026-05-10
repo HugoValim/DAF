@@ -43,6 +43,8 @@ def run_command_line(monkeypatch, request):
     with monkeypatch.context() as m:
         m.setattr(sys, "argv", command_line_arguments)
         obj = RelAngleMove()
+        # DAFIO.read() is persisted-only; align the live EPICS mock explicitly.
+        obj.io.epics_put(obj.io.read_persisted())
         return obj, request.param
 
 

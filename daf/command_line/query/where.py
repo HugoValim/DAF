@@ -22,9 +22,7 @@ class Where(CLIBase):
 
     def __init__(self):
         super().__init__()
-        self.parsed_args = self.parse_command_line()
-        self.parsed_args_dict = vars(self.parsed_args)
-        self.exp = self.build_exp()
+        self.sync_live_experiment_file()
 
     def parse_command_line(self):
         super().parse_command_line()
@@ -67,8 +65,7 @@ class Where(CLIBase):
 
 @cli_decorator
 def main() -> None:
-    obj = Where()
-    obj.run_cmd()
+    Where.run_main()
 
 
 if __name__ == "__main__":

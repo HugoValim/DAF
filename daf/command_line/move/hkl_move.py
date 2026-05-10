@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse as ap
-import numpy as np
-
-from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
-from daf.utils import dafutilities as du
+from daf.core.hkl_move import HKLMove as CoreHKLMove
 from daf.command_line.move.move_utils import MoveBase, _add_hkl_display_args
 
 
@@ -44,17 +40,22 @@ class HKLMove(MoveBase):
 
     def write_angles_if_small_error(self, error: float) -> None:
         """Writes to .Experiment file if the minimization was successful"""
-        if float(error) > self._MAX_ERROR_THRESHOLD:
+        if float(error) > CoreHKLMove()._max_error:
             print("Can't find the HKL {}".format(self.parsed_args.hkl_position))
             return
-        exp_dict = self.get_angles_from_calculated_exp()
+        exp_dict = self.exp.solution().to_angle_dict()
         self.update_experiment_file(exp_dict)
         self.write_to_experiment_file(exp_dict, is_motor_set_point=True)
 
     def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
-        error = self.calculate_hkl(self.parsed_args_dict["hkl-position"])
+        self.sync_live_experiment_file()
+        hkl_move = CoreHKLMove(file_store=self.io, max_error=self._MAX_ERROR_THRESHOLD)
+        result = hkl_move.calculate(
+            self.experiment_file_dict, self.parsed_args_dict["hkl-position"]
+        )
+        self.exp = result.engine
         if not self.parsed_args_dict["quiet"]:
             self.exp.set_print_options(
                 marker=self.parsed_args_dict["marker"],
@@ -62,7 +63,7 @@ class HKLMove(MoveBase):
                 space=self.parsed_args_dict["size"],
             )
             print(self.exp)
-        self.write_angles_if_small_error(error)
+        self.write_angles_if_small_error(result.hkl_error)
 
 
 @cli_decorator

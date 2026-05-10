@@ -11,38 +11,38 @@ from tqdm import tqdm
 from daf.core.mode_parser import ModeParser, PREDEFINED_MATERIALS
 
 _SCAN_COLUMNS = [
-    "Mu", "Eta", "Chi", "Phi", "Nu", "Del",
-    "2theta", "theta", "alpha", "qaz", "naz",
-    "tau", "psi", "beta", "omega",
-    "H", "K", "L", "Error",
+    "Mu",
+    "Eta",
+    "Chi",
+    "Phi",
+    "Nu",
+    "Del",
+    "2theta",
+    "theta",
+    "alpha",
+    "qaz",
+    "naz",
+    "tau",
+    "psi",
+    "beta",
+    "omega",
+    "H",
+    "K",
+    "L",
+    "Error",
 ]
-from daf.core.reciprocal_map import ReciprocalMapWindow
+from daf.core.reciprocal_map import ReciprocalMapGeometry
 from daf.core.minimization import MinimizationProc, _SCAN_QERROR_THRESHOLD
 from daf.core.cli_formatting import DAFFormatter, build_forprint_rows, build_dprint
+from daf.core.solution import DAFSolution
 
 
-class DAF(MinimizationProc, ReciprocalMapWindow):
+class DAF(MinimizationProc, ReciprocalMapGeometry):
 
     predefined_samples = PREDEFINED_MATERIALS
 
     def __init__(self, *args: int) -> None:
-        parser = ModeParser(args)
-        self.setup = parser.setup
-        self.constraint_col1 = parser.constraint_col1
-        self.constraint_col2 = parser.constraint_col2
-        self.constraint_col3 = parser.constraint_col3
-        self.constraint_col4 = parser.constraint_col4
-        self.constraint_col5 = parser.constraint_col5
-        self.motor_constraints = parser.motor_constraints
-        self.pseudo_angle_constraints = parser.pseudo_angle_constraints
-        self.fixed_motor_list = parser.fixed_motor_list
-        self.Mu_bound = parser.Mu_bound
-        self.Eta_bound = parser.Eta_bound
-        self.Chi_bound = parser.Chi_bound
-        self.Phi_bound = parser.Phi_bound
-        self.Nu_bound = parser.Nu_bound
-        self.Del_bound = parser.Del_bound
-        self.pseudo_constraints_w_value_list = parser.pseudo_constraints_w_value_list
+        self.mode = ModeParser(args)
         self.define_standard_experiment()
         self._formatter = DAFFormatter()
 
@@ -63,43 +63,21 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
 
     def _get_dprint(self):
         """Build dprint dict for constraint display."""
-        return build_dprint(
-            self.Mu_bound,
-            self.Eta_bound,
-            self.Chi_bound,
-            self.Phi_bound,
-            self.Nu_bound,
-            self.Del_bound,
-        )
+        return build_dprint(self.mode)
 
-    def _build_forprint_rows(self, dprint, col1, col2):
+    def _build_forprint_rows(self, dprint):
         """Build constraint rows for display table."""
-        return build_forprint_rows(
-            self.pseudo_constraints_w_value_list,
-            self.motor_constraints,
-            dprint,
-            col1,
-            col2,
-            self.setup,
-        )
+        return build_forprint_rows(self.mode, dprint)
 
     def show(self, sh: str, ident: int = 3, space: int = 20) -> str | tuple:
         """Show experiment info in different formats."""
         self._formatter.set_print_options(space=space)
 
         dprint = self._get_dprint()
-        self.forprint = self._build_forprint_rows(dprint, self.constraint_col1, self.constraint_col2)
+        self.forprint = self._build_forprint_rows(dprint)
 
         if sh == "mode":
-            return self._formatter.format_mode(
-                self.setup,
-                self.constraint_col1,
-                self.constraint_col2,
-                self.constraint_col3,
-                self.constraint_col4,
-                self.constraint_col5,
-                self.forprint,
-            )
+            return self._formatter.format_mode(self.mode, self.forprint)
 
         if sh == "expt":
             return self._formatter.format_experiment(
@@ -110,7 +88,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             return self._formatter.format_sample(self.sample)
 
         if sh == "gui":
-            conscols = [self.constraint_col1, self.constraint_col2, self.constraint_col3, self.constraint_col4, self.constraint_col5]
+            conscols = list(self.mode.constraint_columns())
             experiment_list = [
                 self.sampleor,
                 self._formatter._fmt(self.lam),
@@ -153,26 +131,107 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         "Del": "Del_bound",
     }
 
+    # Backward-compatible properties delegating to self.mode
+    @property
+    def setup(self):
+        return self.mode.setup
+
+    @property
+    def constraint_col1(self):
+        return self.mode.constraint_col1
+
+    @property
+    def constraint_col2(self):
+        return self.mode.constraint_col2
+
+    @property
+    def constraint_col3(self):
+        return self.mode.constraint_col3
+
+    @property
+    def constraint_col4(self):
+        return self.mode.constraint_col4
+
+    @property
+    def constraint_col5(self):
+        return self.mode.constraint_col5
+
+    @property
+    def motor_constraints(self):
+        return self.mode.motor_constraints
+
+    @property
+    def pseudo_angle_constraints(self):
+        return self.mode.pseudo_angle_constraints
+
+    @property
+    def fixed_motor_list(self):
+        return self.mode.fixed_motor_list
+
+    @property
+    def pseudo_constraints_w_value_list(self):
+        return self.mode.pseudo_constraints_w_value_list
+
+    @pseudo_constraints_w_value_list.setter
+    def pseudo_constraints_w_value_list(self, value):
+        self.mode.pseudo_constraints_w_value_list = list(value)
+
+    @property
+    def Mu_bound(self):
+        return self.mode.bounds_for("Mu")
+
+    @Mu_bound.setter
+    def Mu_bound(self, value):
+        self.mode.set_bound("Mu", value)
+
+    @property
+    def Eta_bound(self):
+        return self.mode.bounds_for("Eta")
+
+    @Eta_bound.setter
+    def Eta_bound(self, value):
+        self.mode.set_bound("Eta", value)
+
+    @property
+    def Chi_bound(self):
+        return self.mode.bounds_for("Chi")
+
+    @Chi_bound.setter
+    def Chi_bound(self, value):
+        self.mode.set_bound("Chi", value)
+
+    @property
+    def Phi_bound(self):
+        return self.mode.bounds_for("Phi")
+
+    @Phi_bound.setter
+    def Phi_bound(self, value):
+        self.mode.set_bound("Phi", value)
+
+    @property
+    def Nu_bound(self):
+        return self.mode.bounds_for("Nu")
+
+    @Nu_bound.setter
+    def Nu_bound(self, value):
+        self.mode.set_bound("Nu", value)
+
+    @property
+    def Del_bound(self):
+        return self.mode.bounds_for("Del")
+
+    @Del_bound.setter
+    def Del_bound(self, value):
+        self.mode.set_bound("Del", value)
+
+    @property
+    def motor_bounds(self):
+        return self.mode.motor_bounds
+
     def set_constraints(self, *args, setineq=None, **kwargs):
         """Set constraints values to motor and pseudo angle constraints."""
-        self.pseudo_constraints_w_value_list = list()
-
-        for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
-            if motor in kwargs and motor in self.fixed_motor_list:
-                setattr(self, bound_attr, kwargs[motor])
-
-        for name in ("qaz", "naz", "alpha", "beta", "psi", "omega"):
-            if name in kwargs and name in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append((name, kwargs[name]))
-
-        for name in ("aeqb", "eta=del/2", "mu=nu/2"):
-            if name in self.pseudo_angle_constraints:
-                self.pseudo_constraints_w_value_list.append((name, "--"))
-
-        self.motor_bounds_list = tuple(
-            getattr(self, attr) for attr in self.MOTOR_BOUNDS_MAP.values()
-        )
-        return self.motor_bounds_list, self.pseudo_constraints_w_value_list
+        self.motor_bounds_list, constraints = self.mode.apply_constraint_values(kwargs)
+        return self.motor_bounds_list, constraints
 
     def set_circle_constrain(self, **kwargs):
         for motor, bound_attr in self.MOTOR_BOUNDS_MAP.items():
@@ -206,7 +265,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
             return repr(self.formscantxt)
 
         dprint = self._get_dprint()
-        self.forprint = self._build_forprint_rows(dprint, self.constraint_col1, self.constraint_col2)
+        self.forprint = self._build_forprint_rows(dprint)
 
         self.forprint = [
             (i[0], self._formatter._fmt(i[1])) if i[1] != "--" else (i[0], i[1])
@@ -214,12 +273,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         ]
 
         return self._formatter.format_full_status(
-            self.setup,
-            self.constraint_col1,
-            self.constraint_col2,
-            self.constraint_col3,
-            self.constraint_col4,
-            self.constraint_col5,
+            self.mode,
             self.forprint,
             self.qerror,
             self.hkl_calc,
@@ -265,14 +319,7 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         )
 
     def build_bounds(self):
-        self.bounds = (
-            self.Mu_bound,
-            self.Eta_bound,
-            self.Chi_bound,
-            self.Phi_bound,
-            self.Nu_bound,
-            self.Del_bound,
-        )
+        self.bounds = self.mode.bounds_tuple
 
     def calc_from_angs(self, Mu, Eta, Chi, Phi, Nu, Del):
         hkl = self.hrxrd.Ang2HKL(
@@ -282,25 +329,10 @@ class DAF(MinimizationProc, ReciprocalMapWindow):
         return hkl
 
     def export_angles(self):
-        return [
-            self.Mu,
-            self.Eta,
-            self.Chi,
-            self.Phi,
-            self.Nu,
-            self.Del,
-            self.ttB1,
-            self.tB1,
-            self.alphain,
-            self.qaz,
-            self.naz,
-            self.taupseudo,
-            self.psipseudo,
-            self.betaout,
-            self.omega,
-            self.hkl_calc,
-            "{0:.2e}".format(self.qerror),
-        ]
+        return self.solution().to_legacy_export_list()
+
+    def solution(self) -> DAFSolution:
+        return DAFSolution.from_engine(self)
 
     def _build_scan_dataframe(self, angles_list: list) -> pd.DataFrame:
         return pd.DataFrame(angles_list, columns=_SCAN_COLUMNS)

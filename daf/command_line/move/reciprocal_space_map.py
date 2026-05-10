@@ -10,6 +10,7 @@ from daf.utils.print_utils import format_5_decimals
 from daf.utils.decorators import cli_decorator
 from daf.utils import dafutilities as du
 from daf.command_line.move.move_utils import MoveBase
+from daf.core.reciprocal_map_plot import show_reciprocal_space_plane
 
 
 @dataclass
@@ -88,7 +89,8 @@ class ReciprocalSpace(MoveBase):
 
     def _show_reciprocal_space_plane(self, exp, axis, graph_att: GraphAttributes):
         """Call show_reciprocal_space_plane with the given experiment and axis."""
-        return exp.show_reciprocal_space_plane(
+        return show_reciprocal_space_plane(
+            exp=exp,
             ttmax=graph_att.ttmax,
             ttmin=graph_att.ttmin,
             idir=graph_att.idir,

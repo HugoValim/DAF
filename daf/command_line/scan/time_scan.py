@@ -5,6 +5,7 @@ import signal
 from daf.utils.decorators import cli_decorator
 from daf.command_line.cli_base_utils import CLIBase
 from daf.command_line.scan.daf_scan_utils import ScanBase
+from daf.command_line.scan.scan_request import ScanRequest
 
 
 class TimeScan(ScanBase):
@@ -37,15 +38,21 @@ class TimeScan(ScanBase):
 
     def configure_scan_input(self):
         """Basically, a wrapper for configure_scan_inputs. It may differ from scan to scan"""
-        return {
-            "counters": self.get_counters(),
-            "scan_type": self.scan_type,
-            "acquisition_time": self.parsed_args_dict["time"],
-            "delay_time": self.parsed_args_dict["delay"],
-            "output": self.parsed_args_dict["output"],
-            "kafka_topic": self.experiment_file_dict["kafka_topic"],
-            "scan_db": self.experiment_file_dict["scan_db"],
-        }
+        return ScanRequest(
+            scan_data={},
+            motors=[],
+            motors_data=self.experiment_file_dict["motors"],
+            counters=self.get_counters(),
+            main_counter=self.experiment_file_dict.get("main_scan_counter"),
+            scan_type=self.scan_type,
+            steps=None,
+            acquisition_time=self.parsed_args_dict["time"],
+            delay_time=self.parsed_args_dict["delay"],
+            output=self.parsed_args_dict["output"],
+            kafka_topic=self.experiment_file_dict.get("kafka_topic"),
+            scan_db=self.experiment_file_dict.get("scan_db"),
+            kafka_server=self.experiment_file_dict.get("kafka_server"),
+        ).to_daf_scan_inputs()
 
     def run_cmd(self) -> None:
         """

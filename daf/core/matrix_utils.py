@@ -3,6 +3,7 @@ from numpy import linalg as la
 import xrayutilities as xu
 
 from daf.core.math_utils import vector_angle
+from daf.core.geometry import DiffractometerGeometry
 from daf.core.types import PseudoAngles, RotationMatrices
 
 
@@ -83,6 +84,27 @@ def calculate_pseudo_angle_from_motor_angles(
     U: np.ndarray,
 ) -> PseudoAngles:
     """Calculate all pseudo angles from motor angles."""
+    geometry = DiffractometerGeometry(
+        motor_angles=(Mu, Eta, Chi, Phi, Nu, Del),
+        sample=sample,
+        hkl=hkl,
+        wave_length=wave_length,
+        reference_direction=rdir,
+        u_matrix=U,
+    )
+    return calculate_pseudo_angle_from_geometry(geometry)
+
+
+def calculate_pseudo_angle_from_geometry(
+    geometry: DiffractometerGeometry,
+) -> PseudoAngles:
+    """Calculate pseudo angles from a named diffractometer geometry input."""
+    Mu, Eta, Chi, Phi, Nu, Del = geometry.motor_angles
+    sample = geometry.sample
+    hkl = geometry.hkl
+    wave_length = geometry.wave_length
+    rdir = geometry.reference_direction
+    U = geometry.u_matrix
 
     calculated_matrixes = calculate_rotation_matrix_from_diffractometer_angles(
         Mu, Eta, Chi, Phi, Nu, Del

@@ -1,16 +1,19 @@
 from os import path
-import subprocess
 
 from pydm import Display
 from qtpy.QtWidgets import QApplication
 from PyQt5 import QtGui
 from PyQt5.QtGui import QIcon
 
+from daf.core.hkl_move import HKLMove
+from daf.utils.dafutilities import DAFIO
+
 
 class MyDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MyDisplay, self).__init__(parent=parent, args=args, macros=macros)
         self.app = QApplication.instance()
+        self.hkl_move = HKLMove(file_store=DAFIO())
         self.ui.calc_HKL.clicked.connect(self.move_in_hkl)
         self.build_icons()
         self.set_icons()
@@ -50,12 +53,12 @@ class MyDisplay(Display):
 
     def move_in_hkl(self):
 
-        H = self.ui.H_set.text()
-        K = self.ui.K_set.text()
-        L = self.ui.L_set.text()
+        H = float(self.ui.H_set.text())
+        K = float(self.ui.K_set.text())
+        L = float(self.ui.L_set.text())
 
-        subprocess.Popen(["daf.mv", H, K, L], shell=False)
+        self.hkl_move.move([H, K, L])
 
-        self.H_set.setText("")
-        self.K_set.setText("")
-        self.L_set.setText("")
+        self.ui.H_set.setText("")
+        self.ui.K_set.setText("")
+        self.ui.L_set.setText("")

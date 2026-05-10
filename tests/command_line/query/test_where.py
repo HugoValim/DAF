@@ -26,6 +26,9 @@ class TestDAF(unittest.TestCase):
             testargs.append(arg)
         with patch.object(sys, "argv", testargs):
             obj = Where()
+            obj.parsed_args = obj.parse_command_line()
+            obj.parsed_args_dict = vars(obj.parsed_args)
+            obj.exp = obj.build_exp()
         return obj
 
     def test_GIVEN_a_real_position_WHEN_calling_dafwh_THEN_do_sanity_check(self):

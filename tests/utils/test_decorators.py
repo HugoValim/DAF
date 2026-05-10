@@ -146,42 +146,51 @@ class TestCheckVersion(unittest.TestCase):
     def test_check_version_with_current_version(self):
         """Test check_version passes when version matches"""
         with patch("daf.utils.decorators.du") as mock_du:
-            mock_du.read_yml.return_value = {"version": "1.0.0"}
             mock_du.DEFAULT = MagicMock(return_value="/tmp/test")
-            with patch.object(sys, "exit") as mock_exit:
-                with patch.object(os.path, "isfile", return_value=True):
-                    from daf import __version__
+            with patch(
+                "daf.utils.decorators.ExperimentFileStore.only_read",
+                return_value={"version": "1.0.0"},
+            ):
+                with patch.object(sys, "exit") as mock_exit:
+                    with patch.object(os.path, "isfile", return_value=True):
+                        from daf import __version__
 
-                    with patch("daf.utils.decorators.__version__", __version__):
-                        from daf.utils.decorators import check_version
+                        with patch("daf.utils.decorators.__version__", __version__):
+                            from daf.utils.decorators import check_version
 
-                        check_version()
+                            check_version()
 
-                        # Should not have called sys.exit
-                        mock_exit.assert_not_called()
+                            # Should not have called sys.exit
+                            mock_exit.assert_not_called()
 
     def test_check_version_with_old_version(self):
         """Test check_version exits when version is too old"""
         with patch("daf.utils.decorators.du") as mock_du:
-            mock_du.read_yml.return_value = {"version": "0.5.0"}
             mock_du.DEFAULT = MagicMock(return_value="/tmp/test")
-            with patch.object(sys, "exit") as mock_exit:
-                with patch.object(os.path, "isfile", return_value=True):
-                    from daf.utils.decorators import check_version
+            with patch(
+                "daf.utils.decorators.ExperimentFileStore.only_read",
+                return_value={"version": "0.5.0"},
+            ):
+                with patch.object(sys, "exit") as mock_exit:
+                    with patch.object(os.path, "isfile", return_value=True):
+                        from daf.utils.decorators import check_version
 
-                    # Should call sys.exit for old version
-                    # Note: This test may need adjustment based on actual behavior
+                        # Should call sys.exit for old version
+                        # Note: This test may need adjustment based on actual behavior
 
     def test_check_version_with_missing_file(self):
         """Test check_version handles missing config file"""
         with patch("daf.utils.decorators.du") as mock_du:
-            mock_du.read_yml.side_effect = FileNotFoundError()
             mock_du.DEFAULT = "/nonexistent"
-            with patch.object(sys, "exit") as mock_exit:
-                with patch.object(os.path, "isfile", return_value=False):
-                    from daf.utils.decorators import check_version
+            with patch(
+                "daf.utils.decorators.ExperimentFileStore.only_read",
+                side_effect=FileNotFoundError(),
+            ):
+                with patch.object(sys, "exit") as mock_exit:
+                    with patch.object(os.path, "isfile", return_value=False):
+                        from daf.utils.decorators import check_version
 
-                    # Should handle FileNotFoundError gracefully
+                        # Should handle FileNotFoundError gracefully
 
 
 if __name__ == "__main__":

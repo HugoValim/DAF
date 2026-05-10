@@ -13,16 +13,25 @@ def _add_hkl_display_args(parser: ap.ArgumentParser) -> None:
         "-q", "--quiet", action="store_true", help="do not show the full output"
     )
     parser.add_argument(
-        "-m", "--marker", type=str,
-        help="marker to be used in the print", default="",
+        "-m",
+        "--marker",
+        type=str,
+        help="marker to be used in the print",
+        default="",
     )
     parser.add_argument(
-        "-cm", "--column-marker", type=str,
-        help="column marker to be used in the print", default="",
+        "-cm",
+        "--column-marker",
+        type=str,
+        help="column marker to be used in the print",
+        default="",
     )
     parser.add_argument(
-        "-s", "--size", type=int,
-        help="size of the print, default is 14", default=14,
+        "-s",
+        "--size",
+        type=int,
+        help="size of the print, default is 14",
+        default=14,
     )
 
 

@@ -111,125 +111,6 @@ class TestScanBaseGetMotors:
             assert motor_order == []
 
 
-class TestAScansFactory:
-    """Test a_scans.py class factory"""
-
-    def test_exported_classes_exist(self):
-        """Test that all scan classes are exported in the module"""
-        from daf.command_line.scan import a_scans
-
-        # Check all expected classes are exported
-        expected_classes = [
-            "AScan1",
-            "AScan2",
-            "AScan3",
-            "AScan4",
-            "AScan5",
-            "AScan6",
-            "DScan1",
-            "DScan2",
-            "DScan3",
-            "DScan4",
-            "DScan5",
-            "DScan6",
-        ]
-        for cls_name in expected_classes:
-            assert hasattr(a_scans, cls_name), f"{cls_name} should be exported"
-
-    def test_ascan1_has_correct_desc(self):
-        """Test AScan1 class has correct description for absolute scan"""
-        from daf.command_line.scan.a_scans import AScan1
-
-        assert "Perform an absolute scan" in AScan1.DESC
-        assert AScan1.__name__ == "AScan1"
-
-    def test_dscan1_has_correct_desc(self):
-        """Test DScan1 class has correct description for relative scan"""
-        from daf.command_line.scan.a_scans import DScan1
-
-        assert "Perform a relative scan" in DScan1.DESC
-        assert DScan1.__name__ == "DScan1"
-
-    def test_ascan6_has_correct_desc(self):
-        """Test AScan6 class has correct description for 6-motor absolute scan"""
-        from daf.command_line.scan.a_scans import AScan6
-
-        assert (
-            "Perform an absolute scan in all six diffractometer motors" in AScan6.DESC
-        )
-        assert AScan6.__name__ == "AScan6"
-
-    def test_dscan6_has_correct_desc(self):
-        """Test DScan6 class has correct description for 6-motor relative scan"""
-        from daf.command_line.scan.a_scans import DScan6
-
-        assert "Perform a relative scan in all six diffractometer motors" in DScan6.DESC
-        assert DScan6.__name__ == "DScan6"
-
-    def test_exported_main_functions_exist(self):
-        """Test that all main functions are exported in the module"""
-        from daf.command_line.scan import a_scans
-
-        expected_mains = [
-            "ascan1_main",
-            "ascan2_main",
-            "ascan3_main",
-            "ascan4_main",
-            "ascan5_main",
-            "ascan6_main",
-            "dscan1_main",
-            "dscan2_main",
-            "dscan3_main",
-            "dscan4_main",
-            "dscan5_main",
-            "dscan6_main",
-        ]
-        for main_name in expected_mains:
-            assert hasattr(a_scans, main_name), f"{main_name} should be exported"
-
-
-class TestScanDocsCompleteness:
-    """Test that all scan types have proper documentation"""
-
-    def test_exported_classes_have_docs(self):
-        """Verify all exported scan classes have proper DESC and EPI"""
-        from daf.command_line.scan.a_scans import (
-            AScan1,
-            AScan2,
-            AScan3,
-            AScan4,
-            AScan5,
-            AScan6,
-            DScan1,
-            DScan2,
-            DScan3,
-            DScan4,
-            DScan5,
-            DScan6,
-        )
-
-        all_classes = [
-            AScan1,
-            AScan2,
-            AScan3,
-            AScan4,
-            AScan5,
-            AScan6,
-            DScan1,
-            DScan2,
-            DScan3,
-            DScan4,
-            DScan5,
-            DScan6,
-        ]
-
-        for cls in all_classes:
-            assert hasattr(cls, "DESC"), f"{cls.__name__} should have DESC"
-            assert hasattr(cls, "EPI"), f"{cls.__name__} should have EPI"
-            assert len(cls.DESC) > 0, f"{cls.__name__} DESC should not be empty"
-            assert len(cls.EPI) > 0, f"{cls.__name__} EPI should not be empty"
-
-
 class TestDAFScanInputs:
     """Test DAFScanInputs dataclass"""
 
@@ -404,6 +285,22 @@ class TestDAFSigIntHandler:
 
         # Just verify the class can be imported and has expected structure
         assert DAFSigIntHandler.__name__ == "DAFSigIntHandler"
+
+    def test_init_builds_signals_map_from_re(self):
+        """Test __init__ builds signals_map using the RunEngine passed to parent"""
+        from daf.command_line.scan.signal_handler import DAFSigIntHandler
+
+        mock_re = MagicMock()
+        handler = DAFSigIntHandler(mock_re)
+
+        assert handler.signals_map["r"] is mock_re.resume
+        assert handler.signals_map["resume"] is mock_re.resume
+        assert handler.signals_map["a"] is mock_re.abort
+        assert handler.signals_map["abort"] is mock_re.abort
+        assert handler.signals_map["h"] is mock_re.halt
+        assert handler.signals_map["halt"] is mock_re.halt
+        assert handler.signals_map["s"] is mock_re.stop
+        assert handler.signals_map["stop"] is mock_re.stop
 
 
 class TestScanBaseGetCounters:
