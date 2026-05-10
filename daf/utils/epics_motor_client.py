@@ -49,6 +49,11 @@ class EpicsMotorClient:
         self.stop_motor_pv_list = [pv + ".STOP" for pv in self.MOTOR_PVS.values()]
         self.bl_pv_list = [pv for pv in self.BL_PVS.values()]
 
+    def sync_live_state(self, dict_: dict[str, Any]) -> dict[str, Any]:
+        """Read live motor and beamline PV values into an experiment dict."""
+        self.build_epics_pvs(dict_)
+        return self.epics_get(dict_)
+
     def stop(self) -> None:
         """Stop all motors."""
         epics.caput_many(

@@ -37,6 +37,11 @@ class CLIBase:
         self.experiment_file_dict = self.io.read_persisted()
         return self.experiment_file_dict
 
+    def sync_live_experiment_file(self) -> dict:
+        """Refresh the loaded experiment dict with explicit live EPICS state."""
+        self.experiment_file_dict = self.io.sync_live_state(self.experiment_file_dict)
+        return self.experiment_file_dict
+
     def parse_command_line(self):
         self.parser = ap.ArgumentParser(
             formatter_class=ap.RawDescriptionHelpFormatter,

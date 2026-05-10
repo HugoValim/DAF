@@ -27,6 +27,7 @@ class Status(CLIBase):
 
     def __init__(self):
         super().__init__()
+        self.sync_live_experiment_file()
         self.parsed_args = self.parse_command_line()
         self.parsed_args_dict = vars(self.parsed_args)
         self.exp = self.build_exp()

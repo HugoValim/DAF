@@ -349,6 +349,64 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
 
 
 class TestDAFIOEpicsGetPut(unittest.TestCase):
+    def test_sync_live_state_updates_motors_bounds_and_beamline_pvs(self):
+        """Test explicit live-state sync updates an experiment dict from EPICS."""
+        persisted_data = {
+            "motors": {
+                "mu": {
+                    "pv": "test:mu",
+                    "value": 10.0,
+                    "bounds": [-20.0, 20.0],
+                    "up": True,
+                }
+            },
+            "beamline_pvs": {
+                "energy": {
+                    "pv": "test:energy",
+                    "value": 8000.0,
+                    "up": True,
+                    "simulated": False,
+                }
+            },
+        }
+        live_data = {
+            "motors": {
+                "mu": {
+                    "pv": "test:mu",
+                    "value": 12.5,
+                    "bounds": [-30.0, 30.0],
+                    "up": True,
+                }
+            },
+            "beamline_pvs": {
+                "energy": {
+                    "pv": "test:energy",
+                    "value": 9000.0,
+                    "up": True,
+                    "simulated": False,
+                }
+            },
+        }
+
+        with patch("daf.utils.dafutilities.EpicsMotorClient") as mock_client:
+            with patch("daf.utils.dafutilities.ExperimentFileStore") as mock_store:
+                mock_store_instance = MagicMock()
+                mock_store_instance.read.return_value = persisted_data
+                mock_store.return_value = mock_store_instance
+                mock_client.return_value.sync_live_state.return_value = live_data
+
+                from daf.utils.dafutilities import DAFIO
+
+                io = DAFIO(read=True)
+                result = io.sync_live_state(persisted_data)
+
+                self.assertEqual(result["motors"]["mu"]["value"], 12.5)
+                self.assertEqual(result["motors"]["mu"]["bounds"], [-30.0, 30.0])
+                self.assertEqual(result["beamline_pvs"]["energy"]["value"], 9000.0)
+                mock_client.return_value.sync_live_state.assert_called_once_with(
+                    persisted_data
+                )
+
     def test_epics_get_delegates_to_client(self):
         """Test DAFIO.epics_get delegates to EpicsMotorClient when available."""
         with patch("daf.utils.dafutilities.EpicsMotorClient") as mock_client:

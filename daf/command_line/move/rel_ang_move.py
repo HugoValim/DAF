@@ -39,6 +39,8 @@ class RelAngleMove(MoveBase):
     def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
+        self.sync_live_experiment_file()
+        self.exp = self.build_exp()
         motor_dict = self.write_angles()
         self.write_to_experiment_file(motor_dict, is_motor_set_point=True, write=False)
         pseudo_dict = self.get_pseudo_angles_from_motor_angles()

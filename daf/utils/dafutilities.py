@@ -77,7 +77,11 @@ class DAFIO:
 
     def sync_with_environment(self) -> None:
         """Get PVs and sync with it"""
-        self.write(self.epics_get(self.read()))
+        self.sync_live_state_to_file()
+
+    def sync_live_state_to_file(self) -> None:
+        """Explicitly sync live EPICS state into the active experiment file."""
+        self.write(self.sync_live_state(self.read()))
 
     @staticmethod
     def only_read(filepath: str | None = None) -> dict[str, Any]:
@@ -98,6 +102,12 @@ class DAFIO:
         """Method to sync DAF with PVs"""
         if self.epics_client is not None:
             return self.epics_client.epics_get(dict_)
+        return dict_
+
+    def sync_live_state(self, dict_: dict[str, Any]) -> dict[str, Any]:
+        """Explicitly read live EPICS state into an experiment dict."""
+        if self.epics_client is not None:
+            return self.epics_client.sync_live_state(dict_)
         return dict_
 
     def epics_put(self, dict_: dict[str, Any]) -> None:

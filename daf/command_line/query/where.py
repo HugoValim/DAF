@@ -20,6 +20,10 @@ class Where(CLIBase):
     _PSEUDO_NAMES = ("alpha", "beta", "psi", "tau", "qaz", "naz", "omega")
     _MOTOR_NAMES = ("del", "eta", "chi", "phi", "nu", "mu")
 
+    def __init__(self):
+        super().__init__()
+        self.sync_live_experiment_file()
+
     def parse_command_line(self):
         super().parse_command_line()
 

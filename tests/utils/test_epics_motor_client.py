@@ -85,6 +85,50 @@ class TestEpicsMotorClient(unittest.TestCase):
             self.assertEqual(result["motors"]["mu"]["bounds"], [-180.0, 180.0])
             self.assertEqual(result["beamline_pvs"]["energy"]["value"], 8000.0)
 
+    def test_sync_live_state_builds_pvs_and_updates_values(self):
+        """Test explicit live sync builds PV lists before reading EPICS."""
+        with patch("daf.utils.epics_motor_client.epics") as mock_epics:
+            mock_epics.caget_many.side_effect = [
+                [11.0],
+                [-90.0],
+                [95.0],
+                [9.5],
+            ]
+
+            client = EpicsMotorClient()
+            data = {
+                "motors": {
+                    "mu": {
+                        "pv": "SIM:m1",
+                        "value": 0.0,
+                        "bounds": [0, 0],
+                        "up": True,
+                    },
+                    "eta": {
+                        "pv": "SIM:m2",
+                        "value": 0.0,
+                        "bounds": [0, 0],
+                        "up": False,
+                    },
+                },
+                "beamline_pvs": {
+                    "energy": {
+                        "pv": "SIM:energy",
+                        "value": 0,
+                        "up": True,
+                        "simulated": False,
+                    }
+                },
+            }
+            result = client.sync_live_state(data)
+
+            self.assertEqual(result["motors"]["mu"]["value"], 11.0)
+            self.assertEqual(result["motors"]["mu"]["bounds"], [-90.0, 95.0])
+            self.assertEqual(result["motors"]["eta"]["value"], 0.0)
+            self.assertEqual(result["beamline_pvs"]["energy"]["value"], 9500.0)
+            self.assertEqual(client.rbv_motor_pv_list, ["SIM:m1.RBV"])
+            self.assertEqual(client.bl_pv_list, ["SIM:energy"])
+
     def test_epics_get_energy_above_threshold_sets_one(self):
         """Test epics_get sets energy to 1 when PV value is above threshold."""
         with patch("daf.utils.epics_motor_client.epics") as mock_epics:

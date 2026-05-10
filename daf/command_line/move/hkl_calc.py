@@ -40,6 +40,7 @@ class HKLCalc(MoveBase):
     def run_cmd(self) -> None:
         """Method to be defined be each subclass, this is the method
         that should be run when calling the cli interface"""
+        self.sync_live_experiment_file()
         result = CoreHKLMove(file_store=self.io).calculate(
             self.experiment_file_dict, self.parsed_args_dict["hkl-position"]
         )

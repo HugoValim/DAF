@@ -17,7 +17,7 @@ class MainWindow(UiMainWindow, QMainWindow):
         super().__init__()
         self.run_long_task()
         self.io = DAFIO()
-        self.io.sync_with_environment()
+        self.io.sync_live_state_to_file()
         self.instantiate_tabs()
 
     def instantiate_tabs(self):
