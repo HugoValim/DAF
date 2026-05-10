@@ -4,6 +4,7 @@ Unit tests for daf.utils.experiment_file_store module.
 import os
 import tempfile
 
+import pytest
 import yaml
 
 from daf.utils.experiment_file_store import ExperimentFileStore
@@ -59,6 +60,16 @@ class TestExperimentFileStore:
         finally:
             os.unlink(filepath)
 
+    def test_write_replaces_existing_file_with_readable_yaml(self, tmp_path):
+        """Writing over an existing experiment file leaves readable YAML."""
+        filepath = tmp_path / ".Experiment"
+        filepath.write_text("Mode: 215\nMaterial: Si\n")
+
+        store = ExperimentFileStore(filepath)
+        store.write({"Mode": 400, "Material": "Ge"})
+
+        assert store.read() == {"Mode": 400, "Material": "Ge"}
+
     def test_only_read_static_method(self):
         """Test only_read static method reads file without instantiation."""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:
@@ -96,3 +107,21 @@ class TestExperimentFileStore:
             assert result["beamline_pvs"]["energy"]["value"] == 8000
         finally:
             os.unlink(filepath)
+
+    def test_failed_write_keeps_previous_contents(self, tmp_path, monkeypatch):
+        """A failed write must not leave a truncated experiment file behind."""
+        filepath = tmp_path / ".Experiment"
+        filepath.write_text("Mode: 215\nMaterial: Si\n")
+
+        def fail_dump(data, file):
+            file.write("Mode: ")
+            raise OSError("simulated write failure")
+
+        monkeypatch.setattr(yaml, "dump", fail_dump)
+
+        store = ExperimentFileStore(filepath)
+
+        with pytest.raises(OSError, match="simulated write failure"):
+            store.write({"Mode": 400, "Material": "Ge"})
+
+        assert store.read() == {"Mode": 215, "Material": "Si"}

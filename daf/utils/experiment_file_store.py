@@ -2,7 +2,9 @@
 """Pure YAML persistence for experiment files."""
 from __future__ import annotations
 
+import os
 import pathlib
+import tempfile
 from typing import Any
 
 import yaml
@@ -29,10 +31,26 @@ class ExperimentFileStore:
             return yaml.safe_load(file)
 
     def write(self, data: dict[str, Any]) -> None:
-        """Write the experiment dict to the YAML file."""
-        with self.filepath.open("w") as file:
-            yaml.dump(data, file)
-            file.flush()
+        """Write the experiment dict to the YAML file atomically."""
+        self.filepath.parent.mkdir(parents=True, exist_ok=True)
+        temp_path: pathlib.Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                dir=self.filepath.parent,
+                prefix=f".{self.filepath.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as file:
+                temp_path = pathlib.Path(file.name)
+                yaml.dump(data, file)
+                file.flush()
+                os.fsync(file.fileno())
+            os.replace(temp_path, self.filepath)
+        except Exception:
+            if temp_path is not None:
+                temp_path.unlink(missing_ok=True)
+            raise
 
     @staticmethod
     def only_read(filepath: str | pathlib.Path | None = None) -> dict[str, Any]:
