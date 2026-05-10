@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse as ap
-import sys
 import os
-from os import path
-import yaml
-import subprocess
 
 from daf.command_line.support.support_utils import SupportBase
-import daf.utils.generate_daf_default as gdd
 from daf.utils.daf_paths import DAFPaths as dp
-import daf.utils.dafutilities as du
 from daf.utils.decorators import cli_decorator
+from daf.utils.experiment_file_store import ExperimentFileStore
 
 
 class Setup(SupportBase):
@@ -92,15 +87,13 @@ class Setup(SupportBase):
     def create_new_setup(self, setup_name: str) -> None:
         """Create a new DAF setup"""
         data = self.build_current_file(simulated=True)
-        gdd.generate_file(data=data, file_name=setup_name, file_path=dp.DAF_CONFIGS)
+        ExperimentFileStore(self._setup_path(setup_name)).write(data)
 
     def checkout_setup(self, setup_name: str) -> None:
         """Change to a new DAF setup"""
-        full_file_path = os.path.join(dp.DAF_CONFIGS, setup_name)
-        with open(full_file_path, "r") as src:
-            with open(du.DEFAULT(), "w") as dst:
-                dst.write(src.read())
-        self.experiment_file_dict = self.io.read()
+        self.experiment_file_dict = ExperimentFileStore(
+            self._setup_path(setup_name)
+        ).read()
         self.experiment_file_dict["setup"] = setup_name
         self.write_flag = True
 
@@ -115,14 +108,12 @@ class Setup(SupportBase):
     def save_setup(self) -> None:
         """Save the current setup"""
         setup_now = self.get_current_setup()
-        gdd.generate_file(
-            self.experiment_file_dict, file_path=dp.DAF_CONFIGS, file_name=setup_now
-        )
+        ExperimentFileStore(self._setup_path(setup_now)).write(self.experiment_file_dict)
 
     def save_as_setup(self, setup_name: str) -> None:
         """Save the current setup as a new setup"""
-        gdd.generate_file(
-            self.experiment_file_dict, file_path=dp.DAF_CONFIGS, file_name=setup_name
+        ExperimentFileStore(self._setup_path(setup_name)).write(
+            self.experiment_file_dict
         )
 
     def remove_setup(self, setup_name: str) -> None:
@@ -140,10 +131,11 @@ class Setup(SupportBase):
         """Update a description for one of the predefined setups"""
         setup_now = self.get_current_setup()
         if setup_name != "." and setup_name != setup_now:
-            path_to_the_setup = os.path.join(dp.DAF_CONFIGS, setup_name)
-            dict_args = self.io.read(filepath=path_to_the_setup)
+            path_to_the_setup = self._setup_path(setup_name)
+            store = ExperimentFileStore(path_to_the_setup)
+            dict_args = store.read()
             dict_args["setup_desc"] = description
-            du.write(dict_args, filepath=path_to_the_setup)
+            store.write(dict_args)
         else:
             self.experiment_file_dict["setup_desc"] = description
             self.write_flag = True
@@ -155,10 +147,14 @@ class Setup(SupportBase):
             desc = self.experiment_file_dict["setup_desc"]
             print(desc)
         else:
-            path_to_the_setup = os.path.join(dp.DAF_CONFIGS, setup_name)
-            dict_args = self.io.read(filepath=path_to_the_setup)
+            path_to_the_setup = self._setup_path(setup_name)
+            dict_args = ExperimentFileStore(path_to_the_setup).read()
             desc = dict_args["setup_desc"]
             print(desc)
+
+    @staticmethod
+    def _setup_path(setup_name: str) -> str:
+        return os.path.join(dp.DAF_CONFIGS, setup_name)
 
     def run_cmd(self) -> None:
         if self.parsed_args_dict["new"]:

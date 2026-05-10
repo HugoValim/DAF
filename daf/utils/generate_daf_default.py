@@ -3,8 +3,8 @@
 from os import path
 
 import numpy as np
-import yaml
 
+from daf.utils.experiment_file_store import ExperimentFileStore
 from daf.utils.general_configs import VERSION
 
 default = {
@@ -82,5 +82,4 @@ default = {
 
 def generate_file(data=default, file_path="", file_name="default"):
     full_file_path = path.join(file_path, file_name)
-    with open(full_file_path, "w") as stream:
-        yaml.dump(data, stream, allow_unicode=False)
+    ExperimentFileStore(full_file_path).write(data)

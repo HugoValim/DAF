@@ -8,6 +8,7 @@ from unittest.mock import patch
 import daf.utils.dafutilities as du
 from daf.utils.daf_paths import DAFPaths as dp
 from daf.command_line.support.setup import Setup, main
+from daf.utils.experiment_file_store import ExperimentFileStore
 import daf.utils.generate_daf_default as gdd
 from daf.command_line.support.init import Init
 
@@ -129,6 +130,24 @@ class TestDAF(unittest.TestCase):
         os.system("daf.expt -sim")
         assert dict_args["setup"] == param[0]
 
+    def test_checkout_setup_persists_selected_setup_through_experiment_store(
+        self,
+    ):
+        arg = "-c"
+        param = ["store_checkout_setup"]
+        obj = self.make_obj([arg, *param])
+        setup_path = os.path.join(dp.DAF_CONFIGS, param[0])
+        setup_data = dict(obj.experiment_file_dict)
+        setup_data["setup"] = "archived-name"
+        setup_data["setup_desc"] = "from store"
+        ExperimentFileStore(setup_path).write(setup_data)
+
+        obj.run_cmd()
+
+        active_data = ExperimentFileStore().read()
+        assert active_data["setup"] == param[0]
+        assert active_data["setup_desc"] == "from store"
+
     def test_GIVEN_cli_argument_WHEN_inputing_save_THEN_check_if_the_setup_was_saved(
         self,
     ):
@@ -195,6 +214,22 @@ class TestDAF(unittest.TestCase):
         ]
         with patch.object(sys, "argv", testargs):
             main()
+
+    def test_description_for_named_setup_updates_that_setup_file(
+        self,
+    ):
+        obj = self.make_obj([])
+        setup_name = "described_setup"
+        setup_path = os.path.join(dp.DAF_CONFIGS, setup_name)
+        setup_data = dict(obj.experiment_file_dict)
+        setup_data["setup"] = setup_name
+        setup_data["setup_desc"] = "old"
+        ExperimentFileStore(setup_path).write(setup_data)
+
+        obj.update_setup_description(setup_name, "new description")
+
+        saved_setup = ExperimentFileStore(setup_path).read()
+        assert saved_setup["setup_desc"] == "new description"
 
     def test_GIVEN_cli_argument_WHEN_inputing_info_THEN_test_for_problems(
         self,

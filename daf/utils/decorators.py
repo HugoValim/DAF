@@ -4,6 +4,8 @@ import sys
 
 from daf import __version__
 from daf.utils import dafutilities as du
+from daf.utils.experiment_file_schema import ExperimentFileValidationError
+from daf.utils.experiment_file_store import ExperimentFileStore
 
 logger = logging.getLogger(__name__)
 
@@ -47,12 +49,12 @@ def check_version():
     reset_flag = False
     default_path = du.DEFAULT()
     try:
-        data = du.read_yml(default_path)
+        data = ExperimentFileStore.only_read(default_path)
         if (
             data["version"].split(".")[0] != __version__.split(".")[0]
         ):  # If Version if different from "1.x.y" remove data:
             reset_flag = True
-    except (KeyError, FileNotFoundError, TypeError):
+    except (ExperimentFileValidationError, KeyError, FileNotFoundError, TypeError):
         reset_flag = True
 
     if reset_flag:

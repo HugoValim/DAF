@@ -25,7 +25,10 @@ DEFAULT = _default_path
 
 
 def read_yml(filepath: str | None = None) -> dict[str, Any]:
-    """Just get the data from .Experiment file without any epics command"""
+    """Read a generic YAML file.
+
+    Experiment files should use :class:`ExperimentFileStore` or ``DAFIO``.
+    """
     with open(filepath) as file:
         data = yaml.safe_load(file)
         return data

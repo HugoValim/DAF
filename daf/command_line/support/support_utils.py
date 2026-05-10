@@ -1,19 +1,17 @@
-from dataclasses import dataclass
-
-import yaml
+import os
 
 from daf.command_line.cli_base_utils import CLIBase
 import daf.utils.generate_daf_default as gdd
 from daf.utils.daf_paths import DAFPaths as dp
 import daf.utils.dafutilities as du
+from daf.utils.experiment_file_store import ExperimentFileStore
 
 
 class SupportBase(CLIBase):
     @staticmethod
     def write_yaml(dict_, file_path=None) -> None:
         """Method to write to a yaml file"""
-        with open(file_path, "w") as file:
-            yaml.dump(dict_, file)
+        ExperimentFileStore(file_path).write(dict_)
 
     @staticmethod
     def get_motors_beamline_pvs_counters_info(simulated: bool):
@@ -60,10 +58,9 @@ class SupportBase(CLIBase):
     ):
         """write file to disk"""
         if is_global:
-            gdd.generate_file(
-                data=data, file_path=dp.DAF_CONFIGS, file_name=dp.DEFAULT_FILE_NAME
-            )
+            filepath = os.path.join(dp.DAF_CONFIGS, dp.DEFAULT_FILE_NAME)
         else:
-            gdd.generate_file(data=data, file_name=dp.DEFAULT_FILE_NAME)
+            filepath = dp.DEFAULT_FILE_NAME
+        ExperimentFileStore(filepath).write(data)
         if fetch_motors:
             self.get_offline_motors_and_write()
