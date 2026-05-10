@@ -308,6 +308,48 @@ class TestDAFIOWriteAndRead(unittest.TestCase):
         finally:
             os.unlink(filepath)
 
+    def test_persisted_read_round_trip_is_separate_from_explicit_live_sync(self):
+        """Persisted reads do not import live EPICS state until explicit sync."""
+        persisted_data = valid_experiment_data()
+        persisted_data["motors"]["mu"]["value"] = 10.0
+        persisted_data["motors"]["mu"]["bounds"] = [-20.0, 20.0]
+        persisted_data["beamline_pvs"]["energy"]["value"] = 8000.0
+
+        live_data = copy.deepcopy(persisted_data)
+        live_data["motors"]["mu"]["value"] = 99.0
+        live_data["motors"]["mu"]["bounds"] = [-1.0, 1.0]
+        live_data["beamline_pvs"]["energy"]["value"] = 12000.0
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:
+            yaml.dump(persisted_data, f)
+            filepath = f.name
+
+        try:
+            from daf.utils.dafutilities import DAFIO
+            from daf.utils.experiment_file_store import ExperimentFileStore
+
+            io = DAFIO(read=False)
+            io.file_store = ExperimentFileStore(filepath)
+            io.epics_client = MagicMock()
+            io.epics_client.sync_live_state.return_value = live_data
+
+            read_back = io.read()
+
+            self.assertEqual(read_back["motors"]["mu"]["value"], 10.0)
+            self.assertEqual(read_back["motors"]["mu"]["bounds"], [-20.0, 20.0])
+            self.assertEqual(read_back["beamline_pvs"]["energy"]["value"], 8000.0)
+            io.epics_client.sync_live_state.assert_not_called()
+
+            io.sync_live_state_to_file()
+            synced = io.read()
+
+            self.assertEqual(synced["motors"]["mu"]["value"], 99.0)
+            self.assertEqual(synced["motors"]["mu"]["bounds"], [-1.0, 1.0])
+            self.assertEqual(synced["beamline_pvs"]["energy"]["value"], 12000.0)
+            io.epics_client.sync_live_state.assert_called_once()
+        finally:
+            os.unlink(filepath)
+
     def test_write_zeroes_offline_motors_explicitly(self):
         """Test DAFIO write applies offline zeroing explicitly at the seam."""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".yml") as f:

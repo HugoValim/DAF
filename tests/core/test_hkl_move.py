@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from daf.utils.experiment_file_store import ExperimentFileStore
 from daf.core.hkl_move import HKLMove
 
 
@@ -26,3 +27,19 @@ def test_hkl_move_persists_motor_angles_when_successful(temp_experiment_file):
     store.write.assert_called_once()
     written = store.write.call_args.args[0]
     assert isinstance(written["motors"]["mu"]["value"], float)
+
+
+def test_failed_hkl_move_leaves_persisted_motor_values_unchanged(temp_experiment_file):
+    filepath, data = temp_experiment_file
+    original_motor_values = {
+        motor: config["value"] for motor, config in data["motors"].items()
+    }
+    store = ExperimentFileStore(filepath)
+
+    result = HKLMove(file_store=store, max_error=-1.0).move([1.0, 1.0, 1.0])
+
+    assert result.success is False
+    persisted = store.read()
+    assert {
+        motor: config["value"] for motor, config in persisted["motors"].items()
+    } == original_motor_values
